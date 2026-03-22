@@ -1,0 +1,46 @@
+// ============================================
+// VARMUNDT Weapon ENCHANT NPC
+// ============================================
+ba_in01,293,132,4	script	Varmundt Weapon Enchant	10563,{
+	mes "^0000FFWelcome to Varmundt Weapon Enchant System!^000000";
+	mes "I can enchant the following Weapons:";
+	mes "^FF0000=> Time Dimensions Rune Crown^000000";
+	mes "^0088FF=> Dimensions Weapon^000000";
+	mes "^9900FF=> Time Gap Weapon^000000";
+	mes "^00CC00=> New Enchant Custom^000000";
+	next;
+
+	switch(select(
+		"^FF0000Time Dimensions Rune Crown^000000:" +
+		"^0088FFDimensions Weapon^000000:" +
+		"^9900FFTime Gap Weapon^000000:" +
+		"^00CC00Olympus Enchant Custom^000000:" +
+		"Exit"
+	)) {
+
+		case 1:
+			close2;
+			item_enchant(132);
+			end;
+
+		case 2:
+			close2;
+			item_enchant(133);
+			end;
+
+		case 3:
+			close2;
+			item_enchant(150);
+			end;
+
+		case 4:
+			close2;
+			item_enchant(170);
+			end;
+
+		default:
+			mes "[Weapon Enchanter]";
+			mes "Have a nice day!";
+			close;
+	}
+}

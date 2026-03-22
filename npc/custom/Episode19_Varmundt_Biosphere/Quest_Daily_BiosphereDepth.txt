@@ -1,0 +1,743 @@
+//===== rAthena Script =======================================
+//= Varmundt's Biosphere Daily & Weekend Quest - DEPTH 1
+//===== Description: =========================================
+//= Daily & Weekend hunting quests for Depth 1
+//= Requires level 240+
+//= Daily: 1000 monsters (24h cooldown)
+//= Weekend: 5000 monsters (7 days cooldown)
+//= GM Level 80+ can bypass cooldowns and auto-complete
+//============================================================
+
+ba_in01,292,114,4	script	Varmundt Depth 1 Quest	10344,{
+	
+	.@is_gm = (getgmlevel() >= 80);
+	
+	if (BaseLevel < 240 && !.@is_gm) {
+		mes "[Varmundt Administrator - Depth 1]";
+		mes "Varmundt's Biosphere requires level 240 minimum.";
+		mes "Come back when you're stronger!";
+		close;
+	}
+	
+	// ============================================================
+	// CHECK & CLEAR EXPIRED COOLDOWNS FIRST
+	// ============================================================
+	
+	if (checkquest(70268, PLAYTIME) == 2) erasequest 70268; // Daily Cooldown (24h)
+	if (checkquest(70269, PLAYTIME) == 2) erasequest 70269; // Weekend Cooldown (7d)
+	
+	// ============================================================
+	// GM COMMAND - AUTO COMPLETE QUEST INSTANTLY
+	// ============================================================
+	if (.@is_gm) {
+		for (.@i = 70264; .@i <= 70265; .@i++) {
+			if (checkquest(.@i, HUNTING) == 1 || checkquest(.@i, HUNTING) == 0) {
+				mes "[Varmundt Administrator - Depth 1]";
+				mes "^FF0000[GM MODE]^000000";
+				mes "Active quest detected!";
+				mes " ";
+				mes "Complete instantly and claim rewards?";
+				next;
+				
+				if (select("Yes, complete and claim:No, continue normally") == 1) {
+					completequest .@i;
+					
+					.@is_weekend = (.@i == 70265);
+					
+					mes "[Varmundt Administrator - Depth 1]";
+					mes "^00FF00Quest Auto-Completed!^000000";
+					mes "Depth 1 - " + (.@is_weekend ? "Weekend" : "Daily");
+					next;
+					
+					if (.@is_weekend) {
+						add_reputation_points(REPU_BIO_DEEP1, 25);
+						getexp 120000000000, 30000000000;
+						
+						mes "[Varmundt Administrator - Depth 1]";
+						mes "^00FF00Rewards Given:^000000";
+						mes "- 25 Reputation Points (Depth 1)";
+						mes "- 120B Base / 30B Job EXP";
+					} else {
+						add_reputation_points(REPU_BIO_DEEP1, 5);
+						getexp 24000000000, 6000000000;
+						
+						mes "[Varmundt Administrator - Depth 1]";
+						mes "^00FF00Rewards Given:^000000";
+						mes "- 5 Reputation Points (Depth 1)";
+						mes "- 24B Base / 6B Job EXP";
+					}
+					
+					callsub S_GiveRandomReward, (.@is_weekend ? 2 : 1);
+					
+					erasequest .@i;
+					
+					announce strcharinfo(0) + " has completed Varmundt Depth 1 Quest [" + (.@is_weekend ? "Weekend" : "Daily") + "] via GM Command!", bc_all, 0x00FF00;
+					
+					mes " ";
+					mes "^FF0000[GM MODE]^000000";
+					mes "Cooldown NOT applied (GM bypass active)";
+					close;
+				}
+				break;
+			}
+		}
+	}
+	
+	// ============================================================
+	// CHECK IF QUEST COMPLETED - GIVE REWARDS
+	// ============================================================
+	
+	// Depth 1 - Daily 1000 - Quest 70264
+	if (checkquest(70264, HUNTING) == 2) {
+		if (checkquest(70268, PLAYTIME) >= 0 && !.@is_gm) {
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70264;
+			close;
+		}
+		
+		mes "[Varmundt Administrator - Depth 1]";
+		mes "Congratulations! You have completed the Daily Quest (Depth 1).";
+		mes "Here is your reward!";
+		next;
+		
+		add_reputation_points(REPU_BIO_DEEP1, 5);
+		getexp 24000000000, 6000000000;
+		
+		callsub S_GiveRandomReward, 1;
+		
+		erasequest 70264;
+		if (!.@is_gm) setquest 70268;
+		
+		mes "[Varmundt Administrator - Depth 1]";
+		mes "Rewards received!";
+		mes "^00FF00+ 5 Reputation Points (Depth 1)^000000";
+		mes "^00FF00+ 24B Base EXP / 6B Job EXP^000000";
+		mes "^00FF00+ Random Runes & Essences^000000";
+		mes " ";
+		if (!.@is_gm) {
+			mes "^FF0000Daily quest is now on 24-hour cooldown.^000000";
+		} else {
+			mes "^00FF00[GM MODE] Cooldown bypassed^000000";
+		}
+		close;
+	}
+	
+	// Depth 1 - Weekend 5000 - Quest 70265
+	if (checkquest(70265, HUNTING) == 2) {
+		if (checkquest(70269, PLAYTIME) >= 0 && !.@is_gm) {
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 7 days before taking this quest again.";
+			erasequest 70265;
+			close;
+		}
+		
+		mes "[Varmundt Administrator - Depth 1]";
+		mes "Congratulations! You have completed the Weekend Quest (Depth 1).";
+		mes "Here is your reward!";
+		next;
+		
+		add_reputation_points(REPU_BIO_DEEP1, 25);
+		getexp 120000000000, 30000000000;
+		
+		callsub S_GiveRandomReward, 2;
+		
+		erasequest 70265;
+		if (!.@is_gm) setquest 70269;
+		
+		mes "[Varmundt Administrator - Depth 1]";
+		mes "Rewards received!";
+		mes "^00FF00+ 25 Reputation Points (Depth 1)^000000";
+		mes "^00FF00+ 120B Base EXP / 30B Job EXP^000000";
+		mes "^00FF00+ Random Runes & Essences (x7)^000000";
+		mes " ";
+		if (!.@is_gm) {
+			mes "^FF0000Weekend quest is now on 7-day cooldown.^000000";
+		} else {
+			mes "^00FF00[GM MODE] Cooldown bypassed^000000";
+		}
+		close;
+	}
+
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+	
+	.@activeQuest = 0;
+	
+	if (checkquest(70264, HUNTING) == 1) .@activeQuest = 1; // Daily
+	if (checkquest(70265, HUNTING) == 1) .@activeQuest = 2; // Weekend
+	
+	if (.@activeQuest > 0) {
+		mes "[Varmundt Administrator - Depth 1]";
+		mes "You already have an active quest:";
+		mes (.@activeQuest == 1 ? "^0099FFDaily (1000 monsters)^000000" : "^0099FFWeekend (5000 monsters)^000000");
+		mes " ";
+		mes "Complete it to claim your rewards!";
+		close;
+	}
+
+	// ============================================================
+	// CHECK COOLDOWNS
+	// ============================================================
+	
+	.@dailyCooldown = (checkquest(70268, PLAYTIME) >= 0);
+	.@weekendCooldown = (checkquest(70269, PLAYTIME) >= 0);
+	
+	if (.@is_gm) {
+		.@dailyCooldown = 0;
+		.@weekendCooldown = 0;
+	}
+
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+	mes "[Varmundt Administrator - Depth 1]";
+	mes "^0099FFYour Reputation Points: ^00FF00" + (.@points = get_reputation_points(REPU_BIO_DEEP1)) + "^000000";
+	mes "^0099FFDaily Quest (1000 monsters):^000000";
+	mes (.@dailyCooldown ? "^FF0000On Cooldown^000000" : "^00FF00Available^000000");
+	mes "^FF9900Weekend Quest (5000 monsters):^000000";
+	mes (.@weekendCooldown ? "^FF0000On Cooldown^000000" : "^00FF00Available^000000");	
+	if (.@is_gm) {
+		mes " ";
+		mes "^FF0000[GM MODE ACTIVE]^000000";
+	}
+	next;
+	
+	switch(select("Daily Quest (1000):Weekend Quest (5000):Quest Information:Cancel")) {
+		case 1:
+			if (.@dailyCooldown) {
+				mes "[Varmundt Administrator - Depth 1]";
+				mes "Daily quest is on cooldown.";
+				mes "Please wait 24 hours after completing it.";
+				close;
+			}
+			
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "^0099FFDepth 1 - Daily Quest^000000";
+			mes " ";
+			mes "^0099FFYour Reputation Points: ^00FF00" + .@points + "^000000";
+			mes " ";
+			mes "Hunt ^FF66001000 monsters^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 5 Reputation Points";
+			mes "- 24B Base / 6B Job EXP";
+			mes "- 60x Random Runes (2 types)";
+			mes "- 30x Random Essences (2 types)";
+			mes " ";
+			if (select("Accept:Cancel") == 1) {
+				setquest 70264;
+				mes "[Varmundt Administrator - Depth 1]";
+				mes "Good luck, adventurer!";
+			}
+			break;
+			
+		case 2:
+			if (.@weekendCooldown) {
+				mes "[Varmundt Administrator - Depth 1]";
+				mes "Weekend quest is on cooldown.";
+				mes "Please wait 7 days after completing it.";
+				close;
+			}
+			
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "^FF9900Depth 1 - Weekend Quest^000000";
+			mes " ";
+			mes "^0099FFYour Reputation Points: ^00FF00" + .@points + "^000000";
+			mes " ";
+			mes "Hunt ^FF66005000 monsters^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 25 Reputation Points";
+			mes "- 120B Base / 30B Job EXP";
+			mes "- 420x Random Runes (2 types)";
+			mes "- 210x Random Essences (2 types)";
+			mes " ";
+			if (select("Accept:Cancel") == 1) {
+				setquest 70265;
+				mes "[Varmundt Administrator - Depth 1]";
+				mes "Good luck, adventurer!";
+			}
+			break;
+			
+		case 3:
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "^0099FF=== Depth 1 Quest Details ===^000000";
+			mes " ";
+			mes "^0099FF[Daily Quest]^000000";
+			mes "Hunt: ^FF66001000 monsters^000000";
+			mes "Cooldown: ^FF000024 hours^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 5 Reputation Points";
+			mes "- 24B Base / 6B Job EXP";
+			mes "- 60x Random Runes (2 types)";
+			mes "- 30x Random Essences (2 types)";
+			next;
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "^FF9900[Weekend Quest]^000000";
+			mes "Hunt: ^FF66005000 monsters^000000";
+			mes "Cooldown: ^FF00007 days^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 25 Reputation Points";
+			mes "- 120B Base / 30B Job EXP";
+			mes "- 420x Random Runes (2 types)";
+			mes "- 210x Random Essences (2 types)";
+			next;
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "^FFFF00Random Reward Sets:^000000";
+			mes "1. Flame + Earth";
+			mes "2. Ice + Storm";
+			mes "3. Soul + Purification";
+			mes "4. Corruption + Poison";
+			mes " ";
+			mes "One set is randomly selected each time!";
+			close;
+			
+		case 4:
+			mes "[Varmundt Administrator - Depth 1]";
+			mes "Come back anytime!";
+			close;
+	}
+	end;
+
+// ============================================================
+// SUB: GIVE RANDOM REWARD
+// ============================================================
+S_GiveRandomReward:
+	.@type = getarg(0);
+	.@multiplier = (.@type == 2) ? 7 : 1;
+	
+	.@runeAmount = 60 * .@multiplier;
+	.@essenceAmount = 30 * .@multiplier;
+	
+	.@random = rand(1, 4);
+	
+	switch(.@random) {
+		case 1:
+			getitem 1001306, .@runeAmount;
+			getitem 1001307, .@runeAmount;
+			getitem 1001314, .@essenceAmount;
+			getitem 1001315, .@essenceAmount;
+			mes "^FF6600Bonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Flame Rune";
+			mes "- " + .@runeAmount + "x Depth Earth Rune";
+			mes "- " + .@essenceAmount + "x Depth Flame Essence";
+			mes "- " + .@essenceAmount + "x Depth Earth Essence";
+			break;
+			
+		case 2:
+			getitem 1001308, .@runeAmount;
+			getitem 1001309, .@runeAmount;
+			getitem 1001316, .@essenceAmount;
+			getitem 1001317, .@essenceAmount;
+			mes "^0099FFBonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Ice Rune";
+			mes "- " + .@runeAmount + "x Depth Storm Rune";
+			mes "- " + .@essenceAmount + "x Depth Ice Essence";
+			mes "- " + .@essenceAmount + "x Depth Storm Essence";
+			break;
+			
+		case 3:
+			getitem 1001310, .@runeAmount;
+			getitem 1001311, .@runeAmount;
+			getitem 1001318, .@essenceAmount;
+			getitem 1001319, .@essenceAmount;
+			mes "^FFFF00Bonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Soul Rune";
+			mes "- " + .@runeAmount + "x Depth Purification Rune";
+			mes "- " + .@essenceAmount + "x Depth Soul Essence";
+			mes "- " + .@essenceAmount + "x Depth Purifying Essence";
+			break;
+			
+		case 4:
+			getitem 1001312, .@runeAmount;
+			getitem 1001313, .@runeAmount;
+			getitem 1001320, .@essenceAmount;
+			getitem 1001321, .@essenceAmount;
+			mes "^9900FFBonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Corruption Rune";
+			mes "- " + .@runeAmount + "x Depth Poison Rune";
+			mes "- " + .@essenceAmount + "x Depth Corruption Essence";
+			mes "- " + .@essenceAmount + "x Depth Poison Essence";
+			break;
+	}
+	next;
+	return;
+}
+
+//===== rAthena Script =======================================
+//= Varmundt's Biosphere Daily & Weekend Quest - DEPTH 2
+//===== Description: =========================================
+//= Daily & Weekend hunting quests for Depth 2
+//= Requires level 240+
+//= Daily: 1000 monsters (24h cooldown)
+//= Weekend: 5000 monsters (7 days cooldown)
+//= GM Level 80+ can bypass cooldowns and auto-complete
+//============================================================
+
+ba_in01,299,114,4	script	Varmundt Depth 2 Quest	10344,{
+	
+	.@is_gm = (getgmlevel() >= 80);
+	
+	if (BaseLevel < 240 && !.@is_gm) {
+		mes "[Varmundt Administrator - Depth 2]";
+		mes "Varmundt's Biosphere requires level 240 minimum.";
+		mes "Come back when you're stronger!";
+		close;
+	}
+	
+	// ============================================================
+	// CHECK & CLEAR EXPIRED COOLDOWNS FIRST
+	// ============================================================
+	
+	if (checkquest(70270, PLAYTIME) == 2) erasequest 70270; // Daily Cooldown (24h)
+	if (checkquest(70271, PLAYTIME) == 2) erasequest 70271; // Weekend Cooldown (7d)
+	
+	// ============================================================
+	// GM COMMAND - AUTO COMPLETE QUEST INSTANTLY
+	// ============================================================
+	if (.@is_gm) {
+		for (.@i = 70266; .@i <= 70267; .@i++) {
+			if (checkquest(.@i, HUNTING) == 1 || checkquest(.@i, HUNTING) == 0) {
+				mes "[Varmundt Administrator - Depth 2]";
+				mes "^FF0000[GM MODE]^000000";
+				mes "Active quest detected!";
+				mes " ";
+				mes "Complete instantly and claim rewards?";
+				next;
+				
+				if (select("Yes, complete and claim:No, continue normally") == 1) {
+					completequest .@i;
+					
+					.@is_weekend = (.@i == 70267);
+					
+					mes "[Varmundt Administrator - Depth 2]";
+					mes "^00FF00Quest Auto-Completed!^000000";
+					mes "Depth 2 - " + (.@is_weekend ? "Weekend" : "Daily");
+					next;
+					
+					if (.@is_weekend) {
+						add_reputation_points(REPU_BIO_DEEP2, 10);
+						getexp 120000000000, 30000000000;
+						
+						mes "[Varmundt Administrator - Depth 2]";
+						mes "^00FF00Rewards Given:^000000";
+						mes "- 10 Reputation Points (Depth 2)";
+						mes "- 120B Base / 30B Job EXP";
+					} else {
+						add_reputation_points(REPU_BIO_DEEP2, 2);
+						getexp 24000000000, 6000000000;
+						
+						mes "[Varmundt Administrator - Depth 2]";
+						mes "^00FF00Rewards Given:^000000";
+						mes "- 2 Reputation Points (Depth 2)";
+						mes "- 24B Base / 6B Job EXP";
+					}
+					
+					callsub S_GiveRandomReward, (.@is_weekend ? 2 : 1);
+					
+					erasequest .@i;
+					
+					announce strcharinfo(0) + " has completed Varmundt Depth 2 Quest [" + (.@is_weekend ? "Weekend" : "Daily") + "] via GM Command!", bc_all, 0xFF6600;
+					
+					mes " ";
+					mes "^FF0000[GM MODE]^000000";
+					mes "Cooldown NOT applied (GM bypass active)";
+					close;
+				}
+				break;
+			}
+		}
+	}
+	
+	// ============================================================
+	// CHECK IF QUEST COMPLETED - GIVE REWARDS
+	// ============================================================
+	
+	// Depth 2 - Daily 1000 - Quest 70266
+	if (checkquest(70266, HUNTING) == 2) {
+		if (checkquest(70270, PLAYTIME) >= 0 && !.@is_gm) {
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70266;
+			close;
+		}
+		
+		mes "[Varmundt Administrator - Depth 2]";
+		mes "Congratulations! You have completed the Daily Quest (Depth 2).";
+		mes "Here is your reward!";
+		next;
+		
+		add_reputation_points(REPU_BIO_DEEP2, 2);
+		getexp 24000000000, 6000000000;
+		
+		callsub S_GiveRandomReward, 1;
+		
+		erasequest 70266;
+		if (!.@is_gm) setquest 70270;
+		
+		mes "[Varmundt Administrator - Depth 2]";
+		mes "Rewards received!";
+		mes "^00FF00+ 2 Reputation Points (Depth 2)^000000";
+		mes "^00FF00+ 24B Base EXP / 6B Job EXP^000000";
+		mes "^00FF00+ Random Runes & Essences^000000";
+		mes " ";
+		if (!.@is_gm) {
+			mes "^FF0000Daily quest is now on 24-hour cooldown.^000000";
+		} else {
+			mes "^00FF00[GM MODE] Cooldown bypassed^000000";
+		}
+		close;
+	}
+	
+	// Depth 2 - Weekend 5000 - Quest 70267
+	if (checkquest(70267, HUNTING) == 2) {
+		if (checkquest(70271, PLAYTIME) >= 0 && !.@is_gm) {
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 7 days before taking this quest again.";
+			erasequest 70267;
+			close;
+		}
+		
+		mes "[Varmundt Administrator - Depth 2]";
+		mes "Congratulations! You have completed the Weekend Quest (Depth 2).";
+		mes "Here is your reward!";
+		next;
+		
+		add_reputation_points(REPU_BIO_DEEP2, 10);
+		getexp 120000000000, 30000000000;
+		
+		callsub S_GiveRandomReward, 2;
+		
+		erasequest 70267;
+		if (!.@is_gm) setquest 70271;
+		
+		mes "[Varmundt Administrator - Depth 2]";
+		mes "Rewards received!";
+		mes "^00FF00+ 10 Reputation Points (Depth 2)^000000";
+		mes "^00FF00+ 120B Base EXP / 30B Job EXP^000000";
+		mes "^00FF00+ Random Runes & Essences (x7)^000000";
+		mes " ";
+		if (!.@is_gm) {
+			mes "^FF0000Weekend quest is now on 7-day cooldown.^000000";
+		} else {
+			mes "^00FF00[GM MODE] Cooldown bypassed^000000";
+		}
+		close;
+	}
+
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+	
+	.@activeQuest = 0;
+	
+	if (checkquest(70266, HUNTING) == 1) .@activeQuest = 1; // Daily
+	if (checkquest(70267, HUNTING) == 1) .@activeQuest = 2; // Weekend
+	
+	if (.@activeQuest > 0) {
+		mes "[Varmundt Administrator - Depth 2]";
+		mes "You already have an active quest:";
+		mes (.@activeQuest == 1 ? "^FF6600Daily (1000 monsters)^000000" : "^FF6600Weekend (5000 monsters)^000000");
+		mes " ";
+		mes "Complete it to claim your rewards!";
+		close;
+	}
+
+	// ============================================================
+	// CHECK COOLDOWNS
+	// ============================================================
+	
+	.@dailyCooldown = (checkquest(70270, PLAYTIME) >= 0);
+	.@weekendCooldown = (checkquest(70271, PLAYTIME) >= 0);
+	
+	if (.@is_gm) {
+		.@dailyCooldown = 0;
+		.@weekendCooldown = 0;
+	}
+
+	// ============================================================
+	// MAIN MENU
+	// ============================================================	
+	mes "[Varmundt Administrator - Depth 2]";
+	mes "^0099FFYour Reputation Points: ^00FF00" + (.@points = get_reputation_points(REPU_BIO_DEEP2)) + "^000000";
+	mes "^FF6600Daily Quest (1000 monsters):^000000";
+	mes (.@dailyCooldown ? "^FF0000On Cooldown^000000" : "^00FF00Available^000000");
+	mes "^FF9900Weekend Quest (5000 monsters):^000000";
+	mes (.@weekendCooldown ? "^FF0000On Cooldown^000000" : "^00FF00Available^000000");	
+	if (.@is_gm) {
+		mes " ";
+		mes "^FF0000[GM MODE ACTIVE]^000000";
+	}
+	next;
+	
+	switch(select("Daily Quest (1000):Weekend Quest (5000):Quest Information:Cancel")) {
+		case 1:
+			if (.@dailyCooldown) {
+				mes "[Varmundt Administrator - Depth 2]";
+				mes "Daily quest is on cooldown.";
+				mes "Please wait 24 hours after completing it.";
+				close;
+			}
+			
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "^FF6600Depth 2 - Daily Quest^000000";
+			mes " ";
+			mes "^0099FFYour Reputation Points: ^00FF00" + .@points + "^000000";
+			mes " ";
+			mes "Hunt ^FF66001000 monsters^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 2 Reputation Points";
+			mes "- 24B Base / 6B Job EXP";
+			mes "- 60x Random Runes (2 types)";
+			mes "- 30x Random Essences (2 types)";
+			mes " ";
+			if (select("Accept:Cancel") == 1) {
+				setquest 70266;
+				mes "[Varmundt Administrator - Depth 2]";
+				mes "Good luck, adventurer!";
+			}
+			break;
+			
+		case 2:
+			if (.@weekendCooldown) {
+				mes "[Varmundt Administrator - Depth 2]";
+				mes "Weekend quest is on cooldown.";
+				mes "Please wait 7 days after completing it.";
+				close;
+			}
+			
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "^FF9900Depth 2 - Weekend Quest^000000";
+			mes " ";
+			mes "^0099FFYour Reputation Points: ^00FF00" + .@points + "^000000";
+			mes " ";
+			mes "Hunt ^FF66005000 monsters^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 10 Reputation Points";
+			mes "- 120B Base / 30B Job EXP";
+			mes "- 420x Random Runes (2 types)";
+			mes "- 210x Random Essences (2 types)";
+			mes " ";
+			if (select("Accept:Cancel") == 1) {
+				setquest 70267;
+				mes "[Varmundt Administrator - Depth 2]";
+				mes "Good luck, adventurer!";
+			}
+			break;
+			
+		case 3:
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "^FF6600=== Depth 2 Quest Details ===^000000";
+			mes " ";
+			mes "^FF6600[Daily Quest]^000000";
+			mes "Hunt: ^FF66001000 monsters^000000";
+			mes "Cooldown: ^FF000024 hours^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 2 Reputation Points";
+			mes "- 24B Base / 6B Job EXP";
+			mes "- 60x Random Runes (2 types)";
+			mes "- 30x Random Essences (2 types)";
+			next;
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "^FF9900[Weekend Quest]^000000";
+			mes "Hunt: ^FF66005000 monsters^000000";
+			mes "Cooldown: ^FF00007 days^000000";
+			mes " ";
+			mes "Rewards:";
+			mes "- 10 Reputation Points";
+			mes "- 120B Base / 30B Job EXP";
+			mes "- 420x Random Runes (2 types)";
+			mes "- 210x Random Essences (2 types)";
+			next;
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "^FFFF00Random Reward Sets:^000000";
+			mes "1. Flame + Earth";
+			mes "2. Ice + Storm";
+			mes "3. Soul + Purification";
+			mes "4. Corruption + Poison";
+			mes " ";
+			mes "One set is randomly selected each time!";
+			close;
+			
+		case 4:
+			mes "[Varmundt Administrator - Depth 2]";
+			mes "Come back anytime!";
+			close;
+	}
+	end;
+
+// ============================================================
+// SUB: GIVE RANDOM REWARD
+// ============================================================
+S_GiveRandomReward:
+	.@type = getarg(0);
+	.@multiplier = (.@type == 2) ? 7 : 1;
+	
+	.@runeAmount = 60 * .@multiplier;
+	.@essenceAmount = 30 * .@multiplier;
+	
+	.@random = rand(1, 4);
+	
+	switch(.@random) {
+		case 1:
+			getitem 1001306, .@runeAmount;
+			getitem 1001307, .@runeAmount;
+			getitem 1001314, .@essenceAmount;
+			getitem 1001315, .@essenceAmount;
+			mes "^FF6600Bonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Flame Rune";
+			mes "- " + .@runeAmount + "x Depth Earth Rune";
+			mes "- " + .@essenceAmount + "x Depth Flame Essence";
+			mes "- " + .@essenceAmount + "x Depth Earth Essence";
+			break;
+			
+		case 2:
+			getitem 1001308, .@runeAmount;
+			getitem 1001309, .@runeAmount;
+			getitem 1001316, .@essenceAmount;
+			getitem 1001317, .@essenceAmount;
+			mes "^0099FFBonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Ice Rune";
+			mes "- " + .@runeAmount + "x Depth Storm Rune";
+			mes "- " + .@essenceAmount + "x Depth Ice Essence";
+			mes "- " + .@essenceAmount + "x Depth Storm Essence";
+			break;
+			
+		case 3:
+			getitem 1001310, .@runeAmount;
+			getitem 1001311, .@runeAmount;
+			getitem 1001318, .@essenceAmount;
+			getitem 1001319, .@essenceAmount;
+			mes "^FFFF00Bonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Soul Rune";
+			mes "- " + .@runeAmount + "x Depth Purification Rune";
+			mes "- " + .@essenceAmount + "x Depth Soul Essence";
+			mes "- " + .@essenceAmount + "x Depth Purifying Essence";
+			break;
+			
+		case 4:
+			getitem 1001312, .@runeAmount;
+			getitem 1001313, .@runeAmount;
+			getitem 1001320, .@essenceAmount;
+			getitem 1001321, .@essenceAmount;
+			mes "^9900FFBonus Rewards:^000000";
+			mes "- " + .@runeAmount + "x Depth Corruption Rune";
+			mes "- " + .@runeAmount + "x Depth Poison Rune";
+			mes "- " + .@essenceAmount + "x Depth Corruption Essence";
+			mes "- " + .@essenceAmount + "x Depth Poison Essence";
+			break;
+	}
+	next;
+	return;
+}

@@ -1,0 +1,290 @@
+///////////////////SovietBR//////////////////////
+askald,20,111,5	script	AI Search Party	811,{
+	mes "[AI Search Party]";
+	mes "Hello!";
+	mes "I can help you find powerful allies!";
+	next;
+	mes "^FF0000[1] Search Party MVP [Lv 100-200]^000000";
+	mes "Cost: 5 MVP Voucher - Duration: 12 Hours";
+	mes " ";
+	mes "^0000FF[2] Search AI Fake Player [Lv 100-275]^000000";
+	mes "Cost: 10 MVP Voucher - Duration: 24 Hours";
+	mes " ";
+	mes "^00FF00[3] Choose AI Fake Player [Lv 100-275]^000000";
+	mes "3rd Job: 20 MVP | 4th Job: 30 MVP - Duration: 24 Hours";
+	mes " ";
+	mes "^FF00FF[4] Summon ALL AI Fake Player^000000";
+	mes "Cost: 170 MVP Voucher - Duration: 24 Hours";
+	mes "(7 x 3rd Job + 1 x 4th Job)";
+	next;
+	mes "^00FF00They will follow you everywhere automatically!^000000";
+	mes "The catch is, if you die or disconnect, they disappear.";
+	mes "Also, they can die in battle, so be careful.";
+	next;
+
+    // Selection menu
+    switch(select("Search Party MVP [Lv 100-200]","Search AI Fake Player [Lv 100-275]","Choose AI Fake Player [Lv 100-275]","Summon ALL AI Fake Player")) {
+        case 1: // Search Party MVP [Lv 100-200]
+            mes "[AI Search Party]";
+            mes "^FF0000Search Party MVP [Lv 100-200]^000000";
+            mes "Random powerful MVP to aid you!";
+            next;
+            mes "[AI Search Party]";
+            mes "^0000FFCost: 5 MVP Voucher^000000";
+            mes "^00FF00Duration: 12 hours^000000";
+            next;
+            
+            if (select("Summon Random MVP:Cancel") == 1) {
+                if (countitem(7615) < 5) {
+                    mes "[AI Search Party]";
+                    mes "You don't have enough MVP Vouchers!";
+                    mes "Required: ^FF00005 MVP Voucher^000000";
+                    close;
+                }
+                
+                delitem 7615, 5;
+                
+                switch(rand(0,40)) {
+                    case 0: atcommand "@summon 1086 720"; break;
+                    case 1: atcommand "@summon 1115 720"; break;
+                    case 2: atcommand "@summon 1150 720"; break;
+                    case 3: atcommand "@summon 1159 720"; break;
+                    case 4: atcommand "@summon 1112 720"; break;
+                    case 5: atcommand "@summon 1583 720"; break;
+                    case 6: atcommand "@summon 1492 720"; break;
+                    case 7: atcommand "@summon 1046 720"; break;
+                    case 8: atcommand "@summon 1418 720"; break;
+                    case 9: atcommand "@summon 1252 720"; break;
+                    case 10: atcommand "@summon 1059 720"; break;
+                    case 11: atcommand "@summon 1190 720"; break;
+                    case 12: atcommand "@summon 1251 720"; break;
+                    case 13: atcommand "@summon 1087 720"; break;
+                    case 14: atcommand "@summon 1038 720"; break;
+                    case 15: atcommand "@summon 1658 720"; break;
+                    case 16: atcommand "@summon 1272 720"; break;
+                    case 17: atcommand "@summon 1871 720"; break;
+                    case 18: atcommand "@summon 1039 720"; break;
+                    case 19: atcommand "@summon 1147 720"; break;
+                    case 20: atcommand "@summon 1785 720"; break;
+                    case 21: atcommand "@summon 1885 720"; break;
+                    case 22: atcommand "@summon 1630 720"; break;
+                    case 23: atcommand "@summon 1389 720"; break;
+                    case 24: atcommand "@summon 1623 720"; break;
+                    case 25: atcommand "@summon 1688 720"; break;
+                    case 26: atcommand "@summon 1768 720"; break;
+                    case 27: atcommand "@summon 1734 720"; break;
+                    case 28: atcommand "@summon 1719 720"; break;
+                    case 29: atcommand "@summon 2068 720"; break;
+                    case 30: atcommand "@summon 1157 720"; break;
+                    case 31: atcommand "@summon 1373 720"; break;
+                    case 32: atcommand "@summon 1312 720"; break;
+                    case 33: atcommand "@summon 1685 720"; break;
+                    case 34: atcommand "@summon 1779 720"; break;
+                    case 35: atcommand "@summon 1751 720"; break;
+                    case 36: atcommand "@summon 1650 720"; break;
+                    case 37: atcommand "@summon 1917 720"; break;
+                    case 38: atcommand "@summon 1647 720"; break;
+                    case 39: atcommand "@summon 1832 720"; break;
+                    case 40: atcommand "@summon 1751 720"; break;
+                }
+                
+                mes "[AI Search Party]";
+                mes "You now have a powerful MVP by your side!";
+                mes "It will follow you to the ends of the earth!";
+            }
+            break;
+
+        case 2: // Search AI Fake Player [Lv 100-275]
+            mes "[AI Search Party]";
+            mes "^0000FFSearch AI Fake Player [Lv 100-275]^000000";
+            mes "Random elite AI warrior!";
+            next;
+            mes "[AI Search Party]";
+            mes "^0000FFCost: 10 MVP Voucher^000000";
+            mes "^00FF00Duration: 24 hours^000000";
+            next;
+            mes "[AI Search Party]";
+            mes "You will get a random AI from:";
+            mes "^FFFF00=== 3rd Job ===^000000";
+            mes "[1] AI Rune Knight";
+            mes "[2] AI Royal Guard";
+            mes "[3] AI High Priest";
+            mes "[4] AI Hunter";
+            mes "[5] AI Guillotine Cross";
+            mes "[6] AI Shadow Chaser";
+            mes "[7] AI Warlock";
+            mes " ";
+            mes "^FF69B4=== 4th Job ===^000000";
+            mes "[8] AI Cardinal (Healer)";
+            next;
+            
+            if (select("Summon Random AI:Cancel") == 1) {
+                if (countitem(7615) < 10) {
+                    mes "[AI Search Party]";
+                    mes "You don't have enough MVP Vouchers!";
+                    mes "Required: ^FF000010 MVP Voucher^000000";
+                    close;
+                }
+                
+                delitem 7615, 10;
+                
+                // Random AI (3rd Job + 4th Job)
+                setarray .@heroIDs[0], 21835, 21836, 21837, 21838, 21839, 21840, 21841, 30049;
+                setarray .@heroNames$[0], 
+                    "AI Rune Knight", 
+                    "AI Royal Guard", 
+                    "AI High Priest", 
+                    "AI Hunter", 
+                    "AI Guillotine Cross", 
+                    "AI Shadow Chaser", 
+                    "AI Warlock",
+                    "AI Cardinal";
+                
+                set .@randomIndex, rand(0, 8);
+                set .@heroID, .@heroIDs[.@randomIndex];
+                set .@heroName$, .@heroNames$[.@randomIndex];
+                
+                atcommand "@summon " + .@heroID + " 1440";
+                
+                mes "[AI Search Party]";
+                mes "^00FF00You got:^000000 ^FF0000" + .@heroName$ + "^000000!";
+                mes "^00FF00Duration: 24 hours^000000";
+                mes "It will follow you everywhere!";
+            }
+            break;
+
+        case 3: // Choose AI Fake Player [Lv 100-275]
+            mes "[AI Search Party]";
+            mes "^00FF00Choose AI Fake Player [Lv 100-275]^000000";
+            mes "Select your perfect companion!";
+            next;
+            mes "[AI Search Party]";
+            mes "^FFFF003rd Job: 20 MVP Voucher^000000";
+            mes "^FF69B44th Job: 30 MVP Voucher^000000";
+            mes "^00FF00Duration: 24 hours^000000";
+            next;
+            
+            switch(select("=== 3rd Job ===:AI Rune Knight:AI Royal Guard:AI High Priest:AI Hunter:AI Guillotine Cross:AI Shadow Chaser:AI Warlock:=== 4th Job ===:AI Cardinal (Healer):Cancel")) {
+                case 1: // Header 3rd Job
+                    mes "[AI Search Party]";
+                    mes "Please select a character class.";
+                    close;
+                case 2: set .@heroID, 21835; set .@heroName$, "AI Rune Knight"; set .@cost, 20; break;
+                case 3: set .@heroID, 21836; set .@heroName$, "AI Royal Guard"; set .@cost, 20; break;
+                case 4: set .@heroID, 21837; set .@heroName$, "AI High Priest"; set .@cost, 20; break;
+                case 5: set .@heroID, 21838; set .@heroName$, "AI Hunter"; set .@cost, 20; break;
+                case 6: set .@heroID, 21839; set .@heroName$, "AI Guillotine Cross"; set .@cost, 20; break;
+                case 7: set .@heroID, 21840; set .@heroName$, "AI Shadow Chaser"; set .@cost, 20; break;
+                case 8: set .@heroID, 21841; set .@heroName$, "AI Warlock"; set .@cost, 20; break;
+                case 9: // Header 4th Job
+                    mes "[AI Search Party]";
+                    mes "Please select a character class.";
+                    close;
+                case 10: set .@heroID, 30049; set .@heroName$, "AI Cardinal"; set .@cost, 30; break;
+                case 11:
+                    mes "Come back when you're ready!";
+                    close;
+            }
+            
+            mes "[AI Search Party]";
+            mes "You have chosen: ^FF0000" + .@heroName$ + "^000000";
+            mes "This will cost ^0000FF" + .@cost + " MVP Voucher^000000";
+            mes "Duration: ^00FF0024 hours^000000";
+            next;
+            
+            if (.@heroID == 30049) {
+                mes "[AI Search Party]";
+                mes "^FFD700AI Cardinal Features:^000000";
+                mes "+ Emergency heal when HP < 70%";
+                mes "+ Auto resurrection if you die";
+                mes "+ 4th Job buffs";
+                mes "+ Arch Bishop buffs";
+                mes "+ Classic Priest buffs";
+                mes "+ Area healing zones";
+                mes "+ Debuff removal";
+                next;
+            }
+            
+            if (select("Summon:Cancel") == 1) {
+                if (countitem(7615) < .@cost) {
+                    mes "[AI Search Party]";
+                    mes "You don't have enough MVP Vouchers!";
+                    mes "Required: ^FF0000" + .@cost + " MVP Voucher^000000";
+                    close;
+                }
+                
+                delitem 7615, .@cost;
+                atcommand "@summon " + .@heroID + " 1440";
+                
+                mes "[AI Search Party]";
+                mes "Your ^FF0000" + .@heroName$ + "^000000 has been summoned!";
+                mes "^00FF00Duration: 24 hours^000000";
+                mes "It will follow you everywhere!";
+            }
+            break;
+
+        case 4: // Summon ALL AI Fake Player
+            mes "[AI Search Party]";
+            mes "^FF00FFSummon ALL AI Fake Player^000000";
+            mes "The ultimate party! Get all AI at once!";
+            next;
+            mes "[AI Search Party]";
+            mes "^0000FFCost: 170 MVP Voucher^000000";
+            mes "(7 x 20 + 1 x 30 = 170 Vouchers)";
+            mes "^00FF00Duration: 24 hours^000000";
+            next;
+            mes "[AI Search Party]";
+            mes "You will summon:";
+            mes "^FFFF00=== 3rd Job (7 Heroes) ===^000000";
+            mes "[1] AI Rune Knight (20)";
+            mes "[2] AI Royal Guard (20)";
+            mes "[3] AI High Priest (20)";
+            mes "[4] AI Hunter (20)";
+            mes "[5] AI Guillotine Cross (20)";
+            mes "[6] AI Shadow Chaser (20)";
+            mes "[7] AI Warlock (20)";
+            mes " ";
+            mes "^FF69B4=== 4th Job (1 Hero) ===^000000";
+            mes "• AI Cardinal - Healer (30)";
+            next;
+            mes "[AI Search Party]";
+            mes "^FF0000WARNING:^000000";
+            mes "Summoning all 8 AI at once is very powerful!";
+            mes "Make sure you can handle the army!";
+            next;
+            
+            if (select("Summon ALL AI:Cancel") == 1) {
+                if (countitem(7615) < 170) {
+                    mes "[AI Search Party]";
+                    mes "You don't have enough MVP Vouchers!";
+                    mes "Required: ^FF0000170 MVP Voucher^000000";
+                    mes "You have: ^0000FF" + countitem(7615) + " MVP Voucher^000000";
+                    close;
+                }
+                
+                delitem 7615, 170;
+                
+                // Summon all 3rd Job AI
+                atcommand "@summon 21835 1440"; // AI Rune Knight
+                atcommand "@summon 21836 1440"; // AI Royal Guard
+                atcommand "@summon 21837 1440"; // AI High Priest
+                atcommand "@summon 21838 1440"; // AI Hunter
+                atcommand "@summon 21839 1440"; // AI Guillotine Cross
+                atcommand "@summon 21840 1440"; // AI Shadow Chaser
+                atcommand "@summon 21841 1440"; // AI Warlock
+                
+                // Summon 4th Job AI
+                atcommand "@summon 30049 1440"; // AI Cardinal
+                
+                mes "[AI Search Party]";
+                mes "^FF00FFYOUR ULTIMATE ARMY HAS ARRIVED!^000000";
+                mes " ";
+                mes "^00FF008 Elite AI Warriors^000000 are now following you!";
+                mes "^00FF00Duration: 24 hours^000000";
+                mes " ";
+                mes "^FFD700Good luck, Commander!^000000";
+            }
+            break;
+    }
+    close;
+}

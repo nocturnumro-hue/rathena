@@ -1,0 +1,31 @@
+1@mjo1,224,373,5	script	Item Shop Airship Crash	73,{
+	mes "^FF0000[Airship Crash Item]^000000";
+	mes "^0000FFWelcome to the Airship Crash Item Shop!^000000";
+	mes "^008000Please select the shop type:^000000";
+	next;
+
+	switch(select(
+		"^008000Airship Crash SHOP^000000:" +
+		"Exit")) {
+	
+	case 1:
+		mes "[Airship Crash Item]";
+		mes "<FONT color='#008000'>Opening Airship Crash Item...</FONT>";
+		mes " ";
+		mes "^0000FFAvailable Items:^000000";
+		mes "- Airship Crash";
+		close2;
+		callshop "Airship_Crash";
+		end;
+		
+	case 2:
+		mes "[Abyss Lake Shop]";
+		mes "Thank you for visiting!";
+		mes "Have a great day!";
+		close;
+	}
+	
+OnInit:
+	waitingroom "Airship Crash Shop", 0;
+	end;
+}

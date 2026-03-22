@@ -1,0 +1,87 @@
+//===== Warp Portal with Menu =====
+prontera,156,196,0	script	Warp Portal	45,2,2,{
+	end;
+	
+OnTouch:
+	mes "[Warp Portal]";
+	mes "Where would you like to go?";
+	next;
+	
+	// Build menu string
+	.@menu$ = "";
+	.@menu$ += "[1] [MainTown]:";
+	.@menu$ += "[2] [Episode 19-20]:";
+	.@menu$ += "[3] [Item Market]:";
+	.@menu$ += "[4] [Instance New]:";
+	.@menu$ += "[5] [Event Shop]:";
+	.@menu$ += "[6] [VIP Land]:";
+	.@menu$ += "[7] [Eden Group]:";
+	.@menu$ += "[8] [AI Party]:";
+	.@menu$ += "[9] [Casino]:";
+	.@menu$ += "[10] [Fishing]:";
+	.@menu$ += "[11] [Plant Land]:";
+	.@menu$ += "[12] [Mining Mine]:";
+	.@menu$ += "[13] [Garden of Time]:";
+
+	.@menu$ += "Cancel";
+	
+	// Menu selection
+	switch(select(.@menu$)) {
+		case 1: // MainTown
+			warp "askald", 125, 110;
+			end;
+			
+		case 2: // Episode 19-20
+			warp "askald", 56, 128;
+			end;
+			
+		case 3: // Item Market
+			warp "askald", 23, 205;
+			end;
+			
+		case 4: // Instance New
+			warp "askald", 62, 228;
+			end;
+			
+		case 5: // Event Shop
+			warp "askald", 31, 60;
+			end;
+			
+		case 6: // VIP Land
+			warp "askald", 25, 134;
+			end;
+
+		case 7: // Eden Group
+			warp "moc_para01", 31, 14;
+			end;
+
+		case 8: // AI Party
+			warp "askald", 19, 101;
+			end;
+
+		case 9: // Casino
+			warp "askald", 35, 82;
+			end;
+
+		case 10: // Fishing
+			warp "askald", 210, 155;
+			end;
+
+		case 11: // Plant Land
+			warp "askald", 150, 53;
+			end;
+
+		case 12: // Mining Mine
+			warp "askald", 235, 127;
+			end;
+			
+		case 13: // Garden of Time
+			warp "t_garden", 0, 0;
+			end;
+			
+		case 14: // Cancel
+			mes "[Warp Portal]";
+			mes "Come back anytime!";
+			close;
+	}
+}

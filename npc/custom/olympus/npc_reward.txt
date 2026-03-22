@@ -1,0 +1,668 @@
+//===== Script rAthena =========================================
+//= Mystery Gift Box (Event-based + VIP Daily Reward System)
+//= FIXED VERSION - Dual Lock: Account + IP
+//===== BUGS FIXED =============================================
+//= @reloadnpcfile npc/custom/olympus/npc_reward.txt
+//==============================================================
+
+prontera,145,177,4	script	Mystery Gift Box	10033,{
+
+//--------------------------------------------------------------
+// CONFIG - VIP Group IDs
+//--------------------------------------------------------------
+setarray .@vip_groups[0], 1, 2, 5;
+.@is_vip = 0;
+.@player_group = getgroupid();
+for (.@i = 0; .@i < getarraysize(.@vip_groups); .@i++) {
+	if (.@player_group == .@vip_groups[.@i]) {
+		.@is_vip = 1;
+		break;
+	}
+}
+
+.@player_ip$ = getcharip();
+
+//--------------------------------------------------------------
+// Main Menu
+//--------------------------------------------------------------
+if (getgmlevel() >= 80) {
+	mes "[Mystery Gift Box]";
+	mes "Hello Admin!";
+	mes "What would you like to do?";
+	next;
+	switch(select("Receive Event Reward:Receive VIP Daily Reward:Configure Event Rewards:Configure VIP Daily Rewards:View Reward Lists:Reset Systems:View IP Logs")) {
+		case 1: goto L_ReceiveReward;
+		case 2: goto L_VIPDaily;
+		case 3: goto L_AdminMenu;
+		case 4: goto L_AdminVIPMenu;
+		case 5: goto L_ViewRewards;
+		case 6: goto L_ResetMenu;
+		case 7: goto L_ViewIPLogs;
+	}
+} else {
+	mes "[Mystery Gift Box]";
+	mes "Hello ^0000FF" + strcharinfo(0) + "^000000!";
+	mes "What would you like to do?";
+	next;
+
+	if (.@is_vip) {
+		switch(select("Receive Event Reward:Receive VIP Daily Reward:View Rewards")) {
+			case 1: goto L_ReceiveReward;
+			case 2: goto L_VIPDaily;
+			case 3: goto L_ViewRewards;
+		}
+	} else {
+		switch(select("Receive Event Reward:View Rewards")) {
+			case 1: goto L_ReceiveReward;
+			case 2: goto L_ViewRewards;
+		}
+	}
+}
+
+//--------------------------------------------------------------
+// VIP DAILY REWARD
+// LOCK ORDER: 1) Account var  2) IP check
+//--------------------------------------------------------------
+L_VIPDaily:
+if (!.@is_vip && getgmlevel() < 80) {
+	mes "[Mystery Gift Box]";
+	mes "Sorry, only VIP members can receive daily rewards!";
+	close;
+}
+
+if ($VIP_REWARD_COUNT == 0) {
+	mes "[Mystery Gift Box]";
+	mes "VIP Daily rewards are not configured yet!";
+	close;
+}
+
+.@today = gettime(DT_YEAR) * 10000 + gettime(DT_MONTH) * 100 + gettime(DT_DAYOFMONTH);
+
+// ★ FIX BUG 3: Check account var FIRST (was stored but never checked)
+if (#VIP_LAST_CLAIM == .@today) {
+	mes "[Mystery Gift Box]";
+	mes "^FF0000You have already claimed your VIP daily reward today!^000000";
+	mes "Come back tomorrow for more rewards.";
+	close;
+}
+
+// ★ FIX BUG 1+2: IP check as SECONDARY layer (not sole protection)
+.@ip_hash$ = .@player_ip$ + "_" + .@today;
+.@ip_claimed = 0;
+for (.@i = 0; .@i < getarraysize($VIP_IP_LIST$); .@i++) {
+	if ($VIP_IP_LIST$[.@i] == .@ip_hash$) {
+		.@ip_claimed = 1;
+		break;
+	}
+}
+
+if (.@ip_claimed) {
+	mes "[Mystery Gift Box]";
+	mes "^FF0000This IP address has already claimed VIP daily reward today!^000000";
+	mes "Each IP can only claim once per day.";
+	mes " ";
+	mes "^888888Next claim available: Tomorrow^000000";
+	close;
+}
+
+mes "[Mystery Gift Box]";
+mes "^FF9900Welcome VIP Member!^000000";
+mes "Would you like to claim your daily rewards?";
+mes " ";
+mes "^888888Note: One claim per account and per IP daily^000000";
+next;
+
+if (select("Claim Daily Reward:Maybe Later") == 2) {
+	mes "[Mystery Gift Box]";
+	mes "See you again!";
+	close;
+}
+
+mes "[Mystery Gift Box]";
+mes "You received today's VIP rewards:";
+mes " ";
+
+for (.@i = 0; .@i < $VIP_REWARD_COUNT; .@i++) {
+	if ($VIP_REWARD_TYPE$[.@i] == "item") {
+		getitem $VIP_REWARD_ID[.@i], $VIP_REWARD_AMOUNT[.@i];
+		mes "^0000FF" + $VIP_REWARD_AMOUNT[.@i] + "x " + getitemname($VIP_REWARD_ID[.@i]) + "^000000";
+	} else if ($VIP_REWARD_TYPE$[.@i] == "zeny") {
+		set Zeny, Zeny + $VIP_REWARD_AMOUNT[.@i];
+		mes "^00CCFF" + $VIP_REWARD_AMOUNT[.@i] + " Zeny^000000";
+	} else if ($VIP_REWARD_TYPE$[.@i] == "cash") {
+		set #CASHPOINTS, #CASHPOINTS + $VIP_REWARD_AMOUNT[.@i];
+		mes "^00CCFF" + $VIP_REWARD_AMOUNT[.@i] + " Cash Points^000000";
+	}
+}
+
+// ★ FIX: Save account lock FIRST (primary), then IP lock (secondary)
+set #VIP_LAST_CLAIM, .@today;
+
+// ★ FIX BUG 2: Only add IP to list if array not overflowing (cap at 500)
+if (getarraysize($VIP_IP_LIST$) < 500) {
+	setarray $VIP_IP_LIST$[getarraysize($VIP_IP_LIST$)], .@ip_hash$;
+}
+
+mes " ";
+mes "Thank you for being a VIP member!";
+mes "Come back tomorrow for more rewards.";
+close;
+
+//--------------------------------------------------------------
+// EVENT REWARD
+// LOCK ORDER: 1) Account var  2) IP check
+//--------------------------------------------------------------
+L_ReceiveReward:
+if ($REWARD_COUNT == 0) {
+	mes "[Mystery Gift Box]";
+	mes "There are currently no rewards configured!";
+	mes "Please check back later.";
+	close;
+}
+
+// ★ FIX BUG 4: Check ACCOUNT var first - blocks VPN/wifi/mobile bypass
+if (#REWARD_RECEIVED_ID == $REWARD_EVENT_ID) {
+	mes "[Mystery Gift Box]";
+	mes "^FF0000You have already received this event's reward on this account!^000000";
+	mes " ";
+	mes "Current Event ID: ^0000FF" + $REWARD_EVENT_ID + "^000000";
+	close;
+}
+
+// ★ FIX BUG 1: IP check as SECONDARY layer
+.@ip_event_hash$ = .@player_ip$ + "_EVENT_" + $REWARD_EVENT_ID;
+.@ip_claimed = 0;
+for (.@i = 0; .@i < getarraysize($EVENT_IP_LIST$); .@i++) {
+	if ($EVENT_IP_LIST$[.@i] == .@ip_event_hash$) {
+		.@ip_claimed = 1;
+		break;
+	}
+}
+
+if (.@ip_claimed) {
+	mes "[Mystery Gift Box]";
+	mes "^FF0000This IP address has already received this event's reward!^000000";
+	mes "Each IP can only receive rewards once per event.";
+	mes " ";
+	mes "Current Event ID: ^0000FF" + $REWARD_EVENT_ID + "^000000";
+	close;
+}
+
+mes "[Mystery Gift Box]";
+mes "Welcome ^0000FF" + strcharinfo(0) + "^000000!";
+mes "Would you like to receive this event's special rewards?";
+mes " ";
+mes "^FF0000Note: One claim per account and per IP address per event.^000000";
+next;
+
+if (select("Receive Reward:Maybe Later") == 2) {
+	mes "[Mystery Gift Box]";
+	mes "See you again!";
+	close;
+}
+
+mes "[Mystery Gift Box]";
+mes "Wonderful! You received:";
+mes " ";
+
+for (.@i = 0; .@i < $REWARD_COUNT; .@i++) {
+	if ($REWARD_TYPE$[.@i] == "item") {
+		getitem $REWARD_ID[.@i], $REWARD_AMOUNT[.@i];
+		mes "^0000FF" + $REWARD_AMOUNT[.@i] + "x " + getitemname($REWARD_ID[.@i]) + "^000000";
+	} else if ($REWARD_TYPE$[.@i] == "zeny") {
+		set Zeny, Zeny + $REWARD_AMOUNT[.@i];
+		mes "^00CCFF" + $REWARD_AMOUNT[.@i] + " Zeny^000000";
+	} else if ($REWARD_TYPE$[.@i] == "cash") {
+		set #CASHPOINTS, #CASHPOINTS + $REWARD_AMOUNT[.@i];
+		mes "^00CCFF" + $REWARD_AMOUNT[.@i] + " Cash Points^000000";
+	}
+}
+
+// ★ FIX: Save account lock FIRST (primary), then IP lock (secondary)
+set #REWARD_RECEIVED_ID, $REWARD_EVENT_ID;
+
+// ★ FIX BUG 2: Only add IP to list if array not overflowing (cap at 500)
+if (getarraysize($EVENT_IP_LIST$) < 500) {
+	setarray $EVENT_IP_LIST$[getarraysize($EVENT_IP_LIST$)], .@ip_event_hash$;
+}
+
+mes " ";
+mes "Thank you for participating!";
+announce strcharinfo(0) + " has received rewards from the Mystery Gift Box (Event " + $REWARD_EVENT_ID + ")!", bc_all, 0x00FF00;
+close;
+
+//--------------------------------------------------------------
+// ADMIN MENU - EVENT REWARDS
+//--------------------------------------------------------------
+L_AdminMenu:
+mes "[Admin Panel - Event Rewards]";
+mes "Select action:";
+next;
+
+switch(select("Add Item:Add Zeny:Add Cash Points:Delete Reward:Back")) {
+	case 1:
+		mes "[Admin Panel]";
+		mes "Enter Item ID:";
+		input .@itemid;
+		if (getitemname(.@itemid) == "null") {
+			mes "Invalid Item ID!";
+			close;
+		}
+		mes "Enter Amount:";
+		input .@amount;
+		if (.@amount <= 0) { mes "Amount must be greater than 0!"; close; }
+
+		$REWARD_TYPE$[$REWARD_COUNT] = "item";
+		$REWARD_ID[$REWARD_COUNT] = .@itemid;
+		$REWARD_AMOUNT[$REWARD_COUNT] = .@amount;
+		$REWARD_COUNT++;
+
+		mes "[Admin Panel]";
+		mes "Added: ^0000FF" + .@amount + "x " + getitemname(.@itemid) + "^000000";
+		close;
+
+	case 2:
+		mes "[Admin Panel]";
+		mes "Enter Zeny Amount:";
+		input .@zeny;
+		if (.@zeny <= 0) { mes "Amount must be greater than 0!"; close; }
+
+		$REWARD_TYPE$[$REWARD_COUNT] = "zeny";
+		$REWARD_ID[$REWARD_COUNT] = 0;
+		$REWARD_AMOUNT[$REWARD_COUNT] = .@zeny;
+		$REWARD_COUNT++;
+
+		mes "[Admin Panel]";
+		mes "Added: ^00CCFF" + .@zeny + " Zeny^000000";
+		close;
+
+	case 3:
+		mes "[Admin Panel]";
+		mes "Enter Cash Point Amount:";
+		input .@cash;
+		if (.@cash <= 0) { mes "Amount must be greater than 0!"; close; }
+
+		$REWARD_TYPE$[$REWARD_COUNT] = "cash";
+		$REWARD_ID[$REWARD_COUNT] = 0;
+		$REWARD_AMOUNT[$REWARD_COUNT] = .@cash;
+		$REWARD_COUNT++;
+
+		mes "[Admin Panel]";
+		mes "Added: ^00CCFF" + .@cash + " Cash Points^000000";
+		close;
+
+	case 4:
+		if ($REWARD_COUNT == 0) { mes "No rewards to delete!"; close; }
+		mes "[Admin Panel]";
+		mes "Choose delete option:";
+		next;
+
+		switch(select("Delete Single Reward:Delete All Rewards:Cancel")) {
+			case 1:
+				mes "[Admin Panel]";
+				mes "Select the reward to delete:";
+				.@menu$ = "";
+				for (.@i = 0; .@i < $REWARD_COUNT; .@i++) {
+					if ($REWARD_TYPE$[.@i] == "item")
+						.@menu$ += $REWARD_AMOUNT[.@i] + "x " + getitemname($REWARD_ID[.@i]);
+					else if ($REWARD_TYPE$[.@i] == "zeny")
+						.@menu$ += $REWARD_AMOUNT[.@i] + " Zeny";
+					else if ($REWARD_TYPE$[.@i] == "cash")
+						.@menu$ += $REWARD_AMOUNT[.@i] + " Cash Points";
+					.@menu$ += ":";
+				}
+				.@menu$ += "Cancel";
+				.@select = select(.@menu$) - 1;
+				if (.@select == $REWARD_COUNT) close;
+
+				for (.@i = .@select; .@i < $REWARD_COUNT - 1; .@i++) {
+					$REWARD_TYPE$[.@i] = $REWARD_TYPE$[.@i + 1];
+					$REWARD_ID[.@i] = $REWARD_ID[.@i + 1];
+					$REWARD_AMOUNT[.@i] = $REWARD_AMOUNT[.@i + 1];
+				}
+				$REWARD_COUNT--;
+				mes "[Admin Panel]";
+				mes "Reward deleted!";
+				close;
+
+			case 2:
+				mes "[Admin Panel]";
+				mes "Are you sure you want to delete ALL event rewards?";
+				if (select("Yes:No") == 2) close;
+				set $REWARD_COUNT, 0;
+				deletearray $REWARD_TYPE$[0], getarraysize($REWARD_TYPE$);
+				deletearray $REWARD_ID[0], getarraysize($REWARD_ID);
+				deletearray $REWARD_AMOUNT[0], getarraysize($REWARD_AMOUNT);
+				mes "All event rewards deleted!";
+				close;
+
+			case 3:
+				close;
+		}
+
+	case 5:
+		close;
+}
+
+//--------------------------------------------------------------
+// ADMIN MENU - VIP DAILY REWARDS
+//--------------------------------------------------------------
+L_AdminVIPMenu:
+mes "[Admin Panel - VIP Daily Rewards]";
+mes "Select action:";
+next;
+
+switch(select("Add Item:Add Zeny:Add Cash Points:Delete Reward:Back")) {
+	case 1:
+		mes "[Admin Panel]";
+		mes "Enter Item ID:";
+		input .@itemid;
+		if (getitemname(.@itemid) == "null") {
+			mes "Invalid Item ID!";
+			close;
+		}
+		mes "Enter Amount:";
+		input .@amount;
+		if (.@amount <= 0) { mes "Amount must be greater than 0!"; close; }
+
+		$VIP_REWARD_TYPE$[$VIP_REWARD_COUNT] = "item";
+		$VIP_REWARD_ID[$VIP_REWARD_COUNT] = .@itemid;
+		$VIP_REWARD_AMOUNT[$VIP_REWARD_COUNT] = .@amount;
+		$VIP_REWARD_COUNT++;
+
+		mes "[Admin Panel]";
+		mes "Added to VIP Daily: ^0000FF" + .@amount + "x " + getitemname(.@itemid) + "^000000";
+		close;
+
+	case 2:
+		mes "[Admin Panel]";
+		mes "Enter Zeny Amount:";
+		input .@zeny;
+		if (.@zeny <= 0) { mes "Amount must be greater than 0!"; close; }
+
+		$VIP_REWARD_TYPE$[$VIP_REWARD_COUNT] = "zeny";
+		$VIP_REWARD_ID[$VIP_REWARD_COUNT] = 0;
+		$VIP_REWARD_AMOUNT[$VIP_REWARD_COUNT] = .@zeny;
+		$VIP_REWARD_COUNT++;
+
+		mes "[Admin Panel]";
+		mes "Added to VIP Daily: ^00CCFF" + .@zeny + " Zeny^000000";
+		close;
+
+	case 3:
+		mes "[Admin Panel]";
+		mes "Enter Cash Point Amount:";
+		input .@cash;
+		if (.@cash <= 0) { mes "Amount must be greater than 0!"; close; }
+
+		$VIP_REWARD_TYPE$[$VIP_REWARD_COUNT] = "cash";
+		$VIP_REWARD_ID[$VIP_REWARD_COUNT] = 0;
+		$VIP_REWARD_AMOUNT[$VIP_REWARD_COUNT] = .@cash;
+		$VIP_REWARD_COUNT++;
+
+		mes "[Admin Panel]";
+		mes "Added to VIP Daily: ^00CCFF" + .@cash + " Cash Points^000000";
+		close;
+
+	case 4:
+		if ($VIP_REWARD_COUNT == 0) { mes "No VIP rewards to delete!"; close; }
+		mes "[Admin Panel]";
+		mes "Choose delete option:";
+		next;
+
+		switch(select("Delete Single Reward:Delete All Rewards:Cancel")) {
+			case 1:
+				mes "[Admin Panel]";
+				mes "Select the VIP reward to delete:";
+				.@menu$ = "";
+				for (.@i = 0; .@i < $VIP_REWARD_COUNT; .@i++) {
+					if ($VIP_REWARD_TYPE$[.@i] == "item")
+						.@menu$ += $VIP_REWARD_AMOUNT[.@i] + "x " + getitemname($VIP_REWARD_ID[.@i]);
+					else if ($VIP_REWARD_TYPE$[.@i] == "zeny")
+						.@menu$ += $VIP_REWARD_AMOUNT[.@i] + " Zeny";
+					else if ($VIP_REWARD_TYPE$[.@i] == "cash")
+						.@menu$ += $VIP_REWARD_AMOUNT[.@i] + " Cash Points";
+					.@menu$ += ":";
+				}
+				.@menu$ += "Cancel";
+				.@select = select(.@menu$) - 1;
+				if (.@select == $VIP_REWARD_COUNT) close;
+
+				for (.@i = .@select; .@i < $VIP_REWARD_COUNT - 1; .@i++) {
+					$VIP_REWARD_TYPE$[.@i] = $VIP_REWARD_TYPE$[.@i + 1];
+					$VIP_REWARD_ID[.@i] = $VIP_REWARD_ID[.@i + 1];
+					$VIP_REWARD_AMOUNT[.@i] = $VIP_REWARD_AMOUNT[.@i + 1];
+				}
+				$VIP_REWARD_COUNT--;
+				mes "[Admin Panel]";
+				mes "VIP reward deleted!";
+				close;
+
+			case 2:
+				mes "[Admin Panel]";
+				mes "Are you sure you want to delete ALL VIP daily rewards?";
+				if (select("Yes:No") == 2) close;
+				set $VIP_REWARD_COUNT, 0;
+				deletearray $VIP_REWARD_TYPE$[0], getarraysize($VIP_REWARD_TYPE$);
+				deletearray $VIP_REWARD_ID[0], getarraysize($VIP_REWARD_ID);
+				deletearray $VIP_REWARD_AMOUNT[0], getarraysize($VIP_REWARD_AMOUNT);
+				mes "All VIP daily rewards deleted!";
+				close;
+
+			case 3:
+				close;
+		}
+
+	case 5:
+		close;
+}
+
+//--------------------------------------------------------------
+// VIEW REWARD LISTS
+//--------------------------------------------------------------
+L_ViewRewards:
+mes "[Reward Lists]";
+mes "What would you like to view?";
+next;
+
+switch(select("Event Rewards:VIP Daily Rewards:Back")) {
+	case 1:
+		if ($REWARD_COUNT == 0) {
+			mes "[Event Rewards]";
+			mes "No event rewards configured yet!";
+			close;
+		}
+		mes "[Event Rewards]";
+		mes "Current rewards (Event ID: " + $REWARD_EVENT_ID + "):";
+		for (.@i = 0; .@i < $REWARD_COUNT; .@i++) {
+			if ($REWARD_TYPE$[.@i] == "item")
+				mes "=> " + $REWARD_AMOUNT[.@i] + "x ^0000FF" + getitemname($REWARD_ID[.@i]) + "^000000";
+			else if ($REWARD_TYPE$[.@i] == "zeny")
+				mes "=> " + $REWARD_AMOUNT[.@i] + " Zeny";
+			else if ($REWARD_TYPE$[.@i] == "cash")
+				mes "=> " + $REWARD_AMOUNT[.@i] + " Cash Points";
+		}
+		close;
+
+	case 2:
+		if ($VIP_REWARD_COUNT == 0) {
+			mes "[VIP Daily Rewards]";
+			mes "No VIP daily rewards configured yet!";
+			close;
+		}
+		mes "[VIP Daily Rewards]";
+		mes "Current VIP rewards (Daily):";
+		for (.@i = 0; .@i < $VIP_REWARD_COUNT; .@i++) {
+			if ($VIP_REWARD_TYPE$[.@i] == "item")
+				mes "=> " + $VIP_REWARD_AMOUNT[.@i] + "x ^0000FF" + getitemname($VIP_REWARD_ID[.@i]) + "^000000";
+			else if ($VIP_REWARD_TYPE$[.@i] == "zeny")
+				mes "=> " + $VIP_REWARD_AMOUNT[.@i] + " Zeny";
+			else if ($VIP_REWARD_TYPE$[.@i] == "cash")
+				mes "=> " + $VIP_REWARD_AMOUNT[.@i] + " Cash Points";
+		}
+		close;
+
+	case 3:
+		close;
+}
+
+//--------------------------------------------------------------
+// VIEW IP LOGS (ADMIN ONLY)
+//--------------------------------------------------------------
+L_ViewIPLogs:
+mes "[Admin Panel - IP Logs]";
+mes "Select log type to view:";
+next;
+
+switch(select("Event IP Claims:VIP Daily IP Claims:Back")) {
+	case 1:
+		mes "[Event IP Logs]";
+		mes "Total IPs claimed: " + getarraysize($EVENT_IP_LIST$);
+		mes " ";
+		if (getarraysize($EVENT_IP_LIST$) == 0) {
+			mes "No IP claims recorded.";
+		} else {
+			mes "Recent claims (last 10):";
+			.@start = getarraysize($EVENT_IP_LIST$) - 10;
+			if (.@start < 0) .@start = 0;
+			for (.@i = .@start; .@i < getarraysize($EVENT_IP_LIST$); .@i++) {
+				mes (.@i + 1) + ". " + $EVENT_IP_LIST$[.@i];
+			}
+		}
+		close;
+
+	case 2:
+		mes "[VIP Daily IP Logs]";
+		mes "Total IPs claimed today: " + getarraysize($VIP_IP_LIST$);
+		mes " ";
+		if (getarraysize($VIP_IP_LIST$) == 0) {
+			mes "No IP claims recorded today.";
+		} else {
+			mes "Recent claims (last 10):";
+			.@start = getarraysize($VIP_IP_LIST$) - 10;
+			if (.@start < 0) .@start = 0;
+			for (.@i = .@start; .@i < getarraysize($VIP_IP_LIST$); .@i++) {
+				mes (.@i + 1) + ". " + $VIP_IP_LIST$[.@i];
+			}
+		}
+		close;
+
+	case 3:
+		close;
+}
+
+//--------------------------------------------------------------
+// RESET MENU
+//--------------------------------------------------------------
+L_ResetMenu:
+mes "[Admin Panel - Reset Systems]";
+mes "Select what to reset:";
+next;
+
+switch(select("Reset Event System:Reset VIP Daily Claims:Clear Event IP List:Clear VIP IP List:Back")) {
+	case 1:
+		mes "[Admin Panel]";
+		mes "^FF0000WARNING!^000000";
+		mes "This will reset event data and clear event reward list.";
+		mes "Players will be able to receive new event rewards.";
+		mes "Both account locks and IP restrictions will be cleared.";
+		next;
+
+		if (select("Yes, reset event:No, cancel") == 2) {
+			mes "Canceled.";
+			close;
+		}
+
+		set $REWARD_COUNT, 0;
+		deletearray $REWARD_TYPE$[0], getarraysize($REWARD_TYPE$);
+		deletearray $REWARD_ID[0], getarraysize($REWARD_ID);
+		deletearray $REWARD_AMOUNT[0], getarraysize($REWARD_AMOUNT);
+		deletearray $EVENT_IP_LIST$[0], getarraysize($EVENT_IP_LIST$);
+		// ★ FIX: Increment Event ID so account var (#REWARD_RECEIVED_ID) no longer matches
+		set $REWARD_EVENT_ID, $REWARD_EVENT_ID + 1;
+
+		mes "[Admin Panel]";
+		mes "^00FF00[SUCCESS]^000000 Event system reset!";
+		mes "New Event ID: ^0000FF" + $REWARD_EVENT_ID + "^000000";
+		mes "All players can now claim new event rewards.";
+		announce "[Mystery Gift Box] Event has been reset! New rewards coming soon!", bc_all, 0xFF0000;
+		close;
+
+	case 2:
+		mes "[Admin Panel]";
+		mes "^FF0000WARNING!^000000";
+		mes "This will reset ALL VIP daily claim status.";
+		mes "All account locks and IP restrictions will be cleared.";
+		next;
+
+		if (select("Yes, reset VIP claims:No, cancel") == 2) {
+			mes "Canceled.";
+			close;
+		}
+
+		deletearray $VIP_IP_LIST$[0], getarraysize($VIP_IP_LIST$);
+		// ★ FIX: Reset both IP list AND account vars
+		query_sql("UPDATE `global_reg_value` SET `value` = 0 WHERE `str` = '#VIP_LAST_CLAIM'");
+
+		mes "[Admin Panel]";
+		mes "^00FF00[SUCCESS]^000000 VIP daily claims reset!";
+		mes "VIP IP list and account locks cleared.";
+		mes "All VIP players can now claim today's rewards.";
+		announce "[Mystery Gift Box] VIP daily rewards have been reset!", bc_all, 0xFF9900;
+		close;
+
+	case 3:
+		mes "[Admin Panel]";
+		mes "Clear Event IP restriction list?";
+		mes "^FF0000Note: Account-level locks remain active.^000000";
+		next;
+
+		if (select("Yes:No") == 2) close;
+
+		deletearray $EVENT_IP_LIST$[0], getarraysize($EVENT_IP_LIST$);
+		mes "^0000FF[INFO]^000000 Event IP list cleared!";
+		close;
+
+	case 4:
+		mes "[Admin Panel]";
+		mes "Clear VIP Daily IP restriction list?";
+		mes "^FF0000Note: Account-level locks remain active.^000000";
+		next;
+
+		if (select("Yes:No") == 2) close;
+
+		deletearray $VIP_IP_LIST$[0], getarraysize($VIP_IP_LIST$);
+		mes "^0000FF[INFO]^000000 VIP IP list cleared!";
+		close;
+
+	case 5:
+		close;
+}
+
+//--------------------------------------------------------------
+// ON INIT
+//--------------------------------------------------------------
+OnInit:
+	if (!$REWARD_EVENT_ID)
+		set $REWARD_EVENT_ID, 1;
+	if ($REWARD_COUNT == 0)
+		set $REWARD_COUNT, 0;
+	if ($VIP_REWARD_COUNT == 0)
+		set $VIP_REWARD_COUNT, 0;
+
+	debugmes "[Mystery Gift Box] Loaded - FIXED DUAL LOCK VERSION";
+	debugmes "  Event ID: " + $REWARD_EVENT_ID;
+	debugmes "  Event Rewards: " + $REWARD_COUNT;
+	debugmes "  VIP Daily Rewards: " + $VIP_REWARD_COUNT;
+	debugmes "  Event IPs Claimed: " + getarraysize($EVENT_IP_LIST$);
+	debugmes "  VIP IPs Claimed Today: " + getarraysize($VIP_IP_LIST$);
+	end;
+
+//--------------------------------------------------------------
+// ON CLOCK - Auto clear VIP IP list at midnight
+//--------------------------------------------------------------
+OnClock0000:
+	deletearray $VIP_IP_LIST$[0], getarraysize($VIP_IP_LIST$);
+	debugmes "[Mystery Gift Box] VIP IP list auto-cleared at midnight";
+	end;
+}

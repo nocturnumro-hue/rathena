@@ -1,0 +1,215 @@
+// NPC: Cash Point & Proof of Donation Exchanger
+// Place: prontera,155,155
+// Save as: npc/custom/npc_cash_exchange.txt
+// Rate: 1 Proof of Donation = 1000 Cash Points
+
+prontera,162,206,6	script	Cash Exchanger	90,{
+
+	// Configuration
+	set .@pod_id, 7179; // Proof of Donation Item ID
+	set .@rate, 1000;   // 1 POD = 1000 Cash Points
+	
+	mes "^00BFFF=============================^000000";
+	mes "^00BFFF   CASH POINT EXCHANGE^000000";
+	mes "^00BFFF=============================^000000";
+	mes "^FFFFFFWelcome to Cash Exchange!^000000";
+	mes " ";
+	mes "^999999Exchange Rate:^000000";
+	mes "^00FF881 POD = 1000 Cash Points^000000";
+	mes " ";
+	mes "^FF69B4Your Cash: ^00BFFF"+#CASHPOINTS+"^000000";
+	mes "^00FF00Your POD: ^00BFFF"+countitem(.@pod_id)+"^000000";
+	next;
+	mes "^00BFFFWhat would you like to do?^000000";
+	menu "^00FF88POD to Cash Points^000000",PodToCash,"^00FF00Cash Points to POD^000000",CashToPod,"^FF6600Check Balance^000000",CheckBalance,"^FF0000Exit^000000",-;
+	close;
+
+// =====================================
+// POD TO CASH POINTS
+// =====================================
+PodToCash:
+	mes "^00FF88=============================^000000";
+	mes "^00FF88   POD TO CASH POINTS^000000";
+	mes "^00FF88=============================^000000";
+	mes "^FFFFFFYou have: ^00FF88"+countitem(.@pod_id)+" POD^000000";
+	mes "^999999Rate: 1 POD = "+.@rate+" Cash^000000";
+	mes " ";
+	mes "^00BFFFHow many POD to exchange?^000000";
+	mes "^999999Enter 0 to cancel^000000";
+	input .@amount;
+	
+	// Cancel check
+	if(.@amount == 0) {
+		mes " ";
+		mes "^FF6600Transaction cancelled.^000000";
+		close;
+	}
+	
+	// Validation checks
+	if(.@amount < 0) {
+		mes " ";
+		mes "^FF0000ERROR: Invalid amount!^000000";
+		close;
+	}
+	
+	if(countitem(.@pod_id) < .@amount) {
+		mes " ";
+		mes "^FF0000ERROR: Not enough POD!^000000";
+		mes "^999999Need: "+.@amount+" POD^000000";
+		mes "^999999Have: "+countitem(.@pod_id)+" POD^000000";
+		close;
+	}
+	
+	// Calculate cash to receive
+	set .@cash_receive, .@amount * .@rate;
+	
+	// Confirmation
+	next;
+	mes "^00BFFF=============================^000000";
+	mes "^FFFFFFTransaction Summary:^000000";
+	mes "^FF6600Give: ^00FF88"+.@amount+" POD^000000";
+	mes "^00FF00Receive: ^00BFFF"+.@cash_receive+" Cash^000000";
+	mes "^00BFFF=============================^000000";
+	mes " ";
+	mes "^FFFFFFConfirm?^000000";
+	menu "^00FF00Yes^000000",PodToCashConfirm,"^FF0000No^000000",-;
+	close;
+
+PodToCashConfirm:
+	// Final check before transaction
+	if(countitem(.@pod_id) < .@amount) {
+		mes "^FF0000ERROR: Item check failed!^000000";
+		close;
+	}
+	
+	// Execute transaction
+	delitem .@pod_id, .@amount;
+	set #CASHPOINTS, #CASHPOINTS + .@cash_receive;
+	
+	// Success message with announce
+	mes "^00FF00=============================^000000";
+	mes "^00FF00   TRANSACTION SUCCESS^000000";
+	mes "^00FF00=============================^000000";
+	mes "^FFFFFFExchanged: ^00FF88"+.@amount+" POD^000000";
+	mes "^FFFFFFReceived: ^00BFFF+"+.@cash_receive+" Cash^000000";
+	mes " ";
+	mes "^FF69B4New Balance: ^00BFFF"+#CASHPOINTS+" Cash^000000";
+	
+	// Announce for better visibility
+	announce "Successfully exchanged "+.@amount+" POD for "+.@cash_receive+" Cash Points!",bc_self;
+	dispbottom "^00FF00[SUCCESS] Received +"+.@cash_receive+" Cash Points!^000000";
+	dispbottom "^FF69B4[BALANCE] Total Cash: "+#CASHPOINTS+" Points^000000";
+	close;
+
+// =====================================
+// CASH POINTS TO POD
+// =====================================
+CashToPod:
+	mes "^00FF00=============================^000000";
+	mes "^00FF00   CASH POINTS TO POD^000000";
+	mes "^00FF00=============================^000000";
+	mes "^FFFFFFYou have: ^00BFFF"+#CASHPOINTS+" Cash^000000";
+	mes "^999999Rate: "+.@rate+" Cash = 1 POD^000000";
+	mes " ";
+	mes "^00BFFFHow many POD to buy?^000000";
+	mes "^999999Enter 0 to cancel^000000";
+	input .@amount;
+	
+	// Cancel check
+	if(.@amount == 0) {
+		mes " ";
+		mes "^FF6600Transaction cancelled.^000000";
+		close;
+	}
+	
+	// Validation checks
+	if(.@amount < 0) {
+		mes " ";
+		mes "^FF0000ERROR: Invalid amount!^000000";
+		close;
+	}
+	
+	// Calculate cash needed
+	set .@cash_needed, .@amount * .@rate;
+	
+	if(#CASHPOINTS < .@cash_needed) {
+		mes " ";
+		mes "^FF0000ERROR: Not enough Cash!^000000";
+		mes "^999999Need: "+.@cash_needed+" Cash^000000";
+		mes "^999999Have: "+#CASHPOINTS+" Cash^000000";
+		close;
+	}
+	
+	// Check inventory space
+	if(checkweight(.@pod_id, .@amount) == 0) {
+		mes " ";
+		mes "^FF0000ERROR: Inventory too heavy!^000000";
+		mes "^999999Free up some space.^000000";
+		close;
+	}
+	
+	// Confirmation
+	next;
+	mes "^00BFFF=============================^000000";
+	mes "^FFFFFFTransaction Summary:^000000";
+	mes "^FF6600Pay: ^00BFFF"+.@cash_needed+" Cash^000000";
+	mes "^00FF00Receive: ^00FF88"+.@amount+" POD^000000";
+	mes "^00BFFF=============================^000000";
+	mes " ";
+	mes "^FFFFFFConfirm?^000000";
+	menu "^00FF00Yes^000000",CashToPodConfirm,"^FF0000No^000000",-;
+	close;
+
+CashToPodConfirm:
+	// Final checks
+	if(#CASHPOINTS < .@cash_needed) {
+		mes "^FF0000ERROR: Cash check failed!^000000";
+		close;
+	}
+	
+	if(checkweight(.@pod_id, .@amount) == 0) {
+		mes "^FF0000ERROR: Inventory check failed!^000000";
+		close;
+	}
+	
+	// Execute transaction
+	set #CASHPOINTS, #CASHPOINTS - .@cash_needed;
+	getitem .@pod_id, .@amount;
+	
+	// Success message with announce
+	mes "^00FF00=============================^000000";
+	mes "^00FF00   TRANSACTION SUCCESS^000000";
+	mes "^00FF00=============================^000000";
+	mes "^FFFFFFPaid: ^00BFFF"+.@cash_needed+" Cash^000000";
+	mes "^FFFFFFReceived: ^00FF88"+.@amount+" POD^000000";
+	mes " ";
+	mes "^FF69B4New Balance: ^00BFFF"+#CASHPOINTS+" Cash^000000";
+	
+	// Announce for better visibility
+	announce "Successfully purchased "+.@amount+" POD for "+.@cash_needed+" Cash Points!",bc_self;
+	dispbottom "^00FF00[SUCCESS] Received "+.@amount+" Proof of Donation!^000000";
+	dispbottom "^FF69B4[BALANCE] Remaining Cash: "+#CASHPOINTS+" Points^000000";
+	close;
+
+// =====================================
+// CHECK BALANCE
+// =====================================
+CheckBalance:
+	mes "^00BFFF=============================^000000";
+	mes "^00BFFF      YOUR BALANCE^000000";
+	mes "^00BFFF=============================^000000";
+	mes "^FF69B4Cash Points: ^00BFFF"+#CASHPOINTS+"^000000";
+	mes "^00FF00Proof of Donation: ^00FF88"+countitem(.@pod_id)+"^000000";
+	mes " ";
+	mes "^999999Rate: 1 POD = "+.@rate+" Cash^000000";
+	next;
+	mes "^00BFFF=============================^000000";
+	mes "^FFFFFFCalculations:^000000";
+	mes "^00BFFF=============================^000000";
+	mes "^FFFFFFIf convert all POD:^000000";
+	mes "^00FF00"+countitem(.@pod_id)+" POD = "+(countitem(.@pod_id) * .@rate)+" Cash^000000";
+	mes " ";
+	mes "^FFFFFFIf spend all Cash:^000000";
+	mes "^00FF88"+#CASHPOINTS+" Cash = "+(#CASHPOINTS / .@rate)+" POD^000000";
+	close;
+}

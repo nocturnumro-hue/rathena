@@ -1,0 +1,27 @@
+//============================================================
+// Kafra Employee - Prontera
+// Location: prontera (144,200)
+// Savepoint: prontera (151,193)
+// Services: Savepoint + Personal Storage
+//============================================================
+prontera,144,200,4	script	Kafra Employee#prt	90,{
+	cutin "kafra_01",2;               // Hiện ảnh Kafra
+	callfunc "F_KafSet";              // Thiết lập dữ liệu Kafra
+	callfunc "F_Kafra",0,8,0,0,0;     // (Savepoint=0, Storage=8, Guild=0, Fee=0, WarpGroup=0)
+	savepoint "prontera",156,191,1,1; // Điểm hồi sinh mặc định
+	callfunc "F_KafEnd",2,0,0;        // Kết thúc, đóng cutin
+}
+
+//============================================================
+// Kafra Employee - Askald
+// Location: askald (113,160)
+// Savepoint: askald (127,155)
+// Services: Savepoint + Personal Storage
+//============================================================
+askald,113,160,4	script	Kafra Employee#ask	90,{
+	cutin "kafra_01",2;               // Hiện ảnh Kafra
+	callfunc "F_KafSet";              // Thiết lập dữ liệu Kafra
+	callfunc "F_Kafra",0,8,0,0,0;     // (Savepoint=0, Storage=8, Guild=0, Fee=0, WarpGroup=0)
+	savepoint "askald",127,155,1,1; // Điểm hồi sinh mặc định
+	callfunc "F_KafEnd",2,0,0;        // Kết thúc, đóng cutin
+}

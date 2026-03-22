@@ -1,0 +1,257 @@
+//===== rAthena Script =======================================
+//= Glast Heim Monster Hunt Quest (Map 2)
+//===== Description: =========================================
+//= Daily Quest: Kill 1000 monsters in 1@gl_he
+//= Weekly Quest: Kill 5000 monsters in 1@gl_he
+//= Independent from 1@gol1 quest
+//============================================================
+
+1@gl_he,155,40,4	script	Monster Hunter#2	4_M_ROGUE,{
+	.@daily_delay = #GH2_Daily_Delay - gettimetick(2);
+	.@weekly_delay = #GH2_Weekly_Delay - gettimetick(2);
+	
+	mes "[Monster Hunter]";
+	mes "I'm looking for brave warriors to hunt monsters in the Cursed Glast Heim!";
+	next;
+	
+	switch(select("Daily Quest (1000 monsters):Weekly Quest (5000 monsters):Check Progress:Claim Rewards:Info:Cancel")) {
+		case 1: // Daily Quest
+			if (.@daily_delay > 0) {
+				mes "[Monster Hunter]";
+				mes "You already completed the daily quest!";
+				mes "Come back in ^FF0000" + callfunc("F_InsertTime", .@daily_delay) + "^000000";
+				close;
+			}
+			if (GH2_Daily_Active) {
+				mes "[Monster Hunter]";
+				mes "You already have an active daily quest!";
+				mes "Progress: ^0000FF" + GH2_Daily_Count + "/1000^000000";
+				close;
+			}
+			mes "[Monster Hunter]";
+			mes "Daily Quest: Kill 1000 monsters in Cursed Glast Heim";
+			mes "^00FF00Reward:^000000";
+			mes "- 100x Jewel Of Time Ore";
+			mes "- 100x Spell Of Time";
+			mes "- 100x Fragment Of Time";
+			mes "- Base EXP: 268,578,500";
+			mes "- Job EXP: 188,004,950";
+			mes " ";
+			mes "Do you accept?";
+			next;
+			if (select("Yes:No") == 2) {
+				mes "[Monster Hunter]";
+				mes "Come back when you're ready!";
+				close;
+			}
+			GH2_Daily_Active = 1;
+			GH2_Daily_Count = 0;
+			mes "[Monster Hunter]";
+			mes "Quest accepted! Good luck!";
+			mes "Kill any monsters in ^FF00001@gl_he^000000 map.";
+			close;
+			
+		case 2: // Weekly Quest
+			// Kiểm tra phải hoàn thành Daily Quest trước
+			if (#GH2_Daily_Completed < 1) {
+				mes "[Monster Hunter]";
+				mes "You must complete the ^FF0000Daily Quest^000000 at least once before unlocking the Weekly Quest!";
+				close;
+			}
+			
+			if (.@weekly_delay > 0) {
+				mes "[Monster Hunter]";
+				mes "You already completed the weekly quest!";
+				mes "Come back in ^FF0000" + callfunc("F_InsertTime", .@weekly_delay) + "^000000";
+				close;
+			}
+			if (GH2_Weekly_Active) {
+				mes "[Monster Hunter]";
+				mes "You already have an active weekly quest!";
+				mes "Progress: ^0000FF" + GH2_Weekly_Count + "/5000^000000";
+				close;
+			}
+			mes "[Monster Hunter]";
+			mes "Weekly Quest: Kill 5000 monsters in Cursed Glast Heim";
+			mes "^00FF00Reward:^000000";
+			mes "- 700x Jewel Of Time Ore";
+			mes "- 700x Spell Of Time";
+			mes "- 700x Fragment Of Time";
+			mes "- Base EXP: 1,880,049,500";
+			mes "- Job EXP: 1,316,034,650";
+			mes " ";
+			mes "Do you accept?";
+			next;
+			if (select("Yes:No") == 2) {
+				mes "[Monster Hunter]";
+				mes "Come back when you're ready!";
+				close;
+			}
+			GH2_Weekly_Active = 1;
+			GH2_Weekly_Count = 0;
+			mes "[Monster Hunter]";
+			mes "Quest accepted! Good luck!";
+			mes "Kill any monsters in ^FF00001@gl_he^000000 map.";
+			close;
+			
+		case 3: // Check Progress
+			mes "[Monster Hunter]";
+			if (!GH2_Daily_Active && !GH2_Weekly_Active) {
+				mes "You don't have any active quests.";
+				close;
+			}
+			if (GH2_Daily_Active) {
+				mes "^0000FFDaily Quest:^000000";
+				mes "Progress: " + GH2_Daily_Count + "/1000 (" + (GH2_Daily_Count * 100 / 1000) + "%)";
+				if (GH2_Daily_Count >= 1000)
+					mes "^00FF00[COMPLETED]^000000";
+			}
+			if (GH2_Weekly_Active) {
+				mes " ";
+				mes "^FF8000Weekly Quest:^000000";
+				mes "Progress: " + GH2_Weekly_Count + "/5000 (" + (GH2_Weekly_Count * 100 / 5000) + "%)";
+				if (GH2_Weekly_Count >= 5000)
+					mes "^00FF00[COMPLETED]^000000";
+			}
+			close;
+			
+		case 4: // Claim Rewards
+			.@claimed = 0;
+			
+			// Daily Reward
+			if (GH2_Daily_Active && GH2_Daily_Count >= 1000) {
+				if (checkweight(25865, 100) && checkweight(25866, 100) && checkweight(25867, 100)) {
+					getitem 25865, 100; // Jewel Of Time Ore
+					getitem 25866, 100; // Spell Of Time
+					getitem 25867, 100; // Fragment Of Time
+					getexp 268578500, 188004950; // Base EXP, Job EXP
+					GH2_Daily_Active = 0;
+					GH2_Daily_Count = 0;
+					#GH2_Daily_Delay = gettimetick(2) + 86400; // 1 day
+					#GH2_Daily_Completed++; // Đánh dấu đã hoàn thành
+					.@claimed++;
+					announce strcharinfo(0) + " has completed Daily Monster Hunt Quest (1@gl_he)!", bc_all, 0x00FF00;
+				} else {
+					mes "[Monster Hunter]";
+					mes "Your inventory is too heavy!";
+					close;
+				}
+			}
+			
+			// Weekly Reward
+			if (GH2_Weekly_Active && GH2_Weekly_Count >= 5000) {
+				if (checkweight(25865, 700) && checkweight(25866, 700) && checkweight(25867, 700)) {
+					getitem 25865, 700;
+					getitem 25866, 700;
+					getitem 25867, 700;
+					getexp 1880049500, 1316034650;
+					GH2_Weekly_Active = 0;
+					GH2_Weekly_Count = 0;
+					#GH2_Weekly_Delay = gettimetick(2) + 604800; // 7 days
+					.@claimed++;
+					announce strcharinfo(0) + " has completed Weekly Monster Hunt Quest (1@gl_he)!", bc_all, 0xFF8000;
+				} else {
+					mes "[Monster Hunter]";
+					mes "Your inventory is too heavy!";
+					close;
+				}
+			}
+			
+			mes "[Monster Hunter]";
+			if (.@claimed) {
+				mes "Congratulations! You've claimed your rewards!";
+				mes "Total quests completed: " + .@claimed;
+			} else {
+				mes "You don't have any completed quests to claim.";
+			}
+			close;
+			
+		case 5: // Info
+			mes "[Monster Hunter]";
+			mes "^0000FFDaily Quest:^000000";
+			mes "- Kill 1000 monsters in 1@gl_he";
+			mes "- Reward:";
+			mes "  * 100x Jewel Of Time Ore";
+			mes "  * 100x Spell Of Time";
+			mes "  * 100x Fragment Of Time";
+			mes "  * Base EXP: 268,578,500";
+			mes "  * Job EXP: 188,004,950";
+			mes "- Cooldown: 24 hours";
+			next;
+			mes "[Monster Hunter]";
+			mes "^FF8000Weekly Quest:^000000";
+			mes "- Kill 5000 monsters in 1@gl_he";
+			mes "- ^FF0000Requirement: Complete Daily Quest first^000000";
+			mes "- Reward:";
+			mes "  * 700x Jewel Of Time Ore";
+			mes "  * 700x Spell Of Time";
+			mes "  * 700x Fragment Of Time";
+			mes "  * Base EXP: 1,880,049,500";
+			mes "  * Job EXP: 1,316,034,650";
+			mes "- Cooldown: 7 days (168 hours)";
+			next;
+			mes "[Monster Hunter]";
+			mes "^00FF00Target Monsters:^000000";
+			mes "- Mutating White Knight";
+			mes "- Mutating Khalitzburg";
+			mes "- Cursed Raydric";
+			mes "- Cursed Raydric Archer";
+			mes "- Cursed Buttler";
+			mes "- Cursed Servant";
+			close;
+			
+		case 6: // Cancel
+			mes "[Monster Hunter]";
+			mes "See you later!";
+			close;
+	}
+
+OnInit:
+	waitingroom "Quest Instance",0;
+	end;
+}
+
+// ============================================
+// Monster Kill Tracker - Map 2
+// ============================================
+-	script	GH2_Monster_Tracker	FAKE_NPC,{
+OnInit:
+	setmapflag "1@gl_he", mf_loadevent;
+	end;
+
+OnNPCKillEvent:
+	// Kiểm tra map
+	if (strcharinfo(3) != "1@gl_he") end;
+	
+	// Kiểm tra monster ID
+	if (killedrid != 20574 && killedrid != 20576 && killedrid != 20577 && 
+	    killedrid != 20578 && killedrid != 20579 && killedrid != 20580)
+		end;
+	
+	// Đếm cho daily quest
+	if (GH2_Daily_Active && GH2_Daily_Count < 1000) {
+		GH2_Daily_Count++;
+		if (GH2_Daily_Count >= 1000) {
+			dispbottom "===================================";
+			dispbottom "Daily Quest Completed!";
+			dispbottom "Talk to Monster Hunter to claim rewards.";
+			dispbottom "===================================";
+		} else {
+			dispbottom "Daily Quest: " + GH2_Daily_Count + "/1000 (" + (GH2_Daily_Count * 100 / 1000) + "%)";
+		}
+	}
+	
+	// Đếm cho weekly quest
+	if (GH2_Weekly_Active && GH2_Weekly_Count < 5000) {
+		GH2_Weekly_Count++;
+		if (GH2_Weekly_Count >= 5000) {
+			dispbottom "===================================";
+			dispbottom "Weekly Quest Completed!";
+			dispbottom "Talk to Monster Hunter to claim rewards.";
+			dispbottom "===================================";
+		} else if (GH2_Weekly_Count % 10 == 0) {
+			dispbottom "Weekly Quest: " + GH2_Weekly_Count + "/5000 (" + (GH2_Weekly_Count * 100 / 5000) + "%)";
+		}
+	}
+	end;
+}

@@ -1,0 +1,238 @@
+// ============================================================
+//  ███╗   ███╗ ██████╗ ███╗   ██╗███████╗████████╗███████╗██████╗ 
+//  ████╗ ████║██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██╔════╝██╔══██╗
+//  ██╔████╔██║██║   ██║██╔██╗ ██║███████╗   ██║   █████╗  ██████╔╝
+//  ██║╚██╔╝██║██║   ██║██║╚██╗██║╚════██║   ██║   ██╔══╝  ██╔══██╗
+//  ██║ ╚═╝ ██║╚██████╔╝██║ ╚████║███████║   ██║   ███████╗██║  ██║
+//  ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+//           ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
+//           ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
+//           ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
+//           ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
+//           ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
+//           ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
+// ============================================================
+//  MONSTER SYSTEM  |  Version 2.0
+//  File    : npc/custom/monster_system.txt
+//  Reload  : @reloadnpcfile npc/custom/monster_system.txt
+// ------------------------------------------------------------
+//  Changes v2.0:
+//    - Moving & AFK monsters use ORIGINAL, NON-OVERLAPPING IDs
+//      Moving : mob IDs 30101–30120  (exactly 20 unique IDs)
+//      AFK    : mob IDs 30121–30170  (pool of 50, uses first 20)
+//    - Each mob ID spawns EXACTLY once on the map
+//    - Moving monsters spawn 1–3 per random coordinate set
+//    - AFK monsters capped at 20 total
+//    - Expanded first/last name pools for more variety
+//    - All monsters auto-relocate every 1 hour
+//    - Removable via OnClear event
+// ============================================================
+
+-	script	MonsterSystem	FAKE_EVENT,{
+	end;
+
+// ============================================================
+OnInit:
+// ============================================================
+
+	// ----------------------------------------------------------
+	//  GLOBAL CONFIGURATION
+	// ----------------------------------------------------------
+	.spawn_map$ = "prontera";
+
+	// ----------------------------------------------------------
+	//  MOVING MONSTER IDs  (IDs 30101–30120)
+	//    Exactly 20 IDs. Each ID spawns exactly once.
+	//    20 coordinate slots, each draws 1–3 IDs sequentially.
+	//    Spawning stops automatically when pool is exhausted.
+	// ----------------------------------------------------------
+	setarray .moving_mobs[0],
+		30101, 30102, 30103, 30104, 30105,
+		30106, 30107, 30108, 30109, 30110,
+		30111, 30112, 30113, 30114, 30115,
+		30116, 30117, 30118, 30119, 30120;
+	// Exactly 20 IDs in the moving pool
+
+	// ----------------------------------------------------------
+	//  AFK MONSTER IDs  (IDs 30121–30170)
+	//    Original pool of 50 IDs — completely separate from moving.
+	//    Only the first 20 are used (afk_total = 20).
+	//    Each ID spawns exactly once.
+	// ----------------------------------------------------------
+	setarray .afk_mobs[0],
+		30121, 30122, 30123, 30124, 30125, 30126, 30127, 30128, 30129, 30130,
+		30131, 30132, 30133, 30134, 30135, 30136, 30137, 30138, 30139, 30140,
+		30141, 30142, 30143, 30144, 30145, 30146, 30147, 30148, 30149, 30150,
+		30151, 30152, 30153, 30154, 30155, 30156, 30157, 30158, 30159, 30160,
+		30161, 30162, 30163, 30164, 30165, 30166, 30167, 30168, 30169, 30170;
+	// Pool of 50; only [0..19] are used since afk_total = 20
+
+	// ----------------------------------------------------------
+	//  FIRST NAME POOL  (100 names)
+	// ----------------------------------------------------------
+	setarray .first_names$[0],
+		"James",     "John",      "Robert",    "Michael",   "William",
+		"David",     "Richard",   "Joseph",    "Thomas",    "Charles",
+		"Christopher","Daniel",   "Matthew",   "Anthony",   "Donald",
+		"Mark",      "Paul",      "Steven",    "Andrew",    "Kenneth",
+		"Joshua",    "Kevin",     "Brian",     "George",    "Edward",
+		"Ronald",    "Timothy",   "Jason",     "Jeffrey",   "Ryan",
+		"Jacob",     "Gary",      "Nicholas",  "Eric",      "Stephen",
+		"Jonathan",  "Larry",     "Justin",    "Scott",     "Brandon",
+		"Benjamin",  "Samuel",    "Frank",     "Gregory",   "Raymond",
+		"Alexander", "Patrick",   "Jack",      "Dennis",    "Jerry",
+		"Tyler",     "Aaron",     "Henry",     "Douglas",   "Peter",
+		"Adam",      "Nathan",    "Zachary",   "Kyle",      "Walter",
+		"Ethan",     "Noah",      "Liam",      "Mason",     "Logan",
+		"Lucas",     "Oliver",    "Elijah",    "Aiden",     "James",
+		"Sebastian", "Owen",      "Carter",    "Wyatt",     "Dylan",
+		"Hunter",    "Evan",      "Caleb",     "Isaiah",    "Adrian",
+		"Nolan",     "Easton",    "Colton",    "Cameron",   "Landon",
+		"Maxwell",   "Lincoln",   "Jaxon",     "Cooper",    "Brayden",
+		"Grayson",   "Eli",       "Josiah",    "Mateo",     "Sawyer",
+		"Dominic",   "Maverick",  "Roman",     "Silas",     "Declan";
+
+	// ----------------------------------------------------------
+	//  LAST NAME POOL  (100 names)
+	// ----------------------------------------------------------
+	setarray .last_names$[0],
+		"Smith",     "Johnson",   "Williams",  "Brown",     "Jones",
+		"Garcia",    "Miller",    "Davis",     "Rodriguez", "Martinez",
+		"Hernandez", "Lopez",     "Gonzalez",  "Wilson",    "Anderson",
+		"Thomas",    "Taylor",    "Moore",     "Jackson",   "Martin",
+		"Lee",       "Perez",     "Thompson",  "White",     "Harris",
+		"Sanchez",   "Clark",     "Ramirez",   "Lewis",     "Robinson",
+		"Walker",    "Young",     "Allen",     "King",      "Wright",
+		"Scott",     "Torres",    "Nguyen",    "Hill",      "Flores",
+		"Green",     "Adams",     "Nelson",    "Baker",     "Hall",
+		"Rivera",    "Campbell",  "Mitchell",  "Carter",    "Roberts",
+		"Phillips",  "Evans",     "Turner",    "Parker",    "Collins",
+		"Edwards",   "Stewart",   "Morris",    "Murphy",    "Cook",
+		"Rogers",    "Morgan",    "Peterson",  "Cooper",    "Reed",
+		"Bailey",    "Bell",      "Gomez",     "Kelly",     "Howard",
+		"Ward",      "Cox",       "Diaz",      "Richardson","Wood",
+		"Watson",    "Brooks",    "Bennett",   "Gray",      "James",
+		"Reyes",     "Cruz",      "Hughes",    "Price",     "Myers",
+		"Long",      "Foster",    "Sanders",   "Ross",      "Morales",
+		"Powell",    "Sullivan",  "Russell",   "Ortiz",     "Jenkins",
+		"Gutierrez", "Perry",     "Butler",    "Barnes",    "Fisher";
+
+	// ----------------------------------------------------------
+	//  AFK PREFIX POOL
+	//    ~30% chance of an AFK tag appearing.
+	// ----------------------------------------------------------
+	setarray .afk_prefix$[0],
+		"", "", "", "", "", "", "",
+		"[AFK] ", "[Sleep] ", "[Away] ";
+
+	// ----------------------------------------------------------
+	//  CLUSTER POSITIONS  (AFK monsters group here ± 3 tiles)
+	// ----------------------------------------------------------
+	setarray .cluster_x[0], 155, 148, 175, 142, 165, 138, 158, 152, 168, 145;
+	setarray .cluster_y[0], 185, 220, 205, 195, 188, 200, 175, 215, 192, 210;
+
+	// --- Compute sizes (auto, do not edit) ---
+	.first_size       = getarraysize(.first_names$);
+	.last_size        = getarraysize(.last_names$);
+	.afk_prefix_size  = getarraysize(.afk_prefix$);
+	.total_clusters   = getarraysize(.cluster_x);
+	.afk_total        = 20;   // Hard cap for AFK monsters
+	.moving_pool_size = getarraysize(.moving_mobs);
+
+// ============================================================
+//  SPAWN: MOVING MONSTERS
+//    20 coordinate slots, each spawns 1–3 monsters.
+//    IDs are consumed sequentially from .moving_mobs pool.
+//    Spawning stops if the pool runs out.
+// ============================================================
+
+	.@mob_idx = 0;   // Pointer into .moving_mobs pool
+	.moving_count = 0;
+
+	for (.@slot = 0; .@slot < 20 && .@mob_idx < .moving_pool_size; .@slot++) {
+		.@num = rand(1, 3);   // 1–3 mobs per coordinate slot
+		.@sx  = rand(120, 190);
+		.@sy  = rand(150, 240);
+
+		for (.@k = 0; .@k < .@num && .@mob_idx < .moving_pool_size; .@k++) {
+			.@class = .moving_mobs[.@mob_idx];
+			.@name$ = .first_names$[rand(.first_size)] + " " + .last_names$[rand(.last_size)];
+			// Spread slightly around the slot centre (± 2 tiles)
+			.@gid   = monster(.spawn_map$, .@sx + rand(-2,2), .@sy + rand(-2,2), .@name$, .@class, 1);
+			if (.@gid > 0) {
+				.moving_gid[.moving_count] = .@gid;
+				setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+				.moving_count++;
+			}
+			.@mob_idx++;
+		}
+	}
+
+// ============================================================
+//  SPAWN: 20 AFK MONSTERS
+//    Uses .afk_mobs[0..19] (IDs 30121–30140) — no overlap with moving (30101–30120).
+// ============================================================
+
+	for (.@i = 0; .@i < .afk_total; .@i++) {
+		.@class   = .afk_mobs[.@i];
+		.@prefix$ = .afk_prefix$[rand(.afk_prefix_size)];
+		.@name$   = .@prefix$ + .first_names$[rand(.first_size)] + " " + .last_names$[rand(.last_size)];
+		.@cluster = rand(.total_clusters);
+		.@cx      = .cluster_x[.@cluster] + rand(-3, 3);
+		.@cy      = .cluster_y[.@cluster] + rand(-3, 3);
+		.@gid     = monster(.spawn_map$, .@cx, .@cy, .@name$, .@class, 1);
+		if (.@gid > 0) {
+			.afk_gid[.@i] = .@gid;
+			setunitdata(.@gid, UMOB_MODE,    0x80);
+			setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+		}
+	}
+
+	// Kick off the hourly relocation loop
+	donpcevent(strnpcinfo(3) + "::OnHourlyMove");
+	end;
+
+// ============================================================
+OnHourlyMove:
+//  Runs every 1 hour. Warps all monsters to new positions.
+// ============================================================
+
+	sleep(3600000);
+
+	// --- Relocate Moving Monsters ---
+	for (.@i = 0; .@i < .moving_count; .@i++) {
+		if (unitexists(.moving_gid[.@i])) {
+			unitwarp(.moving_gid[.@i], .spawn_map$, rand(120,190), rand(150,240));
+			setunitdata(.moving_gid[.@i], UMOB_LOOKDIR, rand(0,7));
+		}
+	}
+
+	// --- Relocate AFK Monsters (back into clusters) ---
+	for (.@i = 0; .@i < .afk_total; .@i++) {
+		if (unitexists(.afk_gid[.@i])) {
+			.@cluster = rand(.total_clusters);
+			.@cx      = .cluster_x[.@cluster] + rand(-3, 3);
+			.@cy      = .cluster_y[.@cluster] + rand(-3, 3);
+			unitwarp(.afk_gid[.@i], .spawn_map$, .@cx, .@cy);
+			setunitdata(.afk_gid[.@i], UMOB_LOOKDIR, rand(0,7));
+		}
+	}
+
+	donpcevent(strnpcinfo(3) + "::OnHourlyMove");
+	end;
+
+// ============================================================
+OnClear:
+//  Kills all monsters and clears stored GID arrays.
+//  Trigger via:  donpcevent "MonsterSystem::OnClear";
+// ============================================================
+
+	killmonster(.spawn_map$, "All");
+	deletearray(.moving_gid[0], getarraysize(.moving_gid));
+	deletearray(.afk_gid[0],    getarraysize(.afk_gid));
+	.moving_count = 0;
+	end;
+}
+// ============================================================
+//  END OF FILE  |  monster_system.txt  |  Version 2.0
+// ============================================================

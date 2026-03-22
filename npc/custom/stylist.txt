@@ -1,19 +1,31 @@
-//===== rAthena Script =======================================
-//= Stylist
-//===== By: ==================================================
-//= Euphy
-//===== Current Version: =====================================
-//= 1.1
-//===== Compatible With: =====================================
-//= rAthena Project
-//===== Description: =========================================
-//= Changes your hair style, hair color, and cloth color.
-//===== Additional Comments: =================================
-//= 1.0 Initial script.
-//= 1.1 Switched to 'getbattleflag', credits to Saithis. [Euphy]
-//============================================================
+//= 84 Hairstyle of MainTown
+askald,133,70,3	script	Hair Style	878,{
+	cutin "hairstyle_"+Sex, 3;
+	mes "Change Hairstyle?";
+	if(select("Yes.", "No.") == 1) {
+		mes "Please enter a hairstyle number (1-84):";
+		input .@style, 1, 84;
+		
+		if (.@style < 1 || .@style > 84) {
+			mes "Invalid hairstyle number!";
+			mes "Please choose between 1 and 84.";
+		} else {
+			setlook LOOK_HAIR, .@style;
+			mes "Hairstyle changed successfully!";
+		}
+	}
+	close2;
+	cutin "", 255;
+	end;
 
-prontera,170,180,1	script	Stylist#custom_stylist	122,{
+OnInit:
+	setbattleflag("min_hair_style", 1);
+	setbattleflag("max_hair_style", 84);
+	end;
+}
+
+//= Stylist of MainTown
+askald,133,75,3	script	Stylist#custom_stylist	122,{
 	setarray .@Styles[1],
 		getbattleflag("max_cloth_color"),
 		getbattleflag("max_hair_style"),
@@ -48,4 +60,233 @@ prontera,170,180,1	script	Stylist#custom_stylist	122,{
 			break;
 		}
 	}
+}
+
+//= Stylist UI of MainTown
+//===================================================
+askald,133,85,3	script	Stylist UI#MainTown	503,{
+	mes "[Jovovich]";
+	mes "Welcome. I'm Jovovich, a famous stylist from Prontera. How can I help you?";
+	next;
+	switch(select("Change your style:End conversation")) {
+	case 1:
+		close2;
+		openstylist();
+		end;
+	case 2:
+		mes "[Jovovich]";
+		mes "Please visit us again~";
+		close;
+	}
+}
+
+// ============================================================
+// Mount Sprite Changer
+// - Cost: 10 POD (item 7179)
+// - Duration: 48 hours
+// - Sprite + Speed persists after logout/login
+// - Normal   (group 0-4): SC_SPEEDUP0 +25%
+// - VIP/Admin (group 5,99): SC_SPEEDUP1 +50%
+// ============================================================
+
+askald,133,90,3	script	Mount Stylist#mount	691,{
+
+	// ── Speed tier check ─────────────────────────────────────
+	if (getgroupid() == 5 || getgroupid() == 99) {
+		.@is_vip = 1;
+	} else {
+		.@is_vip = 0;
+	}
+
+	mes "[Mount Stylist]";
+	mes "I can transform your appearance into a mounted sprite!";
+	mes "^FF6600Cost: 10 POD^000000 | ^00BFFFDuration: 48 hours^000000";
+	if (.@is_vip) {
+		mes "^FFD700Speed Tier: VIP/Admin — Movement Speed +50%^000000";
+	} else {
+		mes "^00FF00Speed Tier: Normal — Movement Speed +25%^000000";
+	}
+
+	if (MountSpriteExpire > gettimetick(2)) {
+		.@remain = MountSpriteExpire - gettimetick(2);
+		.@h = .@remain / 3600;
+		.@m = (.@remain % 3600) / 60;
+		mes "^00FF00Current sprite active: " + .@h + "h " + .@m + "m remaining^000000";
+	}
+	next;
+
+	switch(select("4th Job Mounts:Special Costumes:Remove Sprite (FREE)")) {
+
+		// ── 4th Job ──────────────────────────────────────────
+		case 1:
+			mes "[Mount Stylist]";
+			mes "Select 4th Job Mount:";
+			next;
+			.@choice = select(
+				"Dragon Knight (Dragon):" +
+				"Meister (Madogear):" +
+				"Shadow Cross:" +
+				"Arch Mage:" +
+				"Cardinal:" +
+				"Windhawk (Wolf):" +
+				"Imperial Guard (Dragon):" +
+				"Biolo:" +
+				"Abyss Chaser:" +
+				"Elemental Master:" +
+				"Inquisitor:" +
+				"Trouvere:" +
+				"Wolf Windhawk:" +
+				"Meister Madogear:" +
+				"Dragon Knight Chicken:" +
+				"Imperial Guard Chicken:" +
+				"Sky Emperor:" +
+				"Soul Ascetic:" +
+				"Shiranui:" +
+				"Night Watch:" +
+				"Hyper Novice:" +
+				"Spirit Handler"
+			);
+			switch(.@choice) {
+				case 1:  .@number = 4265; break;
+				case 2:  .@number = 4266; break;
+				case 3:  .@number = 4267; break;
+				case 4:  .@number = 4268; break;
+				case 5:  .@number = 4269; break;
+				case 6:  .@number = 4270; break;
+				case 7:  .@number = 4271; break;
+				case 8:  .@number = 4272; break;
+				case 9:  .@number = 4273; break;
+				case 10: .@number = 4274; break;
+				case 11: .@number = 4275; break;
+				case 12: .@number = 4277; break;
+				case 13: .@number = 4278; break;
+				case 14: .@number = 4279; break;
+				case 15: .@number = 4280; break;
+				case 16: .@number = 4281; break;
+				case 17: .@number = 4309; break;
+				case 18: .@number = 4310; break;
+				case 19: .@number = 4312; break;
+				case 20: .@number = 4313; break;
+				case 21: .@number = 4314; break;
+				case 22: .@number = 4315; break;
+			}
+			break;
+
+		// ── Special Costumes ─────────────────────────────────
+		case 2:
+			mes "[Mount Stylist]";
+			mes "Select Special Costume:";
+			next;
+			.@choice = select(
+				"Wedding Dress:" +
+				"Christmas:" +
+				"Bikini:" +
+				"Kimono"
+			);
+			switch(.@choice) {
+				case 1: .@number = 22; break;
+				case 2: .@number = 26; break;
+				case 3: .@number = 27; break;
+				case 4: .@number = 28; break;
+			}
+			break;
+
+		// ── Remove ───────────────────────────────────────────
+		case 3:
+			atcommand "@bodystyle 0";
+			sc_end SC_SPEEDUP0;
+			sc_end SC_SPEEDUP1;
+			set MountSpriteStyle, 0;
+			set MountSpriteExpire, 0;
+			mes "[Mount Stylist]";
+			mes "^00FF00Sprite and speed bonus removed!^000000";
+			close;
+	}
+
+	// ── Confirm & Pay ────────────────────────────────────────
+	mes "[Mount Stylist]";
+	mes "Change your sprite now?";
+	mes "^FF6600Cost: 10 POD^000000";
+	mes "^00BFFFDuration: 48 hours^000000";
+	if (.@is_vip) {
+		mes "^FFD700Movement Speed +50% (VIP/Admin)^000000";
+	} else {
+		mes "^00FF00Movement Speed +25% (Normal)^000000";
+	}
+	next;
+
+	if (select("Cancel:Yes, change it!") == 1) {
+		mes "[Mount Stylist]";
+		mes "Come back anytime!";
+		close;
+	}
+
+	if (countitem(7179) < 10) {
+		mes "[Mount Stylist]";
+		mes "^FF0000You need 10 POD! You only have " + countitem(7179) + ".^000000";
+		close;
+	}
+
+	delitem 7179, 10;
+	set MountSpriteStyle, .@number;
+	set MountSpriteExpire, gettimetick(2) + 172800;
+
+	atcommand "@bodystyle " + .@number;
+
+	// Apply speed buff based on group
+	if (.@is_vip) {
+		sc_start SC_SPEEDUP1, 172800000, 50;	// VIP/Admin: +50%
+	} else {
+		sc_start SC_SPEEDUP0, 172800000, 25;	// Normal: +25%
+	}
+
+	mes "[Mount Stylist]";
+	mes "^00FF00Sprite changed! Expires in 48 hours.^000000";
+	if (.@is_vip) {
+		mes "^FFD700Movement Speed +50% applied! (VIP/Admin)^000000";
+	} else {
+		mes "^00FF00Movement Speed +25% applied!^000000";
+	}
+	mes "^777777Your sprite will be restored automatically after logout.^000000";
+	close;
+}
+
+// ============================================================
+// Login Handler - Restore mount sprite & speed after logout
+// ============================================================
+-	script	MountSprite#login	-1,{
+	end;
+
+	OnPCLoginEvent:
+		if (MountSpriteStyle > 0 && MountSpriteExpire > gettimetick(2)) {
+			atcommand "@bodystyle " + MountSpriteStyle;
+
+			.@remain_ms = (MountSpriteExpire - gettimetick(2)) * 1000;
+
+			// Restore speed buff based on group_id
+			if (getgroupid() == 5 || getgroupid() == 99) {
+				sc_start SC_SPEEDUP1, .@remain_ms, 50;	// VIP/Admin: +50%
+			} else {
+				sc_start SC_SPEEDUP0, .@remain_ms, 25;	// Normal: +25%
+			}
+
+			.@remain = MountSpriteExpire - gettimetick(2);
+			.@h = .@remain / 3600;
+			.@m = (.@remain % 3600) / 60;
+
+			if (getgroupid() == 5 || getgroupid() == 99) {
+				dispbottom "^FFD700[Mount Sprite] Active: " + .@h + "h " + .@m + "m remaining. Speed +50% (VIP/Admin)^000000";
+			} else {
+				dispbottom "^00BFFF[Mount Sprite] Active: " + .@h + "h " + .@m + "m remaining. Speed +25%^000000";
+			}
+
+		} else if (MountSpriteStyle > 0 && MountSpriteExpire <= gettimetick(2)) {
+			atcommand "@bodystyle 0";
+			sc_end SC_SPEEDUP0;
+			sc_end SC_SPEEDUP1;
+			set MountSpriteStyle, 0;
+			set MountSpriteExpire, 0;
+			dispbottom "^FF0000[Mount Sprite] Your mount sprite has expired.^000000";
+		}
+		end;
 }

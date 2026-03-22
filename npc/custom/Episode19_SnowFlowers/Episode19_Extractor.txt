@@ -1,0 +1,97 @@
+// ============================================
+// Friederike - Ice Flower Magic Stone Extractor
+// Episode19_Extractor
+// ============================================
+askald,71,101,1	script	Magic Stone Extractor	10458,{
+	
+	// Random PNG (1-5)
+	.@random_png = rand(1,5);
+	.@png_file$ = "ep19_friederike0" + .@random_png + ".png";
+	
+	cutin .@png_file$, 2;
+	mes "[Vellgunde]";
+	mes "Welcome! I can help you extract ^0000FFIce Flower Magic Stones^000000.";
+	mes " ";
+	mes "What would you like to do?";
+	next;
+	
+	cutin "ep19_friederike02.png", 2;
+	switch(select("Extract Ice Fire Manastone:Use Laphine Synthesis:Cancel")) {
+	case 1:
+		// Extract Magic Stone from Flower Petals
+		cutin "ep19_friederike01.png", 2;
+		mes "[Vellgunde]";
+		mes "You need an Ice Fire Manastone?";
+		mes "It can be made from " + getitemname(1000608) + "...";
+		mes "Because this is a bit of luck.";
+		next;
+		mes "[Vellgunde]";
+		mes "If you can afford some bad luck, I can make it for you.";
+		mes "^4d4dff35 " + getitemname(1000608) + "^000000 must be ground and compressed.";
+		
+		while(1) {
+			next;
+			cutin "ep19_friederike02.png", 2;
+			mes "[Vellgunde]";
+			mes "^FF0000Cost:^000000 35x " + getitemname(1000608);
+			mes "^00FF00Reward:^000000 1x Random Ice Fire Manastone";
+			mes " ";
+			mes "^0000FFYou have:^000000 " + countitem(1000608) + " " + getitemname(1000608);
+			next;
+			
+			if (select("Extract the Ice Fire Gem", "Don't do it.") == 2) {
+				cutin "ep19_friederike04.png", 2;
+				mes "[Vellgunde]";
+				mes "I'll come to you later if you need anything.";
+				cutin "ep19_friederike00.png", 2;
+				close;
+			}
+			
+			if (countitem(1000608) < 35) {
+				cutin "ep19_friederike03.png", 2;
+				mes "[Vellgunde]";
+				mes "To make an Ice Flower Manastone, you need ^4d4dff35 " + getitemname(1000608) + "^000000.";
+				mes "Is that a magical crystal?";
+				mes "That's why it's used as fuel here and there.";
+				next;
+				mes "[Vellgunde]";
+				mes "It also acts as a currency among Iwin, so please do the work of the Irwins around you.";
+				mes "Maybe you can get petals.";
+				cutin "ep19_friederike00.png", 2;
+				close;
+			}
+			
+			delitem 1000608, 35;	// Ep19_Snow_Flower
+			getgroupitem(IG_ICE_F_STONE_BOX);
+			
+			cutin "ep19_friederike05.png", 2;
+			mes "[Vellgunde]";
+			mes "Now, here are the results of the Manastone.";
+			mes "Are you as good as you need to be?";
+			specialeffect2 EF_SPHERE;
+			next;
+			mes "[Vellgunde]";
+			mes "Are you going to extract more gemstones?";
+		}
+		end;
+		
+	case 2:
+		// Laphine Synthesis
+		cutin "ep19_friederike01.png", 2;
+		mes "[Vellgunde]";
+		mes "I want to extract the magic of ice...?";
+		mes "Did you bring all the ingredients?";
+		mes "Let's try putting something into the extractor here.";
+		cutin "", 255;
+		close2;
+		laphine_synthesis("Ice_F_Stone_Box2");
+		end;
+		
+	case 3:
+		cutin "ep19_friederike04.png", 2;
+		mes "[Vellgunde]";
+		mes "Come back when you need help!";
+		cutin "ep19_friederike00.png", 2;
+		close;
+	}
+}

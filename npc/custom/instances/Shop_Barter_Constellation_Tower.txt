@@ -1,0 +1,70 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC Olympusro Asia SHOPS
+// ============================================
+askald,67,215,1	script	Constellation Tower	22360,{
+	mes "[Constellation Tower Shop]";
+	mes "Welcome to Constellation Tower Shop!";
+	mes "Please select what you need:";
+	next;
+	
+	switch(select("[1] Basic Shop:[2] Advanced Shop:[3] Nebula Enchant:Exit")) {
+		case 1:
+			mes "[Basic Shop]";
+			mes "Open Basic Shop...";
+			close2;
+			callshop "Constellation_Tower_Basic";
+			end;
+			
+		case 2:
+			mes "[Advanced Shop]";
+			mes "Open Advanced Shop...";
+			close2;
+			callshop "Constellation_Tower_Advanced";
+			end;
+			
+		case 3:
+			mes "[Nebula Enchant]";
+			mes "Select equipment to enchant:";
+			next;
+			switch(select("[1] Nebula Armor of Power:[2] Nebula Armor of Stamina:[3] Nebula Suit of Concentration:[4] Nebula Suit of Creative:[5] Nebula Robe of Spell:[6] Nebula Robe of Wisdom:[7] Signet of Star")) {
+				case 1:
+					close2;
+					item_enchant(7);
+					end;
+				case 2:
+					close2;
+					item_enchant(8);
+					end;
+				case 3:
+					close2;
+					item_enchant(9);
+					end;
+				case 4:
+					close2;
+					item_enchant(10);
+					end;
+				case 5:
+					close2;
+					item_enchant(11);
+					end;
+				case 6:
+					close2;
+					item_enchant(12);
+					end;
+				case 7:
+					close2;
+					item_enchant(169);
+					end;
+			}
+			end;
+			
+		case 4:
+			mes "[Constellation Tower]";
+			mes "Have A Good Day!";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

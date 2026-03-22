@@ -1,0 +1,10 @@
+//==================================================
+// Ancient Temple Akhet
+//==================================================
+mjo_wst01,0,0	monster	Punch Bug	21951,105,5000
+mjo_wst01,0,0	monster	Aferde	21952,105,5000
+mjo_wst01,0,0	monster	Dispol	21953,105,5000
+mjo_wst01,0,0	monster	Timbers	21954,105,5000
+
+
+mjo_wst01,0,0	boss_monster	Renire	21955,1,10800000,600000,0

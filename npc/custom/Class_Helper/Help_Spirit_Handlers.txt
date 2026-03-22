@@ -1,0 +1,61 @@
+//===== rAthena Script =======================================
+//= Spirit Handler Skill Granter
+//===== Description: =========================================
+//= Auto-grants all skills for Spirit Handler class
+//= For testing and fixing skill tree issues
+//============================================================
+askald,104,73,5	script	Spirit Help	911,{
+	
+	mes "^0055FF[ Spirit Guide ]^000000";
+	mes "Hello, " + strcharinfo(0) + "!";
+	mes " ";
+	
+	// Check if player is Spirit Handler
+	if(Class != Job_Spirit_Handler) {
+		mes "I can only help ^FF0000Spirit Handlers^000000.";
+		mes " ";
+		mes "Your current class: ^777777" + jobname(Class) + "^000000";
+		mes " ";
+		mes "Please come back when you become a Spirit Handler!";
+		close;
+	}	
+	mes "I sense the power of spirits with in you!";
+	mes "Would you like me to grant you";
+	mes "^00FF00ALL Spirit Handler Skills^000000?";
+	next;
+	
+	if(select(" - [1] Yes, Grant Me All Skills!: - [2] No thanks.") == 2) {
+		mes "^0055FF[ Spirit Guide ]^000000";
+		mes "Alright, come back if you need help!";
+		close;
+	}
+	
+	mes "^0055FF[ Spirit Guide ]^000000";
+	mes "^00FF00Channeling spiritual energy...^000000";
+	
+	// Use atcommand to grant all skills
+	// This will work if the command exists in your server
+	atcommand "@allskill";
+	
+	// Alternative: @allskill
+	// atcommand "@allskill";
+	
+	// Visual effects
+	specialeffect2 EF_ABSORBSPIRITS;
+	specialeffect2 EF_SUMMONER1;
+	specialeffect2 EF_JOBLVUP;
+	
+	next;
+	mes "^0055FF[ Spirit Guide ]^000000";
+	mes "^00FF00Done!^000000";
+	mes " ";
+	mes "All available skills have been unlocked!";
+	mes " ";
+	mes "Check your skill window (Alt+S)!";
+	close;
+	
+OnInit:
+	.npc_name$ = "[Spirit Guide]";
+	waitingroom "Spirit Handler Help", 0;
+	end;
+}

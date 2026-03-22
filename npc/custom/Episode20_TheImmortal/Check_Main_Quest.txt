@@ -1,0 +1,288 @@
+//============================================================
+// Quest Progress Checker NPC
+// Check your current Episode progress
+// @reloadnpcfile npc/custom/Episode20_TheImmortal/Check_Main_Quest.txt
+//============================================================
+prontera,147,152,5	script	Quest Checker	4_F_KAFRA1,{
+
+	mes "[Quest Checker]";
+	mes "Hello! I can help you check your Episode progress.";
+	mes " ";
+	mes "What would you like to check?";
+	next;
+	
+	switch(select("Check All Episodes:Check Specific Episode:Check Quest Variables:Check Active Quests:Cancel")) {
+		case 1:
+			// Check all episodes
+			mes "[Quest Checker]";
+			mes "^00FF00===== YOUR EPISODE PROGRESS =====^000000";
+			mes " ";
+			mes "^0000FFEpisode 13:^000000 " + ((ep13_1_edq >= 14) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			mes "^0000FFEpisode 14:^000000 " + ((ep14_1_main >= 26) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			mes "^0000FFEpisode 15:^000000 " + ((ep15_1_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			mes "^0000FFEpisode 16:^000000 " + ((ep16_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			mes "^0000FFEpisode 17:^000000 " + ((ep17_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			mes "^0000FFEpisode 18:^000000 " + ((ep18_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			mes "^0000FFEpisode 19:^000000 " + ((ep19_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			mes "^0000FFEpisode 20:^000000 " + ((ep20_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+			next;
+			
+			mes "[Quest Checker]";
+			mes "^00FF00===== DETAILED VALUES =====^000000";
+			mes " ";
+			mes "ep13_1_edq = ^FF6600" + ep13_1_edq + "^000000";
+			mes "ep14_1_main = ^FF6600" + ep14_1_main + "^000000";
+			mes "ep15_1_main = ^FF6600" + ep15_1_main + "^000000";
+			mes "ep16_main = ^FF6600" + ep16_main + "^000000";
+			mes "ep17_main = ^FF6600" + ep17_main + "^000000";
+			mes "ep18_main = ^FF6600" + ep18_main + "^000000";
+			mes "ep19_main = ^FF6600" + ep19_main + "^000000";
+			mes "ep20_main = ^FF6600" + ep20_main + "^000000";
+			break;
+			
+		case 2:
+			// Check specific episode
+			mes "[Quest Checker]";
+			mes "Which episode do you want to check?";
+			next;
+			
+			.@ep = select("Episode 13:Episode 14:Episode 15:Episode 16:Episode 17:Episode 18:Episode 19:Episode 20:Cancel");
+			
+			if (.@ep == 9) {
+				close;
+			}
+			
+			mes "[Quest Checker]";
+			mes "^00FF00===== EPISODE " + (.@ep + 12) + " DETAILS =====^000000";
+			mes " ";
+			
+			switch(.@ep) {
+				case 1: // EP13
+					mes "^0000FFVariable:^000000 ep13_1_edq";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep13_1_edq + "^000000";
+					mes "^0000FFCompletion Value:^000000 14+";
+					mes "^0000FFStatus:^000000 " + ((ep13_1_edq >= 14) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+					
+				case 2: // EP14
+					mes "^0000FFVariable:^000000 ep14_1_main";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep14_1_main + "^000000";
+					mes "^0000FFCompletion Value:^000000 26+";
+					mes "^0000FFStatus:^000000 " + ((ep14_1_main >= 26) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+					
+				case 3: // EP15
+					mes "^0000FFVariable:^000000 ep15_1_main";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep15_1_main + "^000000";
+					mes "^0000FFCompletion Value:^000000 100";
+					mes "^0000FFStatus:^000000 " + ((ep15_1_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+					
+				case 4: // EP16
+					mes "^0000FFVariable:^000000 ep16_main";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep16_main + "^000000";
+					mes "^0000FFCompletion Value:^000000 100";
+					mes "^0000FFStatus:^000000 " + ((ep16_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+					
+				case 5: // EP17
+					mes "^0000FFVariable:^000000 ep17_main";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep17_main + "^000000";
+					mes "^0000FFCompletion Value:^000000 100";
+					mes "^0000FFStatus:^000000 " + ((ep17_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+					
+				case 6: // EP18
+					mes "^0000FFVariable:^000000 ep18_main";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep18_main + "^000000";
+					mes "^0000FFCompletion Value:^000000 100";
+					mes "^0000FFStatus:^000000 " + ((ep18_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+					
+				case 7: // EP19
+					mes "^0000FFVariable:^000000 ep19_main";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep19_main + "^000000";
+					mes "^0000FFCompletion Value:^000000 100";
+					mes "^0000FFStatus:^000000 " + ((ep19_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+					
+				case 8: // EP20
+					mes "^0000FFVariable:^000000 ep20_main";
+					mes "^0000FFCurrent Value:^000000 ^FF6600" + ep20_main + "^000000";
+					mes "^0000FFCompletion Value:^000000 100";
+					mes "^0000FFStatus:^000000 " + ((ep20_main >= 100) ? "^00FF00Complete^000000" : "^FF0000Incomplete^000000");
+					break;
+			}
+			break;
+			
+		case 3:
+			// Check quest variables (custom input)
+			mes "[Quest Checker]";
+			mes "Enter the variable name you want to check:";
+			mes "(Example: ep19_main, ep20_main, etc.)";
+			next;
+			
+			input .@var_name$;
+			
+			mes "[Quest Checker]";
+			mes "Checking variable: ^0000FF" + .@var_name$ + "^000000";
+			mes " ";
+			
+			// Use getd() to dynamically get variable value
+			.@value = getd(.@var_name$);
+			
+			mes "^0000FFVariable Name:^000000 " + .@var_name$;
+			mes "^0000FFCurrent Value:^000000 ^FF6600" + .@value + "^000000";
+			
+			if (.@value == 0) {
+				mes " ";
+				mes "^FF0000Note: Value is 0. This could mean:^000000";
+				mes "- Quest not started yet";
+				mes "- Variable name is incorrect";
+				mes "- Variable doesn't exist";
+			}
+			break;
+			
+		case 4:
+			// Check active quests
+			mes "[Quest Checker]";
+			mes "Enter a Quest ID to check:";
+			mes "(Example: 17600, 17660, etc.)";
+			next;
+			
+			input .@quest_id;
+			
+			.@status = checkquest(.@quest_id);
+			
+			mes "[Quest Checker]";
+			mes "^00FF00===== QUEST STATUS =====^000000";
+			mes " ";
+			mes "^0000FFQuest ID:^000000 " + .@quest_id;
+			mes "^0000FFStatus Code:^000000 ^FF6600" + .@status + "^000000";
+			mes " ";
+			
+			switch(.@status) {
+				case -1:
+					mes "^FF0000Quest not started^000000";
+					break;
+				case 0:
+					mes "^FFAA00Quest active (not completed)^000000";
+					break;
+				case 1:
+					mes "^00FF00Quest completed^000000";
+					break;
+				case 2:
+					mes "^00FF00Quest completed (can claim reward)^000000";
+					break;
+				default:
+					mes "^FF0000Unknown status^000000";
+					break;
+			}
+			
+			next;
+			mes "[Quest Checker]";
+			mes "Would you like to check if it's a hunting quest?";
+			next;
+			
+			if (select("Yes:No") == 1) {
+				.@hunt_status = checkquest(.@quest_id, HUNTING);
+				
+				mes "[Quest Checker]";
+				mes "^00FF00===== HUNTING QUEST STATUS =====^000000";
+				mes " ";
+				mes "^0000FFQuest ID:^000000 " + .@quest_id;
+				mes "^0000FFHunting Status:^000000 ^FF6600" + .@hunt_status + "^000000";
+				mes " ";
+				
+				switch(.@hunt_status) {
+					case -1:
+						mes "^FF0000Not a hunting quest or not started^000000";
+						break;
+					case 0:
+						mes "^FFAA00Hunting in progress^000000";
+						break;
+					case 1:
+						mes "^FFAA00Hunting in progress (incomplete)^000000";
+						break;
+					case 2:
+						mes "^00FF00Hunting completed!^000000";
+						break;
+					default:
+						mes "^FF0000Unknown hunting status^000000";
+						break;
+				}
+			}
+			break;
+			
+		case 5:
+			mes "[Quest Checker]";
+			mes "Come back anytime!";
+			close;
+	}
+	
+	next;
+	mes "[Quest Checker]";
+	mes "Need anything else?";
+	close;
+}
+
+//============================================================
+// GM Command to Set Episode Progress
+//============================================================
+-	script	QuestSetCommand	-1,{
+OnInit:
+	bindatcmd("setep", "QuestSetCommand::OnSetEpisode", 99, 99);
+	end;
+
+OnSetEpisode:
+	// Usage: @setep <episode_number> <value>
+	// Example: @setep 20 100
+	
+	if (.@atcmd_numparameters < 2) {
+		dispbottom "Usage: @setep <episode> <value>";
+		dispbottom "Example: @setep 20 100";
+		end;
+	}
+	
+	.@ep = atoi(.@atcmd_parameters$[0]);
+	.@value = atoi(.@atcmd_parameters$[1]);
+	
+	switch(.@ep) {
+		case 13:
+			ep13_1_edq = .@value;
+			dispbottom "Set ep13_1_edq = " + .@value;
+			break;
+		case 14:
+			ep14_1_main = .@value;
+			dispbottom "Set ep14_1_main = " + .@value;
+			break;
+		case 15:
+			ep15_1_main = .@value;
+			dispbottom "Set ep15_1_main = " + .@value;
+			break;
+		case 16:
+			ep16_main = .@value;
+			dispbottom "Set ep16_main = " + .@value;
+			break;
+		case 17:
+			ep17_main = .@value;
+			dispbottom "Set ep17_main = " + .@value;
+			break;
+		case 18:
+			ep18_main = .@value;
+			dispbottom "Set ep18_main = " + .@value;
+			break;
+		case 19:
+			ep19_main = .@value;
+			dispbottom "Set ep19_main = " + .@value;
+			break;
+		case 20:
+			ep20_main = .@value;
+			dispbottom "Set ep20_main = " + .@value;
+			break;
+		default:
+			dispbottom "Invalid episode number! Use 13-20";
+			break;
+	}
+	end;
+}

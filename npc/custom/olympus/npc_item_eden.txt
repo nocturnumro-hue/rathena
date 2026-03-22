@@ -1,0 +1,175 @@
+//===== rAthena Script =======================================
+//= Adventurer Starter Pack - Multi Set + Custom Price + Buy Full Set
+//============================================================
+prontera,164,169,4	script	Eden Equipment	4_F_KAFRA7,{
+
+	mes "[Eden Equipment Trader]";
+	mes "Choose which equipment set you want to view.";
+	next;
+
+	.@menu = select("LV 45 Weapons(40 Coin)","LV 100 Weapons(80 Coin)","LV 10 ATK Gear (2 Coin)","LV 10 MATK Gear (2 Coin)","Lv100 ATK Gear (50 Coin)","Lv100 MATK Gear (50 Coin)","Paradise Shadow Set (50 Coin)","**Advanced Shadow Set (100 Coin)**","Cancel");	
+	if (.@menu == 9) close; 	
+	callsub S_Shop, .@menu;	
+	end;
+
+//============================================================
+// Sub Shop Function (per item price support + full set option)
+//============================================================
+S_Shop:
+	switch (getarg(0)) {
+		case 1: // Wepon Lv 45 (CHỈ VŨ KHÍ) - Tổng 37 Items
+			setarray .@ItemID[0], 630014, 600020, 500033, 530017, 520011, 620011, 590026, 500034, 610024, 610025, 510036, 700037, 550034, 550035, 540027, 540028, 590027, 550036, 560022, 560023, 700038, 700039, 700040, 570021, 580021, 650011, 650010, 810003, 800005, 540029, 540030, 510037, 550037, 550038, 550039, 500035, 550040;
+			setarray .@ItemName$[0], "Paradise Knight Lance", "Paradise Knight Two-Handed Sword", "Paradise Crusader Sword", "Paradise Crusader Spear", "Paradise Blacksmith Axe", "Paradise Blacksmith Two-Handed Axe", "Paradise Alchemist Mace", "Paradise Alchemist Sword", "Paradise Assassin Chakram", "Paradise Assassin Katar", "Paradise Rogue Dagger", "Paradise Rogue Bow", "Paradise Wizard Staff", "Paradise Wizard Wand", "Paradise Sage Magic Book", "Paradise Sage Spellbook", "Paradise Priest Mace", "Paradise Priest Staff", "Paradise Monk Knuckles", "Paradise Monk Claws", "Paradise Hunter Bow", "Paradise Hunter Crossbow", "Paradise Bard&Dancer Bow", "Paradise Bard Violin", "Paradise Dancer Rope", "Paradise Ninja Cross Petal Shuriken", "Paradise Ninja Punishment Shuriken", "Paradise Gunslinger Rifle", "Paradise Gunslinger Revolver", "Paradise Taekwon Martial Arts Book", "Paradise Taekwon Power Book", "Paradise Soul Linker Dagger", "Paradise Soul Linker Staff", "Paradise Doram Foxtail", "Paradise Doram Foxtail Model", "Paradise Super Novice Sword", "Paradise Super Novice Staff";
+			setarray .@Price[0], 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40;
+			.@setOption = 0; // Không có option mua set cho vũ khí
+			break;
+
+		case 2: // Wepon Lv 100 (CHỈ VŨ KHÍ)
+			setarray .@ItemID[0], 630015, 600021, 500036, 530018, 520012, 620012, 590028, 500037, 610026, 610027, 510038, 700041, 640023, 640024, 540031, 540032, 590029, 550041, 560024, 560025, 700042, 700043, 580023, 580022, 570022, 570023, 650013, 650012, 830004, 800006, 540034, 540033, 640026, 640025, 550042, 550043, 510039, 550044;
+			setarray .@ItemName$[0], "Paradise Rune Knight Lance", "Paradise Rune Knight Two-Handed Sword", "Paradise Royal Guard Sword", "Paradise Royal Guard Spear", "Paradise Mechanic Axe", "Paradise Mechanic Two-Handed Axe", "Paradise Genetic Mace", "Paradise Genetic Sword", "Paradise Guillotine Cross Chakram", "Paradise Guillotine Cross Katar", "Paradise Shadow Chaser Dagger", "Paradise Shadow Chaser Bow", "Paradise Warlock Staff", "Paradise Warlock Wand", "Paradise Sorcerer Magic Book", "Paradise Sorcerer Spellbook", "Paradise Archbishop Mace", "Paradise Arch Bishop Staff", "Paradise Sura Knuckle", "Paradise Sura Claws", "Paradise Ranger Bow", "Paradise Ranger Crossbow", "Paradise Wanderer Rope", "Paradise Wanderer Whip", "Paradise Minstrel Violin", "Paradise Minstrel Harp", "Paradise Kagerou&Oboro Cross Fuuma Shuriken", "Paradise Kagerou&Oboro Fuuma Shuriken", "Paradise Rebellion Gatling Gun", "Paradise Rebellion Revolver", "Paradise Star Emperor Book of the Moon", "Paradise Star Emperor Book of the Sun", "Paradise Soul Reaper Soulstick", "Paradise Soul Reaper Staff", "Paradise Summoner Foxtail", "Paradise Summoner Foxtail Model", "Paradise Super Novice Dagger", "Paradise Super Novice Staff"; 
+			setarray .@Price[0], 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80;
+			.@setOption = 0; // Không có option mua set cho vũ khí
+			break;
+			
+		case 3: // Set ATK Lv 10
+			setarray .@ItemID[0], 400137, 450183, 480103, 470067, 490122, 490123;
+			setarray .@ItemName$[0], "Paradise Advanced Cap", "Paradise Advanced Suit", "Paradise Advanced Cloak", "Paradise Advanced Boots", "Paradise Advanced Ring", "Paradise Advanced Glove";
+			setarray .@Price[0], 2, 2, 2, 2, 2, 2;
+			.@setOption = 1;
+			.@setPrice = 10; // 6 món x 2 coin = 12, nhưng mua set giảm giá còn 10
+			break;
+
+		case 4: // Set MATK Lv 10
+			setarray .@ItemID[0], 400138, 450184, 480104, 470068, 490124, 490125;
+			setarray .@ItemName$[0], "Paradise Hat", "Paradise Robe", "Paradise Muffler", "Paradise Shoes", "Paradise Magic Ring", "Paradise Necklace";
+			setarray .@Price[0], 2, 2, 2, 2, 2, 2;
+			.@setOption = 1;
+			.@setPrice = 10;
+			break;
+
+		case 5: // ATK Set Lv 100
+			setarray .@ItemID[0], 400139, 450185, 480105, 470069, 490126, 490127;
+			setarray .@ItemName$[0], "Paradise Advanced Cap", "Paradise Advanced Suit", "Paradise Advanced Cloak", "Paradise Advanced Boots", "Paradise Advanced Ring", "Paradise Advanced Glove";
+			setarray .@Price[0], 50, 50, 50, 50, 50, 50;
+			.@setOption = 1;
+			.@setPrice = 280; // 6 món x 50 = 300, giảm giá set còn 280
+			break;
+
+		case 6: // MATK Set Lv 100
+			setarray .@ItemID[0], 400140, 450186, 480106, 470093, 490128, 490129;
+			setarray .@ItemName$[0], "Paradise Advanced Hat", "Paradise Advanced Robe", "Paradise Advanced Muffler", "Paradise Advanced Shoes", "Paradise Advanced Magic Ring", "Paradise Advanced Necklace";
+			setarray .@Price[0], 50, 50, 50, 50, 50, 50;
+			.@setOption = 1;
+			.@setPrice = 280;
+			break;
+
+		case 7: // Shadow Set
+			setarray .@ItemID[0], 24689, 24687, 24688, 24690, 24691, 24692;
+			setarray .@ItemName$[0], "Paradise Shadow Armor", "Paradise Shadow Weapon", "Paradise Shadow Shield", "Paradise Shadow Shoes", "Paradise Shadow Earring", "Paradise Shadow Pendant";
+			setarray .@Price[0], 50, 50, 50, 50, 50, 50;
+			.@setOption = 1;
+			.@setPrice = 280; // 6 món x 50 = 300, giảm giá set còn 280
+			break;
+
+		case 8: // Advanced Shadow Gear Required Level : 100
+			setarray .@ItemID[0], 24693, 24694, 24695, 24696, 24697, 24698, 24699, 24700, 24701, 24702, 24703, 24704, 24705, 24706, 24707, 24708, 24709, 24710, 24711, 24712, 24713, 24714, 24715;
+			setarray .@ItemName$[0], "Advanced Paradise Shadow Shield", "Advanced Paradise Shadow Armor", "Advanced Paradise Shadow Shoes", "Advanced Paradise Shadow Earring", "Advanced Paradise Shadow Pendant", "Rune Knight Advanced Paradise Shadow Weapon", "Royal Guard Advanced Paradise Shadow Weapon", "Mechanic Advanced Paradise Shadow Weapon", "Genetic Advanced Paradise Shadow Weapon", "Guillotine Cross Advanced Paradise Shadow Weapon", "Shadow Chaser Advanced Paradise Shadow Weapon", "Warlock Advanced Paradise Shadow Weapon", "Sorcerer Advanced Paradise Shadow Weapon", "Archbishop Advanced Paradise Shadow Weapon", "Sura Advanced Paradise Shadow Weapon", "Ranger Advanced Paradise Shadow Weapon", "Wanderer&Minstrel Advanced Paradise Shadow Weapon", "Kagerou&Oboro Advanced Paradise Shadow Weapon", "Rebellion Advanced Paradise Shadow Weapon", "Star Emperor Advanced Paradise Shadow Weapon", "Soul Reaper Advanced Paradise Shadow Weapon", "Doram Advanced Paradise Shadow Weapon", "Super Novice Advanced Paradise Shadow Weapon";
+			setarray .@Price[0], 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100;
+			.@setOption = 0; // Không có option mua set (vì có nhiều class khác nhau)
+			break;
+	}
+
+	mes "[Eden Equipment Trader]";
+	mes "Select the equipment you wish to buy:";
+	next;
+
+	// Tạo menu
+	.@menu$ = "";
+	
+	// Thêm option "Buy Full Set" nếu có
+	if (.@setOption == 1) {
+		.@menu$ += "^FF0000[BUY FULL SET - " + .@setPrice + " Coins]^000000:";
+	}
+	
+	// Thêm các item riêng lẻ
+	for (.@i = 0; .@i < getarraysize(.@ItemID); .@i++)
+		.@menu$ += .@ItemName$[.@i] + " (" + .@Price[.@i] + " Coins):";
+	.@menu$ += "Cancel";
+
+	.@s = select(.@menu$);
+	
+	// Xử lý Cancel
+	if (.@setOption == 1) {
+		if (.@s == getarraysize(.@ItemID) + 2) close;
+	} else {
+		if (.@s == getarraysize(.@ItemID) + 1) close;
+	}
+
+	// Xử lý mua Full Set
+	if (.@setOption == 1 && .@s == 1) {
+		if (countitem(25223) < .@setPrice) {
+			mes "^FF0000You don't have enough Eden Coins.^000000";
+			mes "You need ^FF0000" + .@setPrice + " Coins^000000 to buy the full set.";
+			close;
+		}
+
+		// Kiểm tra trọng lượng
+		.@totalWeight = 0;
+		for (.@i = 0; .@i < getarraysize(.@ItemID); .@i++) {
+			if (!checkweight(.@ItemID[.@i], 1)) {
+				mes "^FF0000You're carrying too many items.^000000";
+				close;
+			}
+		}
+
+		mes "Buy ^00FF00FULL SET^000000 for ^FF0000" + .@setPrice + " Eden Coins^000000?";
+		mes " ";
+		mes "^0055FFYou will receive:^000000";
+		for (.@i = 0; .@i < getarraysize(.@ItemID); .@i++) {
+			mes "- " + .@ItemName$[.@i];
+		}
+		
+		if (select("Yes:No") == 2) close;
+
+		delitem 25223, .@setPrice;
+		for (.@i = 0; .@i < getarraysize(.@ItemID); .@i++) {
+			getitem .@ItemID[.@i], 1;
+		}
+		
+		mes "^00FF00You purchased the FULL SET successfully!^000000";
+		close2;
+		dispbottom "[Eden Trader] You purchased the Full Set for " + .@setPrice + " Eden Coins!", 0x00FF00;
+		end;
+	}
+
+	// Xử lý mua item riêng lẻ
+	if (.@setOption == 1) {
+		.@s = .@s - 2; // Trừ đi option "Buy Full Set" và "Cancel"
+	} else {
+		.@s = .@s - 1;
+	}
+
+	.@item = .@ItemID[.@s];
+	.@name$ = .@ItemName$[.@s];
+	.@price = .@Price[.@s];
+
+	if (countitem(25223) < .@price) {
+		mes "^FF0000You don't have enough Eden Coins.^000000";
+		close;
+	}
+
+	if (!checkweight(.@item,1)) {
+		mes "^FF0000You're carrying too many items.^000000";
+		close;
+	}
+
+	mes "Buy ^0055FF" + .@name$ + "^000000 for ^FF0000" + .@price + " Eden Coins^000000?";
+	if (select("Yes:No") == 2) close;
+
+	delitem 25223, .@price;
+	getitem .@item, 1;
+	mes "^00FF00You purchased ^FF0000" + .@name$ + "^00FF00 successfully!^000000";
+	close2;
+	dispbottom "[Eden Trader] You purchased " + .@name$ + " for " + .@price + " Eden Coins!", 0x00FF00;
+	end;
+}

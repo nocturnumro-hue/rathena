@@ -1,0 +1,284 @@
+//========== World Boss Event Script ================
+//======= Script Features =================================
+//= World Boss event with escalating rewards
+//= Only accessible by GMs with level 99
+//= Spawns different bosses for each round
+//= Three rounds of escalating difficulty
+//= Rewards increase with each round
+//= Announces event stages and boss spawns server-wide
+//= @worldboss command to teleport to the event location
+//= Interactive NPC dialogue with showscript effects
+//========================================================
+
+askald,134,97,1	script	World Boss Manager	10382,{
+	// ========== 1. DIALOGUE FOR REGULAR PLAYERS ==========
+	if (getgmlevel() < 99) {
+		mes "[World Boss Manager]";
+		mes "Greetings, adventurer!";
+		mes "I'm the World Boss Event Manager.";
+		mes "Only GMs can start this event.";
+		next;
+		mes "[World Boss Manager]";
+		mes "The next scheduled event will begin at ^FF000021:00 VN Time^000000!";
+		mes "Use the command ^00FF00@worldboss^000000 to join when the event starts!";
+		next;
+		mes "[World Boss Manager]";
+		mes "Defeat the boss to claim amazing rewards!";
+		mes "Good luck, and see you at the event!";
+		close;
+	}
+	
+	// ========== 2. GM GREETING DIALOGUE ==========
+	mes "[World Boss Manager]";
+	mes "Greetings, mighty GM!";
+	mes "^FF0000Current Round:^000000 " + (($worldBossEventActive == 1) ? $round : "Event not active");
+	mes "^0000FFEvent Status:^000000 " + (($worldBossEventActive == 1) ? "^00FF00ACTIVE^000000" : "^FF0000INACTIVE^000000");
+	next;
+	
+	// ========== 3. MAIN MENU OPTIONS ==========
+	mes "[World Boss Manager]";
+	mes "What would you like to do?";
+	next;
+	
+	switch(select("~ Start World Boss Event", "~ Stop Current Event", "~ View Event Information", "~ Cancel")) {
+	case 1:
+		// ========== 4. START EVENT DIALOGUE ==========
+		if ($worldBossEventActive == 1) {
+			mes "[World Boss Manager]";
+			mes "An event is already in progress!";
+			mes "You must stop the current event before starting a new one.";
+			close;
+		}
+		mes "[World Boss Manager]";
+		mes "Excellent! The World Boss Event will begin immediately!";
+		mes "^FF0000Starting with Round 1...^000000";
+		mes "Best of luck to all participants!";
+		close2;
+		set $round, 1;
+		callsub StartEvent;
+		end;
+		
+	case 2:
+		// ========== 5. STOP EVENT DIALOGUE ==========
+		if ($worldBossEventActive == 0) {
+			mes "[World Boss Manager]";
+			mes "There is no event currently running.";
+			close;
+		}
+		mes "[World Boss Manager]";
+		mes "Are you sure you want to stop the current event?";
+		mes "This will end the event immediately!";
+		next;
+		if(select("~ Yes, stop it now!", "~ No, let it continue") == 1) {
+			$worldBossEventActive = 0;
+			announce "WORLD BOSS EVENT HAS BEEN STOPPED BY GM", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+			mes "[World Boss Manager]";
+			mes "Event stopped successfully!";
+			mes "Players have been notified.";
+		} else {
+			mes "[World Boss Manager]";
+			mes "Event will continue as scheduled.";
+		}
+		close;
+		
+	case 3:
+		// ========== 6. EVENT INFORMATION DIALOGUE ==========
+		mes "[World Boss Manager]";
+		mes "^0000FF=== World Boss Event Information ===^000000";
+		mes " ";
+		mes "^00FF00Round 1:^000000 Basic rewards";
+		mes "  - Main reward x1";
+		mes "  - Potions and coins";
+		next;
+		mes "[World Boss Manager]";
+		mes "^FFD700Round 2:^000000 Enhanced rewards";
+		mes "  - Main reward x2";
+		mes "  - Better potions";
+		mes "  - Old Violet Box";
+		next;
+		mes "[World Boss Manager]";
+		mes "^FF0000Round 3:^000000 Ultimate rewards";
+		mes "  - Main reward x5";
+		mes "  - Premium items";
+		mes "  - Treasure Box";
+		next;
+		mes "[World Boss Manager]";
+		mes "^0000FF=== Event Schedule ===^000000";
+		mes "Auto-start: ^00FF0021:00 VN Time^000000 daily";
+		mes "Players use ^FF0000@worldboss^000000 to join!";
+		mes " ";
+		mes "The event consists of 3 consecutive rounds.";
+		mes "Each round has stronger bosses and better rewards!";
+		close;
+		
+	case 4:
+		// ========== 7. CANCEL DIALOGUE ==========
+		mes "[World Boss Manager]";
+		mes "Very well. Return anytime you need assistance!";
+		close;
+	}
+	end;
+
+OnMobDead:
+	// Escalating rewards per round
+	if ($round == 1) {
+		// ROUND 1 - Basic rewards
+		getitem 40151, 1;
+		getitem 501, 10;
+		getitem 502, 10;
+		getitem 674, 5;
+		getitem 7227, 3;
+		announce "ROUND 1 REWARD GRANTED", bc_all | bc_blue, 0x00FF00, FW_NORMAL, 16;
+	} else if ($round == 2) {
+		// ROUND 2 - Enhanced rewards
+		getitem 40151, 2;
+		getitem 503, 15;
+		getitem 504, 15;
+		getitem 674, 10;
+		getitem 7227, 5;
+		getitem 617, 1;
+		announce "ROUND 2 REWARD GRANTED", bc_all | bc_blue, 0x00FF00, FW_NORMAL, 16;
+	} else if ($round == 3) {
+		// ROUND 3 - Ultimate rewards
+		getitem 40151, 5;
+		getitem 505, 20;
+		getitem 674, 20;
+		getitem 7227, 10;
+		getitem 617, 3;
+		getitem 616, 1;
+		getitem 7179, 1;
+		announce "FINAL ROUND REWARD GRANTED", bc_all | bc_blue, 0xFFD700, FW_NORMAL, 16;
+	}
+	
+	// Winner announcement
+	announce "CONGRATULATIONS", bc_all | bc_blue, 0xFFD700, FW_NORMAL, 20;
+	announce strcharinfo(0) + " has defeated the World Boss Round " + $round + "!", bc_all | bc_blue, 0x00FF00, FW_NORMAL, 18;
+	
+	if ($round < 3) {
+		set $round, $round + 1;
+		sleep 5000;
+		callsub StartEvent;
+	} else {
+		announce "WORLD BOSS EVENT COMPLETED", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+		announce "Thank you for participating!", bc_all | bc_blue, 0xFFD700, FW_NORMAL, 18;
+		$worldBossEventActive = 0;
+	}
+	end;
+
+// Auto-start every day at 21:00 VN time
+OnClock2100:
+	set $round, 1;
+	announce "AUTO WORLD BOSS EVENT STARTING!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+	announce "Scheduled event at 21:00 VN time!", bc_all | bc_blue, 0xFFD700, FW_NORMAL, 18;
+	sleep 3000;
+	callsub StartEvent;
+	end;
+
+StartEvent:
+	$worldBossEventActive = 1;
+
+	if ($round == 1) {
+		announce "WORLD BOSS EVENT ROUND 1", bc_all | bc_blue, 0xFFD700, FW_NORMAL, 20;
+		announce "Event starts in 3 minutes!", bc_all | bc_blue, 0xFF6B00, FW_NORMAL, 18;
+		announce "Use @worldboss command to join the battle!", bc_all | bc_blue, 0x00FF00, FW_NORMAL, 16;
+		sleep 60000;
+		
+		announce "World Boss spawning in 2 minutes!", bc_all | bc_blue, 0xFFA500, FW_NORMAL, 18;
+		sleep 60000;
+		
+		announce "World Boss spawning in 1 minute!", bc_all | bc_blue, 0xFF4500, FW_NORMAL, 18;
+		sleep 60000;
+		
+		announce "World Boss is spawning NOW!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+
+		for (set .@i, 10; .@i > 0; set .@i, .@i - 1) {
+			announce "" + .@i, bc_all | bc_blue, 0xFFFF00, FW_NORMAL, 22;
+			sleep 1000;
+		}
+	} else if ($round == 2) {
+		announce "WORLD BOSS EVENT ROUND 2", bc_all | bc_blue, 0xFFD700, FW_NORMAL, 20;
+		announce "Stronger boss in 20 seconds!", bc_all | bc_blue, 0xFF6B00, FW_NORMAL, 18;
+		announce "Better rewards await!", bc_all | bc_blue, 0x00FF00, FW_NORMAL, 16;
+		sleep 10000;
+		
+		announce "World Boss spawning in 10 seconds!", bc_all | bc_blue, 0xFF4500, FW_NORMAL, 18;
+
+		for (set .@i, 10; .@i > 0; set .@i, .@i - 1) {
+			announce "" + .@i, bc_all | bc_blue, 0xFFFF00, FW_NORMAL, 22;
+			sleep 1000;
+		}
+	} else if ($round == 3) {
+		announce "WORLD BOSS FINAL ROUND 3", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 22;
+		announce "Ultimate boss in 20 seconds!", bc_all | bc_blue, 0xFFD700, FW_NORMAL, 18;
+		announce "BEST REWARDS - Give it your all!", bc_all | bc_blue, 0x00FF00, FW_NORMAL, 16;
+		sleep 10000;
+		
+		announce "FINAL WORLD BOSS SPAWNING IN 10 SECONDS!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+
+		for (set .@i, 10; .@i > 0; set .@i, .@i - 1) {
+			announce "" + .@i, bc_all | bc_blue, 0xFF0000, FW_NORMAL, 24;
+			sleep 1000;
+		}
+	}
+
+	announce "WORLD BOSS HAS SPAWNED!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+
+	set .day, gettime(4);
+	if ($round == 1) {
+		set .monsterID, (.day % 2 == 0) ? 30023 : 30024;
+		set .monsterName$, "World Boss Lv.1";
+	} else if ($round == 2) {
+		set .monsterID, (.day % 2 == 0) ? 30025 : 30026;
+		set .monsterName$, "World Boss Lv.2";
+	} else if ($round == 3) {
+		set .monsterID, (.day % 2 == 0) ? 30027 : 30028;
+		set .monsterName$, "World Boss Lv.3";
+	}
+
+	monster "1@pop3", 57, 62, .monsterName$, .monsterID, 1, strnpcinfo(3) + "::OnMobDead";
+	end;
+
+// ========== 8. NPC AUTO-DIALOGUE (SHOWSCRIPT EFFECTS) ==========
+// Edit the text that appears above the NPC's head here
+OnInit:
+	while (1) {
+		if ($worldBossEventActive == 1) {
+			showscript "World Boss Event ACTIVE!", getnpcid(0, "World Boss Manager"), AREA;
+			sleep 3000;
+			showscript "Round " + $round + " in progress!", getnpcid(0, "World Boss Manager"), AREA;
+			sleep 3000;
+			showscript "Use @worldboss to join!", getnpcid(0, "World Boss Manager"), AREA;
+			sleep 6000;
+		} else {
+			showscript "World Boss Event Manager", getnpcid(0, "World Boss Manager"), AREA;
+			sleep 3000;
+			showscript "Next event: 21:00 VN Time", getnpcid(0, "World Boss Manager"), AREA;
+			sleep 3000;
+			showscript "GMs can start anytime!", getnpcid(0, "World Boss Manager"), AREA;
+			sleep 6000;
+		}
+	}
+	end;
+}
+
+// ========== 9. @WORLDBOSS COMMAND MESSAGES ==========
+-	script	WorldBossCommand	-1,{
+	OnInit:
+		bindatcmd "worldboss", strnpcinfo(3) + "::OnWorldBossCommand";
+		end;
+
+	OnWorldBossCommand:
+		if ($worldBossEventActive == 1) {
+			warp "1@pop3", 45, 56;
+			dispbottom "You have been warped to the World Boss event!";
+			dispbottom "Current Round: " + $round + " - Good luck, brave warrior!";
+		} else {
+			dispbottom "The World Boss event is not currently active.";
+			dispbottom "Next scheduled event: 21:00 VN Time";
+			dispbottom "Stay tuned for announcements!";
+		}
+		end;
+}
+
+1@pop3	mapflag	nomobloot
+1@pop3	mapflag	noteleport

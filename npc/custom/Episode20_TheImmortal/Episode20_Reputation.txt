@@ -1,0 +1,204 @@
+// ============================================
+// Reputation Sell - Episode 20 Only
+// ============================================
+askald,71,146,1	script	Episode20 Reputation	10585,{
+	.@zeny_cost = 2000000;		// Zeny amount needed to increase rep
+	.@zeny_reputation = 10;		// How much rep player get using Zeny
+	.@item_cost = 5;			// Item amount needed to increase rep
+	.@item_reputation = 100;	// How much rep player get using item
+	.@item_id = 7179;			// Proof of Donation ID
+	
+	.@rep_id = 5;				// Episode 20 Reputation ID
+	.@rep_name$ = "Episode 20";	// Reputation Name
+	.@rep_max = 3000;			// Max Reputation Limit
+
+	// Random PNG chat image (1-4)
+	.@random_png = rand(1,4);
+	.@png_file$ = "ep21_lalaila0" + .@random_png + ".png";
+
+	disable_items;
+	cutin .@png_file$, 2;
+	mes "[Episode 20 Reputation]";
+	mes "Hello, I can ^FF8000increase your reputation^000000 in ^0000FF" + .@rep_name$ + "^000000 if you are willing to invest ^FF8000POD or Zeny^000000.";
+	mes " ";
+	mes "^FF8800Your Current Reputation:^000000";
+	mes "^0000FF" + F_InsertComma(get_reputation_points(.@rep_id)) + "^000000 / ^00FF00" + F_InsertComma(.@rep_max) + "^000000";
+	next;
+	
+	switch(select("How does that work?", (.@zeny_cost?"Invest Zeny":""), (.@item_cost?"Invest POD":""), "Finish conversation")) {
+	case 1:
+		cutin "ep21_lalaila01.png", 2;
+		mes "[Episode 20 Reputation]";
+		mes "I'm here to collect investment from adventurers, therefore increasing their reputation in ^0000FF" + .@rep_name$ + "^000000.";
+		next;
+		cutin "ep21_lalaila02.png", 2;
+		mes "[Episode 20 Reputation]";
+		if (.@zeny_cost)
+			mes "For each ^000088" + F_InsertComma(.@zeny_cost) + "z^000000 you give me, your reputation increases by ^FF0000" + F_InsertComma(.@zeny_reputation) + " points^000000.";
+		if (.@item_cost) {
+			mes "For ^000088" + F_InsertComma(.@item_cost) + "^000000 " + mesitemlink(.@item_id);
+			mes "you give me, your reputation increases by ^FF0000" + F_InsertComma(.@item_reputation) + " points^000000.";
+		}
+		next;
+		cutin "ep21_lalaila03.png", 2;
+		mes "[Episode 20 Reputation]";
+		mes "I can increase reputation up to a max ^0000FF" + F_InsertComma(.@rep_max) + " points^000000. No investments can be made when you reach it.";
+		mes " ";
+		mes "^FF8800Your current reputation:^000000 " + F_InsertComma(get_reputation_points(.@rep_id)) + "/" + F_InsertComma(.@rep_max);
+		cutin "", 255;
+		close;
+		
+	case 2:
+		.@zeny = true;
+		break;
+		
+	case 4:
+		cutin "ep21_lalaila04.png", 2;
+		mes "[Episode 20 Reputation]";
+		mes "Please do come back, Have a nice day!";
+		cutin "", 255;
+		close;
+	}
+	
+	cutin "ep21_lalaila02.png", 2;
+	mes "[Episode 20 Reputation]";
+	
+	// Check if reputation is at max
+	if (get_reputation_points(.@rep_id) >= .@rep_max) {
+		mes "I can only increase your reputation in ^0000FF" + .@rep_name$ + "^000000 up to ^FF0000" + F_InsertComma(.@rep_max) + " points^000000.";
+		mes "No investments can be made anymore.";
+		cutin "", 255;
+		close;
+	}
+	
+	if (.@zeny) {
+		mes "For each ^000088" + F_InsertComma(.@zeny_cost) + "z^000000 you give me, your reputation increases by ^FF0000" + F_InsertComma(.@zeny_reputation) + " points^000000.";
+		if (Zeny < .@zeny_cost) {
+			mes "^FF0000You don't have enough Zeny.^000000";
+			cutin "", 255;
+			close;
+		}
+	}
+	else {
+		mes "For ^000088" + F_InsertComma(.@item_cost) + "^000000 " + mesitemlink(.@item_id);
+		mes "you give me, your reputation increases by ^FF0000" + F_InsertComma(.@item_reputation) + " points^000000.";
+		if (countitem(.@item_id) < .@item_cost) {
+			mes "^FF0000You don't have enough POD.^000000";
+			cutin "", 255;
+			close;
+		}
+	}
+	
+	switch(select("Invest 1 time", "Input how many times", "Cancel")) {
+	case 1:
+		.@t = 1;
+		cutin "ep21_lalaila03.png", 2;
+		mes "[Episode 20 Reputation]";
+		break;
+		
+	case 2:
+		cutin "ep21_lalaila01.png", 2;
+		mes "[EXAMPLES]";
+		for (.@i = 1; .@i < 11; .@i++) {
+			if (.@zeny)
+				mes .@i + ": ^000088" + F_InsertComma(.@zeny_cost * .@i) + "z^000000 > ^FF0000" + F_InsertComma(.@zeny_reputation * .@i) + " reputation";
+			else
+				mes .@i + ": ^000088" + F_InsertComma(.@item_cost * .@i) + " POD^000000 > ^FF0000" + F_InsertComma(.@item_reputation * .@i) + " reputation";
+			if (.@i == 3) .@i = 4;
+			if (.@i == 5) .@i = 9;
+		}
+		mes "^FF0000(Enter '0' to cancel the transaction)^000000";
+		input .@t;
+		if (.@t < 1) {
+			cutin "", 255;
+			close;
+		}
+		clear;
+		cutin "ep21_lalaila02.png", 2;
+		mes "[Episode 20 Reputation]";
+		if (.@zeny) {
+			if (.@t * .@zeny_cost > Zeny) {
+				.@t = Zeny / .@zeny_cost;
+				mes "You don't have enough Zeny for that.";
+				mes "The closest amount you can invest is " + F_InsertComma(.@zeny_cost * .@t) + "z.";
+			}
+		}
+		else if (.@t * .@item_cost > countitem(.@item_id)) {
+			.@t = countitem(.@item_id) / .@item_cost;
+			mes "You don't have enough POD for that.";
+			mes "The closest amount you can invest is " + F_InsertComma(.@item_cost * .@t) + " POD.";
+		}
+		break;
+		
+	case 3:
+		cutin "ep21_lalaila04.png", 2;
+		mes "[Episode 20 Reputation]";
+		mes "Have a nice day!";
+		cutin "", 255;
+		close;
+	}
+	
+	cutin "ep21_lalaila03.png", 2;
+	if (.@zeny)
+		mes "Are you sure you want to invest ^000088" + F_InsertComma(.@zeny_cost * .@t) + "z^000000 to receive ^FF0000" + F_InsertComma(.@zeny_reputation * .@t) + " reputation points^000000 in ^0000FF" + .@rep_name$ + "^000000?";
+	else
+		mes "Are you sure you want to invest ^000088" + F_InsertComma(.@item_cost * .@t) + " POD^000000 to receive ^FF0000" + F_InsertComma(.@item_reputation * .@t) + " reputation points^000000 in ^0000FF" + .@rep_name$ + "^000000?";
+	next;
+	
+	if (select("No, cancel.", "Yes, continue!") == 1) {
+		cutin "", 255;
+		close;
+	}
+	
+	cutin "ep21_lalaila02.png", 2;
+	mes "[Episode 20 Reputation]";
+	
+	// Check if reputation would exceed max
+	if (.@zeny) {
+		if (get_reputation_points(.@rep_id) + (.@t * .@zeny_reputation) > .@rep_max) {
+			emotion ET_OTL;
+			mes "Sorry. That amount of reputation would exceed the maximum ^FF0000" + F_InsertComma(.@rep_max) + "^000000 I can increase.";
+			cutin "", 255;
+			close;
+		}
+	}
+	else {
+		if (get_reputation_points(.@rep_id) + (.@t * .@item_reputation) > .@rep_max) {
+			emotion ET_OTL;
+			mes "Sorry. That amount of reputation would exceed the maximum ^FF0000" + F_InsertComma(.@rep_max) + "^000000 I can increase.";
+			cutin "", 255;
+			close;
+		}
+	}
+	
+	// Process payment
+	if (.@zeny) {
+		if (Zeny < .@zeny_cost * .@t) {
+			mes "^FF0000You don't have enough Zeny...^000000";
+			cutin "", 255;
+			close;
+		}
+		.@getRep = .@zeny_reputation * .@t;
+		Zeny -= .@zeny_cost * .@t;
+	}
+	else {
+		if (countitem(.@item_id) < .@item_cost * .@t) {
+			mes "^FF0000You don't have enough POD...^000000";
+			cutin "", 255;
+			close;
+		}
+		.@getRep = .@item_reputation * .@t;
+		delitem .@item_id, .@item_cost * .@t;
+	}
+	
+	add_reputation_points(.@rep_id, .@getRep);
+	cutin "ep21_lalaila04.png", 2;
+	mes "It is done! Thank you!";
+	mes " ";
+	mes "^0000FFYour reputation in " + .@rep_name$ + " increases by " + F_InsertComma(.@getRep) + " points^000000.";
+	mes "^FF8800Current Reputation:^000000 " + F_InsertComma(get_reputation_points(.@rep_id)) + "/" + F_InsertComma(.@rep_max);
+	specialeffect2 EF_STEALCOIN;
+	emotion ET_DELIGHT;
+	cutin "", 255;
+	close;
+}

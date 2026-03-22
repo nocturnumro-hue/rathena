@@ -1,0 +1,9 @@
+//==================================================
+// Ancient Temple Akhet
+//==================================================
+ra_pol01,0,0	monster	Burning Knight	21946,85,5000
+ra_pol01,0,0	monster	Dedsera	21947,85,5000
+ra_pol01,0,0	monster	Hardrock	21948,95,5000
+ra_pol01,0,0	monster	Deadween	21949,95,5000
+
+ra_pol01,172,274	boss_monster	Gaia Pol	21950,1,10800000,600000,0

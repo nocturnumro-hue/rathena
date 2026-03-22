@@ -1,0 +1,11 @@
+//==================================================
+// ch1_que01 - Encroached Geffenia - East (Extreme Difficulty)
+// Level 200-220 (200+ mobs)
+//==================================================
+
+ch1_que01	monster	Immortal Meat Cleaver Soldier	22460,65
+ch1_que01	monster	Immortal Hatred Scythe Soldier	22461,65
+ch1_que01	monster	Immortal Plow Soldier	22462,70
+
+
+// Total: 200 monsters

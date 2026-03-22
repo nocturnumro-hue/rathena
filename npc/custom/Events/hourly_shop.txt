@@ -1,0 +1,99 @@
+//========================================
+// FILE: npc/custom/events/hourly_shop.txt
+// HOURLY POINT SHOP (MUA BÁN)
+//========================================
+
+//===== HOURLY POINT SHOP DEFINITION =====
+-	shop	hourly_shop	-1,7227:2,1000274:20,7179:30,7000:10,12208:2,14545:10,12210:10,25791:100,7776:200;
+
+//===== HOURLY POINT SHOP NPC =====
+prontera,183,193,1	script	Hourly Point Shop	108,{
+	mes "[Hourly Point Shop]";
+	mes "Hello! How can I help you?";
+	mes " ";
+	mes "You currently have: ^0000FF" + #HOURLYPOINT + " Hourly Points^000000";
+	next;
+	
+	switch(select("Buy Items:Check Points:Guide:Close")) {
+		case 1:
+			callshop "hourly_shop",1;
+			npcshopattach "hourly_shop";
+			end;
+			
+		case 2:
+			mes "[Hourly Point Shop]";
+			mes "Your Hourly Point information:";
+			mes "--------------------------";
+			mes "^0000FFTotal Points: " + #HOURLYPOINT + "^000000";
+			close;
+			
+		case 3:
+			mes "[Hourly Point Shop]";
+			mes "^0000FF--- GUIDE ---^000000";
+			mes " ";
+			mes "- 1 hour online = 2 Hourly Point";
+			mes "- Use ^0000FF@hourly^000000 to check status";
+			mes "- Timer pauses when idle/vending/chatroom";
+			mes "- Points are saved per account";
+			mes "^00FF00- Progress is saved when logout!^000000";
+			close;
+			
+		case 4:
+			close;
+	}
+	
+OnBuyItem:
+	// Kiểm tra từng item được chọn
+	for(.@i = 0; .@i < getarraysize(@bought_nameid); .@i++) {
+		.@item_id = @bought_nameid[.@i];
+		.@quantity = @bought_quantity[.@i];
+		
+		// Lấy giá từ shop
+		.@price = 0;
+		switch(.@item_id) {
+			case 7227: .@price = 2; break;
+			case 1000274: .@price = 20; break;
+			case 7179: .@price = 30; break;
+			case 7000: .@price = 10; break;
+			case 12208: .@price = 2; break;
+			case 14545: .@price = 10; break;
+			case 12210: .@price = 10; break;
+			case 25791: .@price = 100; break;
+			case 7776: .@price = 200; break;
+		}
+		
+		.@totalcost = .@price * .@quantity;
+		
+		// Kiểm tra đủ điểm
+		if(#HOURLYPOINT < .@totalcost) {
+			mes "[Hourly Point Shop]";
+			mes "^FF0000Sorry! You don't have enough Hourly Points.^000000";
+			mes " ";
+			mes "Item: " + getitemname(.@item_id);
+			mes "Quantity: " + .@quantity;
+			mes "Required: ^FF0000" + .@totalcost + " Points^000000";
+			mes "You have: ^0000FF" + #HOURLYPOINT + " Points^000000";
+			close;
+		}
+		
+		// Kiểm tra trọng lượng
+		if(checkweight(.@item_id, .@quantity) == 0) {
+			mes "[Hourly Point Shop]";
+			mes "^FF0000Your inventory is too heavy!^000000";
+			mes "Please free up some space first.";
+			close;
+		}
+		
+		// Trừ điểm và trao item
+		#HOURLYPOINT -= .@totalcost;
+		getitem .@item_id, .@quantity;
+		
+		mes "[Hourly Point Shop]";
+		mes "^00FF00Purchase successful!^000000";
+		mes " ";
+		mes "Bought: ^0000FF" + .@quantity + "x " + getitemname(.@item_id) + "^000000";
+		mes "Cost: ^FF0000" + .@totalcost + " Points^000000";
+		mes "Remaining: ^0000FF" + #HOURLYPOINT + " Points^000000";
+	}
+	close;
+}

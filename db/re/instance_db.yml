@@ -376,7 +376,7 @@ Body:
       X: 100
       Y: 22
   - Id: 49
-    Name: Old Glast Heim (Challenge Mode)
+    Name: Old Glast Heim CM
     Enter:
       Map: 1@gl_he
       X: 150
@@ -451,12 +451,12 @@ Body:
       Map: 1@herbs
       X: 59
       Y: 214
-  - Id: 61
-    Name: Sunken Tower
-    Enter:
-      Map: 1@ch_u
-      X: 13
-      Y: 59
+#  - Id: 61
+#    Name: Sunken Tower
+#    Enter:
+#      Map: 1@ch_u
+#      X: 13
+#      Y: 59
   - Id: 62
     Name: Constellation Tower
     Enter:

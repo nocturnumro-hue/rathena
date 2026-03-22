@@ -1,0 +1,12 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC Christmas Event
+// ============================================
+
+askald,39,53,1	script	Christmas Event	22180,{
+	mes "[Christmas Event]";
+	mes "The Christmas Event will be coming soon to the server!";
+	mes "Please stay tuned and check back later.";
+	close;
+}

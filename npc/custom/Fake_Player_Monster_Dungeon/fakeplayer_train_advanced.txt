@@ -1,0 +1,712 @@
+// npc/custom/Episode25_Olympusro/fake_player_3rd_class_maps.txt
+-	script	FakePlayer3rdClass	-1,{
+OnInit:
+	// Setup View ID arrays - Upper Headgear (View IDs)
+	setarray .headtopViewID[0], 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100;
+	.headtop_size = getarraysize(.headtopViewID);
+	
+	// Setup View ID arrays - Middle Headgear (View IDs)
+	setarray .headmidViewID[0], 0,1,2,3,4,5,15,19,20,30,34,43,44,46,47,49,51,52,68,78,83,86,93,99,100,104,107,109,112,128,134,135,137,140,141,143,145,147,149,150;
+	.headmid_size = getarraysize(.headmidViewID);
+	
+	// Setup View ID arrays - Lower Headgear (View IDs)  
+	setarray .headlowViewID[0], 0,1,2,3,4,5,13,14,16,17,18,19,20,21,26,32,33,41,43,47,49,57,58,59,65,68,69,73,78,79,88,93,97,99,101,103,104,107,109,113;
+	.headlow_size = getarraysize(.headlowViewID);
+	
+	// Setup View ID arrays - Garment/Robe (View IDs)
+	setarray .robeViewID[0], 0,0,0,0,0,0,0,0,0,0,23,25,16,46,64,65,67,68,79,86,87,82,104,52,53,60,62,70,51,80,97,98,103,114,116,117,118,119,120,121,122,123,124,125;
+	.robe_size = getarraysize(.robeViewID);
+	
+	// ============================================
+	// MAP 1: ILLUSION MOONLIGHT - pay_d03_i
+	// Trans 2nd Class (Regular 3rd Class equivalent)
+	// ============================================
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight1";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight2";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight3";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight4";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight5";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight6";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight7";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight8";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight9";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight10";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight11";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight12";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight13";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight14";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight15";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight16";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight17";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight18";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight19";
+	donpcevent strnpcinfo(3)+"::OnSpawnMoonlight20";
+	
+	// ============================================
+	// MAP 2: ILLUSION VAMPIRE - gef_d01_i
+	// 3rd Class Part 1
+	// ============================================
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire1";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire2";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire3";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire4";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire5";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire6";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire7";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire8";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire9";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire10";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire11";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire12";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire13";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire14";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire15";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire16";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire17";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire18";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire19";
+	donpcevent strnpcinfo(3)+"::OnSpawnVampire20";
+	
+	// MAP 3: ILLUSION TEDDY BEAR - ein_d02_i
+	// 3rd Class Part 2 (Trans)
+	// ============================================
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy1";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy2";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy3";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy4";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy5";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy6";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy7";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy8";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy9";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy10";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy11";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy12";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy13";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy14";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy15";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy16";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy17";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy18";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy19";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy20";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy21";
+	donpcevent strnpcinfo(3)+"::OnSpawnTeddy22";
+	end;
+	
+// ============================================
+// MAP 1: ILLUSION MOONLIGHT - pay_d03_i
+// Regular 3rd Class (30275-30287)
+// ============================================
+
+// RUNE KNIGHT - 30275
+OnSpawnMoonlight1:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Siegfried",30275,4054,1,28,5,1408,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,20,strnpcinfo(3)+"::OnKilledMoonlight1");
+	end;
+OnKilledMoonlight1: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight1"; end;
+
+OnSpawnMoonlight2:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Beowulf",30275,4054,1,36,0,1461,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,20,strnpcinfo(3)+"::OnKilledMoonlight2");
+	end;
+OnKilledMoonlight2: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight2"; end;
+
+// WARLOCK - 30276
+OnSpawnMoonlight3:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Morgana",30276,4056,0,35,7,1610,2101,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledMoonlight3");
+	end;
+OnKilledMoonlight3: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight3"; end;
+
+OnSpawnMoonlight4:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Circe",30276,4056,0,21,4,1618,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledMoonlight4");
+	end;
+OnKilledMoonlight4: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight4"; end;
+
+// RANGER - 30277
+OnSpawnMoonlight5:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Legolas",30277,4058,1,22,4,1716,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,20,strnpcinfo(3)+"::OnKilledMoonlight5");
+	end;
+OnKilledMoonlight5: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight5"; end;
+
+OnSpawnMoonlight6:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Katniss",30277,4058,0,40,2,1716,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,20,strnpcinfo(3)+"::OnKilledMoonlight6");
+	end;
+OnKilledMoonlight6: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight6"; end;
+
+// ARCH BISHOP - 30278
+OnSpawnMoonlight7:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Benedict",30278,4057,1,18,1,1551,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledMoonlight7");
+	end;
+OnKilledMoonlight7: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight7"; end;
+
+OnSpawnMoonlight8:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Teresa",30278,4057,0,34,2,1557,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledMoonlight8");
+	end;
+OnKilledMoonlight8: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight8"; end;
+
+// MECHANIC - 30279
+OnSpawnMoonlight9:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Tony",30279,4058,1,25,3,1301,2101,.@ht,.@hm,.@hl,.@rb,0x0008,2,20,strnpcinfo(3)+"::OnKilledMoonlight9");
+	end;
+OnKilledMoonlight9: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight9"; end;
+
+OnSpawnMoonlight10:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Gadget",30279,4058,0,29,6,1367,0,.@ht,.@hm,.@hl,.@rb,0x0008,2,20,strnpcinfo(3)+"::OnKilledMoonlight10");
+	end;
+OnKilledMoonlight10: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight10"; end;
+
+// GUILLOTINE CROSS - 30280
+OnSpawnMoonlight11:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Ezio",30280,4059,1,30,5,1288,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledMoonlight11");
+	end;
+OnKilledMoonlight11: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight11"; end;
+
+OnSpawnMoonlight12:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Altair",30280,4059,1,39,5,1253,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledMoonlight12");
+	end;
+OnKilledMoonlight12: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight12"; end;
+
+// ROYAL GUARD - 30281
+OnSpawnMoonlight13:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Galahad",30281,4066,1,15,6,1402,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,20,strnpcinfo(3)+"::OnKilledMoonlight13");
+	end;
+OnKilledMoonlight13: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight13"; end;
+
+OnSpawnMoonlight14:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Percival",30281,4066,1,17,2,1421,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,20,strnpcinfo(3)+"::OnKilledMoonlight14");
+	end;
+OnKilledMoonlight14: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight14"; end;
+
+// SORCERER - 30282
+OnSpawnMoonlight15:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Aleister",30282,4067,1,20,2,1604,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledMoonlight15");
+	end;
+OnKilledMoonlight15: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight15"; end;
+
+OnSpawnMoonlight16:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Hermione",30282,4067,0,26,7,1617,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledMoonlight16");
+	end;
+OnKilledMoonlight16: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight16"; end;
+
+// MINSTREL - 30283
+OnSpawnMoonlight17:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Apollo",30283,4068,1,27,4,1908,0,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledMoonlight17");
+	end;
+OnKilledMoonlight17: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight17"; end;
+
+// WANDERER - 30284
+OnSpawnMoonlight18:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Calypso",30284,4069,0,38,6,1953,0,.@ht,.@hm,.@hl,.@rb,0,1,20,strnpcinfo(3)+"::OnKilledMoonlight18");
+	end;
+OnKilledMoonlight18: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight18"; end;
+
+// SURA - 30285
+OnSpawnMoonlight19:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Ryu",30285,4070,1,12,0,1806,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledMoonlight19");
+	end;
+OnKilledMoonlight19: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight19"; end;
+
+// GENETIC - 30286
+OnSpawnMoonlight20:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("pay_d03_i",0,0,"Darwin",30286,4071,1,24,5,1522,2101,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledMoonlight20");
+	end;
+OnKilledMoonlight20: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMoonlight20"; end;
+
+// ============================================
+// MAP 2: ILLUSION VAMPIRE - gef_d01_i
+// 3rd Class Part 1 - Mix of Regular (30275-30287)
+// ============================================
+
+// SHADOW CHASER - 30287
+OnSpawnVampire1:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Lupin",30287,4072,1,32,1,1220,0,.@ht,.@hm,.@hl,.@rb,0,1,20,strnpcinfo(3)+"::OnKilledVampire1");
+	end;
+OnKilledVampire1: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire1"; end;
+
+OnSpawnVampire2:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Phantom",30287,4072,1,47,1,1246,0,.@ht,.@hm,.@hl,.@rb,0,1,20,strnpcinfo(3)+"::OnKilledVampire2");
+	end;
+OnKilledVampire2: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire2"; end;
+
+// RUNE KNIGHT - 30275
+OnSpawnVampire3:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Lancelot",30275,4054,1,32,3,1163,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,20,strnpcinfo(3)+"::OnKilledVampire3");
+	end;
+OnKilledVampire3: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire3"; end;
+
+OnSpawnVampire4:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Brunhilde",30275,4054,0,38,1,1408,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,20,strnpcinfo(3)+"::OnKilledVampire4");
+	end;
+OnKilledVampire4: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire4"; end;
+
+// WARLOCK - 30276
+OnSpawnVampire5:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Prospero",30276,4056,1,19,3,1615,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledVampire5");
+	end;
+OnKilledVampire5: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire5"; end;
+
+OnSpawnVampire6:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Medea",30276,4056,0,23,5,1610,2101,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledVampire6");
+	end;
+OnKilledVampire6: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire6"; end;
+
+// RANGER - 30277
+OnSpawnVampire7:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Aragorn",30277,4058,1,48,3,1701,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,20,strnpcinfo(3)+"::OnKilledVampire7");
+	end;
+OnKilledVampire7: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire7"; end;
+
+OnSpawnVampire8:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Robin",30277,4058,1,52,5,1716,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,20,strnpcinfo(3)+"::OnKilledVampire8");
+	end;
+OnKilledVampire8: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire8"; end;
+
+// MECHANIC - 30279
+OnSpawnVampire9:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Pepper",30279,4058,0,31,7,1361,0,.@ht,.@hm,.@hl,.@rb,0x0008,2,20,strnpcinfo(3)+"::OnKilledVampire9");
+	end;
+OnKilledVampire9: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire9"; end;
+
+OnSpawnVampire10:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Jarvis",30279,4058,1,27,4,1301,2101,.@ht,.@hm,.@hl,.@rb,0x0008,2,20,strnpcinfo(3)+"::OnKilledVampire10");
+	end;
+OnKilledVampire10: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire10"; end;
+
+// GUILLOTINE CROSS - 30280
+OnSpawnVampire11:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Evie",30280,4059,0,43,7,1264,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledVampire11");
+	end;
+OnKilledVampire11: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire11"; end;
+
+OnSpawnVampire12:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Shay",30280,4059,1,35,2,1288,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledVampire12");
+	end;
+OnKilledVampire12: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire12"; end;
+
+// ROYAL GUARD - 30281
+OnSpawnVampire13:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Guinevere",30281,4066,0,19,3,1402,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,20,strnpcinfo(3)+"::OnKilledVampire13");
+	end;
+OnKilledVampire13: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire13"; end;
+
+OnSpawnVampire14:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Tristan",30281,4066,1,21,4,1421,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,20,strnpcinfo(3)+"::OnKilledVampire14");
+	end;
+OnKilledVampire14: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire14"; end;
+
+// ARCH BISHOP - 30278
+OnSpawnVampire15:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Francis",30278,4057,1,36,3,1560,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledVampire15");
+	end;
+OnKilledVampire15: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire15"; end;
+
+OnSpawnVampire16:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Joan",30278,4057,0,32,5,1551,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledVampire16");
+	end;
+OnKilledVampire16: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire16"; end;
+
+// SORCERER - 30282
+OnSpawnVampire17:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Yennefer",30282,4067,0,28,0,1619,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledVampire17");
+	end;
+OnKilledVampire17: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire17"; end;
+
+// SURA - 30285
+OnSpawnVampire18:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Akuma",30285,4070,1,54,5,1806,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledVampire18");
+	end;
+OnKilledVampire18: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire18"; end;
+
+// GENETIC - 30286
+OnSpawnVampire19:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Mendel",30286,4071,1,22,4,1530,2101,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledVampire19");
+	end;
+OnKilledVampire19: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire19"; end;
+
+// MINSTREL/WANDERER Mix
+OnSpawnVampire20:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("gef_d01_i",0,0,"Orpheus",30283,4068,1,29,2,1924,0,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledVampire20");
+	end;
+OnKilledVampire20: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnVampire20"; end;
+
+// ============================================
+// MAP 3: ILLUSION TEDDY BEAR - ein_d02_i
+// 3rd Class Trans (30288-30300)
+// ============================================
+
+// RUNE KNIGHT TRANS - 30288
+OnSpawnTeddy1:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Arthur (Vnno1)",30288,4060,1,36,7,1163,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,20,strnpcinfo(3)+"::OnKilledTeddy1");
+	end;
+OnKilledTeddy1: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy1"; end;
+
+OnSpawnTeddy2:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Ragnar (Vnno1)",30288,4060,1,40,2,1158,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,20,strnpcinfo(3)+"::OnKilledTeddy2");
+	end;
+OnKilledTeddy2: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy2"; end;
+
+// WARLOCK TRANS - 30289
+OnSpawnTeddy3:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Merlin (Vnno1)",30289,4061,1,19,3,1610,2101,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledTeddy3");
+	end;
+OnKilledTeddy3: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy3"; end;
+
+OnSpawnTeddy4:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Gandalf",30289,4061,1,25,6,1618,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledTeddy4");
+	end;
+OnKilledTeddy4: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy4"; end;
+
+// RANGER TRANS - 30290
+OnSpawnTeddy5:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Artemis (Vnno1)",30290,4062,0,40,4,1701,0,.@ht,.@hm,.@hl,.@rb,0x0010,2,20,strnpcinfo(3)+"::OnKilledTeddy5");
+	end;
+OnKilledTeddy5: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy5"; end;
+
+OnSpawnTeddy6:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Diana",30290,4062,0,50,4,1723,0,.@ht,.@hm,.@hl,.@rb,0x0010,2,20,strnpcinfo(3)+"::OnKilledTeddy6");
+	end;
+OnKilledTeddy6: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy6"; end;
+
+// ARCH BISHOP TRANS - 30291
+OnSpawnTeddy7:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Teresa (Heal)",30291,4063,0,42,6,1557,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledTeddy7");
+	end;
+OnKilledTeddy7: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy7"; end;
+
+OnSpawnTeddy8:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Augustine (Heal)",30291,4063,1,38,4,1560,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledTeddy8");
+	end;
+OnKilledTeddy8: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy8"; end;
+
+// MECHANIC TRANS - 30292
+OnSpawnTeddy9:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Stark (Tanker)",30292,4064,1,33,4,1301,2101,.@ht,.@hm,.@hl,.@rb,0x0008,2,20,strnpcinfo(3)+"::OnKilledTeddy9");
+	end;
+OnKilledTeddy9: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy9"; end;
+
+OnSpawnTeddy10:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Banner",30292,4064,1,29,6,1367,0,.@ht,.@hm,.@hl,.@rb,0x0008,2,20,strnpcinfo(3)+"::OnKilledTeddy10");
+	end;
+OnKilledTeddy10: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy10"; end;
+
+// GUILLOTINE CROSS TRANS - 30293
+OnSpawnTeddy11:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Altair (Tanker)",30293,4065,1,26,0,1253,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledTeddy11");
+	end;
+OnKilledTeddy11: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy11"; end;
+
+OnSpawnTeddy12:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Corvus",30293,4065,1,41,6,1288,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledTeddy12");
+	end;
+OnKilledTeddy12: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy12"; end;
+
+// ROYAL GUARD TRANS - 30294
+OnSpawnTeddy13:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Lancelot (Tanker)",30294,4073,1,17,5,1402,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,20,strnpcinfo(3)+"::OnKilledTeddy13");
+	end;
+OnKilledTeddy13: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy13"; end;
+
+OnSpawnTeddy14:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Bedivere",30294,4073,1,21,4,1421,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,20,strnpcinfo(3)+"::OnKilledTeddy14");
+	end;
+OnKilledTeddy14: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy14"; end;
+
+// SORCERER TRANS - 30295
+OnSpawnTeddy15:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Yennefer (OnePice)",30295,4074,0,39,7,1619,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledTeddy15");
+	end;
+OnKilledTeddy15: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy15"; end;
+
+OnSpawnTeddy16:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Triss (OnePice)",30295,4074,0,30,1,1617,2101,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledTeddy16");
+	end;
+OnKilledTeddy16: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy16"; end;
+
+// MINSTREL TRANS - 30296
+OnSpawnTeddy17:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Orpheus (TeamA)",30296,4075,1,29,2,1924,0,.@ht,.@hm,.@hl,.@rb,0,2,20,strnpcinfo(3)+"::OnKilledTeddy17");
+	end;
+OnKilledTeddy17: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy17"; end;
+
+// WANDERER TRANS - 30297
+OnSpawnTeddy18:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Gypsy (TeamA)",30297,4076,0,41,8,1953,0,.@ht,.@hm,.@hl,.@rb,0,1,20,strnpcinfo(3)+"::OnKilledTeddy18");
+	end;
+OnKilledTeddy18: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy18"; end;
+
+// SURA TRANS - 30298
+OnSpawnTeddy19:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Akuma (Newbie)",30298,4077,1,14,0,1806,0,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledTeddy19");
+	end;
+OnKilledTeddy19: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy19"; end;
+
+// GENETIC TRANS & Rebellion (3 Rebellions)
+OnSpawnTeddy20:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	.@choice = rand(2);
+	if (.@choice == 0)
+		player_mbase("ein_d02_i",0,0,"Mendel (Paladin)",30299,4078,1,37,3,1522,2101,.@ht,.@hm,.@hl,.@rb,0,0,20,strnpcinfo(3)+"::OnKilledTeddy20");
+	else
+		player_mbase("ein_d02_i",0,0,"Phantom (Paladin)",30300,4215,1,31,1,13158,0,.@ht,.@hm,.@hl,.@rb,0,1,20,strnpcinfo(3)+"::OnKilledTeddy20");
+	end;
+OnKilledTeddy20: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy20"; end;
+
+// REBELLION - 30300 (Female 1)
+OnSpawnTeddy21:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Valerie (SSR)",30300,4215,0,28,5,13158,0,.@ht,.@hm,.@hl,.@rb,0,1,20,strnpcinfo(3)+"::OnKilledTeddy21");
+	end;
+OnKilledTeddy21: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy21"; end;
+
+// REBELLION - 30300 (Female 2)
+OnSpawnTeddy22:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("ein_d02_i",0,0,"Cassidy (SSR)",30300,4215,0,35,3,13159,0,.@ht,.@hm,.@hl,.@rb,0,1,20,strnpcinfo(3)+"::OnKilledTeddy22");
+	end;
+OnKilledTeddy22: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnTeddy22"; end;
+
+}

@@ -1,0 +1,174 @@
+//============================================================
+// Weapon/Armor Refiners & Reform NPC
+//============================================================
+prontera,153,198,6	script	Refiners & Reform	611,{
+	// Display cutin
+	cutin "ch1_yvain01.png",2;
+	
+	mes "[Refiners & Reform]";
+	mes "Welcome!";
+	mes "I can help you ^0000FFRefine^000000 your equipment";
+	mes "or ^FF0000Reform^000000 special items.";
+	next;
+	
+	// Main Menu
+	switch(select("Refine Equipment:Reform Items:Cancel")) {
+		case 1: // Refine
+			if( getbattleflag( "feature.refineui" ) ){
+				close2;
+				cutin "",255;
+				refineui();
+				end;
+			} else {
+				cutin "",255;
+				callfunc "refinemain","Refiners & Reform",0;
+				end;
+			}
+			break;
+			
+		case 2: // Reform
+			mes "[Refiners & Reform]";
+			mes "Which item would you like to Reform?";
+			mes "Please select the item type below:";
+			next;
+			
+			// Reform Menu - Select item type
+			switch(select("Mad Bunny:Thanatos:Golden Apple:Back")) {
+				case 1: // Mad Bunny Reform
+					mes "[Refiners & Reform]";
+					mes "You've selected ^FF0000Mad Bunny Reform^000000!";
+					next;
+					mes "[Refiners & Reform]";
+					mes "^FF0000Refine level is reduced by 5^000000, but consumes less material.";
+					mes "And for modification, the equipment must have a refine level of +9 or higher.";
+					close2;
+					cutin "",255;
+					item_reform("C_Armor_Reform_1");
+					end;
+					
+				case 2: // Thanatos Reform
+					mes "[Refiners & Reform]";
+					mes "You've selected ^FF0000Thanatos Reform^000000!";
+					mes "This feature is under development...";
+					next;
+					
+					// TODO: Call Thanatos reform function
+					// callfunc "reform_thanatos";
+					
+					mes "[Refiners & Reform]";
+					mes "Thanatos Reform coming soon!";
+					break;
+					
+				case 3: // Golden Apple Reform
+					mes "[Refiners & Reform]";
+					mes "You've selected ^FF0000Golden Apple Reform^000000!";
+					mes "This feature is under development...";
+					next;
+					
+					// TODO: Call Golden Apple reform function
+					// callfunc "reform_goldenapple";
+					
+					mes "[Refiners & Reform]";
+					mes "Golden Apple Reform coming soon!";
+					break;
+					
+				case 4: // Back
+					mes "[Refiners & Reform]";
+					mes "Alright, what would you like to do?";
+					next;
+					cutin "",255;
+					goto L_MainMenu;
+					break;
+			}
+			break;
+			
+		case 3: // Cancel
+			mes "[Refiners & Reform]";
+			mes "Alright, see you again!";
+			close2;
+			cutin "",255;
+			end;
+	}
+	
+	close2;
+	cutin "",255;
+	end;
+
+L_MainMenu:
+	// Label to return to main menu
+	mes "[Refiners & Reform]";
+	mes "Welcome!";
+	mes "I can help you ^0000FFRefine^000000 your equipment";
+	mes "or ^FF0000Reform^000000 special items.";
+	next;
+	
+	switch(select("Refine Equipment:Reform Items:Cancel")) {
+		case 1:
+			if( getbattleflag( "feature.refineui" ) ){
+				close2;
+				cutin "",255;
+				refineui();
+				end;
+			} else {
+				cutin "",255;
+				callfunc "refinemain","Refiners & Reform",0;
+				end;
+			}
+			break;
+			
+		case 2:
+			goto L_ReformMenu;
+			break;
+			
+		case 3:
+			mes "[Refiners & Reform]";
+			mes "Alright, see you again!";
+			close2;
+			cutin "",255;
+			end;
+	}
+	end;
+
+L_ReformMenu:
+	mes "[Refiners & Reform]";
+	mes "Which item would you like to Reform?";
+	mes "Please select the item type below:";
+	next;
+	
+	switch(select("Mad Bunny:Thanatos:Golden Apple:Back")) {
+		case 1:
+			mes "[Refiners & Reform]";
+			mes "You've selected ^FF0000Mad Bunny Reform^000000!";
+			next;
+			// TODO: callfunc "reform_madbunny";
+			mes "[Refiners & Reform]";
+			mes "Mad Bunny Reform coming soon!";
+			break;
+			
+		case 2:
+			mes "[Refiners & Reform]";
+			mes "You've selected ^FF0000Thanatos Reform^000000!";
+			next;
+			// TODO: callfunc "reform_thanatos";
+			mes "[Refiners & Reform]";
+			mes "Thanatos Reform coming soon!";
+			break;
+			
+		case 3:
+			mes "[Refiners & Reform]";
+			mes "You've selected ^FF0000Golden Apple Reform^000000!";
+			next;
+			// TODO: callfunc "reform_goldenapple";
+			mes "[Refiners & Reform]";
+			mes "Golden Apple Reform coming soon!";
+			break;
+			
+		case 4:
+			goto L_MainMenu;
+			break;
+	}
+	
+	close2;
+	cutin "",255;
+	end;
+}

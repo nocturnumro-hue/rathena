@@ -1,0 +1,13 @@
+-	script	atcommand	-1,{
+
+OnMaintown:
+	warp "askald",128,118;
+	end;
+	
+
+// ===========================================================
+OnInit:
+	bindatcmd("maintown","atcommand::OnMaintown",0,99);
+	end;
+
+}

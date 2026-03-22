@@ -435,7 +435,7 @@ static int32 clif_send_sub(block_list *bl, va_list ap)
 			return 0;
 		}
 		else if(src_bl->type == BL_NPC) {
-			npc_data *nd = (npc_data *)src_bl;
+			struct npc_data *nd = (struct npc_data *)src_bl;
 			if (nd && sd->chatID && (sd->chatID == nd->chat_id))
 			return 0;
 		}
@@ -443,7 +443,7 @@ static int32 clif_send_sub(block_list *bl, va_list ap)
 	break;
 	}
 
-	if( src_bl->type == BL_NPC && npc_is_hidden_dynamicnpc( *( (npc_data*)src_bl ), *sd ) ){
+	if( src_bl->type == BL_NPC && npc_is_hidden_dynamicnpc( *( (struct npc_data*)src_bl ), *sd ) ){
 		// Do not send anything
 		return 0;
 	}
@@ -532,11 +532,11 @@ int32 clif_send(const void* buf, int32 len, const block_list* bl, enum send_targ
 	case CHAT:
 	case CHAT_WOS:
 		{
-			chat_data *cd;
+			struct chat_data *cd;
 			if (sd) {
-				cd = (chat_data*)map_id2bl(sd->chatID);
+				cd = (struct chat_data*)map_id2bl(sd->chatID);
 			} else if (bl->type == BL_CHAT) {
-				cd = (chat_data*)bl;
+				cd = (struct chat_data*)bl;
 			} else break;
 			if (cd == nullptr)
 				break;
@@ -862,7 +862,15 @@ void clif_charselectok(int32 id, uint8 ok)
 /// 009E <id>.L <name id>.W <identified>.B <x>.W <y>.W <subX>.B <subY>.B <amount>.W (ZC_ITEM_FALL_ENTRY)
 /// 084B <id>.L <name id>.W <type>.W <identified>.B <x>.W <y>.W <subX>.B <subY>.B <amount>.W (ZC_ITEM_FALL_ENTRY4)
 /// 0ADD <id>.L <name id>.W <type>.W <identified>.B <x>.W <y>.W <subX>.B <subY>.B <amount>.W <show drop effect>.B <drop effect mode>.W (ZC_ITEM_FALL_ENTRY5)
+<<<<<<< Updated upstream
 void clif_dropflooritem( const flooritem_data* fitem, bool canShowEffect ){
+=======
+<<<<<<< Updated upstream
+void clif_dropflooritem( const flooritem_data* fitem, bool canShowEffect ){
+=======
+void clif_dropflooritem( struct flooritem_data* fitem, bool canShowEffect ){
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 	nullpo_retv(fitem);
 
 	if( fitem->item.nameid == 0 ){
@@ -885,7 +893,13 @@ void clif_dropflooritem( const flooritem_data* fitem, bool canShowEffect ){
 	p.count = fitem->item.amount;
 #if defined(PACKETVER_ZERO) || PACKETVER >= 20180418
 	if( canShowEffect ){
-		uint8 dropEffect = itemdb_dropeffect( fitem->item.nameid );
+		uint8 dropEffect;
+		if( fitem->dropeffect >= 0 ) {
+			dropEffect = static_cast<uint8>(fitem->dropeffect);
+		}
+		else {
+			dropEffect = itemdb_dropeffect( fitem->item.nameid );
+		}
 
 		if( dropEffect > 0 ){
 			p.showdropeffect = 1;
@@ -1114,7 +1128,7 @@ static void clif_set_unit_idle( const block_list* bl, bool walking, send_target 
 	// npc option changed?
 	if( tbl && tbl->type == BL_PC && bl->type == BL_NPC ){
 		map_session_data* sd = (map_session_data*)tbl;
-		npc_data* nd = (npc_data*)bl;
+		struct npc_data* nd = (struct npc_data*)bl;
 		int32 option = (sc) ? sc->option : 0;
 
 		if( !nd->vd.dead_sit ){
@@ -1726,7 +1740,7 @@ int32 clif_spawn( const block_list* bl, bool walking ){
 			clif_efst_status_change_sub(bl, bl, AREA);
 		}
 		break;
-	case BL_MOB:
+    case BL_MOB:
 		{
 			TBL_MOB *md = ((TBL_MOB*)bl);
 			if(md->special_state.size==SZ_BIG) // tiny/big mobs [Valaris]
@@ -1736,6 +1750,13 @@ int32 clif_spawn( const block_list* bl, bool walking ){
 			if ( md->special_state.ai == AI_ABR || md->special_state.ai == AI_BIONIC )
 				clif_summon_init(*md);
 			clif_name_area(md);
+			// ===== MOB LEVEL UP: Restore aura on spawn =====
+			if (md->mob_level_data.level >= MOB_AURA_LEVEL2) {
+				clif_hat_effect_single(*md, HAT_EF_LEVEL160_RED, true);
+			} else if (md->mob_level_data.level >= MOB_AURA_LEVEL1) {
+				clif_hat_effect_single(*md, HAT_EF_LEVEL99_RED, true);
+			}
+			// ===== END MOB LEVEL UP =====
 		}
 		break;
 	case BL_NPC:
@@ -1823,7 +1844,15 @@ void clif_homunculus_updatestatus( const map_session_data& sd, _sp type ) {
 /// Sends information about owned homunculus to the client . [orn]
 /// 022e <name>.24B <modified>.B <level>.W <hunger>.W <intimacy>.W <equip id>.W <atk>.W <matk>.W <hit>.W <crit>.W <def>.W <mdef>.W <flee>.W <aspd>.W <hp>.W <max hp>.W <sp>.W <max sp>.W <exp>.L <max exp>.L <skill points>.W <atk range>.W	(ZC_PROPERTY_HOMUN)
 /// 09f7 <name>.24B <modified>.B <level>.W <hunger>.W <intimacy>.W <equip id>.W <atk>.W <matk>.W <hit>.W <crit>.W <def>.W <mdef>.W <flee>.W <aspd>.W <hp>.L <max hp>.L <sp>.W <max sp>.W <exp>.L <max exp>.L <skill points>.W <atk range>.W (ZC_PROPERTY_HOMUN_2)
+<<<<<<< Updated upstream
 void clif_hominfo( const map_session_data* sd, const homun_data *hd, int32 flag ){
+=======
+<<<<<<< Updated upstream
+void clif_hominfo( const map_session_data* sd, const homun_data *hd, int32 flag ){
+=======
+void clif_hominfo( map_session_data *sd, struct homun_data *hd, int32 flag ){
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 #if PACKETVER_MAIN_NUM >= 20101005 || PACKETVER_RE_NUM >= 20080827 || defined(PACKETVER_ZERO)
 	nullpo_retv( sd );
 	nullpo_retv( hd );
@@ -2383,7 +2412,7 @@ void clif_parse_NPCMarketClosed(int32 fd, map_session_data *sd) {
 /// 0x9d7 <packet len>.W <count>.B { <name id>.W <qty>.W <price>.L }* (ZC_NPC_MARKET_PURCHASE_RESULT)
 void clif_npc_market_purchase_ack( map_session_data& sd, e_purchase_result res, std::vector<s_npc_buy_list>& list ){
 #if PACKETVER >= 20131223
-	npc_data *nd = map_id2nd( sd.npc_shopid );
+	struct npc_data *nd = map_id2nd( sd.npc_shopid );
 
 	if( nd == nullptr ){
 		return;
@@ -4071,10 +4100,23 @@ void clif_changelook(block_list *bl,int32 type,int32 val) {
 #if PACKETVER < 20150513
 				return;
 #else
+<<<<<<< Updated upstream
 				if( sc != nullptr && sc->option&OPTION_COSTUME ){
  					val = sd->status.class_;
 				}
 
+=======
+<<<<<<< Updated upstream
+				if( sc != nullptr && sc->option&OPTION_COSTUME ){
+ 					val = sd->status.class_;
+=======
+#if PACKETVER < 20231220
+				if( val != 0 && sc != nullptr && sc->option&OPTION_COSTUME ){
+ 					val = 0;
+>>>>>>> Stashed changes
+				}
+#endif
+>>>>>>> Stashed changes
  				vd->look[LOOK_BODY2] = val;
 				break;
 #endif
@@ -5043,7 +5085,7 @@ void clif_getareachar_unit( map_session_data* sd,block_list *bl ){
 		return;
 	}
 
-	if( bl->type == BL_NPC && npc_is_hidden_dynamicnpc( *( (npc_data*)bl ), *sd ) ){
+	if( bl->type == BL_NPC && npc_is_hidden_dynamicnpc( *( (struct npc_data*)bl ), *sd ) ){
 		// Do not send anything
 		return;
 	}
@@ -5616,8 +5658,8 @@ int32 clif_outsight(block_list *bl,va_list ap)
 			if(sd->vd.look[LOOK_BASE] != JT_INVISIBLE)
 				clif_clearunit_single( bl->id, CLR_OUTSIGHT, *tsd );
 			if(sd->chatID){
-				chat_data *cd;
-				cd=(chat_data*)map_id2bl(sd->chatID);
+				struct chat_data *cd;
+				cd=(struct chat_data*)map_id2bl(sd->chatID);
 				if(cd->usersd[0]==sd)
 					clif_dispchat(*cd);
 			}
@@ -6003,7 +6045,18 @@ void clif_skillcastcancel( const block_list& bl ){
 /// if(result!=0) doesn't display any of the previous messages
 /// Note: when this packet is received an unknown flag is always set to 0,
 /// suggesting this is an ACK packet for the UseSkill packets and should be sent on success too [FlavioJS]
+<<<<<<< Updated upstream
 void clif_skill_fail( const map_session_data& sd, uint16 skill_id, enum useskill_fail_cause cause, int32 btype, t_itemid itemId ){
+=======
+<<<<<<< Updated upstream
+void clif_skill_fail( const map_session_data& sd, uint16 skill_id, enum useskill_fail_cause cause, int32 btype, t_itemid itemId ){
+=======
+void clif_skill_fail( map_session_data& sd, uint16 skill_id, enum useskill_fail_cause cause, int32 btype, t_itemid itemId ){
+	if(sd.sc.getSCE(SC_AUTOATTACK))
+		return;
+
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 	if(battle_config.display_skill_fail&1)
 		return; //Disable all skill failed messages
 
@@ -6611,7 +6664,15 @@ void clif_efst_status_change_sub( const block_list* tbl, const block_list* bl, e
 			}
 			break;
 		case BL_NPC: {
+<<<<<<< Updated upstream
 			const npc_data* nd = static_cast<const npc_data*>(bl);
+=======
+<<<<<<< Updated upstream
+			const npc_data* nd = static_cast<const npc_data*>(bl);
+=======
+			struct npc_data* nd = (struct npc_data*)bl;
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 			sc_display = nd->sc_display;
 			sc_display_count = nd->sc_display_count;
@@ -8527,7 +8588,15 @@ void clif_spiritball( const block_list* bl, const block_list* target, enum send_
 			p.num = static_cast<const map_session_data*>(bl)->spiritball;
 			break;
 		case BL_HOM:
+<<<<<<< Updated upstream
 			p.num = static_cast<const homun_data*>(bl)->homunculus.spiritball;
+=======
+<<<<<<< Updated upstream
+			p.num = static_cast<const homun_data*>(bl)->homunculus.spiritball;
+=======
+			p.num = ( (struct homun_data*)bl )->homunculus.spiritball;
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 			break;
 	}
 
@@ -9930,6 +9999,9 @@ void clif_name( const block_list* src, const block_list* bl, send_target target 
 	switch( bl->type ){
 		case BL_PC: {
 			PACKET_ZC_ACK_REQNAMEALL packet = { 0 };
+			char temp_name[NAME_LENGTH];
+			const char* autoString = "[AUTO]";
+			size_t autoLength = strlen(autoString);
 
 			packet.packet_id = HEADER_ZC_ACK_REQNAMEALL;
 			packet.gid = bl->id;
@@ -9947,7 +10019,14 @@ void clif_name( const block_list* src, const block_list* bl, send_target target 
 				return;
 			}
 
-			safestrncpy( packet.name, sd->status.name, NAME_LENGTH );
+			if(battle_config.feature_autoattack_prefixname && sd->sc.getSCE(SC_AUTOATTACK) && autoLength < NAME_LENGTH){ //&& sd->state.autotrade
+				size_t remainingSpace = NAME_LENGTH - autoLength;
+				safestrncpy( temp_name, sd->status.name, NAME_LENGTH );
+				if (strlen(sd->status.name) > remainingSpace)
+					temp_name[remainingSpace] = '\0';  // Truncate the string
+				snprintf(packet.name, NAME_LENGTH, "%s%s", autoString, temp_name);
+			} else
+				safestrncpy( packet.name, sd->status.name, NAME_LENGTH );
 
 			party_data *p = nullptr;
 
@@ -10022,6 +10101,36 @@ void clif_name( const block_list* src, const block_list* bl, send_target target 
 			break;
 		case BL_MOB: {
 			const mob_data* md = static_cast<const mob_data*>(bl);
+<<<<<<< Updated upstream
+=======
+
+			// ========== FAKE PLAYER: xử lý như BL_PC ==========
+			if ((md->mob_id >= 30101 && md->mob_id <= 30200) ||
+			    (md->mob_id >= 30201 && md->mob_id <= 30300)) {
+				PACKET_ZC_ACK_REQNAMEALL packet = { 0 };
+
+				packet.packet_id = HEADER_ZC_ACK_REQNAMEALL;
+				packet.gid = bl->id;
+
+				char fakename[NAME_LENGTH] = { 0 };
+				char fakeparty[NAME_LENGTH] = { 0 };
+
+				safestrncpy( fakename, md->name, NAME_LENGTH );
+
+				char *tab = strchr( fakename, '\t' );
+				if ( tab ) {
+					*tab = '\0';
+					safestrncpy( fakeparty, tab + 1, NAME_LENGTH );
+				}
+
+				safestrncpy( packet.name, fakename, NAME_LENGTH );
+				safestrncpy( packet.party_name, fakeparty, NAME_LENGTH );
+
+				clif_send(&packet, sizeof(packet), src, target);
+				return;
+			}
+			// ====================================================
+>>>>>>> Stashed changes
 
 			if( md->guardian_data && md->guardian_data->guild_id ){
 				PACKET_ZC_ACK_REQNAMEALL packet = { 0 };
@@ -10070,6 +10179,44 @@ void clif_name( const block_list* src, const block_list* bl, send_target target 
 
 #if PACKETVER_MAIN_NUM >= 20180207 || PACKETVER_RE_NUM >= 20171129 || PACKETVER_ZERO_NUM >= 20171130
 				const unit_data* ud = unit_bl2ud(bl);
+<<<<<<< Updated upstream
+=======
+
+				int ele_group = -1;
+				char ele_name[8] = {0};
+				char output[16] = {0};
+
+				// Show Element Info [Hyroshima]
+				if(battle_config.mob_ele_view)
+				{
+					switch(md->status.def_ele)
+					{
+						case 0: ele_group = 51; strcpy(ele_name,"Neutral");	break;
+						case 1: ele_group = 52; strcpy(ele_name,"Water"); break;
+						case 2: ele_group = 53; strcpy(ele_name,"Earth"); break;
+						case 3: ele_group = 54; strcpy(ele_name,"Fire"); break;
+						case 4: ele_group = 55; strcpy(ele_name,"Wind"); break;
+						case 5: ele_group = 59; strcpy(ele_name,"Poison"); break;
+						case 6: ele_group = 57; strcpy(ele_name,"Holy"); break;
+						case 7: ele_group = 58; strcpy(ele_name,"Shadow"); break;
+						case 8: ele_group = 59; strcpy(ele_name,"Ghost"); break;
+						case 9: ele_group = 60; strcpy(ele_name,"Undead"); break;
+						default: break;
+					}
+
+					if(ud != nullptr)
+					{
+						if(ele_group > -1)
+							md->ud.group_id = ele_group;
+						
+						if(strlen(ele_name))
+						{
+							safesnprintf(output,sizeof(output),"%s Lv: %d",ele_name,md->status.ele_lv);
+							safestrncpy(ud->title, output, NAME_LENGTH);
+						}
+					}
+				}
+>>>>>>> Stashed changes
 
 				if (ud != nullptr) {
 					memcpy(packet.title, ud->title, NAME_LENGTH);
@@ -11351,7 +11498,15 @@ void clif_parse_progressbar(int32 fd, map_session_data * sd){
 
 /// Displays cast-like progress bar on a NPC
 /// 09d1 <id>.L <color>.L <time>.L (ZC_PROGRESS_ACTOR)
+<<<<<<< Updated upstream
 void clif_progressbar_npc( const npc_data *nd, const map_session_data* sd ){
+=======
+<<<<<<< Updated upstream
+void clif_progressbar_npc( const npc_data *nd, const map_session_data* sd ){
+=======
+void clif_progressbar_npc( struct npc_data *nd, map_session_data* sd ){
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 #if PACKETVER >= 20130821
 	unsigned char buf[14];
 
@@ -11625,13 +11780,17 @@ void clif_parse_Emotion(int32 fd, map_session_data *sd){
 		return;
 	}
 
-	const PACKET_CZ_REQ_EMOTION* p = reinterpret_cast<PACKET_CZ_REQ_EMOTION*>( RFIFOP( fd, 0 ) );
+#if PACKETVER_MAIN_NUM >= 20230705
+		emotion_type emoticon = static_cast<emotion_type>(RFIFOB(fd, packet_db[RFIFOW(fd, 0)].pos[0]));
+#else
+		const PACKET_CZ_REQ_EMOTION* p = reinterpret_cast<PACKET_CZ_REQ_EMOTION*>(RFIFOP(fd, 0));
 
 	if( p->emotion_type >= ET_MAX ){
 		return;
 	}
 	
 	emotion_type emoticon = static_cast<emotion_type>( p->emotion_type );
+#endif
 
 	if (battle_config.basic_skill_check == 0 || pc_checkskill(sd, NV_BASIC) >= 2 || pc_checkskill(sd, SU_BASIC_SKILL) >= 1) {
 		if (emoticon == ET_CHAT_PROHIBIT) {// prevent use of the mute emote [Valaris]
@@ -11875,7 +12034,7 @@ void clif_parse_WisMessage(int32 fd, map_session_data* sd)
 	if (target[0] && (strncasecmp(target,"NPC:",4) == 0) && (strlen(target) > 4))
 	{
 		char* str = target+4; //Skip the NPC: string part.
-		npc_data* npc;
+		struct npc_data* npc;
 		if ((npc = npc_name2id(str))) {
 			char split_data[NUM_WHISPER_VAR][CHAT_SIZE_MAX];
 			char *split;
@@ -12003,13 +12162,13 @@ void clif_parse_Broadcast(int32 fd, map_session_data* sd) {
 /// There are various variants of this packet, some of them have padding between fields.
 void clif_parse_TakeItem(int32 fd, map_session_data *sd)
 {
-	flooritem_data *fitem;
+	struct flooritem_data *fitem;
 	int32 map_object_id;
 
 	// TODO: shuffle packet
 	map_object_id = RFIFOL(fd,packet_db[RFIFOW(fd,0)].pos[0]);
 
-	fitem = (flooritem_data*)map_id2bl(map_object_id);
+	fitem = (struct flooritem_data*)map_id2bl(map_object_id);
 
 	do {
 		if (pc_isdead(sd)) {
@@ -12236,7 +12395,7 @@ void clif_parse_NpcClicked( int32 fd, map_session_data* sd ){
 			}
 #endif
 			if( bl->m != -1 ){ // the user can't click floating npcs directly (hack attempt)
-				npc_data* nd = (npc_data*)bl;
+				struct npc_data* nd = (struct npc_data*)bl;
 
 				// Progressbar is running
 				if( nd->progressbar.timeout > 0 ){
@@ -12757,7 +12916,7 @@ void clif_parse_SkillUp(int32 fd,map_session_data *sd)
 	pc_skillup(sd,RFIFOW(fd,packet_db[RFIFOW(fd,0)].pos[0]));
 }
 
-static void clif_parse_UseSkillToId_homun(homun_data *hd, map_session_data *sd, t_tick tick, uint16 skill_id, uint16 skill_lv, int32 target_id)
+static void clif_parse_UseSkillToId_homun(struct homun_data *hd, map_session_data *sd, t_tick tick, uint16 skill_id, uint16 skill_lv, int32 target_id)
 {
 	int32 lv;
 
@@ -12785,7 +12944,7 @@ static void clif_parse_UseSkillToId_homun(homun_data *hd, map_session_data *sd, 
 		unit_skilluse_id(hd, target_id, skill_id, skill_lv);
 }
 
-static void clif_parse_UseSkillToPos_homun(homun_data *hd, map_session_data *sd, t_tick tick, uint16 skill_id, uint16 skill_lv, int16 x, int16 y, int32 skillmoreinfo)
+static void clif_parse_UseSkillToPos_homun(struct homun_data *hd, map_session_data *sd, t_tick tick, uint16 skill_id, uint16 skill_lv, int16 x, int16 y, int32 skillmoreinfo)
 {
 	int32 lv;
 	if( !hd )
@@ -14814,7 +14973,7 @@ void clif_parse_GMKick(int32 fd, map_session_data *sd)
 
 		case BL_NPC:
 		{
-			npc_data* nd = (npc_data *)target;
+			struct npc_data* nd = (struct npc_data *)target;
 			if( pc_can_use_command(sd, "unloadnpc", COMMAND_ATCOMMAND)) {
 				npc_unload_duplicates(nd);
 				npc_unload(nd,true);
@@ -16769,17 +16928,7 @@ void clif_mail_removeitem( const map_session_data* sd, bool success, int32 index
 			break;
 		}
 
-		if( sd->mail.item[i].index < 0 || sd->mail.item[i].index >= MAX_INVENTORY ){
-			continue;
-		}
-
-		item_data* id = sd->inventory_data[sd->mail.item[i].index];
-
-		if( id == nullptr ){
-			continue;
-		}
-
-		total += sd->mail.item[i].amount * ( id->weight / 10 );
+		total += sd->mail.item[i].amount * ( sd->inventory_data[sd->mail.item[i].index]->weight / 10 );
 	}
 
 	p.weight = total;
@@ -17452,7 +17601,7 @@ void clif_cashshop_show( map_session_data& sd, const npc_data& nd ){
 void clif_cashshop_ack(map_session_data* sd, int32 error)
 {
 	int32 fd, cost[2] = { 0, 0 };
-	npc_data *nd;
+	struct npc_data *nd;
 
 	nullpo_retv(sd);
 
@@ -22761,6 +22910,53 @@ void clif_parse_refineui_refine( int32 fd, map_session_data* sd ){
 		if (info->broadcast_success) {
 			clif_broadcast_refine_result(*sd, item->nameid, item->refine, true);
 		}
+
+#ifdef REFINEUI_ANNOUNCE	
+		// [Athena Studio] Refine UI Announce
+		if( battle_config.refine_announce ) {
+			char message[CHAT_SIZE_MAX];
+
+			if( id->type == IT_ARMOR ) {
+				if( item->refine >= battle_config.equipment ) {
+					std::string item_link = item_db.create_item_link(*item);
+
+					sprintf(message, msg_txt(sd, 1900), sd->status.name, item_link.c_str());
+					intif_broadcast(message, strlen(message)+1, BC_DEFAULT);
+				}
+			} else if( id->type == IT_WEAPON ) {
+				if( id->weapon_level == 1 ) {
+					if( item->refine >= battle_config.weapon_level_1 ) {
+						std::string item_link = item_db.create_item_link(*item);
+
+						sprintf(message, msg_txt(sd, 1900), sd->status.name, item_link.c_str());
+						intif_broadcast(message, strlen(message)+1, BC_DEFAULT);
+					}
+				} else if( id->weapon_level == 2 ) {
+					if( item->refine >= battle_config.weapon_level_2 ) {
+						std::string item_link = item_db.create_item_link(*item);
+
+						sprintf(message, msg_txt(sd, 1900), sd->status.name, item_link.c_str());
+						intif_broadcast(message, strlen(message)+1, BC_DEFAULT);
+					}
+				} else if( id->weapon_level == 3 ) {
+					if( item->refine >= battle_config.weapon_level_3 ) {
+						std::string item_link = item_db.create_item_link(*item);
+
+						sprintf(message, msg_txt(sd, 1900), sd->status.name, item_link.c_str());
+						intif_broadcast(message, strlen(message)+1, BC_DEFAULT);
+					}
+				} else if( id->weapon_level == 4 ) {
+					if( item->refine >= battle_config.weapon_level_4 ) {
+						std::string item_link = item_db.create_item_link(*item);
+
+						sprintf(message, msg_txt(sd, 1900), sd->status.name, item_link.c_str());
+						intif_broadcast(message, strlen(message)+1, BC_DEFAULT);
+					}
+				}
+			}
+		}
+#endif
+
 		if( id->type == IT_WEAPON ){
 			achievement_update_objective( sd, AG_ENCHANT_SUCCESS, 2, id->weapon_level, item->refine );
 		}
@@ -22947,6 +23143,68 @@ bool clif_parse_stylist_buy_sub( map_session_data* sd, _look look, int16 index )
 }
 
 void clif_parse_stylist_buy( int32 fd, map_session_data* sd ){
+	if( sd == nullptr ){
+		return;
+	}
+#if PACKETVER >= 20231220
+	const PACKET_CZ_REQ_STYLE_CHANGE3* p = reinterpret_cast<PACKET_CZ_REQ_STYLE_CHANGE3*>(RFIFOP(fd, 0));
+
+	for (int i = 0; i < p->count; i++) {
+		if (p->data[i].value == 0)
+			continue;
+
+		switch (p->data[i].action) {
+		case 0:
+			if(!clif_parse_stylist_buy_sub(sd, LOOK_HAIR_COLOR, p->data[i].value)){
+				clif_stylist_response(sd, true);
+				return;
+			}
+			break;
+		case 1:
+			if(!clif_parse_stylist_buy_sub(sd, LOOK_HAIR, p->data[i].value)){
+				clif_stylist_response(sd, true);
+				return;
+			}
+			break;
+		case 2:
+			if(!clif_parse_stylist_buy_sub(sd, LOOK_CLOTHES_COLOR, p->data[i].value)){
+				clif_stylist_response(sd, true);
+				return;
+			}
+			break;
+		case 3:
+			if(!clif_parse_stylist_buy_sub(sd, LOOK_HEAD_TOP, p->data[i].value)){
+				clif_stylist_response(sd, true);
+				return;
+			}
+			break;
+		case 4:
+			if(!clif_parse_stylist_buy_sub(sd, LOOK_HEAD_MID, p->data[i].value)){
+				clif_stylist_response(sd, true);
+				return;
+			}
+			break;
+		case 5:
+			if(!clif_parse_stylist_buy_sub(sd, LOOK_HEAD_BOTTOM, p->data[i].value)){
+				clif_stylist_response(sd, true);
+				return;
+			}
+			break;
+		case 9:
+			if(!clif_parse_stylist_buy_sub(sd, LOOK_BODY2, p->data[i].value)){
+				clif_stylist_response(sd, true);
+				return;
+			}
+			break;
+		default:
+			ShowError("clif_parse_stylist_buy: Unknown action type %d\n", p->data[i].action);
+			clif_stylist_response(sd, true);
+			return;
+		}
+	}
+
+	clif_stylist_response(sd, false);
+#else	
 #if PACKETVER >= 20151104
 #if PACKETVER >= 20180516
 	const PACKET_CZ_REQ_STYLE_CHANGE2* p = reinterpret_cast<PACKET_CZ_REQ_STYLE_CHANGE2*>( RFIFOP( fd, 0 ) );
@@ -22997,6 +23255,7 @@ void clif_parse_stylist_buy( int32 fd, map_session_data* sd ){
 #endif
 
 	clif_stylist_response( sd, false );
+#endif
 #endif
 }
 
@@ -23185,7 +23444,7 @@ void clif_parse_inventory_expansion_reject( int32 fd, map_session_data* sd ){
 #endif
 }
 
-void clif_barter_open( map_session_data& sd, npc_data& nd ){
+void clif_barter_open( map_session_data& sd, struct npc_data& nd ){
 #if PACKETVER_MAIN_NUM >= 20190116 || PACKETVER_RE_NUM >= 20190116 || PACKETVER_ZERO_NUM >= 20181226
 	if( nd.subtype != NPCTYPE_BARTER || nd.u.barter.extended || sd.state.barter_open ){
 		return;
@@ -23263,7 +23522,7 @@ void clif_parse_barter_buy( int32 fd, map_session_data* sd ){
 		return;
 	}
 
-	npc_data* nd = map_id2nd( sd->npc_shopid );
+	struct npc_data* nd = map_id2nd( sd->npc_shopid );
 
 	// Unknown shop
 	if( nd == nullptr ){
@@ -23339,7 +23598,7 @@ void clif_parse_barter_buy( int32 fd, map_session_data* sd ){
 #endif
 }
 
-void clif_barter_extended_open( map_session_data& sd, npc_data& nd ){
+void clif_barter_extended_open( map_session_data& sd, struct npc_data& nd ){
 #if PACKETVER_MAIN_NUM >= 20191120 || PACKETVER_RE_NUM >= 20191106 || PACKETVER_ZERO_NUM >= 20191127
 	if( nd.subtype != NPCTYPE_BARTER || !nd.u.barter.extended || sd.state.barter_extended_open ){
 		return;
@@ -23433,7 +23692,7 @@ void clif_parse_barter_extended_buy( int32 fd, map_session_data* sd ){
 		return;
 	}
 
-	npc_data* nd = map_id2nd( sd->npc_shopid );
+	struct npc_data* nd = map_id2nd( sd->npc_shopid );
 
 	// Unknown shop
 	if( nd == nullptr ){
@@ -25713,7 +25972,12 @@ static int32 clif_parse(int32 fd)
 		cmd = (cmd ^ ((((clif_cryptKey[0] * clif_cryptKey[1]) + clif_cryptKey[2]) >> 16) & 0x7FFF));
 	}
 #endif
-
+	// Ignore known unsupported packets from newer clients
+	if (cmd == 0x0bf0 || cmd == 0x0bf1) {
+		RFIFOSKIP(fd, RFIFOREST(fd));
+		return 0;
+	}
+	
 	// filter out invalid / unsupported packets
 	if (cmd > MAX_PACKET_DB || cmd < MIN_PACKET_DB || packet_db[cmd].len == 0) {
 		ShowWarning("clif_parse: Received unsupported packet (packet 0x%04x, %d bytes received), disconnecting session #%d.\n", cmd, RFIFOREST(fd), fd);

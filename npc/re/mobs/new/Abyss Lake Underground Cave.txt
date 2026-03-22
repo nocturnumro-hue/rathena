@@ -1,0 +1,13 @@
+//==================================================
+// abyss_04 - Abyss Lake Underground Cave
+//==================================================
+abyss_04,0,0	monster	Purple Ferus	20612,25,5000
+abyss_04,0,0	monster	Treasure Mimic	20613,15,5000
+abyss_04,0,0	monster	Black Acidus	20614,35,5000
+abyss_04,0,0	monster	Silver Acidus	20615,35,5000
+abyss_04,0,0	monster	Bone Ferus	20616,50,5000
+abyss_04,0,0	monster	Bone Acidus	20617,50,5000
+abyss_04,0,0,0,0	boss_monster	Bone Detardeurus	20618,1,10800000,600000,0
+
+abyss_03,91,108,0	warp	abysslakedunwarp006	1,1,abyss_04,169,159
+abyss_04,169,162,0	warp	abysslakedunwarp007	1,1,abyss_03,98,105

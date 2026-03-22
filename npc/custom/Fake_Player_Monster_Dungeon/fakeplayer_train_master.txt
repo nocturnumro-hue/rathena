@@ -1,0 +1,852 @@
+// npc/custom/Episode25_Olympusro/fake_player_4th_class_maps.txt
+-	script	FakePlayer4thClass	-1,{
+OnInit:
+	// Setup View ID arrays - Upper Headgear (View IDs)
+	setarray .headtopViewID[0], 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100;
+	.headtop_size = getarraysize(.headtopViewID);
+	
+	// Setup View ID arrays - Middle Headgear (View IDs)
+	setarray .headmidViewID[0], 0,1,2,3,4,5,15,19,20,30,34,43,44,46,47,49,51,52,68,78,83,86,93,99,100,104,107,109,112,128,134,135,137,140,141,143,145,147,149,150;
+	.headmid_size = getarraysize(.headmidViewID);
+	
+	// Setup View ID arrays - Lower Headgear (View IDs)  
+	setarray .headlowViewID[0], 0,1,2,3,4,5,13,14,16,17,18,19,20,21,26,32,33,41,43,47,49,57,58,59,65,68,69,73,78,79,88,93,97,99,101,103,104,107,109,113;
+	.headlow_size = getarraysize(.headlowViewID);
+	
+	// Setup View ID arrays - Garment/Robe (View IDs)
+	setarray .robeViewID[0], 0,0,0,0,0,0,0,0,0,0,23,25,16,46,64,65,67,68,79,86,87,82,104,52,53,60,62,70,51,80,97,98,103,114,116,117,118,119,120,121,122,123,124,125;
+	.robe_size = getarraysize(.robeViewID);
+	
+	// ============================================
+	// MAP 1: PRONTERA MAZE - prt_mz03_i (25 Players)
+	// Base: All 18 unique classes (1 each)
+	// Extra: +7 strong classes (Dragon Knight, Arch Mage, Shadow Cross, Windhawk, Elemental Master, Imperial Guard, Meister)
+	// ============================================
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze1";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze2";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze3";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze4";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze5";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze6";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze7";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze8";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze9";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze10";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze11";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze12";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze13";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze14";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze15";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze16";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze17";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze18";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze19";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze20";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze21";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze22";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze23";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze24";
+	donpcevent strnpcinfo(3)+"::OnSpawnMaze25";
+	
+	// ============================================
+	// MAP 2: NIFFLHEIM - nif_dun01 (25 Players)
+	// 80% Strong Classes (20 players): Dragon Knight(4), Arch Mage(4), Shadow Cross(3), Windhawk(3), Elemental Master(3), Imperial Guard(3)
+	// 20% Other Classes (5 players): Cardinal, Biolo, Abyss Chaser, Inquisitor, Meister
+	// ============================================
+	donpcevent strnpcinfo(3)+"::OnSpawnNif1";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif2";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif3";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif4";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif5";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif6";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif7";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif8";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif9";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif10";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif11";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif12";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif13";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif14";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif15";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif16";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif17";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif18";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif19";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif20";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif21";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif22";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif23";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif24";
+	donpcevent strnpcinfo(3)+"::OnSpawnNif25";
+	
+	// ============================================
+	// MAP 3: RUDUS - sp_rudus4 (25 Players)
+	// 80% Strong Classes (20 players): Dragon Knight(4), Arch Mage(4), Shadow Cross(3), Windhawk(3), Elemental Master(3), Imperial Guard(3)
+	// 20% Other Classes (5 players): Soul Ascetic, Sky Emperor, Star Emperor, Night Watch, Spirit Handler
+	// ============================================
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus1";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus2";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus3";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus4";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus5";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus6";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus7";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus8";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus9";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus10";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus11";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus12";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus13";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus14";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus15";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus16";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus17";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus18";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus19";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus20";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus21";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus22";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus23";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus24";
+	donpcevent strnpcinfo(3)+"::OnSpawnRudus25";
+	end;
+
+// ============================================
+// MAP 1: PRONTERA MAZE - prt_mz03_i (25 Players)
+// Base 18 Classes + Extra 7 Strong Classes
+// ============================================
+
+// BASE CLASSES (18 players - 1 of each)
+
+// 1. DRAGON KNIGHT - 30251 (Male)
+OnSpawnMaze1:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Siegfried",30251,4252,1,19,5,1163,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledMaze1");
+	end;
+OnKilledMaze1: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze1"; end;
+
+// 2. MEISTER - 30253 (Male)
+OnSpawnMaze2:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Viktor",30253,4253,1,21,7,1361,2101,.@ht,.@hm,.@hl,.@rb,0x0008,2,25,strnpcinfo(3)+"::OnKilledMaze2");
+	end;
+OnKilledMaze2: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze2"; end;
+
+// 3. SHADOW CROSS - 30255 (Male)
+OnSpawnMaze3:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Raven",30255,4254,1,23,1,1264,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze3");
+	end;
+OnKilledMaze3: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze3"; end;
+
+// 4. ARCH MAGE - 30256 (Male)
+OnSpawnMaze4:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Merlin",30256,4255,1,24,2,1610,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze4");
+	end;
+OnKilledMaze4: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze4"; end;
+
+// 5. CARDINAL - 30257 (Female)
+OnSpawnMaze5:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Seraphina",30257,4256,0,25,3,1560,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledMaze5");
+	end;
+OnKilledMaze5: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze5"; end;
+
+// 6. WINDHAWK - 30258 (Male)
+OnSpawnMaze6:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Falcon",30258,4257,1,26,4,1723,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,25,strnpcinfo(3)+"::OnKilledMaze6");
+	end;
+OnKilledMaze6: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze6"; end;
+
+// 7. IMPERIAL GUARD - 30260 (Male)
+OnSpawnMaze7:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Maximus",30260,4258,1,16,2,1127,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,25,strnpcinfo(3)+"::OnKilledMaze7");
+	end;
+OnKilledMaze7: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze7"; end;
+
+// 8. BIOLO - 30262 (Male)
+OnSpawnMaze8:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Darwin",30262,4259,1,30,8,1522,2101,.@ht,.@hm,.@hl,.@rb,0x0008,0,25,strnpcinfo(3)+"::OnKilledMaze8");
+	end;
+OnKilledMaze8: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze8"; end;
+
+// 9. ABYSS CHASER - 30263 (Male)
+OnSpawnMaze9:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Dante",30263,4260,1,31,1,1220,0,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledMaze9");
+	end;
+OnKilledMaze9: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze9"; end;
+
+// 10. ELEMENTAL MASTER - 30264 (Male)
+OnSpawnMaze10:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Zephyr",30264,4261,1,32,2,1604,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledMaze10");
+	end;
+OnKilledMaze10: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze10"; end;
+
+// 11. INQUISITOR - 30265 (Male)
+OnSpawnMaze11:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Solomon",30265,4262,1,33,3,1806,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze11");
+	end;
+OnKilledMaze11: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze11"; end;
+
+// 12. HYPER NOVICE - 30267 (Male)
+OnSpawnMaze12:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Novice",30267,4307,1,35,1,1220,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze12");
+	end;
+OnKilledMaze12: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze12"; end;
+
+// 13. SKY EMPEROR - 30268 (Male)
+OnSpawnMaze13:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Dragonist",30268,4302,1,36,6,1550,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledMaze13");
+	end;
+OnKilledMaze13: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze13"; end;
+
+// 14. SOUL ASCETIC - 30269 (Male)
+OnSpawnMaze14:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Bodhi",30269,4303,1,37,7,1608,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledMaze14");
+	end;
+OnKilledMaze14: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze14"; end;
+
+// 15. Shinkiro - 30270 (Male)
+OnSpawnMaze15:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Kagerou",30270,4304,1,38,0,1550,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze15");
+	end;
+OnKilledMaze15: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze15"; end;
+
+// 16. Shiranui - 30271 (Female)
+OnSpawnMaze16:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Sakura",30271,4305,0,39,0,1550,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze16");
+	end;
+OnKilledMaze16: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze16"; end;
+
+// 17. NIGHT WATCH - 30272 (Male)
+OnSpawnMaze17:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Noctis",30272,4306,1,40,2,1201,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze17");
+	end;
+OnKilledMaze17: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze17"; end;
+
+// 18. SPIRIT HANDLER - 30274 (Female)
+OnSpawnMaze18:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Luna",30274,4308,0,42,4,1608,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledMaze18");
+	end;
+OnKilledMaze18: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze18"; end;
+
+// EXTRA STRONG CLASSES (7 players)
+
+// 19. DRAGON KNIGHT - 30252 (Female)
+OnSpawnMaze19:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Brunhilde",30252,4252,0,20,6,1461,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledMaze19");
+	end;
+OnKilledMaze19: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze19"; end;
+
+// 20. ARCH MAGE - 30256 (Female)
+OnSpawnMaze20:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Morgana",30256,4255,0,22,6,1615,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze20");
+	end;
+OnKilledMaze20: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze20"; end;
+
+// 21. SHADOW CROSS - 30255 (Female)
+OnSpawnMaze21:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Evie",30255,4254,0,10,0,1253,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledMaze21");
+	end;
+OnKilledMaze21: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze21"; end;
+
+// 22. WINDHAWK - 30259 (Female)
+OnSpawnMaze22:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Artemis",30259,4257,0,27,5,1716,2101,.@ht,.@hm,.@hl,.@rb,0x0010,2,25,strnpcinfo(3)+"::OnKilledMaze22");
+	end;
+OnKilledMaze22: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze22"; end;
+
+// 23. ELEMENTAL MASTER - 30266 (Female)
+OnSpawnMaze23:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Hermione",30266,4261,0,34,4,1617,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledMaze23");
+	end;
+OnKilledMaze23: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze23"; end;
+
+// 24. IMPERIAL GUARD - 30261 (Female)
+OnSpawnMaze24:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Athena",30261,4258,0,24,7,1461,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,25,strnpcinfo(3)+"::OnKilledMaze24");
+	end;
+OnKilledMaze24: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze24"; end;
+
+// 25. MEISTER - 30254 (Female)
+OnSpawnMaze25:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("prt_mz03_i",0,0,"Stella",30254,4253,0,22,8,1301,0,.@ht,.@hm,.@hl,.@rb,0x0008,2,25,strnpcinfo(3)+"::OnKilledMaze25");
+	end;
+OnKilledMaze25: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnMaze25"; end;
+
+// ============================================
+// MAP 2: NIFFLHEIM - nif_dun01 (25 Players)
+// 80% Strong (20): DK(4), AM(4), SC(3), WH(3), EM(3), IG(3)
+// 20% Other (5): Cardinal, Biolo, Abyss Chaser, Inquisitor, Meister
+// ============================================
+
+// STRONG CLASSES - 80% (20 players)
+
+// DRAGON KNIGHT x4
+OnSpawnNif1:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Arthur",30251,4252,1,17,5,1163,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledNif1");
+	end;
+OnKilledNif1: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif1"; end;
+
+OnSpawnNif2:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Kyle",30251,4252,1,19,5,1163,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledNif2");
+	end;
+OnKilledNif2: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif2"; end;
+
+OnSpawnNif3:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Valkyrie",30252,4252,0,20,6,1461,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledNif3");
+	end;
+OnKilledNif3: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif3"; end;
+
+OnSpawnNif4:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Aurora",30252,4252,0,18,4,1461,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledNif4");
+	end;
+OnKilledNif4: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif4"; end;
+
+// ARCH MAGE x4
+OnSpawnNif5:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Gandalf",30256,4255,1,14,0,1610,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledNif5");
+	end;
+OnKilledNif5: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif5"; end;
+
+OnSpawnNif6:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Merlin",30256,4255,1,24,2,1610,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledNif6");
+	end;
+OnKilledNif6: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif6"; end;
+
+OnSpawnNif7:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Yennefer",30256,4255,0,39,7,1619,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledNif7");
+	end;
+OnKilledNif7: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif7"; end;
+
+OnSpawnNif8:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Morgana",30256,4255,0,22,6,1615,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledNif8");
+	end;
+OnKilledNif8: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif8"; end;
+
+// SHADOW CROSS x3
+OnSpawnNif9:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Raven",30255,4254,1,23,1,1264,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledNif9");
+	end;
+OnKilledNif9: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif9"; end;
+
+OnSpawnNif10:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Ezio",30255,4254,1,26,0,1264,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledNif10");
+	end;
+OnKilledNif10: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif10"; end;
+
+OnSpawnNif11:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Evie",30255,4254,0,10,0,1253,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledNif11");
+	end;
+OnKilledNif11: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif11"; end;
+
+// WINDHAWK x3
+OnSpawnNif12:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Falcon",30258,4257,1,26,4,1723,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,25,strnpcinfo(3)+"::OnKilledNif12");
+	end;
+OnKilledNif12: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif12"; end;
+
+OnSpawnNif13:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Robin",30258,4257,1,50,4,1723,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,25,strnpcinfo(3)+"::OnKilledNif13");
+	end;
+OnKilledNif13: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif13"; end;
+
+OnSpawnNif14:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Artemis",30259,4257,0,27,5,1716,2101,.@ht,.@hm,.@hl,.@rb,0x0010,2,25,strnpcinfo(3)+"::OnKilledNif14");
+	end;
+OnKilledNif14: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif14"; end;
+
+// ELEMENTAL MASTER x3
+OnSpawnNif15:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Zephyr",30264,4261,1,32,2,1604,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledNif15");
+	end;
+OnKilledNif15: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif15"; end;
+
+OnSpawnNif16:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Hermione",30266,4261,0,34,4,1617,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledNif16");
+	end;
+OnKilledNif16: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif16"; end;
+
+OnSpawnNif17:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Aleister",30264,4261,1,32,2,1604,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledNif17");
+	end;
+OnKilledNif17: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif17"; end;
+
+// IMPERIAL GUARD x3
+OnSpawnNif18:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Maximus",30260,4258,1,16,2,1127,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,25,strnpcinfo(3)+"::OnKilledNif18");
+	end;
+OnKilledNif18: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif18"; end;
+
+OnSpawnNif19:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Lancelot",30260,4258,1,12,0,1127,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,25,strnpcinfo(3)+"::OnKilledNif19");
+	end;
+OnKilledNif19: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif19"; end;
+
+OnSpawnNif20:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Athena",30261,4258,0,24,7,1461,2101,.@ht,.@hm,.@hl,.@rb,0x0001,1,25,strnpcinfo(3)+"::OnKilledNif20");
+	end;
+OnKilledNif20: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif20"; end;
+
+// OTHER CLASSES - 20% (5 players)
+
+OnSpawnNif21:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Seraphina",30257,4256,0,25,3,1560,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledNif21");
+	end;
+OnKilledNif21: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif21"; end;
+
+OnSpawnNif22:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Darwin",30262,4259,1,30,8,1522,2101,.@ht,.@hm,.@hl,.@rb,0x0008,0,25,strnpcinfo(3)+"::OnKilledNif22");
+	end;
+OnKilledNif22: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif22"; end;
+
+OnSpawnNif23:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Dante",30263,4260,1,31,1,1220,0,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledNif23");
+	end;
+OnKilledNif23: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif23"; end;
+
+OnSpawnNif24:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Solomon",30265,4262,1,33,3,1806,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledNif24");
+	end;
+OnKilledNif24: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif24"; end;
+
+OnSpawnNif25:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("nif_dun01",0,0,"Viktor",30253,4253,1,21,7,1361,2101,.@ht,.@hm,.@hl,.@rb,0x0008,2,25,strnpcinfo(3)+"::OnKilledNif25");
+	end;
+OnKilledNif25: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnNif25"; end;
+
+// ============================================
+// MAP 3: RUDUS - sp_rudus4 (25 Players)
+// 80% Strong (20): DK(4), AM(4), SC(3), WH(3), EM(3), IG(3)
+// 20% Other (5): Soul Ascetic, Sky Emperor, Star Emperor, Night Watch, Spirit Handler
+// ============================================
+// DRAGON KNIGHT x4
+OnSpawnRudus1:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Beowulf",30251,4252,1,28,1,1163,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledRudus1");
+	end;
+OnKilledRudus1: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus1"; end;
+
+OnSpawnRudus2:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Siegfried",30251,4252,1,19,5,1163,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledRudus2");
+	end;
+OnKilledRudus2: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus2"; end;
+
+OnSpawnRudus3:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Brunhilde",30252,4252,0,20,6,1461,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledRudus3");
+	end;
+OnKilledRudus3: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus3"; end;
+
+OnSpawnRudus4:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Flamewing",30252,4252,0,18,4,1461,2101,.@ht,.@hm,.@hl,.@rb,0,1,25,strnpcinfo(3)+"::OnKilledRudus4");
+	end;
+OnKilledRudus4: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus4"; end;
+
+// ARCH MAGE x4
+OnSpawnRudus5:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Archmage",30256,4255,1,24,2,1610,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledRudus5");
+	end;
+OnKilledRudus5: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus5"; end;
+
+OnSpawnRudus6:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Crowley",30256,4255,1,28,0,1604,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus6");
+	end;
+OnKilledRudus6: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus6"; end;
+
+OnSpawnRudus7:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Yennefer",30256,4255,0,39,7,1619,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus7");
+	end;
+OnKilledRudus7: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus7"; end;
+
+OnSpawnRudus8:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Circe",30256,4255,0,22,6,1615,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledRudus8");
+	end;
+OnKilledRudus8: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus8"; end;
+
+// SHADOW CROSS x3
+OnSpawnRudus9:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Nightblade",30255,4254,1,23,1,1264,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledRudus9");
+	end;
+OnKilledRudus9: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus9"; end;
+
+OnSpawnRudus10:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Altair",30255,4254,1,26,0,1264,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledRudus10");
+	end;
+OnKilledRudus10: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus10"; end;
+
+OnSpawnRudus11:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Elektra",30255,4254,0,41,8,1253,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledRudus11");
+	end;
+OnKilledRudus11: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus11"; end;
+
+// WINDHAWK x3
+OnSpawnRudus12:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Skyrunner",30258,4257,1,26,4,1723,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,25,strnpcinfo(3)+"::OnKilledRudus12");
+	end;
+OnKilledRudus12: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus12"; end;
+
+OnSpawnRudus13:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Aragorn",30258,4257,1,48,3,1723,0,.@ht,.@hm,.@hl,.@rb,0x0010,1,25,strnpcinfo(3)+"::OnKilledRudus13");
+	end;
+OnKilledRudus13: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus13"; end;
+
+OnSpawnRudus14:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Diana",30259,4257,0,50,4,1716,0,.@ht,.@hm,.@hl,.@rb,0x0010,2,25,strnpcinfo(3)+"::OnKilledRudus14");
+	end;
+OnKilledRudus14: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus14"; end;
+
+// ELEMENTAL MASTER x3
+OnSpawnRudus15:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Elementalist",30264,4261,1,32,2,1604,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus15");
+	end;
+OnKilledRudus15: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus15"; end;
+
+OnSpawnRudus16:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Triss",30266,4261,0,26,7,1619,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus16");
+	end;
+OnKilledRudus16: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus16"; end;
+
+OnSpawnRudus17:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Cirilla",30266,4261,0,34,4,1617,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus17");
+	end;
+OnKilledRudus17: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus17"; end;
+
+// IMPERIAL GUARD x3
+OnSpawnRudus18:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Commander",30260,4258,1,16,2,1127,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,25,strnpcinfo(3)+"::OnKilledRudus18");
+	end;
+OnKilledRudus18: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus18"; end;
+
+OnSpawnRudus19:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Percival",30260,4258,1,36,3,1127,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,25,strnpcinfo(3)+"::OnKilledRudus19");
+	end;
+OnKilledRudus19: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus19"; end;
+
+OnSpawnRudus20:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Bradamante",30261,4258,0,32,5,1461,2101,.@ht,.@hm,.@hl,.@rb,0x0001,2,25,strnpcinfo(3)+"::OnKilledRudus20");
+	end;
+OnKilledRudus20: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus20"; end;
+
+// OTHER CLASSES - 20% (5 players)
+
+OnSpawnRudus21:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Bodhi",30269,4303,1,37,7,1608,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus21");
+	end;
+OnKilledRudus21: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus21"; end;
+
+OnSpawnRudus22:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Ryu",30268,4302,1,36,6,1550,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus22");
+	end;
+OnKilledRudus22: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus22"; end;
+
+OnSpawnRudus23:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Solaris",30270,4304,1,38,0,1550,2101,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledRudus23");
+	end;
+OnKilledRudus23: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus23"; end;
+
+OnSpawnRudus24:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Vigilante",30272,4306,1,40,2,1201,0,.@ht,.@hm,.@hl,.@rb,0,0,25,strnpcinfo(3)+"::OnKilledRudus24");
+	end;
+OnKilledRudus24: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus24"; end;
+
+OnSpawnRudus25:
+	.@ht = .headtopViewID[rand(.headtop_size)];
+	.@hm = .headmidViewID[rand(.headmid_size)];
+	.@hl = .headlowViewID[rand(.headlow_size)];
+	.@rb = .robeViewID[rand(.robe_size)];
+	player_mbase("sp_rudus4",0,0,"Spiritcaller",30274,4308,0,42,4,1608,2101,.@ht,.@hm,.@hl,.@rb,0,2,25,strnpcinfo(3)+"::OnKilledRudus25");
+	end;
+OnKilledRudus25: sleep 3000; donpcevent strnpcinfo(3)+"::OnSpawnRudus25"; end;
+
+}

@@ -1,0 +1,981 @@
+//===== rAthena Script =======================================
+//= Leveling Tower Instance
+//===== Description =========================================
+//= Custom high-EXP leveling instance with 12 ranks
+//= Features: 12h cooldown, difficulty system, Hell Mode
+//= Modified from: Sunken Tower
+//=
+//= HELL MODE (Rank 11 - Lv 250-275):
+//= - Uses custom monster pool (ID 30000-30044)
+//= - Spawns elite Poring Hell, Halloween, and Boss monsters
+//= - Boss appears every 5 floors with triple HP
+//=
+//= EXP RATE: Base values x3 (200% bonus on top of base)
+//= NOTE: EXP is applied directly via getexp, no SC_EXPBOOST
+//= used intentionally to avoid conflict with Battle Manual
+//= and other player buffs.
+//=
+//= MOB KILL DROP: 1% chance to drop item ID 1000372
+//= (Meteor Powder) on any mob kill.
+//=
+//= REQUIREMENTS:
+//= - instance_db entry for "Leveling Tower"
+//= - Custom monsters 30000-30044 in mob_db (for Hell Mode)
+//= - Map: 1@ch_u
+//=
+//= FIXES v2:
+//= - OnMobKill: added attachrid(killedrid) to fix getitem error
+//= - OnInstanceDestroy: clear timer + SC_EXPBOOST for all party
+//= - OnPCLoginEvent in entrance NPC: clear leftover timer on login
+//= - Removed broken OnPCDieEvent/OnPCLogoutEvent/OnPCLoadMapEvent
+//= - showdigit 0,3 replaced with showdigit 0,0 where needed
+//============================================================
+
+//============================================================
+// Entry NPC - Creates and enters instance
+//============================================================
+askald,67,225,1	script	Leveling Tower#entrance	22422,{
+    cutin "ep21_yortus_a.png",2;
+
+    if (BaseLevel < 40) {
+        mes "["+strnpcinfo(1)+"]";
+        mes "You are too weak! Come back when you are stronger.";
+        cutin "",255;
+        close;
+    }
+
+    // Check 12h cooldown
+    if (LevelingTower_Cooldown > 0) {
+        .@current_time = gettimetick(2);
+        .@time_diff = LevelingTower_Cooldown - .@current_time;
+
+        if (.@time_diff <= 0) {
+            set LevelingTower_Cooldown, 0;
+        } else {
+            .@hours   = .@time_diff / 3600;
+            .@minutes = (.@time_diff % 3600) / 60;
+            .@seconds = .@time_diff % 60;
+
+            mes "["+strnpcinfo(1)+"]";
+            mes "^ff0000The Tower's magic is still recharging.^000000";
+            mes " ";
+            mes "^00BFFFTime Remaining:^000000";
+            mes "^ff0000" + .@hours + "h " + .@minutes + "m " + .@seconds + "s^000000";
+            next;
+
+            mes "["+strnpcinfo(1)+"]";
+            mes "Reset cooldown?";
+            mes " ";
+            mes "^FF0000Cost:^000000";
+            mes "- 50,000,000 Zeny";
+            mes "- 300 TCG";
+            next;
+
+            if (select("Cancel:Reset (50M + 300 TCG)") == 1) {
+                cutin "",255;
+                close;
+            }
+
+            if (Zeny < 50000000) {
+                mes "["+strnpcinfo(1)+"]";
+                mes "^FF0000Not enough Zeny!^000000";
+                mes "Need: 50M | Have: " + Zeny;
+                cutin "",255;
+                close;
+            }
+
+            if (countitem(7227) < 300) {
+                mes "["+strnpcinfo(1)+"]";
+                mes "^FF0000Not enough TCG!^000000";
+                mes "Need: 300 | Have: " + countitem(7227);
+                cutin "",255;
+                close;
+            }
+
+            set Zeny, Zeny - 50000000;
+            delitem 7227, 300;
+            set LevelingTower_Cooldown, 0;
+
+            mes "["+strnpcinfo(1)+"]";
+            mes "^00FF00Cooldown reset!^000000";
+            cutin "",255;
+            close;
+        }
+    }
+
+    .@party_id = getcharid(1);
+    .@instance$ = "Leveling Tower";
+
+    if (.@party_id < 1) {
+        mes "["+strnpcinfo(1)+"]";
+        mes "You need to be in a party to enter!";
+        cutin "",255;
+        close;
+    }
+
+    // Auto-detect tier based on player level
+    if (BaseLevel >= 250) {
+        .@i = 250;
+        .@maxLvl = 275;
+    } else if (BaseLevel >= 240) {
+        .@i = 240;
+        .@maxLvl = 249;
+    } else {
+        for (.@i = 40; .@i < 250; .@i += 20) {
+            if (BaseLevel >= .@i && BaseLevel < .@i + 20) {
+                .@maxLvl = .@i + 19;
+                break;
+            }
+        }
+    }
+
+    mes "["+strnpcinfo(1)+"]";
+    mes "Want to climb the Leveling Tower?";
+    next;
+
+    switch (select("Cancel", "Create " + .@instance$ + " " + .@i + "~" + .@maxLvl, "Enter " + .@instance$ + " " + .@i + "~" + .@maxLvl)) {
+        case 2:
+            if (is_party_leader() == false) {
+                mes "["+strnpcinfo(1)+"]";
+                mes "You are not the leader of this party.";
+                cutin "",255;
+                close;
+            }
+            if (!instance_check_party(.@party_id, 1, .@i, .@maxLvl)) {
+                mes "["+strnpcinfo(1)+"]";
+                mes "Someone in your party is not eligible to enter this tier.";
+                cutin "",255;
+                close;
+            }
+            if (instance_create(.@instance$) < 0) {
+                mes "["+strnpcinfo(1)+"]";
+                mes "Error creating instance. Please try again.";
+                cutin "",255;
+                close;
+            }
+
+            // Set rank — Hell Mode for Lv 250+
+            if (BaseLevel >= 250) {
+                setinstancevar('rank, 11, instance_id(IM_PARTY));
+            } else {
+                setinstancevar('rank, (.@i - 40) / 20, instance_id(IM_PARTY));
+            }
+
+            mes "["+strnpcinfo(1)+"]";
+            mes "^00FF00Instance created! Select Enter to join.^000000";
+            cutin "",255;
+            close;
+
+        case 3:
+            if (instance_id(IM_PARTY) > 0) {
+                if (getinstancevar('partyCount, instance_id(IM_PARTY)) > 0) {
+                    mes "["+strnpcinfo(1)+"]";
+                    mes "The run is already in progress. You cannot join anymore.";
+                    cutin "",255;
+                    close;
+                }
+            }
+            switch (instance_enter(.@instance$)) {
+                case IE_OK:
+                    set LevelingTower_Cooldown, gettimetick(2) + 43200;
+                    mapannounce "alberta", "" + strcharinfo(0) + " of the party " + getpartyname(getcharid(1)) + " is entering " + .@instance$ + ".", bc_map, "0x00FF99";
+                    cutin "",255;
+                    end;
+
+                case IE_NOMEMBER:
+                case IE_OTHER:
+                case IE_NOINSTANCE:
+                default:
+                    if (is_party_leader(.@party_id) == false) {
+                        mes "["+strnpcinfo(1)+"]";
+                        mes "^ff0000Note: This Memorial Dungeon has a 12 hour cooldown after your last visit.^000000";
+                        cutin "",255;
+                        close;
+                    }
+                    mes "["+strnpcinfo(1)+"]";
+                    mes "^ff0000Your party leader has not created the dungeon yet.^000000";
+                    cutin "",255;
+                    close;
+            }
+
+        case 1:
+            cutin "",255;
+            end;
+    }
+    cutin "",255;
+    end;
+
+    // ============================================================
+    // OnPCLoginEvent — fired when player logs in
+    // 1. Clear leftover countdown timer if LevelingTowerDigit is set
+    //    (handles crash / disconnect during a run)
+    // 2. If player somehow re-enters the instance map on login,
+    //    warp them to SavePoint immediately
+    // ============================================================
+    cutin "",255;
+    end;
+}
+
+// ============================================================
+// Global Login Handler - Leveling Tower
+// Must be a global NPC (map "-") so OnPCLoginEvent fires on any map
+// Handles: clear leftover timer, kick player out of instance on login
+// ============================================================
+-	script	Leveling Tower#login_handler	-1,{
+    end;
+
+    OnPCLoginEvent:
+        // Clear leftover digit and buff if player DC'd during a run
+        if (LevelingTowerDigit) {
+            LevelingTowerDigit = false;
+            showdigit 0, 0;
+            sc_end SC_EXPBOOST;
+        }
+
+        // Kick out if player logged back into an instance map
+        // Instance maps for 1@ch_u are named: 1@ch_u-1, 1@ch_u-2, etc.
+        if (compare(strcharinfo(3), "1@ch_u")) {
+            dispbottom "^FF0000You have been removed from the Leveling Tower instance.^000000";
+            warp "SavePoint", 0, 0;
+        }
+        end;
+
+    // ============================================================
+    // OnPCLogoutEvent — fired when any player logs out
+    // If they are inside a Leveling Tower instance map,
+    // warp them to SavePoint BEFORE logout so they do not
+    // return to the instance on next login
+    // ============================================================
+    OnPCLogoutEvent:
+        if (compare(strcharinfo(3), "1@ch_u")) {
+            sc_end SC_EXPBOOST;
+            showdigit 0, 0;
+            LevelingTowerDigit = false;
+            warp "SavePoint", 0, 0;
+        }
+        end;
+}
+
+// ============================================================
+// Rank & EXP Reference (10x server rate x3 instance bonus = 30x effective)
+// ============================================================
+// Rank 0  (Lv 40-59)   | Mob EXP: 1.42K    | Reward: 28.4K     | Dust: 15% | 25%/kill [FAST]
+// Rank 1  (Lv 60-79)   | Mob EXP: 3.35K    | Reward: 67K       | Dust: 20% | 25%/kill [FAST]
+// Rank 2  (Lv 80-99)   | Mob EXP: 12.3K    | Reward: 247K      | Dust: 25% | 25%/kill [FAST]
+// Rank 3  (Lv 100-119) | Mob EXP: 59.2K    | Reward: 1.18M     | Dust: 30% | 25%/kill [FAST]
+// Rank 4  (Lv 120-139) | Mob EXP: 239K     | Reward: 4.77M     | Dust: 35% | 25%/kill [FAST]
+// Rank 5  (Lv 140-159) | Mob EXP: 1.12M    | Reward: 22.4M     | Dust: 40% | 25%/kill [FAST]
+// Rank 6  (Lv 160-179) | Mob EXP: 5.28M    | Reward: 105M      | Dust: 45% | 25%/kill [FAST]
+// Rank 7  (Lv 180-199) | Mob EXP: 12.1M    | Reward: 242M      | Dust: 50% | 25%/kill [FAST]
+// Rank 8  (Lv 200-219) | Mob EXP: 1.34M    | Reward: 335M      | Dust: 55% |  2%/kill [HARD]
+// Rank 9  (Lv 220-239) | Mob EXP: 5.13M    | Reward: 1.28B     | Dust: 60% |  2%/kill [HARD]
+// Rank 10 (Lv 240-249) | Mob EXP: 21.7M    | Reward: 5.42B     | Dust: 65% |  2%/kill [HARD]
+// Rank 11 (Lv 250-275) | Mob EXP: 312.8M   | Reward: 156B      | Dust: 70% |  1%/kill [HELL]
+// ============================================================
+// All EXP values below are pre-multiplied x3 (200% bonus).
+// This avoids SC_EXPBOOST conflicts with Battle Manual / other player buffs.
+// ============================================================
+
+1@ch_u,1,1,5	script	#lvl_tower_controller	-1,{
+    end;
+
+    OnInstanceInit:
+        // ============================================================
+        // Monster Pools per Rank
+        // Rank 0-2: shared pool (Lv 40~99 mobs)
+        // Rank 3-10: individual pools
+        // Rank 11: Hell Mode custom pool
+        // ============================================================
+
+        // --- Rank 0, 1, 2 (Lv 40~99) shared pool ---
+        setarray .rankMobs02[0],
+            1013,1016,1023,1026,1029,1032,1034,1035,1036,1037,1040,1041,1042,1044,1045,1058,1061,
+            1064,1065,1066,1067,1069,1070,1071,1073,1074,1099,1100,1101,1108,1110,1111,1114,1116,
+            1119,1121,1122,1123,1124,1125,1126,1127,1129,1130,1138,1139,1140,1141,1144,1146,1149,
+            1151,1152,1153,1154,1156,1158,1164,1165,1166,1169,1170,1177,1178,1179,1180,1186,1188,
+            1189,1191,1192,1195,1211,1212,1214,1243,1244,1248,1250,1254,1258,1260,1261,1264,1266,
+            1271,1273,1274,1277,1278,1279,1280,1281,1308,1313,1317,1323,1369,1380,1381,1391,
+            1400,1409,1415,1493,1494,1495,1497,1498,1499,1500,1584,1586,1587,1629,1664,1665,1666,
+            1667,1686,1687,1861,2002,2069,2070,2072,2073,2074,3517,3636;
+
+        // --- Rank 3 (Lv 100-119) ---
+        setarray .rankMobs3[0],
+            3760,3761,3762,3763,3759,3764,3765,3792,3793,3794;
+
+        // --- Rank 4 (Lv 120-139) ---
+        setarray .rankMobs4[0],
+            20255,20256,20257,20258,20259,20261,20263,3751,3752,3753,3750,3754,3756,20801,20802,20803,20804,20805;
+
+        // --- Rank 5 (Lv 140-159) ---
+        setarray .rankMobs5[0],
+            21386,21387,21388,21389,21390,21391,21392,21393,21394,20270,20271,20272;
+
+        // --- Rank 6 (Lv 160-179) ---
+        setarray .rankMobs6[0],
+            20806,20807,20808,20809,20810,20521,20522,20523,20524,20525,20526,20527,20528,20529,20530,20531,20532;
+
+        // --- Rank 7 (Lv 180-199) ---
+        setarray .rankMobs7[0],
+            20372,20373,20374,20375,20376,20377,20378,20806,20807,20808,20809,20810,20521,20522,20523,20524,20525,20526,20527,20528,20529,20530,20531,20532;
+
+        // --- Rank 8 (Lv 200-219) ---
+        setarray .rankMobs8[0],
+            20929,20930,20931,20932,20935,20936,20937,20938,20939,20940,20941,20942,20929,20930,20931,20932,20933;
+
+        // --- Rank 9 (Lv 220-239) ---
+        setarray .rankMobs9[0],
+            20773,20774,20775,20776,20777,20778,20779,20780,20781,20782,20783,20844,20845,21946,21947,21948,21949;
+
+        // --- Rank 10 (Lv 240-249) ---
+        setarray .rankMobs10[0],
+            20175,20176,20177,20178,20179,21538,21539,21540,21541,21542,21543,21544,21545,21600,21601;
+
+        // --- HELL MODE Monster Pool (Rank 11 only) ---
+        setarray .hellMonsters[0],
+            30001, 30003, 30004, 30005, 30006, 30007, 30008, 30009, 30010,
+            30013, 30014, 30015, 30016, 30017,
+            30018, 30019, 30020, 30021,
+            30029, 30030, 30031, 30032, 30033,
+            30034, 30035, 30036, 30037,
+            30040, 30041, 30042, 30043, 30044;
+
+        // --- HELL MODE Boss Pool (Rank 11 only) ---
+        setarray .hellBosses[0],
+            30000, 30002, 30011, 30012, 30022, 30038, 30039;
+
+        setarray .warpPoint[0], 13,58, 96,58, 184,58, 270,58, 354,58;
+        setarray .elements$[0], "Neutral","Water","Earth","Fire","Wind","Poison","Holy","Dark","Ghost","Undead";
+
+        // ============================================================
+        // EXP VALUES — Pre-multiplied x3 (200% bonus built-in)
+        // Using direct getexp() is intentional: avoids SC_EXPBOOST
+        // conflicts with Battle Manual, Happy Hour, EXP cards, etc.
+        // ============================================================
+        setarray .bonusExp[0],
+            85188,          // R0  Lv 40-59   (28396   x3) [FAST]
+            201159,         // R1  Lv 60-79   (67053   x3) [FAST]
+            740589,         // R2  Lv 80-99   (246863  x3) [FAST]
+            3550161,        // R3  Lv 100-119 (1183387 x3) [FAST]
+            14317623,       // R4  Lv 120-139 (4772541 x3) [FAST]
+            67341951,       // R5  Lv 140-159 (22447317 x3) [FAST]
+            316738386,      // R6  Lv 160-179 (105579462 x3) [FAST]
+            726712815,      // R7  Lv 180-199 (242237605 x3) [FAST]
+            1006339197,     // R8  Lv 200-219 (335446399 x3) [HARD]
+            2147483647,     // R9  Lv 220-239 (capped)
+            2147483647,     // R10 Lv 240-249 (capped)
+            2147483647;     // R11 Lv 250-275 (capped)
+
+        setarray .mobExp[0],
+            21297,          // R0  Lv 40-59
+            50289,          // R1  Lv 60-79
+            185145,         // R2  Lv 80-99
+            887538,         // R3  Lv 100-119
+            3579405,        // R4  Lv 120-139
+            16835487,       // R5  Lv 140-159
+            79184595,       // R6  Lv 160-179
+            181678203,      // R7  Lv 180-199
+            20126781,       // R8  Lv 200-219
+            76883334,       // R9  Lv 220-239
+            324926838,      // R10 Lv 240-249
+            2147483647;     // R11 Lv 250-275
+
+        setarray .mobHp[0],
+            50000, 150000, 400000, 1000000, 3000000, 8000000,
+            20000000, 50000000, 120000000, 300000000, 700000000, 2000000000;
+
+        setarray .mobAtk[0],
+            500, 1200, 2500, 5000, 9000, 15000, 25000, 38000, 55000, 80000, 120000, 180000;
+
+        setarray .mobDef[0],
+            50, 100, 180, 300, 500, 800, 1200, 1800, 2500, 3500, 5000, 7000;
+
+        setarray .mobMdef[0],
+            50, 100, 180, 300, 500, 800, 1200, 1800, 2500, 3500, 5000, 7000;
+
+        setarray .mobFlee[0],
+            100, 150, 210, 290, 390, 510, 660, 840, 1050, 1300, 1600, 2000;
+
+        setarray .mobHitBase[0],
+            800, 1200, 1800, 2600, 3600, 5000, 7000, 9500, 12500, 16000, 21000, 28000;
+
+        setarray .mobStr[0],  300,  600, 1000, 1600, 2500, 3800, 5500, 8000, 11000, 15000, 21000, 30000;
+        setarray .mobAgi[0],  100,  200,  350,  550,  850, 1300, 1900, 2800,  3800,  5200,  7200, 10000;
+        setarray .mobVit[0],  300,  600, 1000, 1600, 2500, 3800, 5500, 8000, 11000, 15000, 21000, 30000;
+        setarray .mobInt[0],  250,  500,  850, 1350, 2100, 3200, 4600, 6800,  9200, 12500, 17500, 25000;
+        setarray .mobDex[0],  700, 1400, 2300, 3600, 5500, 8200,11500,16000, 21000, 28000, 38000, 52000;
+        setarray .mobLuk[0],   80,  160,  280,  450,  700, 1050, 1550, 2200,  3000,  4200,  5800,  8500;
+
+        setarray .mobLevel[0],
+            60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 275;
+
+        // ============================================================
+        // Kill Drop Config
+        // Chance is out of 10000 for precision:
+        //   10000 = 100%  |  1000 = 10%  |  100 = 1%
+        //     50 = 0.5%   |    10 = 0.1% |    1 = 0.01%
+        // ============================================================
+        setarray .killDropItem[0],   1000372, 607;
+        setarray .killDropChance[0], 100,     500;  // 1%,  5%
+        setarray .killDropAmount[0], 1,       1;
+        .killDropCount = getarraysize(.killDropItem);
+
+        setarray 'partyMembers[0], 0;
+        'partyMembersClaimed = 0;
+
+        .rankMobs02Size       = getarraysize(.rankMobs02);
+        .rankMobs3Size        = getarraysize(.rankMobs3);
+        .rankMobs4Size        = getarraysize(.rankMobs4);
+        .rankMobs5Size        = getarraysize(.rankMobs5);
+        .rankMobs6Size        = getarraysize(.rankMobs6);
+        .rankMobs7Size        = getarraysize(.rankMobs7);
+        .rankMobs8Size        = getarraysize(.rankMobs8);
+        .rankMobs9Size        = getarraysize(.rankMobs9);
+        .rankMobs10Size       = getarraysize(.rankMobs10);
+        .hellMonsterArraySize = getarraysize(.hellMonsters);
+        .hellBossArraySize    = getarraysize(.hellBosses);
+
+        'difficulty       = 1;
+        'floor            = 0;
+        'map$             = instance_mapname("1@ch_u");
+        'preferredElement = rand(0,9);
+        'partyCount       = 0;
+        'skillsDisabled   = 0;
+        end;
+
+    OnWarpParty:
+        cleararray 'partyMembers[0], 0, 'partyMembersClaimed;
+        'partyMembersClaimed = 0;
+        'floor++;
+
+        announce
+            "[Leveling Tower] Party " + getpartyname('partyId) +
+            " has reached Floor " + ('floor + 1) + "!",
+            bc_all, 0xFF6600;
+
+        mapannounce 'map$, "[ Floor " + ('floor + 1) + " Start ]", bc_map, 0x00FFFF, FW_NORMAL, 14;
+
+        .@index   = 'floor % 5;
+        .@x_start = .warpPoint[.@index * 2];
+        .@y_start = .warpPoint[.@index * 2 + 1];
+        warpparty 'map$, .@x_start, .@y_start, 'partyId, 'map$;
+
+    OnFloorStart:
+        .@index   = 'floor % 5;
+        .@x_start = .warpPoint[.@index * 2];
+        .@y_start = .warpPoint[.@index * 2 + 1];
+        .@mobName$ = "Leveling Floor " + ('floor + 1) + " Variant";
+        .@label$   = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+        sleep 1000;
+
+        .@floor_bonus = 'floor * 8;
+        .@hp_scaled   = 'hp    + 'hp    * .@floor_bonus / 100;
+        .@atk_scaled  = 'atk   + 'atk   * .@floor_bonus / 100;
+        .@def_scaled  = 'def   + 'def   * .@floor_bonus / 100;
+        .@mdef_scaled = 'mdef  + 'mdef  * .@floor_bonus / 100;
+        .@flee_scaled = 'flee  + 'flee  * .@floor_bonus / 200;
+        .@str_scaled  = 'mobSt + 'mobSt * .@floor_bonus / 100;
+        .@agi_scaled  = 'mobAg + 'mobAg * .@floor_bonus / 100;
+        .@vit_scaled  = 'mobVt + 'mobVt * .@floor_bonus / 100;
+        .@int_scaled  = 'mobIn + 'mobIn * .@floor_bonus / 100;
+        .@dex_scaled  = 'mobDx + 'mobDx * .@floor_bonus / 100;
+        .@luk_scaled  = 'mobLk + 'mobLk * .@floor_bonus / 100;
+        .@hit_scaled  = 'hit   + 'hit   * .@floor_bonus / 200;
+
+        if ('rank >= 11) {
+            for (.@i = 0; .@i < (20 + 'difficulty * 5); .@i++) {
+                .@mob = .hellMonsters[rand(.hellMonsterArraySize)];
+                areamonster 'map$, .@x_start-6, .@y_start-40, .@x_start+37, .@y_start-6, .@mobName$, .@mob, 1, .@label$;
+                .@gid = $@mobid[0];
+                .@mob_hp = .@hp_scaled + .@hp_scaled * rand(0,20) / 100;
+                setunitdata .@gid, UMOB_SIZE,        rand(1,2);
+                setunitdata .@gid, UMOB_LEVEL,       'mobLv;
+                setunitdata .@gid, UMOB_MAXHP,       .@mob_hp;
+                setunitdata .@gid, UMOB_HP,          .@mob_hp;
+                setunitdata .@gid, UMOB_ATKMIN,      .@atk_scaled;
+                setunitdata .@gid, UMOB_ATKMAX,      .@atk_scaled + .@atk_scaled * 30 / 100;
+                setunitdata .@gid, UMOB_MATKMIN,     .@atk_scaled * 90 / 100;
+                setunitdata .@gid, UMOB_MATKMAX,     .@atk_scaled + .@atk_scaled * 10 / 100;
+                setunitdata .@gid, UMOB_DEF,         .@def_scaled  + rand(0,50);
+                setunitdata .@gid, UMOB_MDEF,        .@mdef_scaled + rand(0,50);
+                setunitdata .@gid, UMOB_HIT,         .@hit_scaled  + rand(0,300);
+                setunitdata .@gid, UMOB_FLEE,        .@flee_scaled + rand(0,50);
+                setunitdata .@gid, UMOB_CRIT,        rand(15,40);
+                setunitdata .@gid, UMOB_PDODGE,      rand(5,20);
+                setunitdata .@gid, UMOB_STR,         .@str_scaled;
+                setunitdata .@gid, UMOB_AGI,         .@agi_scaled;
+                setunitdata .@gid, UMOB_VIT,         .@vit_scaled;
+                setunitdata .@gid, UMOB_INT,         .@int_scaled;
+                setunitdata .@gid, UMOB_DEX,         .@dex_scaled;
+                setunitdata .@gid, UMOB_LUK,         .@luk_scaled;
+                setunitdata .@gid, UMOB_ATKRANGE,    1 + rand(0,2);
+                setunitdata .@gid, UMOB_AMOTION,     500 + rand(0,300);
+                setunitdata .@gid, UMOB_ADELAY,      800 + rand(0,400);
+                setunitdata .@gid, UMOB_DMOTION,     300;
+                setunitdata .@gid, UMOB_SPEED,       100 + rand(0,50);
+                setunitdata .@gid, UMOB_RACE,        rand(0,9);
+                if (rand(100) < 50) {
+                    setunitdata .@gid, UMOB_ELETYPE, 'preferredElement;
+                } else {
+                    setunitdata .@gid, UMOB_ELETYPE, rand(0,9);
+                }
+                setunitdata .@gid, UMOB_ELELEVEL,    rand(2,4);
+                setunitdata .@gid, UMOB_RES,         rand(0,30);
+                setunitdata .@gid, UMOB_MRES,        rand(0,30);
+                setunitdata .@gid, UMOB_DAMAGETAKEN, 100;
+                setunitdata .@gid, UMOB_DMGIMMUNE,   0;
+                setunitdata .@gid, UMOB_MODE,        0x00A5;
+                unitskilluseid .@gid, "NPC_RELIEVE_ON", 'difficulty;
+                sc_start4 SC_MODECHANGE, 100, 1, 0, 165, 0, 10000, 0, .@gid;
+                sleep 20;
+            }
+
+            if (('floor + 1) % 5 == 0) {
+                .@bossName$ = "[HELL BOSS] Floor " + ('floor + 1) + " Guardian";
+                .@boss      = .hellBosses[rand(.hellBossArraySize)];
+                .@boss_x    = .@x_start + 15;
+                .@boss_y    = 20 + rand(0,5);
+                monster 'map$, .@boss_x, .@boss_y, .@bossName$, .@boss, 1, .@label$;
+                .@boss_gid = $@mobid[0];
+                .@boss_hp  = (.@hp_scaled + .@hp_scaled * rand(0,20) / 100) * 3;
+                .@boss_atk = .@atk_scaled * 2;
+                setunitdata .@boss_gid, UMOB_SIZE,        2;
+                setunitdata .@boss_gid, UMOB_LEVEL,       'mobLv;
+                setunitdata .@boss_gid, UMOB_MAXHP,       .@boss_hp;
+                setunitdata .@boss_gid, UMOB_HP,          .@boss_hp;
+                setunitdata .@boss_gid, UMOB_ATKMIN,      .@boss_atk;
+                setunitdata .@boss_gid, UMOB_ATKMAX,      .@boss_atk + .@boss_atk * 40 / 100;
+                setunitdata .@boss_gid, UMOB_MATKMIN,     .@boss_atk * 90 / 100;
+                setunitdata .@boss_gid, UMOB_MATKMAX,     .@boss_atk + .@boss_atk * 20 / 100;
+                setunitdata .@boss_gid, UMOB_DEF,         .@def_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_MDEF,        .@mdef_scaled * 2;
+                setunitdata .@boss_gid, UMOB_HIT,         .@hit_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_FLEE,        .@flee_scaled + 100;
+                setunitdata .@boss_gid, UMOB_CRIT,        60;
+                setunitdata .@boss_gid, UMOB_PDODGE,      30;
+                setunitdata .@boss_gid, UMOB_STR,         .@str_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_AGI,         .@agi_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_VIT,         .@vit_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_INT,         .@int_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_DEX,         .@dex_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_LUK,         .@luk_scaled  * 2;
+                setunitdata .@boss_gid, UMOB_ATKRANGE,    3;
+                setunitdata .@boss_gid, UMOB_AMOTION,     300;
+                setunitdata .@boss_gid, UMOB_ADELAY,      500;
+                setunitdata .@boss_gid, UMOB_DMOTION,     200;
+                setunitdata .@boss_gid, UMOB_SPEED,       80;
+                setunitdata .@boss_gid, UMOB_RACE,        rand(0,9);
+                setunitdata .@boss_gid, UMOB_ELETYPE,     'preferredElement;
+                setunitdata .@boss_gid, UMOB_ELELEVEL,    4;
+                setunitdata .@boss_gid, UMOB_RES,         50;
+                setunitdata .@boss_gid, UMOB_MRES,        50;
+                setunitdata .@boss_gid, UMOB_DAMAGETAKEN, 100;
+                setunitdata .@boss_gid, UMOB_DMGIMMUNE,   0;
+                setunitdata .@boss_gid, UMOB_MODE,        0x00A5;
+                unitskilluseid .@boss_gid, "NPC_RELIEVE_ON", 'difficulty + 3;
+                sc_start4 SC_MODECHANGE, 100, 1, 0, 524421, 0, 10000, 0, .@boss_gid;
+                mapannounce 'map$, "[ HELL BOSS APPEARED! ] " + .@bossName$ + " has awakened!", bc_map, 0xFF0000, FW_NORMAL, 16;
+            }
+        }
+        else {
+            switch ('rank) {
+                case 0:
+                case 1:
+                case 2:  .@poolSize = .rankMobs02Size;  break;
+                case 3:  .@poolSize = .rankMobs3Size;   break;
+                case 4:  .@poolSize = .rankMobs4Size;   break;
+                case 5:  .@poolSize = .rankMobs5Size;   break;
+                case 6:  .@poolSize = .rankMobs6Size;   break;
+                case 7:  .@poolSize = .rankMobs7Size;   break;
+                case 8:  .@poolSize = .rankMobs8Size;   break;
+                case 9:  .@poolSize = .rankMobs9Size;   break;
+                default: .@poolSize = .rankMobs10Size;  break;
+            }
+
+            for (.@i = 0; .@i < (20 + 'difficulty * 5); .@i++) {
+                .@rnd = rand(.@poolSize);
+                switch ('rank) {
+                    case 0:
+                    case 1:
+                    case 2:  .@mob = .rankMobs02[.@rnd];  break;
+                    case 3:  .@mob = .rankMobs3[.@rnd];   break;
+                    case 4:  .@mob = .rankMobs4[.@rnd];   break;
+                    case 5:  .@mob = .rankMobs5[.@rnd];   break;
+                    case 6:  .@mob = .rankMobs6[.@rnd];   break;
+                    case 7:  .@mob = .rankMobs7[.@rnd];   break;
+                    case 8:  .@mob = .rankMobs8[.@rnd];   break;
+                    case 9:  .@mob = .rankMobs9[.@rnd];   break;
+                    default: .@mob = .rankMobs10[.@rnd];  break;
+                }
+
+                areamonster 'map$, .@x_start-6, .@y_start-40, .@x_start+37, .@y_start-6, .@mobName$, .@mob, 1, .@label$;
+                .@gid = $@mobid[0];
+                .@mob_hp = .@hp_scaled + .@hp_scaled * rand(0,25) / 100;
+                setunitdata .@gid, UMOB_SIZE,        rand(0,2);
+                setunitdata .@gid, UMOB_LEVEL,       'mobLv;
+                setunitdata .@gid, UMOB_MAXHP,       .@mob_hp;
+                setunitdata .@gid, UMOB_HP,          .@mob_hp;
+                setunitdata .@gid, UMOB_ATKMIN,      .@atk_scaled;
+                setunitdata .@gid, UMOB_ATKMAX,      .@atk_scaled + .@atk_scaled * 30 / 100;
+                setunitdata .@gid, UMOB_MATKMIN,     .@atk_scaled * 80 / 100;
+                setunitdata .@gid, UMOB_MATKMAX,     .@atk_scaled;
+                setunitdata .@gid, UMOB_DEF,         .@def_scaled  + rand(0,30);
+                setunitdata .@gid, UMOB_MDEF,        .@mdef_scaled + rand(0,30);
+                setunitdata .@gid, UMOB_HIT,         .@hit_scaled  + rand(0,200);
+                setunitdata .@gid, UMOB_FLEE,        .@flee_scaled + rand(0,40);
+                setunitdata .@gid, UMOB_CRIT,        rand(10,35);
+                setunitdata .@gid, UMOB_PDODGE,      rand(3,15);
+                setunitdata .@gid, UMOB_STR,         .@str_scaled;
+                setunitdata .@gid, UMOB_AGI,         .@agi_scaled;
+                setunitdata .@gid, UMOB_VIT,         .@vit_scaled;
+                setunitdata .@gid, UMOB_INT,         .@int_scaled;
+                setunitdata .@gid, UMOB_DEX,         .@dex_scaled;
+                setunitdata .@gid, UMOB_LUK,         .@luk_scaled;
+                setunitdata .@gid, UMOB_ATKRANGE,    1 + rand(0,1);
+                setunitdata .@gid, UMOB_AMOTION,     600 + rand(0,400);
+                setunitdata .@gid, UMOB_ADELAY,      1000 + rand(0,500);
+                setunitdata .@gid, UMOB_DMOTION,     400;
+                setunitdata .@gid, UMOB_SPEED,       150 + rand(0,50);
+                setunitdata .@gid, UMOB_RACE,        rand(0,9);
+                if (rand(100) < 50) {
+                    setunitdata .@gid, UMOB_ELETYPE, 'preferredElement;
+                } else {
+                    setunitdata .@gid, UMOB_ELETYPE, rand(0,9);
+                }
+                setunitdata .@gid, UMOB_ELELEVEL,    rand(1,4);
+                setunitdata .@gid, UMOB_RES,         rand(0,20);
+                setunitdata .@gid, UMOB_MRES,        rand(0,20);
+                setunitdata .@gid, UMOB_DAMAGETAKEN, 100;
+                setunitdata .@gid, UMOB_DMGIMMUNE,   0;
+                setunitdata .@gid, UMOB_MODE,        0x00A5;
+                unitskilluseid .@gid, "NPC_RELIEVE_ON", 'difficulty;
+                sc_start4 SC_MODECHANGE, 100, 1, 0, 165, 0, 10000, 0, .@gid;
+                sleep 20;
+            }
+        }
+        end;
+
+    OnFirstStart:
+        getpartymember 'partyId, 1, .@partycid;
+        getpartymember 'partyId, 2, .@partyaid;
+        .@count  = $@partymembercount;
+        'partyCount = 0;
+
+        for (.@i = 0; .@i < .@count; .@i++) {
+            if (isloggedin(.@partyaid[.@i]) && strcharinfo(3, .@partycid[.@i]) == 'map$) {
+                'partyCount++;
+            }
+        }
+
+        'bonusExp = .bonusExp['rank];
+        'mobExp   = .mobExp['rank];
+        'jobExp   = 'mobExp / 10 * 8;
+
+        'bonusExp += 'bonusExp / 10 * (5 * ('difficulty - 1));
+        'mobExp   += 'mobExp   / 10 * (3 * ('difficulty - 1));
+        'jobExp    = 'mobExp / 10 * 8;
+
+        'hp    = .mobHp['rank]    + .mobHp['rank]    * 'difficulty / 10;
+        'atk   = .mobAtk['rank]   + .mobAtk['rank]   * 'difficulty * 2 / 10;
+        'def   = .mobDef['rank]   + .mobDef['rank]   * 'difficulty / 10;
+        'mdef  = .mobMdef['rank]  + .mobMdef['rank]  * 'difficulty / 10;
+        'flee  = .mobFlee['rank]  + .mobFlee['rank]  * 'difficulty / 20;
+        'hit   = .mobHitBase['rank] + .mobHitBase['rank] * 'difficulty / 10;
+        'mobLv = .mobLevel['rank];
+
+        'mobSt = .mobStr['rank] + .mobStr['rank] * 'difficulty / 10;
+        'mobAg = .mobAgi['rank] + .mobAgi['rank] * 'difficulty / 10;
+        'mobVt = .mobVit['rank] + .mobVit['rank] * 'difficulty / 10;
+        'mobIn = .mobInt['rank] + .mobInt['rank] * 'difficulty / 10;
+        'mobDx = .mobDex['rank] + .mobDex['rank] * 'difficulty / 10;
+        'mobLk = .mobLuk['rank] + .mobLuk['rank] * 'difficulty / 10;
+
+        'dustChance = 15 + 5 * 'rank + 5 * ('difficulty - 1);
+
+        initnpctimer;
+        startnpctimer;
+
+        donpcevent instance_npcname("#lvl_tower_controller") + "::OnFloorStart";
+
+        if ('rank >= 11) {
+            mapannounce 'map$, "Yortus Executor: This is HELL MODE! Prepare for the ultimate challenge!", bc_map, 0xFF0000, FW_NORMAL, 16;
+            sleep 5000;
+        } else {
+            mapannounce 'map$, "Yortus Executor: Welcome to the Leveling Tower!", bc_map, 0xCC6666, FW_NORMAL, 14;
+            sleep 5000;
+        }
+
+        mapannounce 'map$, "Yortus Executor: You have 30 minutes. EXP x200% is now active!", bc_map, 0xFFD700, FW_NORMAL, 14;
+        sleep 3000;
+        mapannounce 'map$, "Yortus Executor: It seems that " + .elements$['preferredElement] + " energy is strong today.", bc_map, 0xCC6666, FW_NORMAL, 14;
+        end;
+
+    // ============================================================
+    // OnTimer1800000 — 30 minutes reached, warp all party to SavePoint
+    // ============================================================
+    OnTimer1800000:
+        mapannounce 'map$, "Yortus Executor: Time is up! The Tower has closed!", bc_map, 0xFF0000, FW_BOLD, 16;
+        sleep 2000;
+        getpartymember 'partyId, 1, .@pcid_t;
+        getpartymember 'partyId, 2, .@paid_t;
+        for (.@pi = 0; .@pi < $@partymembercount; .@pi++) {
+            if (isloggedin(.@paid_t[.@pi])) {
+                sc_end SC_EXPBOOST, .@paid_t[.@pi];
+                if (attachrid(.@paid_t[.@pi])) {
+                    showdigit 0, 0;
+                    LevelingTowerDigit = false;
+                    detachrid;
+                }
+                warp "SavePoint", 0, 0, .@pcid_t[.@pi];
+            }
+        }
+        instance_destroy;
+        end;
+
+    // ============================================================
+    // OnInstanceDestroy — triggered when instance ends for any reason
+    // Clears SC_EXPBOOST and showdigit for all party members
+    // ============================================================
+    OnInstanceDestroy:
+        getpartymember 'partyId, 1, .@pcid_d;
+        getpartymember 'partyId, 2, .@paid_d;
+        for (.@pi = 0; .@pi < $@partymembercount; .@pi++) {
+            if (isloggedin(.@paid_d[.@pi])) {
+                sc_end SC_EXPBOOST, .@paid_d[.@pi];
+                if (attachrid(.@paid_d[.@pi])) {
+                    showdigit 0, 0;
+                    LevelingTowerDigit = false;
+                    detachrid;
+                }
+            }
+        }
+        end;
+
+    // ============================================================
+    // OnMobKill — FIX: must attachrid(killedrid) before getitem
+    // killedrid = account ID of the player who killed the mob
+    // ============================================================
+    OnMobKill:
+        if (!attachrid(killedrid)) end;
+        for (.@d = 0; .@d < .killDropCount; .@d++) {
+            if (rand(10000) < .killDropChance[.@d]) {
+                getitem .killDropItem[.@d], .killDropAmount[.@d];
+                announce "[ Lucky Drop! ] You found " + .killDropAmount[.@d] + "x " + getitemname(.killDropItem[.@d]) + "!", bc_self, 0xFF4444;
+            }
+        }
+        detachrid;
+        end;
+}
+
+// ============================================================
+// Yortus Executor - Start NPC
+// ============================================================
+1@ch_u,8,55,5	script	Yortus Executor#lvl_tower	22422,{
+    cutin "ep21_yortus_a.png",2;
+    if (!is_party_leader()) {
+        mes "["+strnpcinfo(1)+"]";
+        mes "I only deal with party leaders.";
+        mes "Tell yours to come talk to me.";
+        cutin "",255;
+        close;
+    }
+    'partyId = getcharid(1);
+
+    setarray .@diffName$[1],   "Normal",  "Easy",    "Medium",  "Hard",    "Extreme";
+    setarray .@diffColor$[1],  "^777777", "^00AA00", "^FFAA00", "^FF6600", "^FF0000";
+    setarray .@diffMobs[1],    20,        25,        30,        35,        40;
+    setarray .@diffExpPct[1],  0,         30,        60,        90,        120;
+    setarray .@diffDust[1],    0,         5,         10,        15,        20;
+
+    L_MainMenu:
+        mes "["+strnpcinfo(1)+"]";
+        if (!'hasTalked) {
+            mes "Welcome to the Leveling Tower!";
+            mes "You have ^FF000030 minutes^000000 to climb as high as you can.";
+            mes "Clear all monsters each floor to open the next portal.";
+            mes "Every 5th floor => ^FF6600Bonus EXP reward^000000.";
+            mes " ";
+            mes "^00BFFFThis instance grants 200% bonus EXP^000000 built into all rewards.";
+        } else {
+            mes "Still here? Time is running. What do you need?";
+        }
+        mes "^777777=================^000000";
+        mes "[^00BFFFDifficulty^000000] [^FF6600" + 'difficulty + "^000000] => " + .@diffColor$['difficulty] + .@diffName$['difficulty] + "^000000";
+        mes "^777777=================^000000";
+        'hasTalked = 1;
+        next;
+
+        switch (select("Hold on.", "Let's go!", "Change Difficulty", "What is Difficulty?")) {
+            case 1:
+                cutin "",255;
+                close;
+
+            case 2:
+                donpcevent instance_npcname("#lvl_tower_controller") + "::OnFirstStart";
+
+                sc_start SC_EXPBOOST, 1800000, 200;
+                showdigit 1800, 2;
+                LevelingTowerDigit = true;
+
+                getpartymember getcharid(1), 2, .@exp_aids;
+                hideonnpc instance_npcname(strnpcinfo(0));
+                cutin "",255;
+                close2;
+
+                for (.@ei = 0; .@ei < $@partymembercount; .@ei++) {
+                    if (isloggedin(.@exp_aids[.@ei]) && .@exp_aids[.@ei] != getcharid(2)) {
+                        if (attachrid(.@exp_aids[.@ei])) {
+                            sc_start SC_EXPBOOST, 1800000, 200;
+                            showdigit 1800, 2;
+                            LevelingTowerDigit = true;
+                            detachrid;
+                        }
+                    }
+                }
+                end;
+
+            case 3:
+                .@itemNeeded = 1000372;
+                .@itemCount  = 10;
+
+                mes "["+strnpcinfo(1)+"]";
+                mes "Higher difficulty => ^FF0000more mobs^000000 and ^FF0000stronger stats^000000.";
+                mes "In return => ^00FF00more EXP^000000 and ^00FF00higher Meteor Powder chance^000000.";
+                mes "^777777=================^000000";
+                mes "[^00BFFFCurrent^000000] [^FF6600" + 'difficulty + "^000000] => " + .@diffColor$['difficulty] + .@diffName$['difficulty] + "^000000";
+                mes "^777777=================^000000";
+                mes "^FF6600Cost: 10 " + mesitemlink(.@itemNeeded) + " per change^000000";
+                mes "^777777=================^000000";
+                next;
+
+                .@sel$ = "Cancel";
+                .@sel$ += ":[1] => Normal";
+                .@sel$ += ":[2] => Easy";
+                .@sel$ += ":[3] => Medium";
+                .@sel$ += ":[4] => Hard";
+                .@sel$ += ":[5] => Extreme";
+
+                .@selection = select(.@sel$);
+                if (.@selection == 1) { cutin "",255; close; }
+
+                .@newDiff = .@selection - 1;
+
+                if ('difficulty == .@newDiff) {
+                    mes "["+strnpcinfo(1)+"]";
+                    mes "^FF0000Already on [" + 'difficulty + "] => " + .@diffName$['difficulty] + ".^000000";
+                    mes "Please pick a different level.";
+                    cutin "",255;
+                    close;
+                }
+
+                if (countitem(.@itemNeeded) < .@itemCount) {
+                    mes "["+strnpcinfo(1)+"]";
+                    mes "^FF0000Not enough " + mesitemlink(.@itemNeeded) + ".^000000";
+                    mes "^777777=================^000000";
+                    mes "[Need]  => ^FF6600" + .@itemCount + "^000000";
+                    mes "[Have]  => ^FF0000" + countitem(.@itemNeeded) + "^000000";
+                    mes "^777777=================^000000";
+                    cutin "",255;
+                    close;
+                }
+
+                mes "["+strnpcinfo(1)+"]";
+                mes "Change difficulty to:";
+                mes "^777777=================^000000";
+                mes "[^FF6600" + .@newDiff + "^000000] => " + .@diffColor$[.@newDiff] + .@diffName$[.@newDiff] + "^000000";
+                mes "[Mobs]  => ^FF0000" + .@diffMobs[.@newDiff] + " per floor^000000";
+                mes "[EXP]   => ^00FF00Base +" + .@diffExpPct[.@newDiff] + "%^000000";
+                mes "[Dust]  => ^00FF00Drop +" + .@diffDust[.@newDiff] + "%^000000";
+                mes "^777777=================^000000";
+                mes "^FF6600Cost: 10 " + mesitemlink(.@itemNeeded) + "^000000";
+                next;
+                if (select("Cancel.", "Yes, change it.") == 1) { cutin "",255; close; }
+
+                'difficulty = .@newDiff;
+                delitem .@itemNeeded, .@itemCount;
+                mapannounce 'map$, "[Leveling Tower] Difficulty => [" + 'difficulty + "] " + .@diffName$['difficulty], bc_map, 0xCC6666, FW_NORMAL, 14;
+
+                mes "["+strnpcinfo(1)+"]";
+                mes "^00FF00Difficulty updated.^000000";
+                mes "^777777=================^000000";
+                mes "[^00BFFFDifficulty^000000] [^FF6600" + 'difficulty + "^000000] => " + .@diffColor$['difficulty] + .@diffName$['difficulty] + "^000000";
+                mes "[Mobs]  => ^FF0000" + .@diffMobs['difficulty] + " per floor^000000";
+                mes "[EXP]   => ^00FF00Base +" + .@diffExpPct['difficulty] + "%^000000";
+                mes "[Dust]  => ^00FF00Drop +" + .@diffDust['difficulty] + "%^000000";
+                mes "^777777=================^000000";
+                cutin "",255;
+                close;
+
+            case 4:
+                mes "["+strnpcinfo(1)+"]";
+                mes "^FF6600[ Difficulty System ]^000000";
+                mes "^777777=================^000000";
+                mes "[^7777771^000000] => ^777777Normal^000000   20 mobs  Base EXP";
+                mes "[^00AA002^000000] => ^00AA00Easy^000000     25 mobs  EXP +30%  Dust +5%";
+                mes "[^FFAA003^000000] => ^FFAA00Medium^000000   30 mobs  EXP +60%  Dust +10%";
+                mes "[^FF66004^000000] => ^FF6600Hard^000000     35 mobs  EXP +90%  Dust +15%";
+                mes "[^FF00005^000000] => ^FF0000Extreme^000000  40 mobs  EXP +120% Dust +20%";
+                mes "^777777=================^000000";
+                mes "Each floor => monsters get ^FF0000+8% stronger^000000.";
+                mes "Boss appears every 5 floors with ^FF00003x HP^000000.";
+                mes "^777777=================^000000";
+                mes "^00BFFFThis instance already grants 200% bonus EXP^000000";
+                mes "^777777built into all reward values (no buff needed).^000000";
+                mes "^777777=================^000000";
+                mes "^FF6600Cost to change: 10 " + mesitemlink(1000372) + "^000000";
+                next;
+                goto L_MainMenu;
+        }
+
+    cutin "",255;
+    end;
+}
+
+// ============================================================
+// Dimensional Portals
+// ============================================================
+1@ch_u,47,28,5	script	Dimensional Portal#lvl_tower1	PORTAL,{
+    if (mobcount('map$, instance_npcname("#lvl_tower_controller") + "::OnMobKill") < 1) {
+        if (('floor % 5) == 4) {
+            if (inarray('partyMembers, getcharid(0)) == -1) {
+                'partyMembers['partyMembersClaimed] = getcharid(0);
+                'partyMembersClaimed++;
+                .@message$ = "Received EXP";
+
+                getexp 'bonusExp, 'jobExp;
+
+                if (rand(100) < 'dustChance) {
+                    getitem 1000372, 1;
+                    .@message$ += " and Meteor Powder";
+                }
+
+                unittalk getcharid(3), "" + strcharinfo(0) + ": " + .@message$;
+                end;
+            }
+
+            if (is_party_leader() && 'partyMembersClaimed < 'partyCount) {
+                mes "Only " + 'partyMembersClaimed + " out of " + 'partyCount + " party members have collected their rewards.";
+                mes "----------------";
+                mes "If you continue, they will miss this floor's reward. Force everyone to move?";
+                if (select("Cancel.", "Warp the party.") == 1) {
+                    close;
+                }
+            }
+        }
+        if (is_party_leader()) {
+            donpcevent instance_npcname("#lvl_tower_controller") + "::OnWarpParty";
+        }
+    } else {
+        mapannounce 'map$, "Yortus Executor: Clear all monsters first!", bc_map, 0xCC6666, FW_NORMAL, 14;
+        end;
+    }
+    end;
+}
+
+1@ch_u,130,28,5	duplicate(Dimensional Portal#lvl_tower1)	Dimensional Portal#lvl_tower2	PORTAL
+1@ch_u,219,28,5	duplicate(Dimensional Portal#lvl_tower1)	Dimensional Portal#lvl_tower3	PORTAL
+1@ch_u,306,28,5	duplicate(Dimensional Portal#lvl_tower1)	Dimensional Portal#lvl_tower4	PORTAL
+1@ch_u,389,28,5	duplicate(Dimensional Portal#lvl_tower1)	Dimensional Portal#lvl_tower5	PORTAL
+
+1@ch_u	mapflag	noloot
+// Force logout position to SavePoint — player will NOT return to instance on next login
+1@ch_u	mapflag	nosave	prontera,155,185

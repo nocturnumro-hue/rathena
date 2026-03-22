@@ -1,0 +1,224 @@
+//===== rAthena Script =======================================
+// Random Option Equipment Enchanter - Starter Package
+// Items: 22101, 19117, 420239, 22521, 22522
+// Payment: TCG Card (ID 7227)
+//============================================================
+
+prontera,169,179,1	script	Starter Items	90,{
+
+	// --- CONFIGURATION ---
+	set .PAYMENT_ITEM, 7227; // TCG Card
+	
+	// Starter equipment list (5 items total)
+	setarray .STARTER_ITEMS[0], 22101, 19117, 420239, 22521, 22522;
+	setarray .STARTER_NAMES$[0], 
+		"Angel Poring Boots", 
+		"Poring Sunglasses", 
+		"Adventure Clover", 
+		"Level UP Box Level 80", 
+		"Level UP Box Level 100-175";
+	
+	// Random Options list
+	setarray .RDMOPT_LIST[0],
+		1,2,3,4,5,6, // STR, AGI, VIT, INT, DEX, LUK
+		7,8,9,10,11,12,13,14, // HP, SP, ATK, MATK, HIT, FLEE, ASPD, CRIT
+		16,17,19,24,166,167,170; // DEF, MDEF, MaxHP, MaxSP, IgnoreDef, IgnoreMDef, DoubleAttack
+
+	// Check if account has already received starter equipment
+	if (#STARTER_RECEIVED == 0) {
+		mes "^11E6D0[Starter Equipment]^000000";
+		mes "Welcome to the ^CC9933Starter Equipment System^000000!";
+		mes "^FF6666Each account can only receive this ONCE!^000000";
+		mes "You will receive ^3399FF5 items^000000:";
+		mes "- ^66CC66Angel Poring Boots^000000";
+		mes "- ^66CC66Poring Sunglasses^000000";
+		mes "- ^66CC66Adventure Clover^000000";
+		mes "- ^66CC66Level UP Box [Level 80]^000000";
+		mes "- ^66CC66Level UP Box [Level 100-175]^000000";
+		mes "^FF6666Note:^000000 All items have ^FF6666NO options^000000.";
+		mes "^3399FFOnly the first 3 items^000000 can be enchanted!";
+		next;
+		
+		if (select("^66CC66Claim Starter Equipment^000000:^CC6666Maybe Later^000000") == 2) {
+			mes "See you next time!";
+			close;
+		}
+		
+		// Give all 5 equipment without options
+		for (.@i = 0; .@i < getarraysize(.STARTER_ITEMS); .@i++) {
+			getitem .STARTER_ITEMS[.@i], 1;
+		}
+		
+		#STARTER_RECEIVED = 1;
+		mes "^11E6D0[Starter Equipment]^000000";
+		mes "You have received your ^3399FFStarter Equipment^000000!";
+		mes "Equip the first 3 items and come back to enchant!";
+		close;
+	}
+	
+	// --- MAIN MENU ---
+	set .@balance, countitem(.PAYMENT_ITEM);
+	
+	mes "^11E6D0[Starter Equipment Enchanter]^000000";
+	mes "Welcome back!";
+	mes " ";
+	mes "^CC9933Enchant Services:^000000";
+	mes "- ^66CC661 TCG^000000  ->  Option Value ^66CC661~5^000000";
+	mes "- ^66CC663 TCG^000000  ->  Option Value ^66CC665~10^000000";
+	mes " ";
+	mes "Current Balance: ^3399FF" + .@balance + "^000000 TCG Card(s)";
+	mes " ";
+	mes "^3399FFEnchantable:^000000 Angel Poring Boots, Poring Sunglasses, Adventure Clover";
+	next;
+
+	// Check equipped items (only first 3 can be enchanted)
+	set .@equipped_item, 0;
+	set .@equip_slot, 0;
+	set .@item_name$, "";
+	
+	// Check each equipment slot (only check first 3 items)
+	for (.@i = 1; .@i <= 10; .@i++) {
+		.@current_id = getequipid(.@i);
+		for (.@j = 0; .@j < 3; .@j++) { // Only first 3 items (index 0-2)
+			if (.@current_id == .STARTER_ITEMS[.@j]) {
+				set .@equipped_item, .@current_id;
+				set .@equip_slot, .@i;
+				set .@item_name$, .STARTER_NAMES$[.@j];
+				break;
+			}
+		}
+		if (.@equipped_item > 0) break;
+	}
+
+	if (.@equipped_item == 0) {
+		mes "^11E6D0[Starter Equipment Enchanter]^000000";
+		mes "You must ^FF6666equip one of the enchantable items^000000!";
+		mes " ";
+		mes "^3399FFEnchantable items:^000000";
+		mes "- Angel Poring Boots";
+		mes "- Poring Sunglasses";
+		mes "- Adventure Clover";
+		close;
+	}
+
+	.@selection = select("^66CC66Check Current Options^000000:^CC9933Enchant 1 TCG [1~5]^000000:^CC9933Enchant 3 TCG [5~10]^000000:^CC6666Exit^000000");
+
+	switch(.@selection) {
+		case 1:
+			mes "^11E6D0[Current Options]^000000";
+			mes "Equipment: ^3399FF" + .@item_name$ + "^000000";
+			mes " ";
+			.@has_option = 0;
+			for (.@i = 0; .@i < 3; .@i++) {
+				.@roa_id = getequiprandomoption(.@equip_slot, .@i, ROA_ID);
+				.@roa_value = getequiprandomoption(.@equip_slot, .@i, ROA_VALUE);
+				if (.@roa_id) {
+					.@has_option = 1;
+					switch(.@roa_id) {
+						case 1: mes "- ^3399FFSTR +^000000 " + .@roa_value; break;
+						case 2: mes "- ^3399FFAGI +^000000 " + .@roa_value; break;
+						case 3: mes "- ^3399FFVIT +^000000 " + .@roa_value; break;
+						case 4: mes "- ^3399FFINT +^000000 " + .@roa_value; break;
+						case 5: mes "- ^3399FFDEX +^000000 " + .@roa_value; break;
+						case 6: mes "- ^3399FFLUK +^000000 " + .@roa_value; break;
+						case 7: mes "- ^3399FFMax HP +^000000 " + .@roa_value + "%"; break;
+						case 8: mes "- ^3399FFMax SP +^000000 " + .@roa_value + "%"; break;
+						case 9: mes "- ^3399FFATK +^000000 " + .@roa_value; break;
+						case 10: mes "- ^3399FFMATK +^000000 " + .@roa_value; break;
+						case 11: mes "- ^3399FFHIT +^000000 " + .@roa_value; break;
+						case 12: mes "- ^3399FFFLEE +^000000 " + .@roa_value; break;
+						case 13: mes "- ^3399FFASPD +^000000 " + .@roa_value + "%"; break;
+						case 14: mes "- ^3399FFCRIT +^000000 " + .@roa_value; break;
+						case 16: mes "- ^3399FFDEF +^000000 " + .@roa_value; break;
+						case 17: mes "- ^3399FFMDEF +^000000 " + .@roa_value; break;
+						case 19: mes "- ^3399FFMax HP +^000000 " + .@roa_value; break;
+						case 24: mes "- ^3399FFMax SP +^000000 " + .@roa_value; break;
+						case 166: mes "- ^3399FFIgnore DEF +^000000 " + .@roa_value + "%"; break;
+						case 167: mes "- ^3399FFIgnore MDEF +^000000 " + .@roa_value + "%"; break;
+						case 170: mes "- ^3399FFDouble Attack +^000000 " + .@roa_value + "%"; break;
+						default: mes "- ^3399FFUnknown Option ID " + .@roa_id + " Value:^000000 " + .@roa_value; break;
+					}
+				}
+			}
+			if (.@has_option == 0) {
+				mes "^FF6666No options yet!^000000";
+			}
+			close;
+
+		case 2:
+			if (countitem(.PAYMENT_ITEM) < 1) {
+				mes "You need ^CC66661 TCG Card^000000!";
+				close;
+			}
+			delitem .PAYMENT_ITEM, 1;
+			callsub S_RerollOptions, 1, 5, .@equip_slot, .@item_name$;
+			close;
+
+		case 3:
+			if (countitem(.PAYMENT_ITEM) < 3) {
+				mes "You need ^CC66663 TCG Cards^000000!";
+				close;
+			}
+			delitem .PAYMENT_ITEM, 3;
+			callsub S_RerollOptions, 5, 10, .@equip_slot, .@item_name$;
+			close;
+
+		case 4:
+			mes "See you next time!";
+			close;
+	}
+
+	//======================
+	S_RerollOptions:
+		.@min = getarg(0);
+		.@max = getarg(1);
+		.@equip_slot = getarg(2);
+		.@item_name$ = getarg(3);
+		
+		.@list_size = getarraysize(.RDMOPT_LIST) - 1;
+		
+		// Generate 3 UNIQUE random options (no duplicates)
+		deletearray .@OptID[0], 3;
+		deletearray .@used_options[0], 3;
+		
+		for (.@i = 0; .@i < 3; .@i++) {
+			.@attempts = 0;
+			while (.@attempts < 100) { // Prevent infinite loop
+				.@new_opt = .RDMOPT_LIST[rand(0, .@list_size)];
+				.@is_duplicate = 0;
+				
+				// Check if this option was already selected
+				for (.@j = 0; .@j < .@i; .@j++) {
+					if (.@OptID[.@j] == .@new_opt) {
+						.@is_duplicate = 1;
+						break;
+					}
+				}
+				
+				if (.@is_duplicate == 0) {
+					.@OptID[.@i] = .@new_opt;
+					break;
+				}
+				.@attempts++;
+			}
+		}
+		
+		// Generate random values for each option
+		setarray .@OptVal[0], rand(.@min, .@max), rand(.@min, .@max), rand(.@min, .@max);
+		setarray .@OptParam[0], 0, 0, 0;
+		
+		// Apply the options
+		setrandomoption(.@equip_slot, 0, .@OptID[0], .@OptVal[0], .@OptParam[0]);
+		setrandomoption(.@equip_slot, 1, .@OptID[1], .@OptVal[1], .@OptParam[1]);
+		setrandomoption(.@equip_slot, 2, .@OptID[2], .@OptVal[2], .@OptParam[2]);
+		
+		mes "^11E6D0[Enchant Success]^000000";
+		mes "Your ^3399FF" + .@item_name$ + "^000000 has been enchanted!";
+		mes "^66CC663 unique random options^000000 applied.";
+		mes "Value range: ^CC9933(" + .@min + "~" + .@max + ")^000000";
+		return;
+
+OnInit:
+	waitingroom "Great starter pack",0;
+	end;
+}

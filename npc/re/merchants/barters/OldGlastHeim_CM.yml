@@ -1,0 +1,285 @@
+Header:
+  Type: BARTER_DB
+  Version: 2
+
+Body:
+  - Name: oghc-weapon
+    Items:
+      - Index: 0
+        Item: G_Knight_Spear
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 1
+        Item: G_Knight_JewelSword
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 2
+        Item: G_Knight_Axe
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 3
+        Item: G_Knight_BattleAxe
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 4
+        Item: R_Gladius_R
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 5
+        Item: R_Gladius_L
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 6
+        Item: R_Katar
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 7
+        Item: R_Magician_Dagger
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 8
+        Item: R_Cleric_Staff
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 9
+        Item: R_Magician_Staff
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 10
+        Item: G_Knight_Bow
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 11
+        Item: R_Magician_Wand
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 12
+        Item: R_Sage_Book
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 13
+        Item: R_Cello
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 14
+        Item: R_Wheep
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 15
+        Item: R_Pillar
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 16
+        Item: R_Syringe
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 10
+      - Index: 17
+        Item: G_Alchemist_Staff
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 18
+        Item: G_Knight_Archer_Bow
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 19
+        Item: R_Knuckle
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 20
+        Item: R_Revolver
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 21
+        Item: R_Huuma_Shuriken
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 22
+        Item: R_Foxtail_rod
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+      - Index: 23
+        Item: G_Knight_Sword
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 100
+  - Name: oghc-cir
+    Items:
+      - Index: 0
+        Item: S_Circlet_Of_Time_RK
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 1
+        Item: S_Circlet_Of_Time_LG
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 2
+        Item: S_Circlet_Of_Time_NC
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 3
+        Item: S_Circlet_Of_Time_GN
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 4
+        Item: S_Circlet_Of_Time_GC
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 5
+        Item: S_Circlet_Of_Time_SC
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 6
+        Item: S_Circlet_Of_Time_AB
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 7
+        Item: S_Circlet_Of_Time_SR
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 8
+        Item: S_Circlet_Of_Time_WL
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 9
+        Item: S_Circlet_Of_Time_SO
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 10
+        Item: S_Circlet_Of_Time_RA
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 11
+        Item: S_Circlet_Of_Time_WM
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 12
+        Item: S_Circlet_Of_Time_SJ
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 13
+        Item: S_Circlet_Of_Time_SP
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 14
+        Item: S_Circlet_Of_Time_RL
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 15
+        Item: S_Circlet_Of_Time_OB
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 16
+        Item: S_Circlet_Of_Time_KG
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 17
+        Item: S_Circlet_Of_Time_NV
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 18
+        Item: S_Circlet_Of_Time_SU
+        RequiredItems:
+          - Index: 0
+            Item: S_Circlet_Of_Time
+            Amount: 50
+      - Index: 19
+        Item: C_White_Knight_Card
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 500
+      - Index: 20
+        Item: C_Khaliz_Knight_Card
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 700
+      - Index: 21
+        Item: Change_W_Knight_Egg
+        RequiredItems:
+          - Index: 0
+            Item: Spell_Of_Time
+            Amount: 1000

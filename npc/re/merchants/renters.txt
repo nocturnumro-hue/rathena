@@ -49,7 +49,7 @@ job3_rune01,88,62,5	script	Dragon Breeder	105,{
 
 // Dragon/Gryphon Master :: dragon
 //============================================================
-prontera,130,213,5	script	Riding Creature Master	105,{
+prontera,129,214,5	script	Riding Creature Master	105,{
 	mes "[Riding Creature Master]";
 	if ((eaclass()&EAJ_THIRDMASK)==EAJ_RUNE_KNIGHT) {
 		mes "Welcome. Would you like to rent a Dragon?";
@@ -119,7 +119,7 @@ rachel,106,130,5	duplicate(Riding Creature Master)	Riding Creature Master#6	105
 
 // Peco removing NPC :: dragon
 //============================================================
-prontera,125,208,5	script	Peco Peco Remover	105,{
+prontera,124,209,5	script	Peco Peco Remover	105,{
 	mes "[Soldier]";
 	mes "If you're unable to dismount from a Peco Peco";
 	mes "for some unknown reason,";
@@ -262,13 +262,13 @@ prontera,125,208,5	script	Peco Peco Remover	105,{
 	mes "Mado Gears are only available for Mechanics.";
 	close;
 }
-prontera,163,178,3	duplicate(mgm)	Mado Gear Armorer#prt	105
-geffen,103,55,5	duplicate(mgm)	Mado Gear Armorer#gef	105
-payon,166,106,5	duplicate(mgm)	Mado Gear Armorer#pay	105
-aldebaran,133,112,5	duplicate(mgm)	Mado Gear Armorer#alde	105
-yuno,167,187,3	duplicate(mgm)	Mado Gear Armorer#yuno	105
-rachel,106,134,5	duplicate(mgm)	Mado Gear Armorer#ra	105
-dicastes01,187,207,3	duplicate(mgm)	Mado Gear Armorer#dic	105
-manuk,273,212,5	duplicate(mgm)	Mado Gear Armorer#man	105
-splendide,180,174,5	duplicate(mgm)	Mado Gear Armorer#spl	105
-mid_camp,242,243,3	duplicate(mgm)	Mado Gear Armorer#mid	105
+//prontera,163,178,3	duplicate(mgm)	Mado Gear Armorer#prt	105
+//geffen,103,55,5	duplicate(mgm)	Mado Gear Armorer#gef	105
+//payon,166,106,5	duplicate(mgm)	Mado Gear Armorer#pay	105
+//aldebaran,133,112,5	duplicate(mgm)	Mado Gear Armorer#alde	105
+//yuno,167,187,3	duplicate(mgm)	Mado Gear Armorer#yuno	105
+//rachel,106,134,5	duplicate(mgm)	Mado Gear Armorer#ra	105
+//dicastes01,187,207,3	duplicate(mgm)	Mado Gear Armorer#dic	105
+//manuk,273,212,5	duplicate(mgm)	Mado Gear Armorer#man	105
+//splendide,180,174,5	duplicate(mgm)	Mado Gear Armorer#spl	105
+//mid_camp,242,243,3	duplicate(mgm)	Mado Gear Armorer#mid	105

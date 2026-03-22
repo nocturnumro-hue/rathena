@@ -1,0 +1,383 @@
+//===== rAthena Script =======================================
+//= Baron of Cards - Card to Points & Spin System
+//= Ver: 2.1
+//= Convert cards to points and spin for rewards using points
+//============================================================
+
+askald,32,96,1	script	Machine of Cards	562 ,{
+
+	disable_items;
+
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "Welcome! I can help you with:";
+	mes "- Convert cards to Card Points";
+	mes "- Spin for cards using Points";
+	mes " ";
+	mes "^00A000Current Card Points: " + #CardPoints + "^000000";
+	next;
+	
+	set .@menu$, "^2E8B57Spin for Card (10 Points)^000000:^FF9900Convert Cards to Points^000000:^4682B4View Information^000000";
+	
+	set .@choice, select(.@menu$);
+	
+	if(.@choice == 1) goto L_Spin;
+	else if(.@choice == 2) goto L_ConvertCards;
+	else if(.@choice == 3) goto L_Info;
+	close;
+
+//============================================================
+// SPIN FOR CARDS USING POINTS
+//============================================================
+
+L_Spin:
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "Each spin costs ^FF000010 Card Points^000000";
+	mes " ";
+	mes "^00A000You have: " + #CardPoints + " Points^000000";
+	mes " ";
+	mes "Reward rates:";
+	mes "^EE82EE[>] "+.mvpChance$+"% MVP Card^000000";
+	mes "^EE82EE[>] "+.mbChance$+"% Mini-Boss Card^000000";
+	mes "^00CC00[>] Remaining chance for Common Card^000000";
+	next;
+	
+	if(#CardPoints < 10) {
+		mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+		mes "~";
+		mes "^FF0000You don't have enough Points to spin!^000000";
+		mes "You need ^00A00010 Points^000000 but only have ^FF0000" + #CardPoints + " Points^000000";
+		close;
+	}
+	
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "^4169E1Confirm using 10 Points to spin?^000000";
+	if(select("[ + ] Yes:[ + ] No")==2) close;
+	
+	// Deduct points
+	set #CardPoints, #CardPoints - 10;
+	
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "[ Spinning... ]";
+	
+	set .@accid,getcharid(3);
+	set .@cid,getcharid(0);
+	set .@nick$,strcharinfo(0);
+	
+	set .@sort,rand(1,10000);
+	set .@item,(.@sort <= .cMvP ? .mvp_cards[rand((getarraysize(.mvp_cards)-1))]:.@sort <= .cMini ? .mb_cards[rand((getarraysize(.mb_cards)-1))]:.CardsComun[rand((getarraysize(.CardsComun)-1))]);
+	
+	goto L_Animation;
+
+//============================================================
+// CONVERT CARDS TO POINTS
+//============================================================
+
+L_ConvertCards:
+	deletearray @found_cards[0], 128;
+	deletearray @found_counts[0], 128;
+	deletearray @is_miniboss[0], 128;
+	set @found_total, 0;
+	set @card_index, 0;
+	set @miniboss_count, 0;
+	
+	// Build lookup tables
+	deletearray @mvp_map[0], 1000;
+	deletearray @miniboss_map[0], 1000;
+	
+	// Exclude only MVP cards
+	for(set .@i, 0; .@i < getarraysize(.MVP_CARD_LIST); set .@i, .@i + 1) {
+		set @mvp_map[.MVP_CARD_LIST[.@i]], 1;
+	}
+	
+	// Mark Miniboss cards for warning
+	for(set .@i, 0; .@i < getarraysize(.MINIBOSS_CARD_LIST); set .@i, .@i + 1) {
+		set @miniboss_map[.MINIBOSS_CARD_LIST[.@i]], 1;
+	}
+	
+	// Scan all cards in inventory
+	getinventorylist;
+	for(set .@i, 0; .@i < @inventorylist_count; set .@i, .@i + 1) {
+		set .@item_id, @inventorylist_id[.@i];
+		
+		// Check if it's a card (Type 6)
+		if (getiteminfo(.@item_id, ITEMINFO_TYPE) == 6) {
+			// Skip only if it's an MVP card
+			if (@mvp_map[.@item_id]) continue;
+			
+			// Only accept cards with ID >= 4001
+			if (.@item_id < 4001) continue;
+			
+			set .@amount, @inventorylist_amount[.@i];
+			if (.@amount > 0) {
+				set @found_cards[@card_index], .@item_id;
+				set @found_counts[@card_index], .@amount;
+				
+				// Mark if it's a Miniboss card
+				if (@miniboss_map[.@item_id]) {
+					set @is_miniboss[@card_index], 1;
+					set @miniboss_count, @miniboss_count + .@amount;
+				}
+				
+				set @found_total, @found_total + .@amount;
+				set @card_index, @card_index + 1;
+				
+				if (@card_index >= 127) break;
+			}
+		}
+	}
+	
+	deletearray @mvp_map[0], 1000;
+	deletearray @miniboss_map[0], 1000;
+	
+	if (@card_index == 0) {
+		next;
+		mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+		mes "~";
+		mes "You don't have any cards to convert.";
+		mes " ";
+		mes "^FF0000Note: Only MVP cards cannot be converted.^000000";
+		close;
+	}
+	
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "Found ^00A000" + @found_total + "^000000 cards (" + @card_index + " types)!";
+	
+	// WARNING if there are Miniboss cards
+	if (@miniboss_count > 0) {
+		mes " ";
+		mes "^FF0000WARNING! You have " + @miniboss_count + " Miniboss Cards (4 star)!^000000";
+	}
+	
+	mes " ";
+	mes "^FF6600Your Cards:^000000";
+	for (set .@i, 0; .@i < @card_index && .@i < 10; set .@i, .@i + 1) {
+		if (@is_miniboss[.@i]) {
+			mes "^FF0000" + @found_counts[.@i] + "x " + getitemname(@found_cards[.@i]) + " [4 STAR]^000000";
+		} else {
+			mes "^00A000" + @found_counts[.@i] + "x " + getitemname(@found_cards[.@i]) + "^000000";
+		}
+	}
+	if (@card_index > 10) mes "... and more";
+	next;
+	
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "^FF6600(1 Card = 1 Point)^000000";
+	mes " ";
+	
+	if (@miniboss_count > 0) {
+		mes "^FF0000WARNING: You have Miniboss cards!^000000";
+		mes "^FFA500Are you sure you want to convert them?^000000";
+		mes " ";
+	}
+	
+	mes "What would you like to do?";
+	switch(select("Convert ALL cards:Select specific card:Cancel")) {
+		case 1:
+			goto L_ConvertAll;
+		case 2:
+			goto L_ConvertOne;
+		case 3:
+			close;
+	}
+
+L_ConvertAll:
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	
+	if (@miniboss_count > 0) {
+		mes "^FF0000### FINAL WARNING! ###^000000";
+		mes "You are about to convert ^FF0000" + @miniboss_count + " Miniboss Cards^000000!";
+		mes " ";
+	}
+	
+	mes "Convert ^FF0000ALL " + @found_total + " cards^000000 to points?";
+	next;
+	if (select("Yes, convert all:No") == 2) close;
+	
+	set .@removed, 0;
+	for (set .@i, 0; .@i < @card_index; set .@i, .@i + 1) {
+		delitem @found_cards[.@i], @found_counts[.@i];
+		set .@removed, .@removed + @found_counts[.@i];
+	}
+	
+	set #CardPoints, #CardPoints + .@removed;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "Success! You received ^00A000+" + .@removed + "^000000 points!";
+	mes " ";
+	mes "^00A000Total Points: " + #CardPoints + "^000000";
+	close;
+
+L_ConvertOne:
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "Select which card to convert:";
+	set .@menu$, "";
+	for (set .@i, 0; .@i < @card_index; set .@i, .@i + 1) {
+		if (@is_miniboss[.@i]) {
+			set .@menu$, .@menu$ + "^FF0000[4 STAR] " + getitemname(@found_cards[.@i]) + " (" + @found_counts[.@i] + "x)^000000:";
+		} else {
+			set .@menu$, .@menu$ + getitemname(@found_cards[.@i]) + " (" + @found_counts[.@i] + "x):";
+		}
+	}
+	set .@menu$, .@menu$ + "Cancel";
+	set .@selected, select(.@menu$) - 1;
+	
+	if (.@selected >= @card_index) close;
+	
+	set .@card_id, @found_cards[.@selected];
+	set .@card_amount, @found_counts[.@selected];
+	set .@is_miniboss_card, @is_miniboss[.@selected];
+	
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	
+	if (.@is_miniboss_card) {
+		mes "^FF0000WARNING: This is a Miniboss Card (4 star)!^000000";
+		mes " ";
+	}
+	
+	mes "You have ^00A000" + .@card_amount + "x " + getitemname(.@card_id) + "^000000";
+	mes " ";
+	mes "How many do you want to convert?";
+	mes "(Enter 0 to cancel)";
+	input .@convert_amount;
+	
+	if (.@convert_amount <= 0 || .@convert_amount > .@card_amount) {
+		next;
+		mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+		mes "~";
+		mes "Invalid amount!";
+		close;
+	}
+	
+	delitem .@card_id, .@convert_amount;
+	set #CardPoints, #CardPoints + .@convert_amount;
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "Success! You received ^00A000+" + .@convert_amount + "^000000 points!";
+	mes " ";
+	mes "^00A000Total Points: " + #CardPoints + "^000000";
+	close;
+
+//============================================================
+// INFORMATION
+//============================================================
+
+L_Info:
+	next;
+	mes "^DA70D6.::[ Baron of Cards ]::.^000000";
+	mes "~";
+	mes "I can help you with:";
+	mes " ";
+	mes "^00CC001. CONVERT CARDS TO POINTS^000000";
+	mes "- Convert Normal and Mini-boss cards";
+	mes "- Cannot convert MVP cards";
+	mes "- 1 Card = 1 Point";
+	mes " ";
+	mes "^2E8B572. SPIN FOR CARDS USING POINTS^000000";
+	mes "- Cost: 10 Points/spin";
+	mes "- MVP rate: "+.mvpChance$+"%";
+	mes "- Mini-Boss rate: "+.mbChance$+"%";
+	next;
+	
+	mes "^DA70D6.::[ MVP Cards Available ]::.^000000";
+	for(set .@i,0; .@i<getarraysize(.mvp_cards); set .@i,.@i+1)
+	{ mes "[>] "+getitemname(.mvp_cards[.@i])+""; }
+	next;
+	
+	mes "^DA70D6.::[ Mini-Boss Cards Available ]::.^000000";
+	for(set .@i,0; .@i<getarraysize(.mb_cards); set .@i,.@i+1)
+	{ mes "[>] "+getitemname(.mb_cards[.@i])+""; }
+	next;
+	
+	mes "^DA70D6.::[ Common Cards Available ]::.^000000";
+	for(set .@i,0; .@i<getarraysize(.CardsComun); set .@i,.@i+1)
+	{ mes "[>] "+getitemname(.CardsComun[.@i])+""; }
+	close;
+
+//============================================================
+// ANIMATION
+//============================================================
+
+L_Animation:
+	freeloop(1);
+	while(!.@time) {
+		set .@sleep,(.@count < 20 ? 0:(.@count < 30 ? 1:2));
+		if(.@sleep == 2 && !.@alert){ mes "^A9A9A9-- STOPPING -- ^000000"; set .@alert,1; }
+		
+		set .@item_show,(rand(2)?.mvp_cards[rand(getarraysize(.mvp_cards))]:rand(2)?.mb_cards[rand(getarraysize(.mb_cards))]:.CardsComun[rand(getarraysize(.CardsComun))]);
+
+		if(.@count >= 35){ set .@item_show,.@item; set .@time,1; }
+		
+		if(isloggedin(.@accid,.@cid))
+			cutin ""+.@item_show+"",2;
+		else
+			set .@time,1;
+		
+		if(!.@sleep) sleep2 80; else if(.@sleep == 1) sleep2 250; else if(.@sleep == 2) sleep2 350;
+		set .@count,.@count+1;
+	}
+	freeloop(0);
+
+	if(isloggedin(.@accid,.@cid)) {
+		if(inarray(.mvp_cards[0],.@item) > -1) set .@chance$,.mvpChance$;
+		else if(inarray(.mb_cards[0],.@item) > -1) set .@chance$,.mbChance$;
+		
+		if(.@chance$ != "")
+			announce "Player "+.@nick$+" obtained "+getitemname(.@item)+" from Baron of Cards with "+.@chance$+"% chance!",bc_all;
+
+		mes "You obtained:";
+		mes "~^4169E1 "+getitemname(.@item)+"^000000";		
+		getitem .@item,1;
+		close2;
+		cutin "",255;
+	}
+	end;
+
+//============================================================
+// CONFIGURATION
+//============================================================
+
+OnInit:
+	// MINIBOSS CARD LIST (4 star) - WARNING ONLY
+	setarray .MINIBOSS_CARD_LIST[0],
+		4306,4197,4179,4183,4266,4054,4047,4171,4207,4254,4250,4163,4203,4300,4198,4238,4290,4237,4241,4174,4354,4392,4393,4391,4394,4396,4397,4395,4398,4384,4406,4423,4427,4428,4429,4431,4426,4440;
+
+	// MVP CARD LIST - CANNOT BE CONVERTED
+	setarray .MVP_CARD_LIST[0],
+		4169,4144,4147,4142,4132,4128,4143,4137,4123,4146,4131,4148,4121,4135,4318,4324,4168,4305,4276,4134,4330,4263,4236,4302,4342,4372,4357,4359,4361,4363,4367,4365,4352,4374,4376,4399,4386,4403,4407,4408,4419,4425,4430,4441,4145;
+
+	// Chance to get cards (1= 0.01%, 500= 5%, 5000= 50%)
+	set .cMvP,1;     // 0.01% MVP
+	set .cMini,4001; // 40% Mini-Boss (cumulative)
+	
+	// Mini-Boss Cards (available from spin)
+	setarray .mb_cards[0],4054,4163,4203,4237,4290,4354,4428,4440,300270,300271,300278,300379,300381;
+	
+	// MVP Cards (available from spin)
+	setarray .mvp_cards[0],4123,4131,4137,4142,4147,4168,4236,4263,4324,4425,4169;
+	
+	// Common Cards (available from spin)
+	setarray .CardsComun[0],4001,4002,4003,4004,4008,4010,4011,4016,4017,4025,4028,4038,4041,4048,4057,4060,4064,4076,4090,4095,4119,4120,4139,4149,4150,4153,4154,4209,4212,4227,4228,4230,4231,4233,4331,4332,4333,4388,4416,4418,4266,4306,4300;
+
+	// Calculate display percentages
+	set .@MvPCalc,(.cMvP*100)/10000;
+	set .@MiniCalc,(.cMini*100)/10000;
+	set .mvpChance$,""+(.@MvPCalc >= 100 ? 100:""+.@MvPCalc+""+(((.cMvP*100)%10000) ? (","+substr(""+((.cMvP*100)%10000),0,1)):"")+"")+"";
+	set .mbChance$,""+(.@MiniCalc >= 100 ? 100:""+.@MiniCalc+""+(((.cMini*100)%10000) ? (","+substr(""+((.cMini*100)%10000),0,1)):"")+"")+"";
+	end;
+}

@@ -1,0 +1,228 @@
+//============================================================
+//= Episode 20 Mini Warper
+//= Author: Nam
+//= Description: Compact warper for Episode 20 maps only
+//= Compatible with rAthena 2024-2025
+//============================================================
+
+-	script	Episode20 Warper	-1,{
+	mes "[Episode 20 Warper]";
+	mes "Hi " + strcharinfo(0) + "!";
+	mes "I can take you to Episode 20 locations.";
+	next;
+	
+	while (true) {
+		// Main menu with last location history
+		.@menu$ = "^0000FFJor Back Series^000000:^00FF00Jor Root Series^000000:^FF6600Special Maps^000000:^9933FFIce Castle^000000";
+		if (@ep20_warp_last$ != "") {
+			.@menu$ = "^FFFFFFLast: " + @ep20_warp_name$ + "^000000:" + .@menu$;
+			.@offset = 1;
+		}
+		.@menu$ = .@menu$ + ":Cancel";
+		
+		.@choice = select(.@menu$);
+		
+		// Handle Last Location
+		if (.@offset && .@choice == 1) {
+			warp @ep20_warp_last$, @ep20_warp_x, @ep20_warp_y;
+			end;
+		}
+		
+		// Adjust choice if history shown
+		if (.@offset) .@choice--;
+		
+		switch(.@choice) {
+		//====================================
+		case 1: // Jor Back Series
+			mes "[EP20 Warper]";
+			mes "^0000FFJor Back Series:^000000";
+			mes "Frozen lands and ancient canyons.";
+			next;
+			switch(select(
+				"Frozen Scale Glacier (jor_back3)",
+				"Frozen Scale Beach (jor_back4)",
+				"Ancient Ice Canyon East (jor_back5)",
+				"Ancient Ice Canyon West (jor_back6)",
+				"Back")) {
+				case 1:
+					@ep20_warp_last$ = "jor_back3";
+					@ep20_warp_x = 158;
+					@ep20_warp_y = 356;
+					@ep20_warp_name$ = "Frozen Scale Glacier";
+					warp "jor_back3",158,356;
+					end;
+				case 2:
+					@ep20_warp_last$ = "jor_back4";
+					@ep20_warp_x = 273;
+					@ep20_warp_y = 19;
+					@ep20_warp_name$ = "Frozen Scale Beach";
+					warp "jor_back4",273,19;
+					end;
+				case 3:
+					@ep20_warp_last$ = "jor_back5";
+					@ep20_warp_x = 340;
+					@ep20_warp_y = 20;
+					@ep20_warp_name$ = "Ice Canyon East";
+					warp "jor_back5",340,20;
+					end;
+				case 4:
+					@ep20_warp_last$ = "jor_back6";
+					@ep20_warp_x = 388;
+					@ep20_warp_y = 263;
+					@ep20_warp_name$ = "Ice Canyon West";
+					warp "jor_back6",388,263;
+					end;
+				case 5: break;
+			}
+			break;
+		//====================================
+		case 2: // Jor Root Series
+			mes "[EP20 Warper]";
+			mes "^00FF00Jor Root Series:^000000";
+			mes "The Snake God's domain.";
+			next;
+			switch(select(
+				"Snake God Root 1F (jor_root1)",
+				"Snake God Root 2F (jor_root2)",
+				"Deep Root Cave (jor_root3)",
+				"Snake Nest (jor_nest)",
+				"Back")) {
+				case 1:
+					@ep20_warp_last$ = "jor_root1";
+					@ep20_warp_x = 59;
+					@ep20_warp_y = 281;
+					@ep20_warp_name$ = "Snake God Root 1F";
+					warp "jor_root1",59,281;
+					end;
+				case 2:
+					@ep20_warp_last$ = "jor_root2";
+					@ep20_warp_x = 25;
+					@ep20_warp_y = 17;
+					@ep20_warp_name$ = "Snake God Root 2F";
+					warp "jor_root2",25,17;
+					end;
+				case 3:
+					@ep20_warp_last$ = "jor_root3";
+					@ep20_warp_x = 367;
+					@ep20_warp_y = 129;
+					@ep20_warp_name$ = "Deep Root Cave";
+					warp "jor_root3",367,129;
+					end;
+				case 4:
+					@ep20_warp_last$ = "jor_nest";
+					@ep20_warp_x = 38;
+					@ep20_warp_y = 270;
+					@ep20_warp_name$ = "Snake Nest";
+					warp "jor_nest",38,270;
+					end;
+				case 5: break;
+			}
+			break;
+		//====================================
+		case 3: // Special Maps
+			mes "[EP20 Warper]";
+			mes "^FF6600Special Episode 20 Maps:^000000";
+			next;
+			switch(select(
+				"Sacred Root (jor_sanct)",
+				"Snake Labyrinth (jor_maze)",
+				"^9933FFJor Twice^000000 ^FF0000[Quest Req]^000000",
+				"^9933FFJor Twig^000000 ^FF0000[Quest Req]^000000",
+				"Safe Place (jor_safty2)",
+				"Back")) {
+				case 1:
+					@ep20_warp_last$ = "jor_sanct";
+					@ep20_warp_x = 150;
+					@ep20_warp_y = 47;
+					@ep20_warp_name$ = "Sacred Root";
+					warp "jor_sanct",150,47;
+					end;
+				case 2:
+					@ep20_warp_last$ = "jor_maze";
+					@ep20_warp_x = 23;
+					@ep20_warp_y = 40;
+					@ep20_warp_name$ = "Snake Labyrinth";
+					warp "jor_maze",23,40;
+					end;
+				case 3:
+					if (ep20_main < 34) {
+						mes "[EP20 Warper]";
+						mes "^FF0000Access Denied!^000000";
+						mes "You need to complete Episode 20 main quest (Progress: " + ep20_main + "/34)";
+						close;
+					}
+					@ep20_warp_last$ = "jor_twice";
+					@ep20_warp_x = 42;
+					@ep20_warp_y = 55;
+					@ep20_warp_name$ = "Jor Twice";
+					warp "jor_twice",42,55;
+					end;
+				case 4:
+					if (ep20_main < 34) {
+						mes "[EP20 Warper]";
+						mes "^FF0000Access Denied!^000000";
+						mes "You need to complete Episode 20 main quest (Progress: " + ep20_main + "/34)";
+						close;
+					}
+					@ep20_warp_last$ = "jor_twig";
+					@ep20_warp_x = 212;
+					@ep20_warp_y = 114;
+					@ep20_warp_name$ = "Jor Twig";
+					warp "jor_twig",212,114;
+					end;
+				case 5:
+					@ep20_warp_last$ = "jor_safty2";
+					@ep20_warp_x = 199;
+					@ep20_warp_y = 369;
+					@ep20_warp_name$ = "Safe Place";
+					warp "jor_safty2",199,369;
+					end;
+				case 6: break;
+			}
+			break;
+		//====================================
+		case 4: // Ice Castle
+			mes "[EP20 Warper]";
+			mes "^9933FFIce Castle Locations:^000000";
+			next;
+			switch(select(
+				"Ice Castle Entrance (icecastle)",
+				"^FF0000Ice Castle Inner 2^000000 ^FF0000[Quest Req]^000000",
+				"Back")) {
+				case 1:
+					@ep20_warp_last$ = "icecastle";
+					@ep20_warp_x = 51;
+					@ep20_warp_y = 164;
+					@ep20_warp_name$ = "Ice Castle";
+					warp "icecastle",51,164;
+					end;
+				case 2:
+					if (ep20_main < 61) {
+						mes "[EP20 Warper]";
+						mes "^FF0000The door is locked!^000000";
+						mes "Complete Episode 20 quest first!";
+						mes "(Progress: " + ep20_main + "/61)";
+						close;
+					}
+					@ep20_warp_last$ = "icas_in2";
+					@ep20_warp_x = 248;
+					@ep20_warp_y = 112;
+					@ep20_warp_name$ = "Ice Castle In 2";
+					warp "icas_in2",248,112;
+					end;
+				case 3: break;
+			}
+			break;
+		//====================================
+		case 5:
+			mes "[EP20 Warper]";
+			mes "Safe travels, adventurer!";
+			close;
+		}
+	}
+}
+
+// NPC Duplicates
+//============================================================
+// Main location
+askald,59,155,1	duplicate(Episode20 Warper)	EP20 Warper#ask	10457

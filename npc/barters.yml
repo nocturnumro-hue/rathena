@@ -51,3 +51,10 @@ Footer:
   - Path: npc/re/merchants/barters.yml
     Mode: Renewal
   - Path: npc/custom/barters.yml
+  - Path: npc/custom/Episode19_Varmundt_Biosphere/barters.yml
+  - Path: npc/custom/Episode19_SnowFlowers/barters.yml
+  - Path: npc/custom/Episode20_TheImmortal/barters.yml
+  - Path: npc/custom/Episode25_Olympusro/barters.yml 
+  - Path: npc/custom/All_Event_Shop/barters.yml
+  - Path: npc/custom/instances/barters.yml
+  - Path: npc/custom/Headgear_Bio5/barters.yml

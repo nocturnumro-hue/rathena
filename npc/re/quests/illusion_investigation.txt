@@ -172,6 +172,7 @@ prt_in,124,21,1	script	 Member link#yeonsu	4_M_DEWWOMAN,{
 	close;
 }
 
+//= Illusion of Moonlight Quest
 pay_d03_i,149,34,5	script	Girocker#ziroker	4_M_ORIENT02,{
 	if (BaseLevel < 100)
 		end;
@@ -298,7 +299,7 @@ pay_d03_i,149,34,5	script	Girocker#ziroker	4_M_ORIENT02,{
 		close2;
 		erasequest 3447;
 		setquest 3448;
-		getexp 2500000,2500000;
+		getexp 25000000,25000000;
 		end;
 	}
 	end;
@@ -312,6 +313,7 @@ OnInit:
 	end;
 }
 
+//= Illusion of Frozen Quest
 ice_dun02,142,18,5	script	Elysia#elisia	4_F_OPERATION,{
 	if (BaseLevel < 120) {
 		mes "[Elysia]";
@@ -458,7 +460,7 @@ ice_dun02,142,18,5	script	Elysia#elisia	4_F_OPERATION,{
 		close2;
 		erasequest 3450;
 		setquest 3451;
-		getexp 6000000,6000000;
+		getexp 60000000,60000000;
 		end;
 	}
 	end;
@@ -472,6 +474,7 @@ OnInit:
 	end;
 }
 
+//= Illusion of Vampire Quest
 gef_d01_i,122,237,3	script	Radimir#ridimir	8_F,{
 	if (BaseLevel < 130)
 		end;
@@ -604,7 +607,7 @@ gef_d01_i,122,237,3	script	Radimir#ridimir	8_F,{
 		close2;
 		erasequest 3453;
 		setquest 3454;
-		getexp 10000000,10000000;
+		getexp 100000000,100000000;
 		end;
 	}
 	end;
@@ -618,6 +621,7 @@ OnInit:
 	end;
 }
 
+//= Illusion of Teddy Bear Quest
 ein_d02_i,161,180,5	script	Machoko#machoco	8_F_GIRL,{
 	if (BaseLevel < 150)
 		end;
@@ -753,7 +757,7 @@ ein_d02_i,161,180,5	script	Machoko#machoco	8_F_GIRL,{
 		close2;
 		erasequest 3456;
 		setquest 3457;
-		getexp 17500000,12500000;
+		getexp 175000000,125000000;
 		end;
 	}
 	end;
@@ -767,6 +771,7 @@ OnInit:
 	end;
 }
 
+//= Illusion of Abyss Quest
 tur_d03_i,125,186,5	script	Orian#orian	4_M_LGTPOOR,{
 	if (BaseLevel < 150)
 		end;
@@ -902,7 +907,7 @@ tur_d03_i,125,186,5	script	Orian#orian	4_M_LGTPOOR,{
 		close2;
 		erasequest 3459;
 		setquest 3460;
-		getexp 22500000,16000000;
+		getexp 225000000,160000000;
 		end;
 	}
 	end;
@@ -916,6 +921,7 @@ OnInit:
 	end;
 }
 
+//= Illusion of Twins Quest
 ant_d02_i,167,184,5	script	Sheshin#sesin	1_M_MOC_LORD,{
 	if (BaseLevel < 160)
 		end;
@@ -1066,7 +1072,7 @@ ant_d02_i,167,184,5	script	Sheshin#sesin	1_M_MOC_LORD,{
 		close2;
 		erasequest 3508;
 		setquest 3509;
-		getexp 27000000,18000000;
+		getexp 270000000,180000000;
 		end;
 	}
 	end;
@@ -1080,6 +1086,7 @@ OnInit:
 	end;
 }
 
+//= Illusion of Luanda Quest
 com_d02_i,253,232,3	script	Cassis#kesis	4_M_KHBOY,{
 	if (BaseLevel < 160)
 		end;
@@ -1212,7 +1219,7 @@ com_d02_i,253,232,3	script	Cassis#kesis	4_M_KHBOY,{
 		close2;
 		erasequest 3462;
 		setquest 3463;
-		getexp 29000000,19600000;
+		getexp 290000000,196000000;
 		end;
 	}
 	end;
@@ -1225,9 +1232,23 @@ OnInit:
 	questinfo( QTYPE_DAILYQUEST, QMARK_YELLOW, "checkquest(3463,PLAYTIME) == 2" );
 	end;
 }
-
-/*
-prt_fild01,131,364,5	script	Terrian#terian	4W_M_02,{
+//= Illusion of Labyrinth Quest
+prt_mz03_i,97,31,5	script	Terrian#terian	4W_M_02,{
+	mes "[Therian]";
+	mes "Are there any difficulties in carrying out the mission?";
+	mes "If you want to get out of the Twisted Labyrinth, I can guide you.";
+	next;
+	if (select( "Let's continue talking about the investigation.", "I want to go out." ) == 2) {
+		mes "[Therian]";
+		mes "I will guide you to where the entrance to the Twisted Labyrinth was.";
+		close2;
+		warp "prt_maze01",99,29;
+		end;
+	}
+	mes "[Therian]";
+	mes "I understand.";
+	mes "Then let's talk about the investigation.";
+	next;
 	if (BaseLevel < 170) {
 		mes "[Terrian]";
 		mes "It's nice weather.";
@@ -1261,9 +1282,9 @@ prt_fild01,131,364,5	script	Terrian#terian	4W_M_02,{
 		mes "If you don't mind, please apply for membership with the Commander <NAVI>[Joel]<INFO>prt_in,136,34,</INFO></NAVI> in Prontera.";
 		close;
 	}
-	if (isbegin_quest(3467) == 0) {
+	if (isbegin_quest(3464) == 0) {
 		mes "[Terrian]";
-		mes "The weather is nice";
+		mes "The weather is nice.";
 		next;
 		mes "[Terrian]";
 		mes "I'm a Terrian from the Illusion Investigation Corps.";
@@ -1281,7 +1302,7 @@ prt_fild01,131,364,5	script	Terrian#terian	4W_M_02,{
 		mes "After the flowers wither in winter, they will bloom again in spring. They always bloom in the place where the flowers withered and fell off.";
 		next;
 		mes "[Terrian]";
-		mes "It's the same with animals, the appearance of each of which varies innumerable, but for hundreds of years it has been discovered that there has always been a completely identical appearance";
+		mes "It's the same with animals, the appearance of each of which varies innumerable, but for hundreds of years it has been discovered that there has always been a completely identical appearance.";
 		next;
 		mes "[Terrian]";
 		mes "This is the core of the theory of reincarnation, and it takes a very long time to observe and investigate it.";
@@ -1304,7 +1325,7 @@ prt_fild01,131,364,5	script	Terrian#terian	4W_M_02,{
 			close;
 		}
 		mes "[Terrian]";
-		mes "Thank you";
+		mes "Thank you.";
 		next;
 		mes "[Terrian]";
 		mes "In order to determine the individual recovery rate, we need to reduce the number of monsters as quickly as possible.";
@@ -1352,7 +1373,7 @@ prt_fild01,131,364,5	script	Terrian#terian	4W_M_02,{
 			close;
 		}
 		mes "[Terrian]";
-		mes "Thank you";
+		mes "Thank you.";
 		next;
 		mes "[Terrian]";
 		mes "In order to determine the individual recovery rate, we need to reduce the number of monsters as quickly as possible.";
@@ -1379,7 +1400,7 @@ prt_fild01,131,364,5	script	Terrian#terian	4W_M_02,{
 		close2;
 		erasequest 3465;
 		setquest 3466;
-		getexp 35000000,22750000;
+		getexp 350000000,227500000;
 		end;
 	}
 	end;
@@ -1389,12 +1410,13 @@ OnInit:
 
 	questinfo( QTYPE_QUEST2, QMARK_YELLOW, "checkquest(3465,HUNTING) == 2" );
 	questinfo( QTYPE_DAILYQUEST, QMARK_YELLOW, "isbegin_quest(3464) == 2 && checkquest(3466,PLAYTIME) == -1 && checkquest(3465,HUNTING) == -1" );
-	questinfo( QTYPE_DAILYQUEST, QMARK_YELLOW, "checkquest(3466,PLAYTIME) == 2" );
+
+	// No questinfo when expired
+	// questinfo( QTYPE_DAILYQUEST, QMARK_YELLOW, "checkquest(3466,PLAYTIME) == 2" );
 	end;
 }
-*/
-
-iz_d04_i,127,224,5	script	Lister#ristar	4_F_01,{
+//= Illusion of Underwater F2 Quest
+iz_d05_i,146,186,3	script	Lister#ristar	4_F_01,{
 	if (BaseLevel < 180) {
 		mes "[Lister]";
 		mes "Hello";
@@ -1540,7 +1562,7 @@ iz_d04_i,127,224,5	script	Lister#ristar	4_F_01,{
 		close2;
 		erasequest 3468;
 		setquest 3469;
-		getexp 65000000,45000000;
+		getexp 650000000,450000000;
 		end;
 	}
 	end;

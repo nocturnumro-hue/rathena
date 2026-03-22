@@ -1,0 +1,377 @@
+// @reloadnpcfile npc/custom/All_Event_Shop/Daily_Quest.txt
+//===== rAthena Script =======================================
+//= Daily Quest Enduring Power NPC
+//===== Description: =========================================
+//= Give 5 daily quests with 24h cooldown per quest
+//= Quest 70303: Hunt 1000 monsters in Abandoned Pit F2
+//= Quest 70304: Hunt 2000 monsters + 1 The One in Amicitia F2
+//= Quest 70305: Hunt 5000 monsters + 1 Nightmare Piamette in Niflheim Pumpkin Farm
+//= Quest 70306: Hunt 5000 monsters + 1 Guide of Dead in Ancient Temple Ahket
+//= Quest 70307: Hunt 3000 monsters in Varmundt's Biosphere Depth 2
+//= Location: askald 103 92
+//============================================================
+
+askald,103,92,1	script	[Daily] EnduringPower	10901,{
+
+	cutin "jp_dux_thia01.bmp", 2;
+
+	// ============================================================
+	// QUEST CONFIG
+	// #EP_Q1_CD ~ #EP_Q5_CD = cooldown timestamp per account
+	// ============================================================
+
+	.@now = gettimetick(2);
+	.@cd = 86400; // 24 hours in seconds
+
+	// Check cooldown remaining for each quest
+	.@cd1 = (#EP_Q1_CD > .@now) ? (#EP_Q1_CD - .@now) : 0;
+	.@cd2 = (#EP_Q2_CD > .@now) ? (#EP_Q2_CD - .@now) : 0;
+	.@cd3 = (#EP_Q3_CD > .@now) ? (#EP_Q3_CD - .@now) : 0;
+	.@cd4 = (#EP_Q4_CD > .@now) ? (#EP_Q4_CD - .@now) : 0;
+	.@cd5 = (#EP_Q5_CD > .@now) ? (#EP_Q5_CD - .@now) : 0;
+
+	// ============================================================
+	// REWARD CLAIM CHECK
+	// ============================================================
+
+	// Quest 70303
+	if (checkquest(70303, HUNTING) == 2) {
+		cutin "jp_dux_thia03.bmp", 2;
+		mes "[Daily Quest Manager]";
+		mes "You have completed:";
+		mes "^0000FFDaily Quest Enduring Power I^000000";
+		mes " ";
+		mes "Here are your rewards!";
+		next;
+		getitem 1230046, 50;
+		getexp 10000000000, 5000000000;
+		erasequest 70303;
+		set #EP_Q1_CD, .@now + .@cd;
+		specialeffect2 EF_LEVELUP;
+		mes "[Daily Quest Manager]";
+		mes "^00AA00Rewards received!^000000";
+		mes "^888888Come back in 24 hours.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Quest 70304
+	if (checkquest(70304, HUNTING) == 2) {
+		cutin "jp_dux_thia03.bmp", 2;
+		mes "[Daily Quest Manager]";
+		mes "You have completed:";
+		mes "^0055FFDaily Quest Enduring Power II^000000";
+		mes " ";
+		mes "Here are your rewards!";
+		next;
+		getitem 1230046, 100;
+		getexp 25000000000, 10000000000;
+		erasequest 70304;
+		set #EP_Q2_CD, .@now + .@cd;
+		specialeffect2 EF_LEVELUP;
+		mes "[Daily Quest Manager]";
+		mes "^00AA00Rewards received!^000000";
+		mes "^888888Come back in 24 hours.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Quest 70305
+	if (checkquest(70305, HUNTING) == 2) {
+		cutin "jp_dux_thia03.bmp", 2;
+		mes "[Daily Quest Manager]";
+		mes "You have completed:";
+		mes "^FF6600Daily Quest Enduring Power III^000000";
+		mes " ";
+		mes "Here are your rewards!";
+		next;
+		getitem 1230046, 150;
+		getexp 50000000000, 20000000000;
+		erasequest 70305;
+		set #EP_Q3_CD, .@now + .@cd;
+		specialeffect2 EF_LEVELUP;
+		mes "[Daily Quest Manager]";
+		mes "^00AA00Rewards received!^000000";
+		mes "^888888Come back in 24 hours.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Quest 70306
+	if (checkquest(70306, HUNTING) == 2) {
+		cutin "jp_dux_thia03.bmp", 2;
+		mes "[Daily Quest Manager]";
+		mes "You have completed:";
+		mes "^FF3300Daily Quest Enduring Power IV^000000";
+		mes " ";
+		mes "Here are your rewards!";
+		next;
+		getitem 1230046, 200;
+		getexp 80000000000, 30000000000;
+		erasequest 70306;
+		set #EP_Q4_CD, .@now + .@cd;
+		specialeffect2 EF_LEVELUP;
+		mes "[Daily Quest Manager]";
+		mes "^00AA00Rewards received!^000000";
+		mes "^888888Come back in 24 hours.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Quest 70307
+	if (checkquest(70307, HUNTING) == 2) {
+		cutin "jp_dux_thia03.bmp", 2;
+		mes "[Daily Quest Manager]";
+		mes "You have completed:";
+		mes "^AA0000Daily Quest Enduring Power V^000000";
+		mes " ";
+		mes "Here are your rewards!";
+		next;
+		getitem 1230046, 300;
+		getexp 120000000000, 50000000000;
+		erasequest 70307;
+		set #EP_Q5_CD, .@now + .@cd;
+		specialeffect2 EF_LEVELUP;
+		mes "[Daily Quest Manager]";
+		mes "^00AA00Rewards received!^000000";
+		mes "^888888Come back in 24 hours.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+
+	mes "[Daily Quest Manager]";
+	mes "Welcome, ^0055FF" + strcharinfo(0) + "^000000!";
+	mes " ";
+	mes "^0055FF=== Daily Quest Enduring Power ===^000000";
+	mes " ";
+
+	// Show cooldown status for each quest
+	if (.@cd1 > 0)
+		mes "^808080[I] Abandoned Pit F2 - Cooldown: " + (.@cd1/3600) + "h " + ((.@cd1%3600)/60) + "m^000000";
+	else if (checkquest(70303, HUNTING) == 1)
+		mes "^FFAA00[I] Abandoned Pit F2 - ^FF6600In Progress^000000";
+	else
+		mes "^00FF00[I] Abandoned Pit F2 - Available^000000";
+
+	if (.@cd2 > 0)
+		mes "^808080[II] Amicitia F2 - Cooldown: " + (.@cd2/3600) + "h " + ((.@cd2%3600)/60) + "m^000000";
+	else if (checkquest(70304, HUNTING) == 1)
+		mes "^FFAA00[II] Amicitia F2 - ^FF6600In Progress^000000";
+	else
+		mes "^00FF00[II] Amicitia F2 - Available^000000";
+
+	if (.@cd3 > 0)
+		mes "^808080[III] Niflheim Pumpkin Farm - Cooldown: " + (.@cd3/3600) + "h " + ((.@cd3%3600)/60) + "m^000000";
+	else if (checkquest(70305, HUNTING) == 1)
+		mes "^FFAA00[III] Niflheim Pumpkin Farm - ^FF6600In Progress^000000";
+	else
+		mes "^00FF00[III] Niflheim Pumpkin Farm - Available^000000";
+
+	if (.@cd4 > 0)
+		mes "^808080[IV] Ancient Temple Ahket - Cooldown: " + (.@cd4/3600) + "h " + ((.@cd4%3600)/60) + "m^000000";
+	else if (checkquest(70306, HUNTING) == 1)
+		mes "^FFAA00[IV] Ancient Temple Ahket - ^FF6600In Progress^000000";
+	else
+		mes "^00FF00[IV] Ancient Temple Ahket - Available^000000";
+
+	if (.@cd5 > 0)
+		mes "^808080[V] Varmundt's Biosphere Depth 2 - Cooldown: " + (.@cd5/3600) + "h " + ((.@cd5%3600)/60) + "m^000000";
+	else if (checkquest(70307, HUNTING) == 1)
+		mes "^FFAA00[V] Varmundt's Biosphere Depth 2 - ^FF6600In Progress^000000";
+	else
+		mes "^00FF00[V] Varmundt's Biosphere Depth 2 - Available^000000";
+
+	next;
+
+	switch(select("[1] Accept Quest:[2] Quest Information:[3] Item Shop:[X] Cancel")) {
+		case 2:
+			cutin "jp_dux_thia02.bmp", 2;
+			mes "[Daily Quest Manager]";
+			mes "^0000FF[I] Abandoned Pit F2^000000";
+			mes "Hunt: 1000 monsters | Reward: 50 Coin + 10B/5B EXP";
+			mes " ";
+			mes "^0055FF[II] Amicitia F2^000000";
+			mes "Hunt: 2000 monsters + 1 The One | Reward: 100 Coin + 25B/10B EXP";
+			mes " ";
+			mes "^FF6600[III] Niflheim Pumpkin Farm^000000";
+			mes "Hunt: 5000 monsters + 1 Nightmare Piamette | Reward: 150 Coin + 50B/20B EXP";
+			mes " ";
+			mes "^FF3300[IV] Ancient Temple Ahket^000000";
+			mes "Hunt: 5000 monsters + 1 Guide of Dead | Reward: 200 Coin + 80B/30B EXP";
+			mes " ";
+			mes "^AA0000[V] Varmundt's Biosphere Depth 2^000000";
+			mes "Hunt: 3000 monsters | Reward: 300 Coin + 120B/50B EXP";
+			mes " ";
+			mes "^888888Each quest resets every 24 hours.^000000";
+			cutin "", 255;
+			close;
+
+		case 3:
+			cutin "", 255;
+			close2;
+			callshop "Daily_EnduringPower", 1;
+			end;
+
+		case 4:
+			mes "[Daily Quest Manager]";
+			mes "Come back anytime, adventurer!";
+			cutin "", 255;
+			close;
+	}
+
+	// ============================================================
+	// QUEST SELECTION MENU
+	// ============================================================
+
+	cutin "jp_dux_thia02.bmp", 2;
+	mes "[Daily Quest Manager]";
+	mes "Which quest would you like to take?";
+	next;
+
+	.@menu$ = "";
+	if (.@cd1 > 0)
+		.@menu$ += "^808080[I] Abandoned Pit F2 (Cooldown " + (.@cd1/3600) + "h " + ((.@cd1%3600)/60) + "m)^000000:";
+	else if (checkquest(70303, HUNTING) == 1)
+		.@menu$ += "^FFAA00[I] Abandoned Pit F2 (In Progress)^000000:";
+	else
+		.@menu$ += "^00FF00[I] Abandoned Pit F2^000000:";
+
+	if (.@cd2 > 0)
+		.@menu$ += "^808080[II] Amicitia F2 (Cooldown " + (.@cd2/3600) + "h " + ((.@cd2%3600)/60) + "m)^000000:";
+	else if (checkquest(70304, HUNTING) == 1)
+		.@menu$ += "^FFAA00[II] Amicitia F2 (In Progress)^000000:";
+	else
+		.@menu$ += "^00FF00[II] Amicitia F2^000000:";
+
+	if (.@cd3 > 0)
+		.@menu$ += "^808080[III] Niflheim Pumpkin Farm (Cooldown " + (.@cd3/3600) + "h " + ((.@cd3%3600)/60) + "m)^000000:";
+	else if (checkquest(70305, HUNTING) == 1)
+		.@menu$ += "^FFAA00[III] Niflheim Pumpkin Farm (In Progress)^000000:";
+	else
+		.@menu$ += "^00FF00[III] Niflheim Pumpkin Farm^000000:";
+
+	if (.@cd4 > 0)
+		.@menu$ += "^808080[IV] Ancient Temple Ahket (Cooldown " + (.@cd4/3600) + "h " + ((.@cd4%3600)/60) + "m)^000000:";
+	else if (checkquest(70306, HUNTING) == 1)
+		.@menu$ += "^FFAA00[IV] Ancient Temple Ahket (In Progress)^000000:";
+	else
+		.@menu$ += "^00FF00[IV] Ancient Temple Ahket^000000:";
+
+	if (.@cd5 > 0)
+		.@menu$ += "^808080[V] Varmundt's Biosphere Depth 2 (Cooldown " + (.@cd5/3600) + "h " + ((.@cd5%3600)/60) + "m)^000000:";
+	else if (checkquest(70307, HUNTING) == 1)
+		.@menu$ += "^FFAA00[V] Varmundt's Biosphere Depth 2 (In Progress)^000000:";
+	else
+		.@menu$ += "^00FF00[V] Varmundt's Biosphere Depth 2^000000:";
+
+	.@menu$ += "[X] Cancel";
+
+	.@choice = select(.@menu$);
+
+	if (.@choice == 6) {
+		mes "[Daily Quest Manager]";
+		mes "Come back anytime, adventurer!";
+		cutin "", 255;
+		close;
+	}
+
+	// Map choice to quest ID and cooldown
+	switch(.@choice) {
+		case 1: .@qid = 70303; .@qcd = .@cd1; .@qname$ = "Abandoned Pit F2"; break;
+		case 2: .@qid = 70304; .@qcd = .@cd2; .@qname$ = "Amicitia F2"; break;
+		case 3: .@qid = 70305; .@qcd = .@cd3; .@qname$ = "Niflheim Pumpkin Farm"; break;
+		case 4: .@qid = 70306; .@qcd = .@cd4; .@qname$ = "Ancient Temple Ahket"; break;
+		case 5: .@qid = 70307; .@qcd = .@cd5; .@qname$ = "Varmundt's Biosphere Depth 2"; break;
+	}
+
+	// Block if on cooldown
+	if (.@qcd > 0) {
+		mes "[Daily Quest Manager]";
+		mes "^FF0000This quest is on cooldown!^000000";
+		mes "Time remaining: ^FF6600" + (.@qcd/3600) + "h " + ((.@qcd%3600)/60) + "m^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Block if already in progress
+	if (checkquest(.@qid, HUNTING) == 1) {
+		mes "[Daily Quest Manager]";
+		mes "^FFAA00You already have this quest in progress!^000000";
+		mes "Complete the hunt and return to claim your reward.";
+		next;
+
+		mes "[Daily Quest Manager]";
+		mes "Do you want to ^FF0000cancel^000000 this quest?";
+		mes "^FF0000WARNING: All progress will be lost!^000000";
+		next;
+
+		if (select("[1] Keep Quest:[X] ^FF0000Cancel Quest^000000") == 2) {
+			mes "[Daily Quest Manager]";
+			mes "Are you sure?";
+			next;
+			if (select("[1] No:[X] ^FF0000Yes, cancel^000000") == 2) {
+				erasequest .@qid;
+				mes "[Daily Quest Manager]";
+				mes "Quest canceled. Your progress has been reset.";
+				cutin "", 255;
+				close;
+			}
+		}
+		mes "[Daily Quest Manager]";
+		mes "Good luck with your hunt!";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CONFIRM AND ACCEPT QUEST
+	// ============================================================
+
+	mes "[Daily Quest Manager]";
+	mes "Quest: ^0055FFDaily Quest Enduring Power^000000";
+	mes "Map: ^00FF00" + .@qname$ + "^000000";
+	mes " ";
+	switch(.@choice) {
+		case 1: mes "Hunt: ^FF6600500 monsters^000000"; break;
+		case 2: mes "Hunt: ^FF66002000 monsters + 1 The One^000000"; break;
+		case 3: mes "Hunt: ^FF66005000 monsters + 1 Nightmare Piamette^000000"; break;
+		case 4: mes "Hunt: ^FF66005000 monsters + 1 Guide of Dead^000000"; break;
+		case 5: mes "Hunt: ^FF66003000 monsters^000000"; break;
+	}
+	mes " ";
+	mes "^888888This quest resets every 24 hours.^000000";
+	next;
+
+	if (select("[1] Accept Quest:[X] Cancel") == 2) {
+		mes "[Daily Quest Manager]";
+		mes "Come back when you're ready!";
+		cutin "", 255;
+		close;
+	}
+
+	setquest .@qid;
+	specialeffect2 EF_STEAL;
+
+	mes "[Daily Quest Manager]";
+	mes "^00AA00Quest accepted!^000000";
+	mes "Good luck, adventurer!";
+	mes "Return when you've completed the hunt.";
+	cutin "", 255;
+	close;
+}
+
+// ============================================================
+// BARTER SHOP - EP_BarterShop
+// Rename "EP_BarterShop" to match your server's shop name
+// Add items below in format: itemID,cost_itemID,cost_amount
+// ============================================================
+
+// -	shop	EP_BarterShop	-1,{
+// 	<ItemID>,<CurrencyItemID>:<Amount>;
+// 	Example:
+// 	501,1230046:10;		// Red Potion costs 10 Enduring Power Coin
+// }

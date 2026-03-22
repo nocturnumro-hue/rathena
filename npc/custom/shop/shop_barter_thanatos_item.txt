@@ -1,0 +1,418 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC TRADER
+//@reloadnpcfile npc/custom/shop/npc_thanatos_enchant_item.txt
+// ============================================
+askald,159,115,5	script	Thanatos Item	563,{
+	mes "[Accessory Trader]";
+	mes "Well Come Thanatos Revamp Item!";
+	mes "Please select shop Type:";
+	next;
+	
+	switch(select("Shop Material:Shop Brilliant Light:Shop Sinful:Shop Headgears Good Evil:Enchant UI:Upgrade Enchant:Add Second Enchant:Exit")) {
+		case 1:
+			mes "[Material Trader]";
+			mes "Open Trade Metarial...";
+			close2;
+			callshop "Shop_Trade_Metarial";
+			end;
+		case 2:
+			mes "[Accessory Trader]";
+			mes "Open Shop Accessory...";
+			close2;
+			callshop "Shop_Brilliant_Light";
+			end;
+		
+		case 3:
+			mes "[Accessory Trader]";
+			mes "Open Shop Accessory...";
+			close2;
+			callshop "Shop_Sinful";
+			end;
+		case 4:
+			mes "[Headgears Good Evil Trader]";
+			mes "Open Shop Headgears...";
+			close2;
+			callshop "Headgears_Good_Evil";
+			end;
+		case 5:
+			mes "[Enchant System]";
+			mes "Opening Enchant UI...";
+			close2;
+			item_enchant(67);
+			end;
+		case 6:
+			// UPGRADE ENCHANT
+			mes "[Upgrade Enchant System]";
+			mes "Welcome to Enchant Upgrade System!";
+			mes " ";
+			mes "^0000FFYou can upgrade your enchants here:^000000";
+			mes "- Magic Essence Lv1 => Lv10";
+			mes "- Acute Lv1 => Lv10";
+			mes "- Master Archer Lv1 => Lv10";
+			mes "- Adamantine Lv1 => Lv10";
+			mes "- Affection Lv1 => Lv10";
+			mes "- Unyielding Lv1 => Lv10";
+			next;
+			
+			// Check if player has valid item equipped
+			if (!getequipid(EQI_HEAD_TOP)) {
+				mes "[Upgrade Enchant System]";
+				mes "Please equip a Crown of Good and Evil item first!";
+				close;
+			}
+			
+			.@equip_slot = EQI_HEAD_TOP;
+			.@equip_id = getequipid(.@equip_slot);
+			
+			// Check if item is valid
+			.@is_valid = 0;
+			switch(.@equip_id) {
+				case 400374: case 400375: case 400376: case 400377: case 400378:
+				case 400379: case 400380: case 400381: case 400382: case 400383:
+				case 400384: case 400385: case 400386: case 400387: case 400388:
+				case 400389: case 400390: case 400391: case 400392: case 400393:
+				case 400394: case 400395:
+					.@is_valid = 1;
+					break;
+			}
+			
+			if (!.@is_valid) {
+				mes "[Upgrade Enchant System]";
+				mes "^FF0000This item cannot be upgraded here!^000000";
+				mes "Only Crown of Good and Evil items are allowed.";
+				close;
+			}
+			
+			.@equip_refine = getequiprefinerycnt(.@equip_slot);
+			
+			setarray .@card[0],
+				getequipcardid(.@equip_slot, 0),
+				getequipcardid(.@equip_slot, 1),
+				getequipcardid(.@equip_slot, 2),
+				getequipcardid(.@equip_slot, 3);
+			
+			// Define enchant arrays (Item IDs for level 1-10) - CORRECTED IDs
+			setarray .@magic_essence[0], 29071, 29072, 29073, 29074, 29075, 29076, 29077, 29078, 29079, 29080;
+			setarray .@acute[0], 29081, 29082, 29083, 29084, 29085, 29086, 29087, 29088, 29089, 29090;
+			setarray .@master_archer[0], 29091, 29092, 29093, 29094, 29095, 29096, 29097, 29098, 29099, 29100;
+			setarray .@adamantine[0], 29101, 29102, 29103, 29104, 29105, 29106, 29107, 29108, 29109, 29110;
+			setarray .@affection[0], 29111, 29112, 29113, 29114, 29115, 29116, 29117, 29118, 29119, 29120;
+			setarray .@unyielding[0], 29706, 29707, 29708, 29709, 29710, 29711, 29712, 29713, 29714, 29715;
+			
+			// Check all 4 slots for upgradeable enchant
+			.@can_upgrade = 0;
+			.@current_level = 0;
+			.@enchant_type = -1;
+			.@enchant_slot = -1;
+			
+			// Loop through all 4 card slots
+			for (.@slot = 0; .@slot < 4; .@slot++) {
+				.@current_enchant = .@card[.@slot];
+				
+				// Check all enchant types
+				for (.@i = 0; .@i < 10; .@i++) {
+					if (.@current_enchant == .@magic_essence[.@i]) {
+						.@can_upgrade = 1;
+						.@current_level = .@i + 1;
+						.@enchant_type = 0;
+						.@enchant_slot = .@slot;
+						break;
+					}
+					if (.@current_enchant == .@acute[.@i]) {
+						.@can_upgrade = 1;
+						.@current_level = .@i + 1;
+						.@enchant_type = 1;
+						.@enchant_slot = .@slot;
+						break;
+					}
+					if (.@current_enchant == .@master_archer[.@i]) {
+						.@can_upgrade = 1;
+						.@current_level = .@i + 1;
+						.@enchant_type = 2;
+						.@enchant_slot = .@slot;
+						break;
+					}
+					if (.@current_enchant == .@adamantine[.@i]) {
+						.@can_upgrade = 1;
+						.@current_level = .@i + 1;
+						.@enchant_type = 3;
+						.@enchant_slot = .@slot;
+						break;
+					}
+					if (.@current_enchant == .@affection[.@i]) {
+						.@can_upgrade = 1;
+						.@current_level = .@i + 1;
+						.@enchant_type = 4;
+						.@enchant_slot = .@slot;
+						break;
+					}
+					if (.@current_enchant == .@unyielding[.@i]) {
+						.@can_upgrade = 1;
+						.@current_level = .@i + 1;
+						.@enchant_type = 5;
+						.@enchant_slot = .@slot;
+						break;
+					}
+				}
+				
+				// If found upgradeable enchant, stop searching
+				if (.@can_upgrade) break;
+			}
+			
+			if (!.@can_upgrade || .@current_level >= 10) {
+				mes "[Upgrade Enchant System]";
+				mes "^FF0000No upgradeable enchantment found!^000000";
+				mes " ";
+				mes "Requirements:";
+				mes "- Item must have Magic Essence/Acute/Master Archer/Adamantine/Affection/Unyielding enchant";
+				mes "- Enchant must be below Level 10";
+				close;
+			}
+			
+			.@next_level = .@current_level + 1;
+			.@upgrade_cost = 50 + ((.@current_level - 1) * 20); // 50, 70, 90, 110, etc.
+			
+			// Get enchant name
+			switch(.@enchant_type) {
+				case 0: .@enchant_name$ = "Magic Essence"; break;
+				case 1: .@enchant_name$ = "Acute"; break;
+				case 2: .@enchant_name$ = "Master Archer"; break;
+				case 3: .@enchant_name$ = "Adamantine"; break;
+				case 4: .@enchant_name$ = "Affection"; break;
+				case 5: .@enchant_name$ = "Unyielding"; break;
+			}
+			
+			mes "[Upgrade Enchant System]";
+			mes "Current Enchant: ^0000FF" + .@enchant_name$ + " Lv" + .@current_level + "^000000";
+			mes "Upgrade to: ^00FF00" + .@enchant_name$ + " Lv" + .@next_level + "^000000";
+			mes "^FF6600Slot Position:^000000 " + (.@enchant_slot + 1);
+			mes " ";
+			mes "^FF0000Cost:^000000";
+			mes "- Fate Fragment: " + .@upgrade_cost;
+			mes "- Sin Fragment: " + .@upgrade_cost;
+			mes "- Enchant Ticket: " + ((.@current_level / 2) + 1);
+			if (.@current_level >= 3) mes "- M Dimension Essence: " + ((.@current_level - 1) / 2);
+			next;
+			
+			if (select("Cancel:Upgrade") == 1) close;
+			
+			// Check materials (using item IDs from your system)
+			.@fate_frag = 1000263; // Fate_Fragment
+			.@sin_frag = 1000257;  // Sin_Fragment
+			.@enchant_ticket = 1000874; // Enchant_Ticket
+			.@dimension_essence = 7925; // M_Dimension_Essence
+			
+			.@ticket_cost = (.@current_level / 2) + 1;
+			.@essence_cost = 0;
+			if (.@current_level >= 3) .@essence_cost = (.@current_level - 1) / 2;
+			
+			if (countitem(.@fate_frag) < .@upgrade_cost || countitem(.@sin_frag) < .@upgrade_cost) {
+				mes "[Upgrade Enchant System]";
+				mes "^FF0000Not enough Fragments!^000000";
+				close;
+			}
+			
+			if (countitem(.@enchant_ticket) < .@ticket_cost) {
+				mes "[Upgrade Enchant System]";
+				mes "^FF0000Not enough Enchant Tickets!^000000";
+				close;
+			}
+			
+			if (.@essence_cost > 0 && countitem(.@dimension_essence) < .@essence_cost) {
+				mes "[Upgrade Enchant System]";
+				mes "^FF0000Not enough M Dimension Essence!^000000";
+				close;
+			}
+			
+			// Consume materials
+			delitem .@fate_frag, .@upgrade_cost;
+			delitem .@sin_frag, .@upgrade_cost;
+			delitem .@enchant_ticket, .@ticket_cost;
+			if (.@essence_cost > 0) delitem .@dimension_essence, .@essence_cost;
+			
+			// Get new enchant ID
+			switch(.@enchant_type) {
+				case 0: .@new_enchant = .@magic_essence[.@next_level - 1]; break;
+				case 1: .@new_enchant = .@acute[.@next_level - 1]; break;
+				case 2: .@new_enchant = .@master_archer[.@next_level - 1]; break;
+				case 3: .@new_enchant = .@adamantine[.@next_level - 1]; break;
+				case 4: .@new_enchant = .@affection[.@next_level - 1]; break;
+				case 5: .@new_enchant = .@unyielding[.@next_level - 1]; break;
+			}
+			
+			// CRITICAL FIX: Only upgrade in current slot - DO NOT move to slot 4
+			.@card[.@enchant_slot] = .@new_enchant;
+			
+			delequip .@equip_slot;
+			specialeffect2 EF_REPAIRWEAPON;
+			
+			mes "[Upgrade Enchant System]";
+			mes "^00FF00Upgrade successful!^000000";
+			mes " ";
+			mes "Your enchant is now: ^0000FF" + .@enchant_name$ + " Lv" + .@next_level + "^000000";
+			mes "Position: ^00FF00Slot " + (.@enchant_slot + 1) + "^000000";
+			getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+			equip .@equip_id;
+			close;
+		case 7:
+			// ADD SECOND ENCHANT TO SLOT 2
+			mes "[Second Enchant System]";
+			mes "Welcome to Second Enchant System!";
+			mes " ";
+			mes "^0000FFRequirements:^000000";
+			mes "- Slot 4 must have a MAX level enchant (Lv10)";
+			mes "- Slot 2 must be empty";
+			mes " ";
+			mes "^00FF00You can add one of these enchants to Slot 2:^000000";
+			mes "- Magic Essence Lv1";
+			mes "- Acute Lv1";
+			mes "- Master Archer Lv1";
+			mes "- Adamantine Lv1";
+			mes "- Affection Lv1";
+			mes "- Unyielding Lv1";
+			next;
+			
+			// Check if player has valid item equipped
+			if (!getequipid(EQI_HEAD_TOP)) {
+				mes "[Second Enchant System]";
+				mes "Please equip a Crown of Good and Evil item first!";
+				close;
+			}
+			
+			.@equip_slot = EQI_HEAD_TOP;
+			.@equip_id = getequipid(.@equip_slot);
+			
+			// Check if item is valid
+			.@is_valid = 0;
+			switch(.@equip_id) {
+				case 400374: case 400375: case 400376: case 400377: case 400378:
+				case 400379: case 400380: case 400381: case 400382: case 400383:
+				case 400384: case 400385: case 400386: case 400387: case 400388:
+				case 400389: case 400390: case 400391: case 400392: case 400393:
+				case 400394: case 400395:
+					.@is_valid = 1;
+					break;
+			}
+			
+			if (!.@is_valid) {
+				mes "[Second Enchant System]";
+				mes "^FF0000This item cannot be enchanted here!^000000";
+				mes "Only Crown of Good and Evil items are allowed.";
+				close;
+			}
+			
+			.@equip_refine = getequiprefinerycnt(.@equip_slot);
+			
+			setarray .@card[0],
+				getequipcardid(.@equip_slot, 0),
+				getequipcardid(.@equip_slot, 1),
+				getequipcardid(.@equip_slot, 2),
+				getequipcardid(.@equip_slot, 3);
+			
+			// Check if slot 2 is empty
+			if (.@card[1] != 0) {
+				mes "[Second Enchant System]";
+				mes "^FF0000Slot 2 is not empty!^000000";
+				mes "You must have an empty slot 2 to add second enchant.";
+				close;
+			}
+			
+			// Check if slot 4 has max level enchant
+			.@slot4_enchant = .@card[3];
+			.@has_max_enchant = 0;
+			
+			// Define max level enchant IDs (Lv10)
+			setarray .@max_enchants[0], 29080, 29090, 29100, 29110, 29120, 29715;
+			
+			for (.@i = 0; .@i < 6; .@i++) {
+				if (.@slot4_enchant == .@max_enchants[.@i]) {
+					.@has_max_enchant = 1;
+					break;
+				}
+			}
+			
+			if (!.@has_max_enchant) {
+				mes "[Second Enchant System]";
+				mes "^FF0000Slot 4 does not have a MAX level enchant!^000000";
+				mes " ";
+				mes "Requirements:";
+				mes "- Slot 4 must have Lv10 enchant";
+				mes "- Available: Magic Essence/Acute/Master Archer/Adamantine/Affection/Unyielding Lv10";
+				close;
+			}
+			
+			// Select enchant type
+			mes "[Second Enchant System]";
+			mes "Select the enchant you want to add to Slot 2:";
+			next;
+			
+			switch(select("Magic Essence Lv1:Acute Lv1:Master Archer Lv1:Adamantine Lv1:Affection Lv1:Unyielding Lv1:Cancel")) {
+				case 1: .@new_enchant = 29071; .@enchant_name$ = "Magic Essence"; break;
+				case 2: .@new_enchant = 29081; .@enchant_name$ = "Acute"; break;
+				case 3: .@new_enchant = 29091; .@enchant_name$ = "Master Archer"; break;
+				case 4: .@new_enchant = 29101; .@enchant_name$ = "Adamantine"; break;
+				case 5: .@new_enchant = 29111; .@enchant_name$ = "Affection"; break;
+				case 6: .@new_enchant = 29706; .@enchant_name$ = "Unyielding"; break;
+				case 7: close;
+			}
+			
+			// Set material costs
+			.@enchant_cost = 100; // Cost to add second enchant
+			.@fate_frag = 1000263;
+			.@sin_frag = 1000257;
+			.@enchant_ticket = 1000874;
+			
+			mes "[Second Enchant System]";
+			mes "You selected: ^0000FF" + .@enchant_name$ + " Lv1^000000";
+			mes " ";
+			mes "^FF0000Cost:^000000";
+			mes "- Fate Fragment: " + .@enchant_cost;
+			mes "- Sin Fragment: " + .@enchant_cost;
+			mes "- Enchant Ticket: 5";
+			next;
+			
+			if (select("Cancel:Add Enchant") == 1) close;
+			
+			// Check materials
+			if (countitem(.@fate_frag) < .@enchant_cost || countitem(.@sin_frag) < .@enchant_cost) {
+				mes "[Second Enchant System]";
+				mes "^FF0000Not enough Fragments!^000000";
+				close;
+			}
+			
+			if (countitem(.@enchant_ticket) < 5) {
+				mes "[Second Enchant System]";
+				mes "^FF0000Not enough Enchant Tickets!^000000";
+				close;
+			}
+			
+			// Consume materials
+			delitem .@fate_frag, .@enchant_cost;
+			delitem .@sin_frag, .@enchant_cost;
+			delitem .@enchant_ticket, 5;
+			
+			// Add enchant to slot 2
+			.@card[1] = .@new_enchant;
+			
+			delequip .@equip_slot;
+			specialeffect2 EF_REPAIRWEAPON;
+			
+			mes "[Second Enchant System]";
+			mes "^00FF00Enchant added successfully!^000000";
+			mes " ";
+			mes "Slot 2 now has: ^0000FF" + .@enchant_name$ + " Lv1^000000";
+			mes " ";
+			mes "You can now upgrade this enchant using ^0000FFUpgrade Enchant^000000 option!";
+			getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+			equip .@equip_id;
+			close;
+			
+		case 8:
+			mes "[Accessory Trader]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

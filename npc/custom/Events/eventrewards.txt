@@ -1,0 +1,11 @@
+//===== By:==================================================
+// @reloadnpc npc/custom/manuel_npc/eventrewards.txt
+
+function	script	eventRewards	{
+	//reward for winning
+	getitem 7227, 1;  //TCG Ticket
+	getitem 25723, 5; //Core Cor
+	getitem 25669, 5; //Unknown Part
+	getitem 25271, 10; //llusion Stone
+
+}

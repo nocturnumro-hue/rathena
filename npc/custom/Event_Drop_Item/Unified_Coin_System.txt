@@ -1,0 +1,337 @@
+//===== rAthena Script =======================================
+//= COIN DROP SYSTEM - Gold / Mithril / Platinum
+//===== Description: =========================================
+//= Drop rate scales with monster level
+//= Includes Coin Exchanger NPC in Prontera
+//===== Items Required: ======================================
+//= 7517: Gold Coin
+//= 674:  Mithril Coin
+//= 677:  Platinum Coin
+//===== Installation: ========================================
+//= Save as: npc/custom/coin_drop_system.txt
+//= Add to scripts_custom.conf:
+//=   npc: npc/custom/coin_drop_system.txt
+//= Reload: @reloadscript or restart server
+//============================================================
+
+//===== COIN DROP SYSTEM =====
+-	script	CoinDropSystem	-1,{
+
+OnNPCKillEvent:
+	// Get mob level
+	.@mob_level = getmonsterinfo(killedrid, MOB_LV);
+
+	// Calculate drop rates based on monster level
+	if (.@mob_level <= 100) {
+		.@gold_rate     = 100;   // 1%    (100/10000)
+		.@mithril_rate  = 10;    // 0.1%  (10/10000)
+		.@platinum_rate = 1;     // 0.01% (1/10000)
+	} else {
+		.@extra_levels  = .@mob_level - 100;
+		.@bonus         = (.@extra_levels / 50);
+		.@gold_rate     = 100 + .@bonus;
+		.@mithril_rate  = 10  + .@bonus;
+		.@platinum_rate = 1   + .@bonus;
+	}
+
+	// Check Gold Coin drop
+	if (rand(1, 10000) <= .@gold_rate) {
+		getitem 7517, 1;
+		announce "[" + strcharinfo(0) + "] obtained Gold Coin!", bc_self, 0x00FF00;
+	}
+
+	// Check Mithril Coin drop
+	if (rand(1, 10000) <= .@mithril_rate) {
+		getitem 674, 1;
+		announce "[" + strcharinfo(0) + "] obtained Mithril Coin!", bc_self, 0x00FF00;
+	}
+
+	// Check Platinum Coin drop
+	if (rand(1, 10000) <= .@platinum_rate) {
+		getitem 677, 1;
+		announce "[" + strcharinfo(0) + "] obtained Platinum Coin!", bc_self, 0x80FF00;
+	}
+
+	end;
+}
+
+//===== COIN EXCHANGER NPC =====
+prontera,180,190,1	script	Coin Exchanger	10304,{
+	mes "[Coin Exchanger]";
+	mes "Hello! I can exchange coins and Zeny.";
+	mes " ";
+	mes "^0000FF=== Coin => Zeny ===^000000";
+	mes "^FF0000Gold Coin^000000 = 1,000,000 Zeny";
+	mes "^0000FFMithril Coin^000000 = 3,000,000 Zeny";
+	mes "^008000Platinum Coin^000000 = 10,000,000 Zeny";
+	mes " ";
+	mes "^FF0000=== Zeny => Coin (+10% fee) ===^000000";
+	mes "1,100,000 Zeny = ^FF00001 Gold Coin^000000";
+	mes "3,300,000 Zeny = ^0000FF1 Mithril Coin^000000";
+	mes "11,000,000 Zeny = ^0080001 Platinum Coin^000000";
+	next;
+
+	switch(select("Coin => Zeny:Zeny => Coin:Check Inventory:Cancel")) {
+	case 1:
+		// Coin to Zeny Menu
+		switch(select("Exchange Gold Coins:Exchange Mithril Coins:Exchange Platinum Coins:Exchange All:Back")) {
+		case 1:
+			// Exchange Gold Coins
+			.@gold_count = countitem(7517);
+			if (.@gold_count == 0) {
+				mes "[Coin Exchanger]";
+				mes "You don't have any Gold Coins!";
+				close;
+			}
+			mes "[Coin Exchanger]";
+			mes "You have ^FF0000" + .@gold_count + " Gold Coins^000000.";
+			mes "Exchange all for ^0000FF" + (.@gold_count * 1000000) + " Zeny^000000?";
+			next;
+			if(select("Yes:No") == 2) close;
+
+			delitem 7517, .@gold_count;
+			Zeny += (.@gold_count * 1000000);
+			mes "[Coin Exchanger]";
+			mes "Exchanged ^FF0000" + .@gold_count + " Gold Coins^000000!";
+			mes "You received ^0000FF" + (.@gold_count * 1000000) + " Zeny^000000!";
+			close;
+
+		case 2:
+			// Exchange Mithril Coins
+			.@mithril_count = countitem(674);
+			if (.@mithril_count == 0) {
+				mes "[Coin Exchanger]";
+				mes "You don't have any Mithril Coins!";
+				close;
+			}
+			mes "[Coin Exchanger]";
+			mes "You have ^0000FF" + .@mithril_count + " Mithril Coins^000000.";
+			mes "Exchange all for ^0000FF" + (.@mithril_count * 3000000) + " Zeny^000000?";
+			next;
+			if(select("Yes:No") == 2) close;
+
+			delitem 674, .@mithril_count;
+			Zeny += (.@mithril_count * 3000000);
+			mes "[Coin Exchanger]";
+			mes "Exchanged ^0000FF" + .@mithril_count + " Mithril Coins^000000!";
+			mes "You received ^0000FF" + (.@mithril_count * 3000000) + " Zeny^000000!";
+			close;
+
+		case 3:
+			// Exchange Platinum Coins
+			.@platinum_count = countitem(677);
+			if (.@platinum_count == 0) {
+				mes "[Coin Exchanger]";
+				mes "You don't have any Platinum Coins!";
+				close;
+			}
+			mes "[Coin Exchanger]";
+			mes "You have ^008000" + .@platinum_count + " Platinum Coins^000000.";
+			mes "Exchange all for ^0000FF" + (.@platinum_count * 10000000) + " Zeny^000000?";
+			next;
+			if(select("Yes:No") == 2) close;
+
+			delitem 677, .@platinum_count;
+			Zeny += (.@platinum_count * 10000000);
+			mes "[Coin Exchanger]";
+			mes "Exchanged ^008000" + .@platinum_count + " Platinum Coins^000000!";
+			mes "You received ^0000FF" + (.@platinum_count * 10000000) + " Zeny^000000!";
+			close;
+
+		case 4:
+			// Exchange All Coins
+			.@gold_count     = countitem(7517);
+			.@mithril_count  = countitem(674);
+			.@platinum_count = countitem(677);
+			.@total_zeny     = (.@gold_count * 1000000) + (.@mithril_count * 3000000) + (.@platinum_count * 10000000);
+
+			if (.@gold_count == 0 && .@mithril_count == 0 && .@platinum_count == 0) {
+				mes "[Coin Exchanger]";
+				mes "You don't have any coins!";
+				close;
+			}
+
+			mes "[Coin Exchanger]";
+			mes "Your coins:";
+			mes "^FF0000Gold: "    + .@gold_count     + "^000000";
+			mes "^0000FFMithril: " + .@mithril_count  + "^000000";
+			mes "^008000Platinum: "+ .@platinum_count + "^000000";
+			mes " ";
+			mes "Total: ^0000FF" + .@total_zeny + " Zeny^000000";
+			mes "Exchange all?";
+			next;
+			if(select("Yes:No") == 2) close;
+
+			if (.@gold_count > 0)     delitem 7517, .@gold_count;
+			if (.@mithril_count > 0)  delitem 674,  .@mithril_count;
+			if (.@platinum_count > 0) delitem 677,  .@platinum_count;
+			Zeny += .@total_zeny;
+
+			mes "[Coin Exchanger]";
+			mes "Exchange complete!";
+			mes "You received ^0000FF" + .@total_zeny + " Zeny^000000!";
+			close;
+
+		case 5:
+			close;
+		}
+		break;
+
+	case 2:
+		// Zeny to Coin Menu (+10% fee)
+		mes "[Coin Exchanger]";
+		mes "^FF0000Warning: 10% service fee applies!^000000";
+		mes " ";
+		mes "Which coin do you want to buy?";
+		next;
+
+		switch(select("Buy Gold Coins:Buy Mithril Coins:Buy Platinum Coins:Back")) {
+		case 1:
+			// Buy Gold Coins (1,100,000 Zeny each)
+			mes "[Coin Exchanger]";
+			mes "^FF0000Gold Coin^000000: 1,100,000 Zeny each";
+			mes "Your Zeny: ^0000FF" + Zeny + "^000000";
+			mes " ";
+			mes "How many do you want to buy?";
+			mes "^777777(Enter 0 to cancel)^000000";
+			next;
+			input .@amount;
+
+			if (.@amount <= 0) { mes "[Coin Exchanger]"; mes "Cancelled."; close; }
+
+			.@cost = .@amount * 1100000;
+			if (Zeny < .@cost) {
+				mes "[Coin Exchanger]";
+				mes "^FF0000Not enough Zeny!^000000";
+				mes "You need ^0000FF" + .@cost + " Zeny^000000.";
+				close;
+			}
+			if (checkweight(7517, .@amount) == 0) {
+				mes "[Coin Exchanger]";
+				mes "^FF0000Your inventory is too heavy!^000000";
+				close;
+			}
+
+			mes "[Coin Exchanger]";
+			mes "Buy ^FF0000" + .@amount + " Gold Coins^000000";
+			mes "Cost: ^0000FF" + .@cost + " Zeny^000000";
+			mes " ";
+			mes "Confirm purchase?";
+			next;
+			if(select("Yes:No") == 2) close;
+
+			Zeny -= .@cost;
+			getitem 7517, .@amount;
+			mes "[Coin Exchanger]";
+			mes "Purchase complete!";
+			mes "You bought ^FF0000" + .@amount + " Gold Coins^000000!";
+			close;
+
+		case 2:
+			// Buy Mithril Coins (3,300,000 Zeny each)
+			mes "[Coin Exchanger]";
+			mes "^0000FFMithril Coin^000000: 3,300,000 Zeny each";
+			mes "Your Zeny: ^0000FF" + Zeny + "^000000";
+			mes " ";
+			mes "How many do you want to buy?";
+			mes "^777777(Enter 0 to cancel)^000000";
+			next;
+			input .@amount;
+
+			if (.@amount <= 0) { mes "[Coin Exchanger]"; mes "Cancelled."; close; }
+
+			.@cost = .@amount * 3300000;
+			if (Zeny < .@cost) {
+				mes "[Coin Exchanger]";
+				mes "^FF0000Not enough Zeny!^000000";
+				mes "You need ^0000FF" + .@cost + " Zeny^000000.";
+				close;
+			}
+			if (checkweight(674, .@amount) == 0) {
+				mes "[Coin Exchanger]";
+				mes "^FF0000Your inventory is too heavy!^000000";
+				close;
+			}
+
+			mes "[Coin Exchanger]";
+			mes "Buy ^0000FF" + .@amount + " Mithril Coins^000000";
+			mes "Cost: ^0000FF" + .@cost + " Zeny^000000";
+			mes " ";
+			mes "Confirm purchase?";
+			next;
+			if(select("Yes:No") == 2) close;
+
+			Zeny -= .@cost;
+			getitem 674, .@amount;
+			mes "[Coin Exchanger]";
+			mes "Purchase complete!";
+			mes "You bought ^0000FF" + .@amount + " Mithril Coins^000000!";
+			close;
+
+		case 3:
+			// Buy Platinum Coins (11,000,000 Zeny each)
+			mes "[Coin Exchanger]";
+			mes "^008000Platinum Coin^000000: 11,000,000 Zeny each";
+			mes "Your Zeny: ^0000FF" + Zeny + "^000000";
+			mes " ";
+			mes "How many do you want to buy?";
+			mes "^777777(Enter 0 to cancel)^000000";
+			next;
+			input .@amount;
+
+			if (.@amount <= 0) { mes "[Coin Exchanger]"; mes "Cancelled."; close; }
+
+			.@cost = .@amount * 11000000;
+			if (Zeny < .@cost) {
+				mes "[Coin Exchanger]";
+				mes "^FF0000Not enough Zeny!^000000";
+				mes "You need ^0000FF" + .@cost + " Zeny^000000.";
+				close;
+			}
+			if (checkweight(677, .@amount) == 0) {
+				mes "[Coin Exchanger]";
+				mes "^FF0000Your inventory is too heavy!^000000";
+				close;
+			}
+
+			mes "[Coin Exchanger]";
+			mes "Buy ^008000" + .@amount + " Platinum Coins^000000";
+			mes "Cost: ^0000FF" + .@cost + " Zeny^000000";
+			mes " ";
+			mes "Confirm purchase?";
+			next;
+			if(select("Yes:No") == 2) close;
+
+			Zeny -= .@cost;
+			getitem 677, .@amount;
+			mes "[Coin Exchanger]";
+			mes "Purchase complete!";
+			mes "You bought ^008000" + .@amount + " Platinum Coins^000000!";
+			close;
+
+		case 4:
+			close;
+		}
+		break;
+
+	case 3:
+		// Check Inventory
+		.@gold_count     = countitem(7517);
+		.@mithril_count  = countitem(674);
+		.@platinum_count = countitem(677);
+		.@total_value    = (.@gold_count * 1000000) + (.@mithril_count * 3000000) + (.@platinum_count * 10000000);
+
+		mes "[Coin Exchanger]";
+		mes "Your coin inventory:";
+		mes "^FF0000Gold Coins: "    + .@gold_count     + "^000000";
+		mes "^0000FFMithril Coins: " + .@mithril_count  + "^000000";
+		mes "^008000Platinum Coins: "+ .@platinum_count + "^000000";
+		mes " ";
+		mes "Total value: ^0000FF" + .@total_value + " Zeny^000000";
+		mes "Current Zeny: ^0000FF" + Zeny + "^000000";
+		close;
+
+	case 4:
+		close;
+	}
+}

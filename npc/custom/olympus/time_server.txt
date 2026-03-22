@@ -1,0 +1,77 @@
+prontera,155,208,4	script	Server Clock	10371,{
+	mes " SERVER INFO ";
+	mes " ";
+	
+	// Lấy thời gian bằng gettimestr - chính xác
+	.@time$ = gettimestr("%H:%M:%S", 21);      // Giờ:Phút:Giây
+	.@dayname$ = gettimestr("%A", 21);         // Tên thứ (Monday, Tuesday...)
+	.@monthname$ = gettimestr("%B", 21);       // Tên tháng (January, February...)
+	.@day$ = gettimestr("%d", 21);             // Ngày (01-31)
+	.@year$ = gettimestr("%Y", 21);            // Năm (2024, 2025...)
+	
+	// Lấy số người online thật
+	.@real_online = getusers(1);
+	
+	// Dùng số fake đã lưu
+	.@fake_online = .@real_online * .fake_multiplier;
+	
+	// Hiển thị thông tin (chỉ dùng đỏ và xanh dương)
+	mes "^FF0000 Server Time^000000";
+	mes "^0000FF " + .@time$ + "^000000";
+	mes " ";
+	mes "^FF0000 Server Date^000000";
+	mes "^0000FF " + .@dayname$ + "^000000";
+	mes "^0000FF " + .@monthname$ + " " + .@day$ + ", " + .@year$ + "^000000";
+	mes " ";
+	mes "^FF0000 Players Online^000000";
+	mes "^0000FF " + .@fake_online + " Players^000000";
+	mes " ";
+	close;
+	
+OnInit:
+	// Random multiplier lần đầu
+	.fake_multiplier = rand(2, 4);
+	callsub OnUpdateClock;
+	initnpctimer;
+	end;
+
+OnTimer1000:
+	callsub OnUpdateClock;
+	initnpctimer;
+	end;
+
+// Random multiplier mới mỗi 5-10 phút
+OnTimer300000:  // 5 phút = 300000ms
+	stopnpctimer;
+	
+	// Random multiplier mới
+	.fake_multiplier = rand(2, 4);
+	
+	// Random thời gian đợi tiếp theo: 5-10 phút
+	.next_change = rand(300, 600);  // 300-600 giây
+	
+	// Khởi động timer với khoảng thời gian mới
+	initnpctimer;
+	end;
+
+OnUpdateClock:
+	// Lấy thời gian hiện tại
+	.@time$ = gettimestr("%T", 21);
+	
+	// Lấy số người online thật
+	.@real_online = getusers(1);
+	
+	// Dùng multiplier cố định cho đến khi random lại
+	.@fake_online = .@real_online * .fake_multiplier;
+	
+	// Xóa waitingroom cũ
+	delwaitingroom;
+	
+	// Tạo waitingroom mới với số fake
+	waitingroom "" + .@time$ + " | " + .@fake_online + " Online", 0;
+	
+	return;
+}
+
+// Duplicate tại Askald
+askald,114,162,4	duplicate(Server Clock)	Server Clock#ask	10371

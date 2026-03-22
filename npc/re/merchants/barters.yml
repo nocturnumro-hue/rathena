@@ -62,6 +62,11 @@ Footer:
   - Path: npc/re/merchants/barters/quests_18.yml
   - Path: npc/re/merchants/barters/quests_exp_175.yml
   - Path: npc/re/merchants/barters/refine.yml
-  - Path: npc/re/merchants/barters/rgsr_in.yml
+#  - Path: npc/re/merchants/barters/rgsr_in.yml
+  - Path: npc/re/merchants/barters/quests_19.yml
   - Path: npc/re/merchants/barters/Pet_Groomer.yml
-
+  - Path: npc/re/merchants/barters/clock_unknown_basement.yml
+  - Path: npc/re/merchants/barters/OldGlastHeim_CM.yml
+  - Path: npc/re/merchants/barters/GeffenNightArena.yml
+  - Path: npc/re/merchants/barters/Underwater_Sea.yml
+  

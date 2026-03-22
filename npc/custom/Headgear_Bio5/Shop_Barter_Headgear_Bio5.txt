@@ -1,0 +1,928 @@
+// ============================================
+// BIO5 AND ZODIAC SHOP - FULL SYSTEM
+// ============================================
+// Place: askald,11,225,5
+// @reloadnpcfile npc/custom/Headgear_Bio5/Shop_Barter_Headgear_Bio5.txt
+// Colors: Red (FF0000), Orange (FF6600), Blue (0000FF), Green (008800)
+// Energy Fragment (6820) Fragment of Vicious Mind (22687) Grudge Fragment (23016)
+// ============================================
+
+askald,11,225,5	script	Bio5 And Zodiac	601,{
+	disable_items;
+	
+	// ============================================
+	// CONFIGURATION
+	// ============================================
+	
+	// Bio5 Tier 1 Enchant Material
+	.enchant_item = 23016;
+	.enchant_slot4 = 50;
+	.enchant_slot3 = 50;
+	.enchant_slot2 = 50;
+	
+	// Bio5 Tier 1 Reset
+	.reset_item = 22687;
+	.reset_cost = 30;
+	
+	// Bio5 Tier 1 Upgrade Cost & Rate
+	.up_lv1 = 20;  .rate_lv1 = 90;
+	.up_lv2 = 40;  .rate_lv2 = 80;
+	.up_lv3 = 50;  .rate_lv3 = 70;
+	.up_lv4 = 70;  .rate_lv4 = 60;
+	.up_lv5 = 100; .rate_lv5 = 50;
+	.up_lv6 = 150; .rate_lv6 = 40;
+	.up_lv7 = 250; .rate_lv7 = 30;
+	.up_lv8 = 500; .rate_lv8 = 20;
+	.up_lv9 = 1000; .rate_lv9 = 10;
+	
+	// Zodiac Tier 2 Enchant Material
+	.zodiac_enchant_item = 23016;
+	.zodiac_slot4 = 100;
+	.zodiac_slot3 = 100;
+	.zodiac_slot2 = 100;
+	
+	// Zodiac Tier 2 Reset
+	.zodiac_reset_item = 22687;
+	.zodiac_reset_cost = 50;
+	
+	// Zodiac Tier 2 Upgrade Cost & Rate
+	.zodiac_up_lv1 = 30;  .zodiac_rate_lv1 = 90;
+	.zodiac_up_lv2 = 60;  .zodiac_rate_lv2 = 80;
+	.zodiac_up_lv3 = 80;  .zodiac_rate_lv3 = 70;
+	.zodiac_up_lv4 = 100; .zodiac_rate_lv4 = 60;
+	.zodiac_up_lv5 = 150; .zodiac_rate_lv5 = 50;
+	.zodiac_up_lv6 = 200; .zodiac_rate_lv6 = 40;
+	.zodiac_up_lv7 = 300; .zodiac_rate_lv7 = 30;
+	.zodiac_up_lv8 = 600; .zodiac_rate_lv8 = 20;
+	.zodiac_up_lv9 = 1200; .zodiac_rate_lv9 = 10;
+	
+	// ============================================
+	
+	mes "[Bio5 And Zodiac Shop]";
+	mes "Welcome to Bio5 And Zodiac Shop!";
+	mes "Please select service:";
+	next;
+	
+	switch(select("[1] Bio5 Headgear Shop:[2] Bio5 Headgear Enchant:[3] Zodiac Headgear Shop:[4] Zodiac Headgear Enchant:[5] Zodiac Boots Shop:[6] Zodiac Boots Enchant:[7] Special Items:[-Exit-]")) {
+		case 1:
+			mes "[Bio5 Headgear Shop]";
+			mes "Opening Bio5 Headgear Shop..";
+			close2;
+			callshop "Bio5_Headgear";
+			end;
+		
+		case 2:
+			mes "[Bio5 Tier 1 Enchant]";
+			mes "Opening Bio5 Tier 1 Enchant System..";
+			next;
+			
+			switch(select("^0000FFEnchant Helmet^000000:^FF0000Reset Enchant^000000:^FF6600Information^000000:^008800Back^000000")) {
+				case 1:
+					callsub Bio5_Tier1_Enchant;
+					end;
+				case 2:
+					callsub Bio5_Tier1_Reset;
+					end;
+				case 3:
+					callsub Bio5_Tier1_Info;
+					end;
+				case 4:
+					mes "[Bio5 Tier 1 Enchant]";
+					mes "Returning to main menu..";
+					close;
+			}
+			end;
+		
+		case 3:
+			mes "[Zodiac Headgear Shop]";
+			mes "Opening Zodiac Headgear Shop..";
+			close2;
+			callshop "Zodiac_Headgear";
+			end;
+		
+		case 4:
+			mes "[Zodiac Tier 2 Enchant]";
+			mes "Opening Zodiac Tier 2 Enchant System..";
+			next;
+			
+			switch(select("^0000FFEnchant Headgear^000000:^FF0000Reset Enchant^000000:^FF6600Information^000000:^008800Back^000000")) {
+				case 1:
+					callsub Zodiac_Tier2_Enchant;
+					end;
+				case 2:
+					callsub Zodiac_Tier2_Reset;
+					end;
+				case 3:
+					callsub Zodiac_Tier2_Info;
+					end;
+				case 4:
+					mes "[Zodiac Tier 2 Enchant]";
+					mes "Returning to main menu..";
+					close;
+			}
+			end;
+		
+		case 5:
+			mes "[Zodiac Boots Shop]";
+			mes "Opening Zodiac Boots Shop..";
+			close2;
+			callshop "Zodiac_Shoes";
+			end;
+
+		case 6:
+			mes "[Zodiac Boots Enchant]";
+			mes "Opening Zodiac Boots Enchant..";
+			close2;
+			item_enchant(171);
+			end;
+		
+		case 7:
+			mes "[Special Items Shop]";
+			mes "Opening Special Items Shop..";
+			close2;
+			callshop "Special_Items";
+			end;
+		
+		case 8:
+			mes "[Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+
+// ============================================
+// BIO5 TIER 1 ENCHANT
+// ============================================
+Bio5_Tier1_Enchant:
+	.@equip = getequipid(EQI_HEAD_TOP);
+	
+	switch(.@equip) {
+		case 18971: case 18972: case 18973: case 18974: case 18975:
+		case 18976: case 18977: case 18978: case 18979: case 18980:
+		case 18981: case 18982: case 18983: case 18984:
+			break;
+		default:
+			mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+			mes "^FF0000Only Bio5 Tier 1 Helmets can be enchanted!^000000";
+			mes "Valid IDs: 18971-18984";
+			close;
+	}
+	
+	setarray .@card[0], getequipcardid(EQI_HEAD_TOP,0), getequipcardid(EQI_HEAD_TOP,1), 
+						getequipcardid(EQI_HEAD_TOP,2), getequipcardid(EQI_HEAD_TOP,3);
+	.@refine = getequiprefinerycnt(EQI_HEAD_TOP);
+	
+	if (.@card[3] == 0) {
+		.@slot = 3;
+		.@cost = .enchant_slot4;
+		.@info$ = "^008800Slot 4 - Supreme Magic Lv1^000000";
+		.@is_upgrade = 0;
+	}
+	else if (.@card[2] == 0) {
+		.@slot = 2;
+		.@cost = .enchant_slot3;
+		.@info$ = "^008800Slot 3 - Supreme Magic Lv1^000000";
+		.@is_upgrade = 0;
+	}
+	else if (.@card[1] == 0) {
+		.@slot = 1;
+		.@cost = .enchant_slot2;
+		.@info$ = "^008800Slot 2 - Random Stats +1~5^000000";
+		.@is_upgrade = 0;
+	}
+	else {
+		.@can_upgrade = 0;
+		.@upgrade_slot = 0;
+		.@is_upgrade = 1;
+		
+		switch(.@card[1]) {
+		case 4700: case 4701: case 4702: case 4703:
+		case 4710: case 4711: case 4712: case 4713:
+		case 4720: case 4721: case 4722: case 4723:
+		case 4730: case 4731: case 4732: case 4733:
+		case 4740: case 4741: case 4742: case 4743:
+		case 4750: case 4751: case 4752: case 4753:
+			.@lv = (.@card[1] % 10);
+			switch(.@lv) {
+			case 0: .@cost = .up_lv1; .@rate = .rate_lv1; break;
+			case 1: .@cost = .up_lv2; .@rate = .rate_lv2; break;
+			case 2: .@cost = .up_lv3; .@rate = .rate_lv3; break;
+			case 3: .@cost = .up_lv4; .@rate = .rate_lv4; break;
+			}
+			.@can_upgrade = 1;
+			.@upgrade_slot = 1;
+			.@info$ = "^FF6600Upgrade Slot 2 (Stats) +" + .@lv + " -> +" + (.@lv+1) + "^000000";
+			break;
+		
+		case 4704: case 4714: case 4724: case 4734: case 4744: case 4754:
+			switch(.@card[2]) {
+			case 29706: case 29061: case 29071: case 29081: case 29091: case 29101: case 29111:
+				.@cost = .up_lv1; .@rate = .rate_lv1; .@lv = 1; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29707: case 29062: case 29072: case 29082: case 29092: case 29102: case 29112:
+				.@cost = .up_lv2; .@rate = .rate_lv2; .@lv = 2; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29708: case 29063: case 29073: case 29083: case 29093: case 29103: case 29113:
+				.@cost = .up_lv3; .@rate = .rate_lv3; .@lv = 3; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29709: case 29064: case 29074: case 29084: case 29094: case 29104: case 29114:
+				.@cost = .up_lv4; .@rate = .rate_lv4; .@lv = 4; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29710: case 29065: case 29075: case 29085: case 29095: case 29105: case 29115:
+				.@cost = .up_lv5; .@rate = .rate_lv5; .@lv = 5; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29711: case 29066: case 29076: case 29086: case 29096: case 29106: case 29116:
+				.@cost = .up_lv6; .@rate = .rate_lv6; .@lv = 6; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29712: case 29067: case 29077: case 29087: case 29097: case 29107: case 29117:
+				.@cost = .up_lv7; .@rate = .rate_lv7; .@lv = 7; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29713: case 29068: case 29078: case 29088: case 29098: case 29108: case 29118:
+				.@cost = .up_lv8; .@rate = .rate_lv8; .@lv = 8; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29714: case 29069: case 29079: case 29089: case 29099: case 29109: case 29119:
+				.@cost = .up_lv9; .@rate = .rate_lv9; .@lv = 9; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29715: case 29070: case 29080: case 29090: case 29100: case 29110: case 29120:
+				switch(.@card[3]) {
+				case 29706: case 29061: case 29071: case 29081: case 29091: case 29101: case 29111:
+					.@cost = .up_lv1; .@rate = .rate_lv1; .@lv = 1; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29707: case 29062: case 29072: case 29082: case 29092: case 29102: case 29112:
+					.@cost = .up_lv2; .@rate = .rate_lv2; .@lv = 2; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29708: case 29063: case 29073: case 29083: case 29093: case 29103: case 29113:
+					.@cost = .up_lv3; .@rate = .rate_lv3; .@lv = 3; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29709: case 29064: case 29074: case 29084: case 29094: case 29104: case 29114:
+					.@cost = .up_lv4; .@rate = .rate_lv4; .@lv = 4; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29710: case 29065: case 29075: case 29085: case 29095: case 29105: case 29115:
+					.@cost = .up_lv5; .@rate = .rate_lv5; .@lv = 5; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29711: case 29066: case 29076: case 29086: case 29096: case 29106: case 29116:
+					.@cost = .up_lv6; .@rate = .rate_lv6; .@lv = 6; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29712: case 29067: case 29077: case 29087: case 29097: case 29107: case 29117:
+					.@cost = .up_lv7; .@rate = .rate_lv7; .@lv = 7; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29713: case 29068: case 29078: case 29088: case 29098: case 29108: case 29118:
+					.@cost = .up_lv8; .@rate = .rate_lv8; .@lv = 8; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29714: case 29069: case 29079: case 29089: case 29099: case 29109: case 29119:
+					.@cost = .up_lv9; .@rate = .rate_lv9; .@lv = 9; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29715: case 29070: case 29080: case 29090: case 29100: case 29110: case 29120:
+					mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+					mes "^008800All enchants are at MAX level!^000000";
+					mes "Slot 2: Stats +4";
+					mes "Slot 3: Supreme Magic Lv10";
+					mes "Slot 4: Supreme Magic Lv10";
+					close;
+				}
+				if (.@can_upgrade) {
+					.@info$ = "^FF6600Upgrade Slot 4 (Supreme Magic) Lv" + .@lv + " -> Lv" + (.@lv+1) + "^000000";
+				}
+				break;
+			}
+			if (.@can_upgrade && .@upgrade_slot == 2) {
+				.@info$ = "^FF6600Upgrade Slot 3 (Supreme Magic) Lv" + .@lv + " -> Lv" + (.@lv+1) + "^000000";
+			}
+			break;
+		}
+		
+		if (!.@can_upgrade) {
+			mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+			mes "^FF0000Cannot upgrade!^000000";
+			close;
+		}
+		
+		.@slot = 999;
+	}
+	
+	mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+	mes "^0000FF[Tier 1 Headgear]^000000";
+	mes .@info$;
+	mes "";
+	mes "^0000FFCost:^000000 " + .@cost + "x " + getitemname(.enchant_item);
+	if (.@slot == 999)
+		mes "^008800Success Rate:^000000 " + .@rate + "%";
+	mes " ";
+	mes "^FF0000Note:^000000 Refine & Card safe";
+	if (.@slot == 999) {
+		mes "^FF6600On Fail: Level stays same^000000";
+		mes " ";
+		mes "^FF6600You have: " + countitem(.enchant_item) + "x " + getitemname(.enchant_item) + "^000000";
+	}
+	next;
+	
+	.@auto_mode = 0;
+	if (.@is_upgrade == 1) {
+		switch(select("^008800Single Upgrade^000000:^FF6600Auto Upgrade (Until max/no materials)^000000:^FF0000Cancel^000000")) {
+		case 1: .@auto_mode = 0; break;
+		case 2: .@auto_mode = 1; break;
+		case 3:
+			mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+			mes "Cancelled.";
+			close;
+		}
+	} else {
+		if (select("^008800Proceed^000000:^FF0000Cancel^000000") == 2) {
+			mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+			mes "Cancelled.";
+			close;
+		}
+	}
+	
+	if (countitem(.enchant_item) < .@cost) {
+		mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+		mes "^FF0000Insufficient materials!^000000";
+		mes "You need: " + .@cost + "x " + getitemname(.enchant_item);
+		close;
+	}
+	
+	if (callfunc("F_IsEquipIDHack", EQI_HEAD_TOP, .@equip) || 
+		callfunc("F_IsEquipCardHack", EQI_HEAD_TOP, .@card[0], .@card[1], .@card[2], .@card[3]) || 
+		callfunc("F_IsEquipRefineHack", EQI_HEAD_TOP, .@refine))
+		close;
+	
+	.@total_success = 0;
+	.@total_fail = 0;
+	.@total_cost = 0;
+	
+	while(1) {
+		if (countitem(.enchant_item) < .@cost) {
+			if (.@auto_mode == 1) {
+				mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+				mes "^FF6600Out of materials!^000000";
+				mes "Total Success: ^008800" + .@total_success + "^000000";
+				mes "Total Failed: ^FF0000" + .@total_fail + "^000000";
+				mes "Total Used: ^0000FF" + .@total_cost + "x " + getitemname(.enchant_item) + "^000000";
+			} else {
+				mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+				mes "^FF0000Insufficient materials!^000000";
+			}
+			close;
+		}
+		
+		progressbar "0000FF", 1;
+		delitem .enchant_item, .@cost;
+		.@total_cost += .@cost;
+		
+		.@result = 0;
+		switch(.@slot) {
+		case 3:
+		case 2:
+			setarray .@enchant[0], 29706, 29061, 29071, 29081, 29091, 29101, 29111;
+			.@card[.@slot] = .@enchant[rand(getarraysize(.@enchant))];
+			.@result = 1;
+			break;
+			
+		case 1:
+			setarray .@enchant[0],
+				4700, 4701, 4702, 4703, 4704,
+				4710, 4711, 4712, 4713, 4714,
+				4720, 4721, 4722, 4723, 4724,
+				4730, 4731, 4732, 4733, 4734,
+				4740, 4741, 4742, 4743, 4744,
+				4750, 4751, 4752, 4753, 4754;
+			.@card[1] = .@enchant[rand(getarraysize(.@enchant))];
+			.@result = 1;
+			break;
+			
+		case 999:
+			if (.@rate > rand(100)) {
+				.@result = 1;
+				.@card[.@upgrade_slot]++;
+				.@total_success++;
+			} else {
+				.@result = 0;
+				.@total_fail++;
+			}
+			break;
+		}
+		
+		if (.@auto_mode == 0) {
+			delequip EQI_HEAD_TOP;
+			getitem2 .@equip, 1, 1, .@refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+			
+			if (.@result == 0 && .@slot == 999) {
+				specialeffect2 EF_SUI_EXPLOSION;
+				mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+				mes "^FF6600Failed! Level stays same.^000000";
+			} else {
+				specialeffect2 EF_FIREHIT;
+				mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+				mes "^008800Enchant Success!^000000";
+			}
+			close;
+		}
+		
+		if (.@auto_mode == 1 && .@slot == 999) {
+			.@is_max = 0;
+			
+			if (.@upgrade_slot == 1 && (.@card[1] == 4704 || .@card[1] == 4714 || .@card[1] == 4724 || 
+				.@card[1] == 4734 || .@card[1] == 4744 || .@card[1] == 4754)) {
+				.@is_max = 1;
+			}
+			
+			if (.@upgrade_slot == 2 && (.@card[2] == 29715 || .@card[2] == 29070 || .@card[2] == 29080 || 
+				.@card[2] == 29090 || .@card[2] == 29100 || .@card[2] == 29110 || .@card[2] == 29120)) {
+				.@is_max = 1;
+			}
+			if (.@upgrade_slot == 3 && (.@card[3] == 29715 || .@card[3] == 29070 || .@card[3] == 29080 || 
+				.@card[3] == 29090 || .@card[3] == 29100 || .@card[3] == 29110 || .@card[3] == 29120)) {
+				.@is_max = 1;
+			}
+			
+			if (.@is_max) {
+				delequip EQI_HEAD_TOP;
+				getitem2 .@equip, 1, 1, .@refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+				specialeffect2 EF_FIREHIT;
+				mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+				mes "^008800Current slot reached MAX level!^000000";
+				mes " ";
+				mes "Total Success: ^008800" + .@total_success + "^000000";
+				mes "Total Failed: ^FF0000" + .@total_fail + "^000000";
+				mes "Total Used: ^0000FF" + .@total_cost + "x " + getitemname(.enchant_item) + "^000000";
+				close;
+			}
+			
+			if (.@upgrade_slot == 1) {
+				.@lv = (.@card[1] % 10);
+				switch(.@lv) {
+				case 0: .@cost = .up_lv1; .@rate = .rate_lv1; break;
+				case 1: .@cost = .up_lv2; .@rate = .rate_lv2; break;
+				case 2: .@cost = .up_lv3; .@rate = .rate_lv3; break;
+				case 3: .@cost = .up_lv4; .@rate = .rate_lv4; break;
+				}
+			} else {
+				.@current_card = (.@upgrade_slot == 2) ? .@card[2] : .@card[3];
+				switch(.@current_card) {
+				case 29706: case 29061: case 29071: case 29081: case 29091: case 29101: case 29111:
+					.@cost = .up_lv1; .@rate = .rate_lv1; break;
+				case 29707: case 29062: case 29072: case 29082: case 29092: case 29102: case 29112:
+					.@cost = .up_lv2; .@rate = .rate_lv2; break;
+				case 29708: case 29063: case 29073: case 29083: case 29093: case 29103: case 29113:
+					.@cost = .up_lv3; .@rate = .rate_lv3; break;
+				case 29709: case 29064: case 29074: case 29084: case 29094: case 29104: case 29114:
+					.@cost = .up_lv4; .@rate = .rate_lv4; break;
+				case 29710: case 29065: case 29075: case 29085: case 29095: case 29105: case 29115:
+					.@cost = .up_lv5; .@rate = .rate_lv5; break;
+				case 29711: case 29066: case 29076: case 29086: case 29096: case 29106: case 29116:
+					.@cost = .up_lv6; .@rate = .rate_lv6; break;
+				case 29712: case 29067: case 29077: case 29087: case 29097: case 29107: case 29117:
+					.@cost = .up_lv7; .@rate = .rate_lv7; break;
+				case 29713: case 29068: case 29078: case 29088: case 29098: case 29108: case 29118:
+					.@cost = .up_lv8; .@rate = .rate_lv8; break;
+				case 29714: case 29069: case 29079: case 29089: case 29099: case 29109: case 29119:
+					.@cost = .up_lv9; .@rate = .rate_lv9; break;
+				}
+			}
+			
+			continue;
+		}
+		
+		if (.@auto_mode == 1 && .@slot != 999) {
+			delequip EQI_HEAD_TOP;
+			getitem2 .@equip, 1, 1, .@refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+			specialeffect2 EF_FIREHIT;
+			mes "^FF6600[Bio5 Tier 1 Enchant]^000000";
+			mes "^008800Enchant Success!^000000";
+			close;
+		}
+		
+		break;
+	}
+	
+	close;
+// ============================================
+// BIO5 TIER 1 RESET & INFO (Unchanged)
+// ============================================
+Bio5_Tier1_Reset:
+	.@equip = getequipid(EQI_HEAD_TOP);
+	switch(.@equip) {
+		case 18971: case 18972: case 18973: case 18974: case 18975:
+		case 18976: case 18977: case 18978: case 18979: case 18980:
+		case 18981: case 18982: case 18983: case 18984:
+			break;
+		default:
+			mes "^FF6600[Bio5 Tier 1 Reset]^000000";
+			mes "^FF0000Only Bio5 Tier 1 Helmets!^000000";
+			close;
+	}
+	
+	setarray .@card[0], getequipcardid(EQI_HEAD_TOP,0), getequipcardid(EQI_HEAD_TOP,1), 
+						getequipcardid(EQI_HEAD_TOP,2), getequipcardid(EQI_HEAD_TOP,3);
+	.@refine = getequiprefinerycnt(EQI_HEAD_TOP);
+	
+	if (.@card[3] < 1 && .@card[2] < 1 && .@card[1] < 1) {
+		mes "^FF6600[Bio5 Tier 1 Reset]^000000";
+		mes "^FF0000No enchant to reset!^000000";
+		close;
+	}
+	
+	mes "^FF6600[Bio5 Tier 1 Reset]^000000";
+	mes "Reset all enchants on this helmet?";
+	mes "^0099FFCost:^000000 " + .reset_cost + "x " + getitemname(.reset_item);
+	mes "^FF0000Note:^000000 Refine & Card safe";
+	next;
+	
+	if (select("^00FF00Reset All Enchants^000000:^FF0000Cancel^000000") == 2) {
+		mes "^FF6600[Bio5 Tier 1 Reset]^000000";
+		mes "Cancelled.";
+		close;
+	}
+	
+	if (countitem(.reset_item) < .reset_cost) {
+		mes "^FF6600[Bio5 Tier 1 Reset]^000000";
+		mes "^FF0000Insufficient materials!^000000";
+		close;
+	}
+	
+	progressbar "0000FF", 2;
+	delitem .reset_item, .reset_cost;
+	delequip EQI_HEAD_TOP;
+	getitem2 .@equip, 1, 1, .@refine, 0, .@card[0], 0, 0, 0;
+	specialeffect2 EF_FIREHIT;
+	mes "^FF6600[Bio5 Tier 1 Reset]^000000";
+	mes "^00FF00Reset Complete!^000000";
+	close;
+
+Bio5_Tier1_Info:
+	mes "^FF6600[Bio5 Tier 1 Information]^000000";
+	mes "^00AAFF======================================^000000";
+	mes "^FFD700Valid Equipment:^000000 Bio5 Tier 1 Helmets (ID: 18971-18984)";
+	mes "^FFD700Enchant Slots:^000000";
+	mes "• Slot 4: Supreme Magic Lv1 (Cost: " + .enchant_slot4 + "x)";
+	mes "• Slot 3: Supreme Magic Lv1 (Cost: " + .enchant_slot3 + "x)";
+	mes "• Slot 2: Random Stats +1~5 (Cost: " + .enchant_slot2 + "x)";
+	next;
+	mes "^FF6600[Bio5 Tier 1 Information]^000000";
+	mes "^FFD700Upgrade Costs:^000000";
+	mes "Lv1→2: " + .up_lv1 + "x (" + .rate_lv1 + "%)";
+	mes "Lv2→3: " + .up_lv2 + "x (" + .rate_lv2 + "%)";
+	mes "Lv3→4: " + .up_lv3 + "x (" + .rate_lv3 + "%)";
+	mes "Lv4→5: " + .up_lv4 + "x (" + .rate_lv4 + "%)";
+	mes "^FFD700Reset:^000000 " + .reset_cost + "x " + getitemname(.reset_item);
+	close;
+
+// ============================================
+// ZODIAC TIER 2 ENCHANT WITH AUTO UPGRADE
+// ============================================
+Zodiac_Tier2_Enchant:
+	.@equip = getequipid(EQI_HEAD_TOP);
+	
+	switch(.@equip) {
+		case 400078: case 400098: case 400121: case 400120: case 400119:
+		case 400118: case 400117: case 400116: case 400099: case 400095:
+		case 400094: case 400079: case 20748: case 20749: case 1270116:
+		case 1270117: case 1270118: case 1270119: case 1270120:
+			break;
+		default:
+			mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+			mes "^FF0000Only Zodiac Tier 2 Helmets!^000000";
+			close;
+	}
+	
+	setarray .@card[0], getequipcardid(EQI_HEAD_TOP,0), getequipcardid(EQI_HEAD_TOP,1), 
+						getequipcardid(EQI_HEAD_TOP,2), getequipcardid(EQI_HEAD_TOP,3);
+	.@refine = getequiprefinerycnt(EQI_HEAD_TOP);
+	
+	// Determine enchant slot or upgrade
+	if (.@card[3] == 0) {
+		.@slot = 3;
+		.@cost = .zodiac_slot4;
+		.@info$ = "^FFD700Slot 4 - Supreme Magic Lv1^000000";
+		.@is_upgrade = 0;
+	}
+	else if (.@card[2] == 0) {
+		.@slot = 2;
+		.@cost = .zodiac_slot3;
+		.@info$ = "^FFD700Slot 3 - Supreme Magic Lv1^000000";
+		.@is_upgrade = 0;
+	}
+	else if (.@card[1] == 0) {
+		.@slot = 1;
+		.@cost = .zodiac_slot2;
+		.@info$ = "^FFD700Slot 2 - Supreme Magic Lv1^000000";
+		.@is_upgrade = 0;
+	}
+	else {
+		// Check upgrade priority: Slot 2 → Slot 3 → Slot 4
+		.@can_upgrade = 0;
+		.@upgrade_slot = 0;
+		.@is_upgrade = 1;
+		
+		// Check Slot 2
+		switch(.@card[1]) {
+		case 29061: case 29071: case 29081: case 29091: case 29101: case 29111: case 29706:
+			.@cost = .zodiac_up_lv1; .@rate = .zodiac_rate_lv1; .@lv = 1; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29062: case 29072: case 29082: case 29092: case 29102: case 29112: case 29707:
+			.@cost = .zodiac_up_lv2; .@rate = .zodiac_rate_lv2; .@lv = 2; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29063: case 29073: case 29083: case 29093: case 29103: case 29113: case 29708:
+			.@cost = .zodiac_up_lv3; .@rate = .zodiac_rate_lv3; .@lv = 3; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29064: case 29074: case 29084: case 29094: case 29104: case 29114: case 29709:
+			.@cost = .zodiac_up_lv4; .@rate = .zodiac_rate_lv4; .@lv = 4; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29065: case 29075: case 29085: case 29095: case 29105: case 29115: case 29710:
+			.@cost = .zodiac_up_lv5; .@rate = .zodiac_rate_lv5; .@lv = 5; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29066: case 29076: case 29086: case 29096: case 29106: case 29116: case 29711:
+			.@cost = .zodiac_up_lv6; .@rate = .zodiac_rate_lv6; .@lv = 6; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29067: case 29077: case 29087: case 29097: case 29107: case 29117: case 29712:
+			.@cost = .zodiac_up_lv7; .@rate = .zodiac_rate_lv7; .@lv = 7; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29068: case 29078: case 29088: case 29098: case 29108: case 29118: case 29713:
+			.@cost = .zodiac_up_lv8; .@rate = .zodiac_rate_lv8; .@lv = 8; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29069: case 29079: case 29089: case 29099: case 29109: case 29119: case 29714:
+			.@cost = .zodiac_up_lv9; .@rate = .zodiac_rate_lv9; .@lv = 9; .@can_upgrade = 1; .@upgrade_slot = 1; break;
+		case 29070: case 29080: case 29090: case 29100: case 29110: case 29120: case 29715:
+			// Slot 2 maxed, check Slot 3
+			switch(.@card[2]) {
+			case 29061: case 29071: case 29081: case 29091: case 29101: case 29111: case 29706:
+				.@cost = .zodiac_up_lv1; .@rate = .zodiac_rate_lv1; .@lv = 1; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29062: case 29072: case 29082: case 29092: case 29102: case 29112: case 29707:
+				.@cost = .zodiac_up_lv2; .@rate = .zodiac_rate_lv2; .@lv = 2; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29063: case 29073: case 29083: case 29093: case 29103: case 29113: case 29708:
+				.@cost = .zodiac_up_lv3; .@rate = .zodiac_rate_lv3; .@lv = 3; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29064: case 29074: case 29084: case 29094: case 29104: case 29114: case 29709:
+				.@cost = .zodiac_up_lv4; .@rate = .zodiac_rate_lv4; .@lv = 4; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29065: case 29075: case 29085: case 29095: case 29105: case 29115: case 29710:
+				.@cost = .zodiac_up_lv5; .@rate = .zodiac_rate_lv5; .@lv = 5; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29066: case 29076: case 29086: case 29096: case 29106: case 29116: case 29711:
+				.@cost = .zodiac_up_lv6; .@rate = .zodiac_rate_lv6; .@lv = 6; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29067: case 29077: case 29087: case 29097: case 29107: case 29117: case 29712:
+				.@cost = .zodiac_up_lv7; .@rate = .zodiac_rate_lv7; .@lv = 7; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29068: case 29078: case 29088: case 29098: case 29108: case 29118: case 29713:
+				.@cost = .zodiac_up_lv8; .@rate = .zodiac_rate_lv8; .@lv = 8; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29069: case 29079: case 29089: case 29099: case 29109: case 29119: case 29714:
+				.@cost = .zodiac_up_lv9; .@rate = .zodiac_rate_lv9; .@lv = 9; .@can_upgrade = 1; .@upgrade_slot = 2; break;
+			case 29070: case 29080: case 29090: case 29100: case 29110: case 29120: case 29715:
+				// Slot 2 & 3 maxed, check Slot 4
+				switch(.@card[3]) {
+				case 29061: case 29071: case 29081: case 29091: case 29101: case 29111: case 29706:
+					.@cost = .zodiac_up_lv1; .@rate = .zodiac_rate_lv1; .@lv = 1; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29062: case 29072: case 29082: case 29092: case 29102: case 29112: case 29707:
+					.@cost = .zodiac_up_lv2; .@rate = .zodiac_rate_lv2; .@lv = 2; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29063: case 29073: case 29083: case 29093: case 29103: case 29113: case 29708:
+					.@cost = .zodiac_up_lv3; .@rate = .zodiac_rate_lv3; .@lv = 3; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29064: case 29074: case 29084: case 29094: case 29104: case 29114: case 29709:
+					.@cost = .zodiac_up_lv4; .@rate = .zodiac_rate_lv4; .@lv = 4; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29065: case 29075: case 29085: case 29095: case 29105: case 29115: case 29710:
+					.@cost = .zodiac_up_lv5; .@rate = .zodiac_rate_lv5; .@lv = 5; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29066: case 29076: case 29086: case 29096: case 29106: case 29116: case 29711:
+					.@cost = .zodiac_up_lv6; .@rate = .zodiac_rate_lv6; .@lv = 6; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29067: case 29077: case 29087: case 29097: case 29107: case 29117: case 29712:
+					.@cost = .zodiac_up_lv7; .@rate = .zodiac_rate_lv7; .@lv = 7; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29068: case 29078: case 29088: case 29098: case 29108: case 29118: case 29713:
+					.@cost = .zodiac_up_lv8; .@rate = .zodiac_rate_lv8; .@lv = 8; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29069: case 29079: case 29089: case 29099: case 29109: case 29119: case 29714:
+					.@cost = .zodiac_up_lv9; .@rate = .zodiac_rate_lv9; .@lv = 9; .@can_upgrade = 1; .@upgrade_slot = 3; break;
+				case 29070: case 29080: case 29090: case 29100: case 29110: case 29120: case 29715:
+					mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+					mes "^00FF00All enchants MAX level!^000000";
+					close;
+				}
+				break;
+			}
+			break;
+		}
+		
+		if (!.@can_upgrade) {
+			mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+			mes "^FF0000Cannot upgrade!^000000";
+			close;
+		}
+		
+		.@slot = 999;
+		.@info$ = "^FFD700Upgrade Slot " + (.@upgrade_slot+1) + " Lv" + .@lv + " -> Lv" + (.@lv+1) + "^000000";
+	}
+	
+	mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+	mes "^FFD700[Tier 2 Headgear]^000000";
+	mes .@info$;
+	mes "^0099FFCost:^000000 " + .@cost + "x " + getitemname(.zodiac_enchant_item);
+	if (.@slot == 999)
+		mes "^00FF00Success Rate:^000000 " + .@rate + "%";
+	mes "^FF0000Note:^000000 Refine & Card safe";
+	if (.@slot == 999) {
+		mes "^00FF00On Fail: Level stays same^000000";
+		mes "^FFD700You have: " + countitem(.zodiac_enchant_item) + "x^000000";
+	}
+	next;
+	
+	// Ask for auto mode
+	.@auto_mode = 0;
+	if (.@is_upgrade == 1) {
+		switch(select("^008800Single Upgrade^000000:^0000FFAuto Upgrade (Until max / no materials)^000000:^FF0000Cancel^000000")) {
+		case 1: .@auto_mode = 0; break;
+		case 2: .@auto_mode = 1; break;
+		case 3:
+			mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+			mes "^FF0000Cancelled.^000000";
+			close;
+		}
+	} else {
+		if (select("^008800Proceed^000000:^FF0000Cancel^000000") == 2) {
+			mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+			mes "^FF0000Cancelled.^000000";
+			close;
+		}
+	}
+	
+	if (countitem(.zodiac_enchant_item) < .@cost) {
+		mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+		mes "^FF0000Insufficient materials!^000000";
+		close;
+	}
+	
+	// Anti-hack check
+	if (callfunc("F_IsEquipIDHack", EQI_HEAD_TOP, .@equip) || 
+		callfunc("F_IsEquipCardHack", EQI_HEAD_TOP, .@card[0], .@card[1], .@card[2], .@card[3]) || 
+		callfunc("F_IsEquipRefineHack", EQI_HEAD_TOP, .@refine))
+		close;
+	
+	// ============================================
+	// ENCHANT PROCESS (For initial enchant)
+	// ============================================
+	if (.@slot != 999) {
+		// Initial enchant (Slot 2, 3, or 4)
+		progressbar "0000FF", 1;
+		delitem .zodiac_enchant_item, .@cost;
+		
+		setarray .@enchant[0], 29706, 29061, 29071, 29081, 29091, 29101, 29111;
+		.@card[.@slot] = .@enchant[rand(getarraysize(.@enchant))];
+		
+		delequip EQI_HEAD_TOP;
+		getitem2 .@equip, 1, 1, .@refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+		specialeffect2 EF_FIREHIT;
+		mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+		mes "^008800Enchant Success!^000000";
+		close;
+	}
+	
+	// ================= AUTO UPGRADE LOOP (Your original logic) =================
+	.@total_success = 0;
+	.@total_fail = 0;
+	.@total_cost = 0;
+	
+	while (1) {
+		// Out of material
+		if (countitem(.zodiac_enchant_item) < .@cost) {
+			if (.@auto_mode == 1) {
+				mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+				mes "^FF0000Out of materials!^000000";
+				mes " ";
+				mes "Total Success: ^008800" + .@total_success + "^000000";
+				mes "Total Failed: ^FF0000" + .@total_fail + "^000000";
+				mes "Total Used: ^0000FF" + .@total_cost + "x " + getitemname(.zodiac_enchant_item) + "^000000";
+			} else {
+				mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+				mes "^FF0000Insufficient materials!^000000";
+			}
+			break;
+		}
+		
+		progressbar "0000FF", 1;
+		delitem .zodiac_enchant_item, .@cost;
+		.@total_cost += .@cost;
+		
+		// Roll upgrade
+		if (.@rate > rand(100)) {
+			.@card[.@upgrade_slot]++;
+			.@total_success++;
+			specialeffect2 EF_FIREHIT;
+		} else {
+			.@total_fail++;
+			specialeffect2 EF_SUI_EXPLOSION;
+		}
+		
+		// Check MAX Lv10
+		if (
+			(.@upgrade_slot == 1 && (
+				.@card[1] == 29070 || .@card[1] == 29080 || .@card[1] == 29090 ||
+				.@card[1] == 29100 || .@card[1] == 29110 || .@card[1] == 29120 || .@card[1] == 29715)) ||
+			(.@upgrade_slot == 2 && (
+				.@card[2] == 29070 || .@card[2] == 29080 || .@card[2] == 29090 ||
+				.@card[2] == 29100 || .@card[2] == 29110 || .@card[2] == 29120 || .@card[2] == 29715)) ||
+			(.@upgrade_slot == 3 && (
+				.@card[3] == 29070 || .@card[3] == 29080 || .@card[3] == 29090 ||
+				.@card[3] == 29100 || .@card[3] == 29110 || .@card[3] == 29120 || .@card[3] == 29715))
+		) {
+			mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+			mes "^008800Reached MAX Level 10!^000000";
+			mes " ";
+			mes "Total Success: ^008800" + .@total_success + "^000000";
+			mes "Total Failed: ^FF0000" + .@total_fail + "^000000";
+			mes "Total Used: ^0000FF" + .@total_cost + "x " + getitemname(.zodiac_enchant_item) + "^000000";
+			break;
+		}
+		
+		// For single mode, stop after first attempt
+		if (.@auto_mode == 0) {
+			break;
+		}
+		
+		// Recalculate cost & rate
+		.@current_card = (.@upgrade_slot == 1) ? .@card[1] :
+						((.@upgrade_slot == 2) ? .@card[2] : .@card[3]);
+		
+		switch (.@current_card) {
+		case 29706: case 29061: case 29071: case 29081: case 29091: case 29101: case 29111:
+			.@cost = .zodiac_up_lv1; .@rate = .zodiac_rate_lv1; break;
+		case 29707: case 29062: case 29072: case 29082: case 29092: case 29102: case 29112:
+			.@cost = .zodiac_up_lv2; .@rate = .zodiac_rate_lv2; break;
+		case 29708: case 29063: case 29073: case 29083: case 29093: case 29103: case 29113:
+			.@cost = .zodiac_up_lv3; .@rate = .zodiac_rate_lv3; break;
+		case 29709: case 29064: case 29074: case 29084: case 29094: case 29104: case 29114:
+			.@cost = .zodiac_up_lv4; .@rate = .zodiac_rate_lv4; break;
+		case 29710: case 29065: case 29075: case 29085: case 29095: case 29105: case 29115:
+			.@cost = .zodiac_up_lv5; .@rate = .zodiac_rate_lv5; break;
+		case 29711: case 29066: case 29076: case 29086: case 29096: case 29106: case 29116:
+			.@cost = .zodiac_up_lv6; .@rate = .zodiac_rate_lv6; break;
+		case 29712: case 29067: case 29077: case 29087: case 29097: case 29107: case 29117:
+			.@cost = .zodiac_up_lv7; .@rate = .zodiac_rate_lv7; break;
+		case 29713: case 29068: case 29078: case 29088: case 29098: case 29108: case 29118:
+			.@cost = .zodiac_up_lv8; .@rate = .zodiac_rate_lv8; break;
+		case 29714: case 29069: case 29079: case 29089: case 29099: case 29109: case 29119:
+			.@cost = .zodiac_up_lv9; .@rate = .zodiac_rate_lv9; break;
+		}
+	}
+	
+	// Apply equipment once after loop ends
+	delequip EQI_HEAD_TOP;
+	getitem2 .@equip, 1, 1, .@refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+	
+	if (.@auto_mode == 0) {
+		if (.@total_success > 0) {
+			mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+			mes "^008800Upgrade Success!^000000";
+		} else {
+			mes "^FF6600[Zodiac Tier 2 Enchant]^000000";
+			mes "^FFAA00Failed! Level stays same.^000000";
+		}
+	}
+	
+	close;
+// ============================================
+// ZODIAC TIER 2 RESET
+// ============================================
+Zodiac_Tier2_Reset:
+	.@equip = getequipid(EQI_HEAD_TOP);
+	switch(.@equip) {
+		case 400078: case 400098: case 400121: case 400120: case 400119:
+		case 400118: case 400117: case 400116: case 400099: case 400095:
+		case 400094: case 400079: case 20748: case 20749: case 1270116:
+		case 1270117: case 1270118: case 1270119: case 1270120:
+			break;
+		default:
+			mes "^FF6600[Zodiac Tier 2 Reset]^000000";
+			mes "^FF0000Only Zodiac Tier 2 Helmets!^000000";
+			close;
+	}
+	
+	setarray .@card[0], getequipcardid(EQI_HEAD_TOP,0), getequipcardid(EQI_HEAD_TOP,1), 
+						getequipcardid(EQI_HEAD_TOP,2), getequipcardid(EQI_HEAD_TOP,3);
+	.@refine = getequiprefinerycnt(EQI_HEAD_TOP);
+	
+	if (.@card[3] < 1 && .@card[2] < 1 && .@card[1] < 1) {
+		mes "^FF6600[Zodiac Tier 2 Reset]^000000";
+		mes "^FF0000No enchant to reset!^000000";
+		close;
+	}
+	
+	mes "^FF6600[Zodiac Tier 2 Reset]^000000";
+	mes "Reset all enchants on this helmet?";
+	mes "^0000FFCost:^000000 " + .zodiac_reset_cost + "x " + getitemname(.zodiac_reset_item);
+	mes "^FF0000Note:^000000 Refine & Card safe";
+	next;
+	
+	if (select("^008800Reset All Enchants^000000:^FF0000Cancel^000000") == 2) {
+		mes "^FF6600[Zodiac Tier 2 Reset]^000000";
+		mes "Cancelled.";
+		close;
+	}
+	
+	if (countitem(.zodiac_reset_item) < .zodiac_reset_cost) {
+		mes "^FF6600[Zodiac Tier 2 Reset]^000000";
+		mes "^FF0000Insufficient materials!^000000";
+		close;
+	}
+	
+	progressbar "0000FF", 2;
+	delitem .zodiac_reset_item, .zodiac_reset_cost;
+	delequip EQI_HEAD_TOP;
+	getitem2 .@equip, 1, 1, .@refine, 0, .@card[0], 0, 0, 0;
+	specialeffect2 EF_FIREHIT;
+	mes "^FF6600[Zodiac Tier 2 Reset]^000000";
+	mes "^008800Reset Complete!^000000";
+	close;
+	
+// ============================================
+// ZODIAC TIER 2 INFO
+// ============================================
+Zodiac_Tier2_Info:
+	mes "^FF6600[Zodiac Tier 2 Information]^000000";
+	mes "^0000FF======================================^000000";
+	mes "^FF6600Valid Equipment:^000000 Zodiac Tier 2 Helmets";
+	mes "^FF6600Enchant Slots:^000000";
+	mes "• Slot 4: Supreme Magic Lv1 (Cost: " + .zodiac_slot4 + "x)";
+	mes "• Slot 3: Supreme Magic Lv1 (Cost: " + .zodiac_slot3 + "x)";
+	mes "• Slot 2: Supreme Magic Lv1 (Cost: " + .zodiac_slot2 + "x)";
+	next;
+	mes "^FF6600[Zodiac Tier 2 Information]^000000";
+	mes "^FF6600Upgrade Costs:^000000";
+	mes "Lv1→2: " + .zodiac_up_lv1 + "x (" + .zodiac_rate_lv1 + "%)";
+	mes "Lv2→3: " + .zodiac_up_lv2 + "x (" + .zodiac_rate_lv2 + "%)";
+	mes "Lv3→4: " + .zodiac_up_lv3 + "x (" + .zodiac_rate_lv3 + "%)";
+	mes "Lv4→5: " + .zodiac_up_lv4 + "x (" + .zodiac_rate_lv4 + "%)";
+	mes "Lv5→6: " + .zodiac_up_lv5 + "x (" + .zodiac_rate_lv5 + "%)";
+	mes "Lv6→7: " + .zodiac_up_lv6 + "x (" + .zodiac_rate_lv6 + "%)";
+	next;
+	mes "^FF6600[Zodiac Tier 2 Information]^000000";
+	mes "Lv7→8: " + .zodiac_up_lv7 + "x (" + .zodiac_rate_lv7 + "%)";
+	mes "Lv8→9: " + .zodiac_up_lv8 + "x (" + .zodiac_rate_lv8 + "%)";
+	mes "Lv9→10: " + .zodiac_up_lv9 + "x (" + .zodiac_rate_lv9 + "%)";
+	mes "^FF6600Reset:^000000 " + .zodiac_reset_cost + "x " + getitemname(.zodiac_reset_item);
+	close;
+}

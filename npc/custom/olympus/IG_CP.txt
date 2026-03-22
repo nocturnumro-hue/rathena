@@ -1,0 +1,1293 @@
+//===== rAthena Script =======================================
+//= Enhanced In-Game Control Panel
+//===== By ===================================================
+//= llchrisll (Original) + Enhanced Version
+//===== Version ==============================================
+//= 2.1 - Market System Removed
+//      - Character Rename with cooldown & fee
+//      - Character Deletion with password verification
+//      - Detailed Inventory Viewer
+//      - Advanced Player Search for GMs
+//      - Chat/Command History Viewer
+//      - Trading History Viewer
+//      - Multi-Account Detection
+//      - Quick Teleport to Player
+//      - Batch Operations
+//      - Report System
+//===== Requirements =========================================
+//= SQL Tables needed (run these queries first):
+/*
+CREATE TABLE IF NOT EXISTS `cp_reports` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reporter_id` int(11) NOT NULL,
+  `reporter_name` varchar(30) NOT NULL,
+  `reported_name` varchar(30) NOT NULL,
+  `reason` varchar(255) NOT NULL,
+  `status` enum('pending','reviewing','resolved','rejected') DEFAULT 'pending',
+  `date_created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `resolved_by` varchar(30) DEFAULT NULL,
+  `resolution_note` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `cp_trade_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `char1_id` int(11) NOT NULL,
+  `char1_name` varchar(30) NOT NULL,
+  `char2_id` int(11) NOT NULL,
+  `char2_name` varchar(30) NOT NULL,
+  `items_char1` text NOT NULL,
+  `items_char2` text NOT NULL,
+  `zeny_char1` bigint(20) DEFAULT 0,
+  `zeny_char2` bigint(20) DEFAULT 0,
+  `trade_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `cp_chat_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `char_id` int(11) NOT NULL,
+  `char_name` varchar(30) NOT NULL,
+  `message` text NOT NULL,
+  `chat_type` enum('public','party','guild','whisper') NOT NULL,
+  `log_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `char_id` (`char_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+*/
+//============================================================
+
+askald,136,128,6	script	Enhanced CP	924,{
+
+mes .n$;
+mes "Hello, ^0055FF" + strcharinfo(0) + "^000000!";
+mes "Welcome to the Enhanced Control Panel.";
+mes "I can help you manage your account";
+mes "and characters!";
+next;
+
+if(getgroupid() >= 40) goto GM_Menu;
+
+// ========== PLAYER MENU ==========
+switch(select("- My Account Info:- Character Management:- Report System:- Nothing")) {
+	case 1: goto CP_My;
+	case 2: goto Char_Management;
+	case 3: goto Report_Menu;
+	case 4: close;
+}
+
+//================== GM MENU ==================
+GM_Menu:
+switch(select("- View Players Account:- Advanced Search:- Trading History:- Chat/Command Logs:- Report Management:- GM Utilities:- View my Account:- View Server Stats:- Nothing")) {
+	case 1: goto GM_ViewAccount;
+	case 2: goto GM_AdvSearch;
+	case 3: goto GM_TradeHistory;
+	case 4: goto GM_ChatLogs;
+	case 5: goto GM_Reports;
+	case 6: goto GM_Utilities;
+	case 7: goto CP_My;
+	case 8: goto Server_Stats;
+	case 9: close;
+}
+
+//================== PLAYER SECTION ==================
+
+//========== MY ACCOUNT INFO ==========
+CP_My:
+query_sql "SELECT `userid`, `sex`, `email`, `logincount`, `last_ip`, `user_pass` FROM `login` WHERE `account_id` = '"+getcharid(3)+"'", .@user$, .@sex$, .@email$, .@login, .@last_ip$, .@pass$;
+mes .n$;
+mes "^FF6600=== Account Information ===^000000";
+mes "Username: ^00FF00" + .@user$ + "^000000";
+mes "Account ID: ^00FF00" + getcharid(3) + "^000000";
+mes "Gender: ^00FF00" + .@sex$ + "^000000";
+mes "E-Mail: ^00FF00" + .@email$ + "^000000";
+mes "Login Count: ^00FF00" + .@login + "^000000";
+mes "Last IP: ^00FF00" + .@last_ip$ + "^000000";
+mes " ";
+mes "^FF0000Note: Password is hidden for security.^000000";
+next;
+
+switch(select("- View Characters:- Edit E-Mail:- Back")) {
+	case 1: goto View_Characters;
+	case 2: goto Edit_Email;
+	case 3: 
+		if(getgroupid() >= 40) goto GM_Menu;
+		close;
+}
+
+//========== CHARACTER MANAGEMENT ==========
+Char_Management:
+mes .n$;
+mes "^FF6600=== Character Management ===^000000";
+mes "What would you like to do?";
+next;
+
+switch(select("- View Characters:- Rename Character:- Delete Character:- View Inventory:- Back")) {
+	case 1: goto View_Characters;
+	case 2: goto Rename_Character;
+	case 3: goto Delete_Character;
+	case 4: goto View_Inventory;
+	case 5: 
+		if(getgroupid() >= 40) goto GM_Menu;
+		close;
+}
+
+//========== VIEW CHARACTERS ==========
+View_Characters:
+query_sql "SELECT `char_id`, `char_num`, `name`, `class`, `base_level`, `job_level`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y` FROM `char` WHERE `account_id` = '"+getcharid(3)+"' ORDER BY `base_level` DESC", .@char_id, .@char_num, .@name$, .@class, .@base_level, .@job_level, .@zeny, .@str, .@agi, .@vit, .@int, .@dex, .@luk, .@last_map$, .@last_x, .@last_y, .@save_map$, .@save_x, .@save_y;
+
+mes .n$;
+mes "^FF6600=== Your Characters ===^000000";
+mes " ";
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@name$); set .@i, .@i + 1) {
+	mes "^FF0000[" + (.@i+1) + "] " + .@name$[.@i] + "^000000";
+	mes "Level: ^00FF00" + .@base_level[.@i] + "/" + .@job_level[.@i] + "^000000 | Class: ^0055FF" + jobname(.@class[.@i]) + "^000000";
+	mes "Zeny: ^FF6600" + .@zeny[.@i] + "z^000000";
+	mes "---------------------";
+	set .@menu$, .@menu$ + "- " + .@name$[.@i] + ":";
+}
+set .@menu$, .@menu$ + "- Back";
+next;
+
+set .@select, select(.@menu$) - 1;
+if(.@select == getarraysize(.@name$)) {
+	if(getgroupid() >= 40) goto GM_Menu;
+	goto Char_Management;
+}
+
+mes .n$;
+mes "^FF6600=== Character Details ===^000000";
+mes "^FF0000" + .@name$[.@select] + "^000000";
+mes "---------------------";
+mes "Base Level: ^00FF00" + .@base_level[.@select] + "^000000";
+mes "Job Level: ^00FF00" + .@job_level[.@select] + "^000000";
+mes "Class: ^0055FF" + jobname(.@class[.@select]) + "^000000";
+mes "Zeny: ^FF6600" + .@zeny[.@select] + "z^000000";
+mes " ";
+mes "^00FFFFSTATS:^000000";
+mes "STR: " + .@str[.@select] + " | AGI: " + .@agi[.@select] + " | VIT: " + .@vit[.@select];
+mes "INT: " + .@int[.@select] + " | DEX: " + .@dex[.@select] + " | LUK: " + .@luk[.@select];
+mes " ";
+mes "^00FFFFPosition:^000000";
+mes "Map: " + .@last_map$[.@select] + " (" + .@last_x[.@select] + "," + .@last_y[.@select] + ")";
+mes "Save: " + .@save_map$[.@select] + " (" + .@save_x[.@select] + "," + .@save_y[.@select] + ")";
+next;
+
+switch(select("- Reset Position:- Reset Style:- Change Slot:- Reset Equip:- Edit Gender:- Back")) {
+	case 1: // Reset Position
+		query_sql "SELECT `online` FROM `char` WHERE `name` = '"+escape_sql(.@name$[.@select])+"'", .@on;
+		if(.@on) {
+			mes .n$;
+			mes "^FF0000Character must be offline!^000000";
+			close;
+		}
+		mes .n$;
+		mes "Position reset to savepoint.";
+		query_sql "UPDATE `char` SET `last_map` = '"+.@save_map$[.@select]+"', `last_x` = '"+.@save_x[.@select]+"', `last_y` = '"+.@save_y[.@select]+"' WHERE `name` = '"+escape_sql(.@name$[.@select])+"'";
+		close;
+		
+	case 2: // Reset Style
+		query_sql "SELECT `online` FROM `char` WHERE `name` = '"+escape_sql(.@name$[.@select])+"'", .@on;
+		if(.@on) {
+			mes .n$;
+			mes "^FF0000Character must be offline!^000000";
+			close;
+		}
+		mes .n$;
+		mes "Style reset completed.";
+		query_sql "UPDATE `char` SET `hair` = '0', `hair_color` = '0', `clothes_color` = '0' WHERE `name` = '"+escape_sql(.@name$[.@select])+"'";
+		close;
+		
+	case 3: // Change Slot
+		mes .n$;
+		mes "Current slots in use:";
+		for(set .@i, 0; .@i < getarraysize(.@char_num); set .@i, .@i + 1)
+			mes .@char_num[.@i] + ". " + .@name$[.@i];
+		mes " ";
+		mes "Enter new slot number (0-" + (.max_ch-1) + "):";
+		input .@new_slot;
+		
+		if(.@new_slot < 0 || .@new_slot >= .max_ch) {
+			mes .n$;
+			mes "^FF0000Invalid slot number!^000000";
+			close;
+		}
+		
+		for(set .@i, 0; .@i < getarraysize(.@char_num); set .@i, .@i + 1) {
+			if(.@char_num[.@i] == .@new_slot) {
+				mes .n$;
+				mes "^FF0000Slot already in use!^000000";
+				close;
+			}
+		}
+		
+		query_sql "SELECT `online` FROM `char` WHERE `name` = '"+escape_sql(.@name$[.@select])+"'", .@on;
+		if(.@on) {
+			mes .n$;
+			mes "^FF0000Character must be offline!^000000";
+			close;
+		}
+		
+		query_sql "UPDATE `char` SET `char_num` = '"+.@new_slot+"' WHERE `name` = '"+escape_sql(.@name$[.@select])+"'";
+		mes .n$;
+		mes "Slot changed successfully!";
+		close;
+		
+	case 4: // Reset Equip
+		query_sql "SELECT `online` FROM `char` WHERE `name` = '"+escape_sql(.@name$[.@select])+"'", .@on;
+		if(.@on) {
+			mes .n$;
+			mes "^FF0000Character must be offline!^000000";
+			close;
+		}
+		mes .n$;
+		mes "All equipment unequipped.";
+		query_sql "UPDATE `inventory` SET `equip` = '0' WHERE `char_id` = '"+.@char_id[.@select]+"'";
+		query_sql "UPDATE `char` SET `weapon` = '0', `shield` = '0', `head_top` = '0', `head_mid` = '0', `head_bottom` = '0' WHERE `name` = '"+escape_sql(.@name$[.@select])+"'";
+		close;
+		
+	case 5: // Edit Gender
+		if(gettimetick(2) < char_gender) {
+			mes .n$;
+			mes "^FF0000Gender change on cooldown!^000000";
+			mes "Time remaining: " + callfunc("CP_Time2Str", char_gender);
+			close;
+		}
+		mes .n$;
+		mes "Change gender of ^FF0000" + .@name$[.@select] + "^000000?";
+		mes "Cooldown: " + (.char_gender / 86400) + " days";
+		if(select("- Yes:- No") == 2) close;
+		
+		set char_gender, gettimetick(2) + .char_gender;
+		changecharsex(.@char_id[.@select]);
+		mes .n$;
+		mes "Gender will be changed on next login.";
+		close;
+		
+	case 6:
+		goto View_Characters;
+}
+
+//========== RENAME CHARACTER ==========
+Rename_Character:
+// Get characters
+query_sql "SELECT `char_id`, `name`, `online` FROM `char` WHERE `account_id` = '"+getcharid(3)+"' ORDER BY `base_level` DESC", .@char_id, .@name$, .@online;
+
+mes .n$;
+mes "^FF6600=== Rename Character ===^000000";
+mes "Fee: ^FF0000" + .rename_fee + " Zeny^000000";
+mes "Cooldown: ^FF0000" + (.rename_cooldown / 86400) + " days^000000";
+mes " ";
+
+if(Zeny < .rename_fee) {
+	mes "^FF0000Not enough Zeny!^000000";
+	close;
+}
+
+if(gettimetick(2) < char_rename_time) {
+	mes "^FF0000Rename on cooldown!^000000";
+	mes "Time remaining: " + callfunc("CP_Time2Str", char_rename_time);
+	close;
+}
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@name$); set .@i, .@i + 1)
+	set .@menu$, .@menu$ + "- " + .@name$[.@i] + ":";
+set .@menu$, .@menu$ + "- Cancel";
+
+set .@select, select(.@menu$) - 1;
+if(.@select == getarraysize(.@name$)) close;
+
+if(.@online[.@select]) {
+	mes .n$;
+	mes "^FF0000Character must be offline!^000000";
+	close;
+}
+
+mes .n$;
+mes "Enter new name for ^FF0000" + .@name$[.@select] + "^000000:";
+input .@new_name$;
+
+if(.@new_name$ == "" || getstrlen(.@new_name$) < 4 || getstrlen(.@new_name$) > 23) {
+	mes .n$;
+	mes "^FF0000Invalid name length! (4-23 characters)^000000";
+	close;
+}
+
+// Check if name exists
+query_sql "SELECT COUNT(*) FROM `char` WHERE `name` = '"+escape_sql(.@new_name$)+"'", .@exists;
+if(.@exists) {
+	mes .n$;
+	mes "^FF0000Name already exists!^000000";
+	close;
+}
+
+mes .n$;
+mes "Rename ^FF0000" + .@name$[.@select] + "^000000";
+mes "to ^00FF00" + .@new_name$ + "^000000?";
+mes " ";
+mes "Cost: ^FF0000" + .rename_fee + " Zeny^000000";
+if(select("- Confirm:- Cancel") == 2) close;
+
+query_sql "UPDATE `char` SET `name` = '"+escape_sql(.@new_name$)+"' WHERE `char_id` = '"+.@char_id[.@select]+"'";
+set Zeny, Zeny - .rename_fee;
+set char_rename_time, gettimetick(2) + .rename_cooldown;
+
+mes .n$;
+mes "^00FF00Character renamed successfully!^000000";
+close;
+
+//========== DELETE CHARACTER ==========
+Delete_Character:
+query_sql "SELECT `char_id`, `name`, `online`, `base_level` FROM `char` WHERE `account_id` = '"+getcharid(3)+"' ORDER BY `base_level` DESC", .@char_id, .@name$, .@online, .@level;
+
+mes .n$;
+mes "^FF6600=== Delete Character ===^000000";
+mes "^FF0000WARNING: This action is PERMANENT!^000000";
+mes "You must enter your password to confirm.";
+mes " ";
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@name$); set .@i, .@i + 1)
+	set .@menu$, .@menu$ + "- " + .@name$[.@i] + " (Lv." + .@level[.@i] + "):";
+set .@menu$, .@menu$ + "- Cancel";
+
+set .@select, select(.@menu$) - 1;
+if(.@select == getarraysize(.@name$)) close;
+
+if(.@online[.@select]) {
+	mes .n$;
+	mes "^FF0000Character must be offline!^000000";
+	close;
+}
+
+mes .n$;
+mes "Delete ^FF0000" + .@name$[.@select] + "^000000 (Level " + .@level[.@select] + ")?";
+mes " ";
+mes "Enter your account PASSWORD to confirm:";
+input .@pass$;
+
+query_sql "SELECT `user_pass` FROM `login` WHERE `account_id` = '"+getcharid(3)+"'", .@real_pass$;
+if(.@pass$ != .@real_pass$) {
+	mes .n$;
+	mes "^FF0000Incorrect password!^000000";
+	close;
+}
+
+mes .n$;
+mes "^FF0000FINAL CONFIRMATION^000000";
+mes "Type the character name to delete:";
+mes "^FF0000" + .@name$[.@select] + "^000000";
+input .@confirm$;
+
+if(.@confirm$ != .@name$[.@select]) {
+	mes .n$;
+	mes "^FF0000Name mismatch. Deletion cancelled.^000000";
+	close;
+}
+
+// Delete character
+query_sql "DELETE FROM `char` WHERE `char_id` = '"+.@char_id[.@select]+"'";
+query_sql "DELETE FROM `inventory` WHERE `char_id` = '"+.@char_id[.@select]+"'";
+query_sql "DELETE FROM `skill` WHERE `char_id` = '"+.@char_id[.@select]+"'";
+query_sql "DELETE FROM `cart_inventory` WHERE `char_id` = '"+.@char_id[.@select]+"'";
+
+mes .n$;
+mes "^00FF00Character deleted successfully.^000000";
+close;
+
+//========== VIEW INVENTORY ==========
+View_Inventory:
+query_sql "SELECT `char_id`, `name` FROM `char` WHERE `account_id` = '"+getcharid(3)+"' ORDER BY `base_level` DESC", .@char_id, .@name$;
+
+mes .n$;
+mes "^FF6600=== View Inventory ===^000000";
+mes "Select character:";
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@name$); set .@i, .@i + 1)
+	set .@menu$, .@menu$ + "- " + .@name$[.@i] + ":";
+set .@menu$, .@menu$ + "- Back";
+
+set .@select, select(.@menu$) - 1;
+if(.@select == getarraysize(.@name$)) goto Char_Management;
+
+query_sql "SELECT `nameid`, `amount`, `equip`, `refine`, `card0`, `card1`, `card2`, `card3` FROM `inventory` WHERE `char_id` = '"+.@char_id[.@select]+"' ORDER BY `nameid`", .@itemid, .@amount, .@equip, .@refine, .@card0, .@card1, .@card2, .@card3;
+
+mes .n$;
+mes "^FF6600=== Inventory of " + .@name$[.@select] + " ===^000000";
+mes "Total Items: ^00FF00" + getarraysize(.@itemid) + "^000000";
+mes " ";
+
+if(getarraysize(.@itemid) == 0) {
+	mes "^FF0000Inventory is empty!^000000";
+	close;
+}
+
+mes "^00FFFFShowing in chat window...^000000";
+close2;
+
+dispbottom "========== Inventory of " + .@name$[.@select] + " ==========";
+for(set .@i, 0; .@i < getarraysize(.@itemid); set .@i, .@i + 1) {
+	set .@itemname$, getitemname(.@itemid[.@i]);
+	set .@equip_status$, (.@equip[.@i] > 0) ? " [EQUIPPED]" : "";
+	set .@refine_status$, (.@refine[.@i] > 0) ? " [+" + .@refine[.@i] + "]" : "";
+	
+	dispbottom "[" + (.@i+1) + "] " + .@itemname$ + " x" + .@amount[.@i] + .@refine_status$ + .@equip_status$;
+	
+	if(.@card0[.@i] > 0 || .@card1[.@i] > 0 || .@card2[.@i] > 0 || .@card3[.@i] > 0) {
+		set .@cards$, "    Cards: ";
+		if(.@card0[.@i] > 0) set .@cards$, .@cards$ + getitemname(.@card0[.@i]) + " ";
+		if(.@card1[.@i] > 0) set .@cards$, .@cards$ + getitemname(.@card1[.@i]) + " ";
+		if(.@card2[.@i] > 0) set .@cards$, .@cards$ + getitemname(.@card2[.@i]) + " ";
+		if(.@card3[.@i] > 0) set .@cards$, .@cards$ + getitemname(.@card3[.@i]);
+		dispbottom .@cards$;
+	}
+}
+dispbottom "========================================";
+end;
+
+//========== EDIT EMAIL ==========
+Edit_Email:
+mes .n$;
+mes "Enter new email address:";
+mes "(Type 'Cancel' to abort)";
+input .@new_email$;
+
+if(.@new_email$ == "Cancel") {
+	if(getgroupid() >= 40) goto GM_Menu;
+	close;
+}
+
+query_sql "SELECT `email` FROM `login` WHERE `account_id` = '"+getcharid(3)+"'", .@old_email$;
+
+mes .n$;
+mes "Old Email: ^FF0000" + .@old_email$ + "^000000";
+mes "New Email: ^00FF00" + .@new_email$ + "^000000";
+mes " ";
+mes "Confirm change?";
+if(select("- Yes:- No") == 2) {
+	if(getgroupid() >= 40) goto GM_Menu;
+	close;
+}
+
+query_sql "UPDATE `login` SET `email` = '"+escape_sql(.@new_email$)+"' WHERE `account_id` = '"+getcharid(3)+"'";
+
+mes .n$;
+mes "^00FF00Email updated successfully!^000000";
+close;
+
+//========== REPORT SYSTEM ==========
+Report_Menu:
+mes .n$;
+mes "^FF6600=== Report System ===^000000";
+mes "Report rule violations or suspicious activity.";
+next;
+
+switch(select("- Submit Report:- My Reports:- Back")) {
+	case 1: goto Submit_Report;
+	case 2: goto View_MyReports;
+	case 3: close;
+}
+
+//========== SUBMIT REPORT ==========
+Submit_Report:
+mes .n$;
+mes "Enter the character name to report:";
+input .@reported$;
+
+if(.@reported$ == "") {
+	mes .n$;
+	mes "^FF0000Invalid name!^000000";
+	close;
+}
+
+// Check if character exists
+query_sql "SELECT COUNT(*) FROM `char` WHERE `name` = '"+escape_sql(.@reported$)+"'", .@exists;
+if(!.@exists) {
+	mes .n$;
+	mes "^FF0000Character not found!^000000";
+	close;
+}
+
+mes .n$;
+mes "Reporting: ^FF0000" + .@reported$ + "^000000";
+mes " ";
+mes "Select reason:";
+next;
+
+switch(select("- Bot/Hacking:- Scamming:- Harassment:- RMT:- Bug Abuse:- Other")) {
+	case 1: set .@reason$, "Bot/Hacking"; break;
+	case 2: set .@reason$, "Scamming"; break;
+	case 3: set .@reason$, "Harassment"; break;
+	case 4: set .@reason$, "RMT (Real Money Trading)"; break;
+	case 5: set .@reason$, "Bug Abuse"; break;
+	case 6: 
+		mes .n$;
+		mes "Enter reason:";
+		input .@reason$;
+		if(.@reason$ == "") close;
+		break;
+}
+
+mes .n$;
+mes "^FF6600=== Report Summary ===^000000";
+mes "Reported: ^FF0000" + .@reported$ + "^000000";
+mes "Reason: ^00FF00" + .@reason$ + "^000000";
+mes " ";
+mes "Submit report?";
+if(select("- Submit:- Cancel") == 2) close;
+
+query_sql "INSERT INTO `cp_reports` (`reporter_id`, `reporter_name`, `reported_name`, `reason`) VALUES ('"+getcharid(0)+"', '"+escape_sql(strcharinfo(0))+"', '"+escape_sql(.@reported$)+"', '"+escape_sql(.@reason$)+"')";
+
+mes .n$;
+mes "^00FF00Report submitted successfully!^000000";
+mes "GMs will review it soon.";
+close;
+
+//========== VIEW MY REPORTS ==========
+View_MyReports:
+query_sql "SELECT `id`, `reported_name`, `reason`, `status`, `date_created`, `resolution_note` FROM `cp_reports` WHERE `reporter_id` = '"+getcharid(0)+"' ORDER BY `date_created` DESC LIMIT 20", .@id, .@reported$, .@reason$, .@status$, .@date$, .@note$;
+
+mes .n$;
+mes "^FF6600=== My Reports ===^000000";
+mes "Total: ^00FF00" + getarraysize(.@id) + "^000000";
+mes " ";
+
+if(getarraysize(.@id) == 0) {
+	mes "^FF0000No reports found!^000000";
+	close;
+}
+
+for(set .@i, 0; .@i < getarraysize(.@id) && .@i < 10; set .@i, .@i + 1) {
+	mes "^00FFFF[" + (.@i+1) + "]^000000 ^FF0000" + .@reported$[.@i] + "^000000";
+	mes "Reason: " + .@reason$[.@i];
+	mes "Status: " + (.@status$[.@i] == "pending" ? "^FFD700Pending^000000" : .@status$[.@i] == "resolved" ? "^00FF00Resolved^000000" : .@status$[.@i]);
+	mes "Date: " + .@date$[.@i];
+	if(.@note$[.@i] != "") mes "Note: " + .@note$[.@i];
+	mes "---------------------";
+}
+close;
+
+//================== GM SECTION ==================
+
+//========== GM VIEW ACCOUNT ==========
+GM_ViewAccount:
+mes .n$;
+mes "Enter character name:";
+input .@search_char$;
+
+if(.@search_char$ == "") {
+	mes .n$;
+	mes "^FF0000Invalid name!^000000";
+	close;
+}
+
+query_sql "SELECT `account_id` FROM `char` WHERE `name` = '"+escape_sql(.@search_char$)+"'", .@acc_id;
+if(!.@acc_id) {
+	mes .n$;
+	mes "^FF0000Character not found!^000000";
+	close;
+}
+
+query_sql "SELECT `userid`, `sex`, `email`, `logincount`, `last_ip`, `lastlogin` FROM `login` WHERE `account_id` = '"+.@acc_id+"'", .@user$, .@sex$, .@email$, .@login, .@ip$, .@last_login$;
+
+mes .n$;
+mes "^FF6600=== Account Information ===^000000";
+if(getgroupid() >= 80) {
+	mes "Username: ^00FF00" + .@user$ + "^000000";
+	mes "Account ID: ^00FF00" + .@acc_id + "^000000";
+}
+mes "Gender: ^00FF00" + .@sex$ + "^000000";
+mes "Email: ^00FF00" + .@email$ + "^000000";
+mes "Login Count: ^00FF00" + .@login + "^000000";
+mes "Last IP: ^00FF00" + .@ip$ + "^000000";
+mes "Last Login: ^00FF00" + .@last_login$ + "^000000";
+close;
+
+//========== GM ADVANCED SEARCH ==========
+GM_AdvSearch:
+mes .n$;
+mes "^FF6600=== Advanced Search ===^000000";
+next;
+
+switch(select("- By Account ID:- By IP Address:- By Email:- By Level Range:- Back")) {
+	case 1: // Account ID
+		mes .n$;
+		mes "Enter Account ID:";
+		input .@acc_id;
+		
+		query_sql "SELECT `userid`, `sex`, `email`, `logincount`, `last_ip` FROM `login` WHERE `account_id` = '"+.@acc_id+"'", .@user$, .@sex$, .@email$, .@login, .@ip$;
+		query_sql "SELECT `name`, `base_level`, `job_level` FROM `char` WHERE `account_id` = '"+.@acc_id+"'", .@names$, .@blvl, .@jlvl;
+		
+		if(.@user$ == "") {
+			mes .n$;
+			mes "^FF0000Account not found!^000000";
+			close;
+		}
+		
+		mes .n$;
+		mes "^FF6600=== Account " + .@acc_id + " ===^000000";
+		mes "Username: " + .@user$;
+		mes "Email: " + .@email$;
+		mes "Last IP: " + .@ip$;
+		mes "Login Count: " + .@login;
+		mes " ";
+		mes "^00FFFFCharacters:^000000";
+		for(set .@i, 0; .@i < getarraysize(.@names$); set .@i, .@i + 1)
+			mes "- " + .@names$[.@i] + " (Lv." + .@blvl[.@i] + "/" + .@jlvl[.@i] + ")";
+		close;
+		
+	case 2: // IP Address
+		mes .n$;
+		mes "Enter IP Address:";
+		input .@search_ip$;
+		
+		query_sql "SELECT `account_id`, `userid`, `email`, `logincount` FROM `login` WHERE `last_ip` = '"+escape_sql(.@search_ip$)+"' LIMIT 20", .@acc_ids, .@users$, .@emails$, .@logins;
+		
+		mes .n$;
+		mes "^FF6600=== Accounts with IP: " + .@search_ip$ + " ===^000000";
+		mes "Found: ^00FF00" + getarraysize(.@acc_ids) + "^000000";
+		mes " ";
+		
+		if(getarraysize(.@acc_ids) == 0) {
+			mes "^FF0000No accounts found!^000000";
+			close;
+		}
+		
+		mes "^FF0000Showing in chat window...^000000";
+		close2;
+		
+		dispbottom "========== Accounts with IP: " + .@search_ip$ + " ==========";
+		for(set .@i, 0; .@i < getarraysize(.@acc_ids); set .@i, .@i + 1)
+			dispbottom "[" + (.@i+1) + "] AccID: " + .@acc_ids[.@i] + " | User: " + .@users$[.@i] + " | Email: " + .@emails$[.@i] + " | Logins: " + .@logins[.@i];
+		dispbottom "========================================";
+		end;
+		
+	case 3: // Email
+		mes .n$;
+		mes "Enter Email:";
+		input .@search_email$;
+		
+		query_sql "SELECT `account_id`, `userid`, `last_ip`, `logincount` FROM `login` WHERE `email` LIKE '%"+escape_sql(.@search_email$)+"%' LIMIT 20", .@acc_ids, .@users$, .@ips$, .@logins;
+		
+		mes .n$;
+		mes "^FF6600=== Search Results ===^000000";
+		mes "Found: ^00FF00" + getarraysize(.@acc_ids) + "^000000";
+		
+		if(getarraysize(.@acc_ids) == 0) {
+			mes "^FF0000No accounts found!^000000";
+			close;
+		}
+		
+		mes "^FF0000Showing in chat window...^000000";
+		close2;
+		
+		dispbottom "========== Email Search Results ==========";
+		for(set .@i, 0; .@i < getarraysize(.@acc_ids); set .@i, .@i + 1)
+			dispbottom "[" + (.@i+1) + "] AccID: " + .@acc_ids[.@i] + " | User: " + .@users$[.@i] + " | IP: " + .@ips$[.@i];
+		dispbottom "========================================";
+		end;
+		
+	case 4: // Level Range
+		mes .n$;
+		mes "Enter minimum level:";
+		input .@min_lvl;
+		mes "Enter maximum level:";
+		input .@max_lvl;
+		
+		if(.@min_lvl < 1 || .@max_lvl > 999 || .@min_lvl > .@max_lvl) {
+			mes .n$;
+			mes "^FF0000Invalid level range!^000000";
+			close;
+		}
+		
+		query_sql "SELECT `name`, `base_level`, `job_level`, `class`, `account_id` FROM `char` WHERE `base_level` >= '"+.@min_lvl+"' AND `base_level` <= '"+.@max_lvl+"' ORDER BY `base_level` DESC LIMIT 50", .@names$, .@blvls, .@jlvls, .@classes, .@acc_ids;
+		
+		mes .n$;
+		mes "^FF6600=== Level Range " + .@min_lvl + "-" + .@max_lvl + " ===^000000";
+		mes "Found: ^00FF00" + getarraysize(.@names$) + "^000000";
+		
+		if(getarraysize(.@names$) == 0) {
+			mes "^FF0000No characters found!^000000";
+			close;
+		}
+		
+		mes "^FF0000Showing in chat window...^000000";
+		close2;
+		
+		dispbottom "========== Characters Level " + .@min_lvl + "-" + .@max_lvl + " ==========";
+		for(set .@i, 0; .@i < getarraysize(.@names$); set .@i, .@i + 1)
+			dispbottom "[" + (.@i+1) + "] " + .@names$[.@i] + " | Lv." + .@blvls[.@i] + "/" + .@jlvls[.@i] + " | " + jobname(.@classes[.@i]) + " | AccID: " + .@acc_ids[.@i];
+		dispbottom "========================================";
+		end;
+		
+	case 5:
+		goto GM_Menu;
+}
+
+//========== GM TRADING HISTORY ==========
+GM_TradeHistory:
+mes .n$;
+mes "Enter character name:";
+input .@search_char$;
+
+if(.@search_char$ == "") {
+	mes .n$;
+	mes "^FF0000Invalid name!^000000";
+	close;
+}
+
+query_sql "SELECT `char_id` FROM `char` WHERE `name` = '"+escape_sql(.@search_char$)+"'", .@char_id;
+if(!.@char_id) {
+	mes .n$;
+	mes "^FF0000Character not found!^000000";
+	close;
+}
+
+query_sql "SELECT `char1_name`, `char2_name`, `items_char1`, `items_char2`, `zeny_char1`, `zeny_char2`, `trade_time` FROM `cp_trade_log` WHERE `char1_id` = '"+.@char_id+"' OR `char2_id` = '"+.@char_id+"' ORDER BY `trade_time` DESC LIMIT 50", .@char1$, .@char2$, .@items1$, .@items2$, .@zeny1, .@zeny2, .@time$;
+
+mes .n$;
+mes "^FF6600=== Trading History ===^000000";
+mes "Character: ^00FF00" + .@search_char$ + "^000000";
+mes "Trades Found: ^00FF00" + getarraysize(.@char1$) + "^000000";
+
+if(getarraysize(.@char1$) == 0) {
+	mes "^FF0000No trade history found!^000000";
+	close;
+}
+
+mes "^FF0000Showing in chat window...^000000";
+close2;
+
+dispbottom "========== Trade History: " + .@search_char$ + " ==========";
+for(set .@i, 0; .@i < getarraysize(.@char1$); set .@i, .@i + 1) {
+	dispbottom "[" + (.@i+1) + "] " + .@time$[.@i];
+	dispbottom "    " + .@char1$[.@i] + " <-> " + .@char2$[.@i];
+	dispbottom "    Items: " + .@items1$[.@i] + " | " + .@items2$[.@i];
+	dispbottom "    Zeny: " + .@zeny1[.@i] + "z | " + .@zeny2[.@i] + "z";
+	dispbottom "    -----------";
+}
+dispbottom "========================================";
+end;
+
+//========== GM CHAT LOGS ==========
+GM_ChatLogs:
+mes .n$;
+mes "Enter character name:";
+input .@search_char$;
+
+if(.@search_char$ == "") {
+	mes .n$;
+	mes "^FF0000Invalid name!^000000";
+	close;
+}
+
+query_sql "SELECT `char_id` FROM `char` WHERE `name` = '"+escape_sql(.@search_char$)+"'", .@char_id;
+if(!.@char_id) {
+	mes .n$;
+	mes "^FF0000Character not found!^000000";
+	close;
+}
+
+query_sql "SELECT `message`, `chat_type`, `log_time` FROM `cp_chat_log` WHERE `char_id` = '"+.@char_id+"' ORDER BY `log_time` DESC LIMIT 100", .@messages$, .@types$, .@times$;
+
+mes .n$;
+mes "^FF6600=== Chat History ===^000000";
+mes "Character: ^00FF00" + .@search_char$ + "^000000";
+mes "Messages Found: ^00FF00" + getarraysize(.@messages$) + "^000000";
+
+if(getarraysize(.@messages$) == 0) {
+	mes "^FF0000No chat history found!^000000";
+	close;
+}
+
+mes "^FF0000Showing in chat window...^000000";
+close2;
+
+dispbottom "========== Chat History: " + .@search_char$ + " ==========";
+for(set .@i, 0; .@i < getarraysize(.@messages$); set .@i, .@i + 1)
+	dispbottom "[" + .@types$[.@i] + "] " + .@times$[.@i] + " - " + .@messages$[.@i];
+dispbottom "========================================";
+end;
+
+//========== GM REPORT MANAGEMENT ==========
+GM_Reports:
+query_sql "SELECT `id`, `reporter_name`, `reported_name`, `reason`, `status`, `date_created` FROM `cp_reports` WHERE `status` = 'pending' ORDER BY `date_created` ASC LIMIT 20", .@id, .@reporter$, .@reported$, .@reason$, .@status$, .@date$;
+
+mes .n$;
+mes "^FF6600=== Report Management ===^000000";
+mes "Pending Reports: ^FF6600" + getarraysize(.@id) + "^000000";
+mes " ";
+
+if(getarraysize(.@id) == 0) {
+	mes "^00FF00No pending reports!^000000";
+	close;
+}
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@id) && .@i < 15; set .@i, .@i + 1)
+	set .@menu$, .@menu$ + "- " + .@reported$[.@i] + " (" + .@reason$[.@i] + "):";
+set .@menu$, .@menu$ + "- Back";
+
+set .@select, select(.@menu$) - 1;
+if(.@select >= getarraysize(.@id) || .@select >= 15) goto GM_Menu;
+
+mes .n$;
+mes "^FF6600=== Report Details ===^000000";
+mes "Reported: ^FF0000" + .@reported$[.@select] + "^000000";
+mes "Reporter: ^0055FF" + .@reporter$[.@select] + "^000000";
+mes "Reason: ^00FF00" + .@reason$[.@select] + "^000000";
+mes "Date: " + .@date$[.@select];
+next;
+
+switch(select("- Resolve (Take Action):- Reject:- Mark Reviewing:- Back")) {
+	case 1: // Resolve
+		mes .n$;
+		mes "Enter resolution note:";
+		input .@note$;
+		
+		query_sql "UPDATE `cp_reports` SET `status` = 'resolved', `resolved_by` = '"+escape_sql(strcharinfo(0))+"', `resolution_note` = '"+escape_sql(.@note$)+"' WHERE `id` = '"+.@id[.@select]+"'";
+		
+		mes .n$;
+		mes "^00FF00Report resolved!^000000";
+		close;
+		
+	case 2: // Reject
+		mes .n$;
+		mes "Enter reason for rejection:";
+		input .@note$;
+		
+		query_sql "UPDATE `cp_reports` SET `status` = 'rejected', `resolved_by` = '"+escape_sql(strcharinfo(0))+"', `resolution_note` = '"+escape_sql(.@note$)+"' WHERE `id` = '"+.@id[.@select]+"'";
+		
+		mes .n$;
+		mes "^00FF00Report rejected!^000000";
+		close;
+		
+	case 3: // Reviewing
+		query_sql "UPDATE `cp_reports` SET `status` = 'reviewing', `resolved_by` = '"+escape_sql(strcharinfo(0))+"' WHERE `id` = '"+.@id[.@select]+"'";
+		
+		mes .n$;
+		mes "^00FF00Report marked as reviewing!^000000";
+		close;
+		
+	case 4:
+		goto GM_Reports;
+}
+
+//========== GM UTILITIES ==========
+GM_Utilities:
+mes .n$;
+mes "^FF6600=== GM Utilities ===^000000";
+next;
+
+switch(select("- Teleport to Player:- Multi-Account Detection:- Batch Kick Players:- Send Mass Mail:- Back")) {
+	case 1: goto GM_Teleport;
+	case 2: goto GM_MultiAccount;
+	case 3: goto GM_BatchKick;
+	case 4: goto GM_MassMail;
+	case 5: goto GM_Menu;
+}
+
+//========== GM TELEPORT TO PLAYER ==========
+GM_Teleport:
+query_sql "SELECT `name`, `class`, `base_level`, `job_level`, `last_map` FROM `char` WHERE `online` = 1 ORDER BY `base_level` DESC LIMIT 50", .@names$, .@classes, .@blvls, .@jlvls, .@maps$;
+
+mes .n$;
+mes "^FF6600=== Teleport to Player ===^000000";
+mes "Online Players: ^00FF00" + getarraysize(.@names$) + "^000000";
+mes " ";
+
+if(getarraysize(.@names$) == 0) {
+	mes "^FF0000No players online!^000000";
+	close;
+}
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@names$) && .@i < 20; set .@i, .@i + 1) {
+	set .@menu$, .@menu$ + "- " + .@names$[.@i] + " (Lv." + .@blvls[.@i] + "/" + .@jlvls[.@i] + " " + jobname(.@classes[.@i]) + "):";
+}
+set .@menu$, .@menu$ + "- Show More (Chat):- Enter Name Manually:- Back";
+
+set .@select, select(.@menu$) - 1;
+
+if(.@select == getarraysize(.@names$) && getarraysize(.@names$) > 20 || .@select == 20) {
+	mes .n$;
+	mes "^00FF00Displaying full list in chat window...^000000";
+	close2;
+	
+	dispbottom "========== Online Players ==========";
+	for(set .@i, 0; .@i < getarraysize(.@names$); set .@i, .@i + 1)
+		dispbottom "[" + (.@i+1) + "] " + .@names$[.@i] + " | Lv." + .@blvls[.@i] + "/" + .@jlvls[.@i] + " | " + jobname(.@classes[.@i]) + " | Map: " + .@maps$[.@i];
+	dispbottom "========================================";
+	dispbottom "Use: @warpto <player_name>";
+	end;
+}
+
+if(.@select == getarraysize(.@names$) + 1 || .@select == 21) {
+	mes .n$;
+	mes "Enter character name:";
+	input .@target$;
+	
+	if(.@target$ == "") {
+		mes .n$;
+		mes "^FF0000Invalid name!^000000";
+		close;
+	}
+	
+	query_sql "SELECT `online` FROM `char` WHERE `name` = '"+escape_sql(.@target$)+"'", .@target_online;
+	
+	if(!.@target_online) {
+		mes .n$;
+		mes "^FF0000Character not found or is offline!^000000";
+		close;
+	}
+	
+	mes .n$;
+	mes "^00FF00Teleporting to " + .@target$ + "^000000";
+	close2;
+	
+	atcommand "@warpto " + .@target$;
+	end;
+}
+
+if(.@select >= getarraysize(.@names$) || .@select >= 20 || .@select == 22) {
+	goto GM_Utilities;
+}
+
+set .@target$, .@names$[.@select];
+
+mes .n$;
+mes "^FF6600=== Teleport Confirmation ===^000000";
+mes "Player: ^00FF00" + .@target$ + "^000000";
+mes "Level: ^00FF00" + .@blvls[.@select] + "/" + .@jlvls[.@select] + "^000000";
+mes "Class: ^0055FF" + jobname(.@classes[.@select]) + "^000000";
+mes "Map: ^00FFFF" + .@maps$[.@select] + "^000000";
+mes " ";
+mes "Teleport to this player?";
+
+if(select("- Yes, Warp:- Cancel") == 2) goto GM_Teleport;
+
+mes .n$;
+mes "^00FF00Teleporting to " + .@target$ + "^000000";
+close2;
+
+atcommand "@warpto " + .@target$;
+end;
+
+//========== GM MULTI-ACCOUNT DETECTION ==========
+GM_MultiAccount:
+mes .n$;
+mes "^FF6600=== Multi-Account Detection ===^000000";
+mes "This will search for accounts";
+mes "sharing the same IP address.";
+next;
+
+mes .n$;
+mes "Minimum accounts per IP:";
+input .@min_accounts;
+
+if(.@min_accounts < 2) set .@min_accounts, 2;
+
+query_sql "SELECT `last_ip`, COUNT(*) as count FROM `login` WHERE `account_id` > 1 GROUP BY `last_ip` HAVING count >= "+.@min_accounts+" ORDER BY count DESC LIMIT 50", .@ips$, .@counts;
+
+mes .n$;
+mes "^FF6600=== Results ===^000000";
+mes "IPs Found: ^00FF00" + getarraysize(.@ips$) + "^000000";
+
+if(getarraysize(.@ips$) == 0) {
+	mes "^00FF00No multi-accounts detected!^000000";
+	close;
+}
+
+mes "^FF0000Showing in chat window...^000000";
+close2;
+
+dispbottom "========== Multi-Account Detection ==========";
+dispbottom "Minimum accounts per IP: " + .@min_accounts;
+dispbottom " ";
+
+for(set .@i, 0; .@i < getarraysize(.@ips$); set .@i, .@i + 1) {
+	dispbottom "[" + (.@i+1) + "] IP: " + .@ips$[.@i] + " | Accounts: " + .@counts[.@i];
+	
+	query_sql "SELECT `userid`, `account_id`, `logincount` FROM `login` WHERE `last_ip` = '"+escape_sql(.@ips$[.@i])+"' LIMIT 10", .@users$, .@acc_ids, .@logins;
+	
+	for(set .@j, 0; .@j < getarraysize(.@users$); set .@j, .@j + 1)
+		dispbottom "    - " + .@users$[.@j] + " (AccID: " + .@acc_ids[.@j] + ", Logins: " + .@logins[.@j] + ")";
+	
+	dispbottom "    -----------";
+	deletearray .@users$;
+	deletearray .@acc_ids;
+	deletearray .@logins;
+}
+dispbottom "========================================";
+end;
+
+//========== GM BATCH KICK PLAYERS ==========
+GM_BatchKick:
+mes .n$;
+mes "^FF6600=== Batch Kick Players ===^000000";
+mes "^FF0000WARNING: This will kick players!^000000";
+mes " ";
+mes "Select kick criteria:";
+next;
+
+switch(select("- Kick by Level Range:- Kick by Map:- Kick All Except GMs:- Cancel")) {
+	case 1:
+		mes .n$;
+		mes "Enter minimum level:";
+		input .@min_lvl;
+		mes "Enter maximum level:";
+		input .@max_lvl;
+		
+		if(.@min_lvl < 1 || .@max_lvl > 999 || .@min_lvl > .@max_lvl) {
+			mes .n$;
+			mes "^FF0000Invalid level range!^000000";
+			close;
+		}
+		
+		query_sql "SELECT `name` FROM `char` WHERE `online` = 1 AND `base_level` >= "+.@min_lvl+" AND `base_level` <= "+.@max_lvl, .@kick_names$;
+		
+		mes .n$;
+		mes "Players to kick: ^00FF00" + getarraysize(.@kick_names$) + "^000000";
+		mes "Level range: " + .@min_lvl + "-" + .@max_lvl;
+		mes " ";
+		mes "^FF0000Proceed with kick?^000000";
+		if(select("- Yes, Kick Them:- Cancel") == 2) close;
+		
+		for(set .@i, 0; .@i < getarraysize(.@kick_names$); set .@i, .@i + 1)
+			atcommand "@kick " + .@kick_names$[.@i];
+		
+		mes .n$;
+		mes "^00FF00Kicked " + getarraysize(.@kick_names$) + " players!^000000";
+		close;
+		
+	case 2:
+		mes .n$;
+		mes "Enter map name:";
+		input .@kick_map$;
+		
+		if(.@kick_map$ == "") {
+			mes .n$;
+			mes "^FF0000Invalid map!^000000";
+			close;
+		}
+		
+		query_sql "SELECT `name` FROM `char` WHERE `online` = 1 AND `last_map` = '"+escape_sql(.@kick_map$)+"'", .@kick_names$;
+		
+		mes .n$;
+		mes "Players to kick: ^00FF00" + getarraysize(.@kick_names$) + "^000000";
+		mes "Map: " + .@kick_map$;
+		mes " ";
+		mes "^FF0000Proceed with kick?^000000";
+		if(select("- Yes, Kick Them:- Cancel") == 2) close;
+		
+		for(set .@i, 0; .@i < getarraysize(.@kick_names$); set .@i, .@i + 1)
+			atcommand "@kick " + .@kick_names$[.@i];
+		
+		mes .n$;
+		mes "^00FF00Kicked " + getarraysize(.@kick_names$) + " players!^000000";
+		close;
+		
+	case 3:
+		mes .n$;
+		mes "^FF0000KICK ALL NON-GM PLAYERS?^000000";
+		mes "This will kick everyone except GMs!";
+		mes " ";
+		mes "Type 'CONFIRM' to proceed:";
+		input .@confirm$;
+		
+		if(.@confirm$ != "CONFIRM") {
+			mes .n$;
+			mes "Cancelled.";
+			close;
+		}
+		
+		announce "[GM] Mass kick in progress...", bc_all;
+		sleep2 3000;
+		
+		atcommand "@kickall";
+		
+		mes .n$;
+		mes "^00FF00All players kicked!^000000";
+		close;
+		
+	case 4:
+		goto GM_Utilities;
+}
+
+//========== GM MASS MAIL ==========
+GM_MassMail:
+mes .n$;
+mes "^FF6600=== Send Mass Mail ===^000000";
+mes "Send mail to multiple players.";
+next;
+
+mes .n$;
+mes "Select recipients:";
+switch(select("- All Online Players:- All Players (Max 100):- By Level Range:- Custom List:- Cancel")) {
+	case 1:
+		query_sql "SELECT `char_id`, `name` FROM `char` WHERE `online` = 1", .@char_ids, .@names$;
+		break;
+		
+	case 2:
+		query_sql "SELECT `char_id`, `name` FROM `char` ORDER BY `char_id` DESC LIMIT 100", .@char_ids, .@names$;
+		break;
+		
+	case 3:
+		mes .n$;
+		mes "Enter minimum level:";
+		input .@min_lvl;
+		mes "Enter maximum level:";
+		input .@max_lvl;
+		
+		query_sql "SELECT `char_id`, `name` FROM `char` WHERE `base_level` >= "+.@min_lvl+" AND `base_level` <= "+.@max_lvl+" LIMIT 100", .@char_ids, .@names$;
+		break;
+		
+	case 4:
+		mes .n$;
+		mes "^FF0000Custom list not yet implemented!^000000";
+		mes "Please use other options.";
+		close;
+		
+	case 5:
+		goto GM_Utilities;
+}
+
+if(getarraysize(.@char_ids) == 0) {
+	mes .n$;
+	mes "^FF0000No recipients found!^000000";
+	close;
+}
+
+mes .n$;
+mes "Recipients: ^00FF00" + getarraysize(.@char_ids) + "^000000";
+mes " ";
+mes "Enter mail title:";
+input .@title$;
+
+if(.@title$ == "") {
+	mes .n$;
+	mes "^FF0000Title cannot be empty!^000000";
+	close;
+}
+
+mes .n$;
+mes "Enter mail message:";
+input .@message$;
+
+if(.@message$ == "") {
+	mes .n$;
+	mes "^FF0000Message cannot be empty!^000000";
+	close;
+}
+
+mes .n$;
+mes "Attach Zeny? (0 for no)";
+input .@zeny;
+
+if(.@zeny < 0) set .@zeny, 0;
+
+mes .n$;
+mes "^FF6600=== Mail Preview ===^000000";
+mes "Recipients: ^00FF00" + getarraysize(.@char_ids) + "^000000";
+mes "Title: " + .@title$;
+mes "Message: " + .@message$;
+if(.@zeny > 0) mes "Zeny: ^FF6600" + .@zeny + "z^000000";
+mes " ";
+mes "Send mail?";
+if(select("- Yes, Send:- Cancel") == 2) close;
+
+set .@sent, 0;
+for(set .@i, 0; .@i < getarraysize(.@char_ids); set .@i, .@i + 1) {
+	query_sql "INSERT INTO `mail` (`send_name`, `dest_id`, `dest_name`, `title`, `message`, `zeny`, `time`) VALUES ('"+escape_sql(strcharinfo(0))+"', '"+.@char_ids[.@i]+"', '"+escape_sql(.@names$[.@i])+"', '"+escape_sql(.@title$)+"', '"+escape_sql(.@message$)+"', '"+.@zeny+"', NOW())";
+	set .@sent, .@sent + 1;
+}
+
+mes .n$;
+mes "^00FF00Mail sent successfully!^000000";
+mes "Total sent: " + .@sent;
+close;
+
+//========== SERVER STATS ==========
+Server_Stats:
+query_sql "SELECT COUNT(*) FROM `login` WHERE `account_id` > 1", .@count_acc;
+query_sql "SELECT COUNT(*) FROM `char`", .@count_char;
+query_sql "SELECT COUNT(*) FROM `char` WHERE `online` = 1", .@count_online;
+query_sql "SELECT SUM(`zeny`) FROM `char` WHERE `zeny` > 0", .@total_zeny;
+query_sql "SELECT AVG(`base_level`) FROM `char`", .@avg_level;
+query_sql "SELECT MAX(`base_level`) FROM `char`", .@max_level;
+
+mes .n$;
+mes "^FF6600=== Server Statistics ===^000000";
+mes "Total Accounts: ^00FF00" + .@count_acc + "^000000";
+mes "Total Characters: ^00FF00" + .@count_char + "^000000";
+mes "Online Now: ^00FF00" + .@count_online + "^000000";
+mes "Total Zeny: ^FF6600" + .@total_zeny + "z^000000";
+mes "Average Level: ^00FF00" + .@avg_level + "^000000";
+mes "Max Level: ^00FF00" + .@max_level + "^000000";
+next;
+
+if(select("- Show Online Players:- Class Distribution:- Back") == 3) goto GM_Menu;
+
+if(@menu == 1) {
+	query_sql "SELECT `name`, `class`, `base_level`, `job_level` FROM `char` WHERE `online` = 1 ORDER BY `base_level` DESC", .@names$, .@classes, .@blvls, .@jlvls;
+	
+	mes .n$;
+	mes "^00FF00Displaying in chat window...^000000";
+	close2;
+	
+	dispbottom "========== Online Players ==========";
+	for(set .@i, 0; .@i < getarraysize(.@names$); set .@i, .@i + 1)
+		dispbottom "[" + (.@i+1) + "] " + .@names$[.@i] + " | Lv." + .@blvls[.@i] + "/" + .@jlvls[.@i] + " | " + jobname(.@classes[.@i]);
+	dispbottom "========================================";
+	end;
+}
+
+if(@menu == 2) {
+	query_sql "SELECT `class`, COUNT(*) as count FROM `char` GROUP BY `class` ORDER BY count DESC", .@classes, .@counts;
+	
+	mes .n$;
+	mes "^00FF00Displaying in chat window...^000000";
+	close2;
+	
+	dispbottom "========== Class Distribution ==========";
+	for(set .@i, 0; .@i < getarraysize(.@classes); set .@i, .@i + 1)
+		dispbottom "[" + (.@i+1) + "] " + jobname(.@classes[.@i]) + ": " + .@counts[.@i] + " characters";
+	dispbottom "========================================";
+	end;
+}
+
+//============================================================
+OnInit:
+	set .n$, "^55AA88[Enhanced CP]^000000";
+	set .max_ch, 9; // Max Characters per Account
+	set .char_gender, 2592000; // Gender change cooldown (30 days)
+	
+	// Character Management Settings
+	set .rename_fee, 100000000; // 100M Zeny to rename
+	set .rename_cooldown, 2592000; // 30 days cooldown
+}
+
+//============================================================
+//= TIME CONVERSION FUNCTION (Renamed to avoid conflict)
+//============================================================
+function	script	CP_Time2Str	{
+	set .@time, getarg(0) - gettimetick(2);
+	if(.@time <= 0) return "Available Now";
+	
+	set .@days, .@time / 86400;
+	set .@hours, (.@time % 86400) / 3600;
+	set .@mins, (.@time % 3600) / 60;
+	
+	set .@str$, "";
+	if(.@days > 0) set .@str$, .@str$ + .@days + " days ";
+	if(.@hours > 0) set .@str$, .@str$ + .@hours + " hours ";
+	if(.@mins > 0) set .@str$, .@str$ + .@mins + " minutes";
+	
+	return .@str$;
+}
+//============================================================
+//= END OF SCRIPT
+//============================================================

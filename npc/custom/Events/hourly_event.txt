@@ -1,0 +1,123 @@
+//========================================
+// FILE: npc/custom/events/hourly_system.txt
+// HOURLY POINT SYSTEM (TÍNH ĐIỂM)
+//========================================
+-	script	Hourly_Point_System	-1,{
+
+OnInit:
+	// SETTINGS
+	.check_interval = 60;        // Check every 60 seconds (1 minute)
+	.idle_time = 600;            // Maximum idle time (10 minutes = 600 seconds)
+	.max_dual_login = 1;         // Maximum accounts allowed to login simultaneously
+	.use_gepard = false;         // Enable/disable Gepard UID check (true/false)
+	.points_per_hour = 2;        // Points earned per hour (CHANGED TO 2)
+	
+	// Bind command
+	bindatcmd "hourly", strnpcinfo(0)+"::OnCommand", 0, 99;
+	end;
+
+OnPCLoginEvent:
+	// Check dual login if Gepard is enabled
+	if (.use_gepard) {
+		if (getcharid(3) != playerattached()) end;
+		query_sql("SELECT COUNT(*) FROM `login` WHERE `account_id` != " + getcharid(3) + " AND `last_ip` = '" + escape_sql(getcharip()) + "' AND `last_login` > NOW() - INTERVAL 5 MINUTE", .@count);
+		if (.@count >= .max_dual_login) {
+			@hourly_disabled = 1;
+			dispbottom "[Hourly Point] System disabled due to multiple account login detected!", 0x00FF00;
+			end;
+		}
+	}
+	
+	// Start timer
+	@hourly_disabled = 0;
+	@hourly_idle = 0;
+	
+	addtimer (.check_interval * 1000), strnpcinfo(0)+"::OnTimer";
+	end;
+
+OnPCLogoutEvent:
+	// Remove timer on logout
+	deltimer strnpcinfo(0)+"::OnTimer";
+	end;
+
+OnTimer:
+	// Check if system is disabled
+	if (@hourly_disabled) {
+		addtimer (.check_interval * 1000), strnpcinfo(0)+"::OnTimer";
+		end;
+	}
+	
+	// Check idle status (vending, chatroom, afk)
+	if (checkvending() || checkchatting() || checkidle() >= .idle_time) {
+		if (!@hourly_idle) {
+			@hourly_idle = 1;
+			dispbottom "[Hourly Point] Timer paused due to idle status detected!", 0x00FF00;
+		}
+		addtimer (.check_interval * 1000), strnpcinfo(0)+"::OnTimer";
+		end;
+	}
+	
+	// Notify if just exited idle status
+	if (@hourly_idle) {
+		@hourly_idle = 0;
+		dispbottom "[Hourly Point] Timer has resumed!", 0x00FF00;
+	}
+	
+	// Increase time
+	#hourly_minutes += .check_interval;
+	
+	// Check if reached 3600 seconds (1 hour)
+	if (#hourly_minutes >= 3600) {
+		#hourly_minutes = 0;
+		#HOURLYPOINT += .points_per_hour;  // Add 2 points instead of 1
+		
+		// Notify when receiving Hourly Points
+		announce "[Hourly Point] " + strcharinfo(0) + " has received " + .points_per_hour + " Hourly Points! (Total: " + #HOURLYPOINT + " points)", bc_self, 0x00FF00;
+		dispbottom "========================================", 0x00FF00;
+		dispbottom "[Hourly Point] You have been online for 1 hour!", 0x00FF00;
+		dispbottom "[Hourly Point] +" + .points_per_hour + " Hourly Points (Total: " + #HOURLYPOINT + ")", 0x00FF00;
+		dispbottom "========================================", 0x00FF00;
+	}
+	
+	// Continue timer
+	addtimer (.check_interval * 1000), strnpcinfo(0)+"::OnTimer";
+	end;
+
+OnCommand:
+	mes "[Hourly Point System]";
+	mes "--------------------------";
+	
+	if (@hourly_disabled) {
+		mes "^FF0000Status: Disabled^000000";
+		mes "^FF0000Reason: Multiple account login detected^000000";
+		mes " ";
+		mes "Please logout your other accounts!";
+		close;
+	}
+	
+	mes "^00FF00Status: Active^000000";
+	
+	if (@hourly_idle)
+		mes "^FF0000Timer: Paused (Idle)^000000";
+	else
+		mes "^00FF00Timer: Running^000000";
+	
+	.@hours = #hourly_minutes / 3600;
+	.@mins = (#hourly_minutes % 3600) / 60;
+	.@secs = #hourly_minutes % 60;
+	
+	mes " ";
+	mes "Online time: ^00FF00" + .@hours + " hour(s) " + .@mins + " minute(s) " + .@secs + " second(s)^000000";
+	mes "Time remaining: ^00FF00" + (60 - .@mins) + " minute(s) " + (60 - .@secs) + " second(s)^000000";
+	mes " ";
+	mes "Current Hourly Points: ^00FF00" + #HOURLYPOINT + " points^000000";
+	mes " ";
+	mes "^00FF00Reward: " + .points_per_hour + " points per hour online^000000";
+	mes "^00FF00Note: Progress is saved when you logout!^000000";
+	mes " ";
+	mes "^888888Timer will pause when:^000000";
+	mes "^888888- Opening shop (Vending)^000000";
+	mes "^888888- Opening chatroom^000000";
+	mes "^888888- AFK for more than " + (.idle_time / 60) + " minutes^000000";
+	close;
+}

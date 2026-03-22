@@ -1,0 +1,1255 @@
+//===== rAthena Script =======================================
+//= Bot Configuration System
+//===== By: ==================================================
+//= Enhanced Bot Configuration Menu
+//===== Description: =========================================
+//= All bot configuration menus and settings
+//= Smart AI, Attack Skills, Buffs, Items, etc.
+//============================================================
+
+-	script	bot_configuration	FAKE_NPC,{
+
+OnConfigMenu:
+config_menu:
+	mes "[Auto Attack Configuration]";
+	mes "^0000FFChoose configuration^000000";
+	
+	switch(select(
+		"Melee Attack",
+		"Regeneration",
+		"Attack Skills",
+		"Buff Skills",
+		"Buff Items",
+		"Teleport",
+		"Monsters Selection",
+		"Items Pickup",
+		"Reset All Settings",
+		"Back to Main Menu"
+	)){
+		case 1: goto melee_attack;
+		case 2: goto regeneration_menu;
+		case 3: goto attackskills_menu;
+		case 4: goto buffskills_menu;
+		case 5: goto buffitems_menu;
+		case 6: goto teleport_menu;
+		case 7: goto monsters_menu;
+		case 8: goto pickupitems_menu;
+		case 9: goto reset_all;
+		case 10: 
+			doevent "bot_time_manager::main_menu";
+			end;
+	}
+	end;
+
+OnSmartAIMenu:
+smart_ai_menu:
+	mes "[Smart AI Settings]";
+	mes " ";
+	mes "^0000FFCurrent Configuration^000000";
+	mes " ";
+	
+	if(#BOT_SMART_MOVE){
+		mes "^008000ENABLED Smart Movement^000000";
+		mes "Range: " + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells";
+	} else {
+		mes "DISABLED Smart Movement";
+	}
+	
+	if(#BOT_KITING){
+		mes "^00FF00ENABLED Kiting Mode^000000";
+	} else {
+		mes "DISABLED Kiting Mode";
+	}
+	
+	if(#BOT_MULTI_TARGET){
+		mes "^00FF00ENABLED Multi Target^000000";
+		mes "Max Targets: " + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3);
+	} else {
+		mes "DISABLED Multi Target";
+	}
+	
+	mes " ";
+	
+	switch(select(
+		#BOT_SMART_MOVE ? "Disable Smart Movement" : "Enable Smart Movement",
+		"Movement Range Settings",
+		#BOT_KITING ? "Disable Kiting Mode" : "Enable Kiting Mode",
+		#BOT_MULTI_TARGET ? "Disable Multi Target" : "Enable Multi Target",
+		"Multi Target Settings",
+		"Back to Main Menu"
+	)){
+		case 1:
+			#BOT_SMART_MOVE = !#BOT_SMART_MOVE;
+			if(#BOT_SMART_MOVE){
+				setautoattack("11;1;" + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7));
+			} else {
+				setautoattack("11;0;0");
+			}
+			goto smart_ai_menu;
+			
+		case 2:
+			goto move_range_menu;
+			
+		case 3:
+			#BOT_KITING = !#BOT_KITING;
+			setautoattack("14;0;" + #BOT_KITING);
+			goto smart_ai_menu;
+			
+		case 4:
+			#BOT_MULTI_TARGET = !#BOT_MULTI_TARGET;
+			setautoattack("17;0;" + #BOT_MULTI_TARGET);
+			goto smart_ai_menu;
+			
+		case 5:
+			goto multi_target_menu;
+			
+		case 6:
+			doevent "bot_time_manager::main_menu";
+			end;
+	}
+	end;
+
+move_range_menu:
+	mes "[Movement Range]";
+	mes " ";
+	mes "Current Range: ^FF0000" + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells^000000";
+	mes " ";
+	mes "^0000FFDescription^000000";
+	mes "Set maximum distance bot can";
+	mes "move from starting position";
+	mes " ";
+	mes "^0000FFRecommended Settings^000000";
+	mes "3-5 cells: Tank Melee classes";
+	mes "7-10 cells: Balanced setup";
+	mes "12-15 cells: Ranged DPS";
+	mes " ";
+	mes "^FF0000Important^000000";
+	mes "Smaller range = Stay closer";
+	mes "Larger range = More freedom";
+	mes " ";
+	next;
+	
+	mes "[Movement Range]";
+	mes "Enter range 3 to 20 cells";
+	mes " ";
+	mes "^FF0000Current: " + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells^000000";
+	input .@range;
+	
+	if(.@range >= 3 && .@range <= 20){
+		#BOT_MOVE_RANGE = .@range;
+		setautoattack("12;1;" + .@range);
+		next;
+		mes "[Movement Range]";
+		mes "^008000Success^000000";
+		mes " ";
+		mes "Range set to: ^FF0000" + .@range + " cells^000000";
+		mes " ";
+		mes "Bot will move within this range";
+		mes "from starting position";
+	} else {
+		next;
+		mes "[Movement Range]";
+		mes "^FF0000Invalid range^000000";
+		mes " ";
+		mes "Please use value between";
+		mes "3 and 20 cells";
+	}
+	next;
+	goto smart_ai_menu;
+
+multi_target_menu:
+	mes "[Multi Target Attack]";
+	mes " ";
+	
+	if(#BOT_MULTI_TARGET){
+		mes "Status: ^008000ENABLED^000000";
+		mes "Max Targets: ^FF0000" + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3) + "^000000";
+	} else {
+		mes "Status: DISABLED";
+	}
+	
+	mes " ";
+	mes "^0000FFDescription^000000";
+	mes "Attack multiple monsters at once";
+	mes "instead of focusing on one target";
+	mes " ";
+	mes "^0000FFRecommended Settings^000000";
+	mes "2-3 targets: Single target DPS";
+	mes "3-5 targets: AOE classes";
+	mes "5-8 targets: Wizard Sage";
+	mes " ";
+	next;
+	
+	mes "[Set Max Targets]";
+	mes " ";
+	mes "Current: ^FF0000" + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3) + " targets^000000";
+	mes " ";
+	mes "Enter max targets 2 to 10";
+	input .@max_targets;
+	
+	if(.@max_targets >= 2 && .@max_targets <= 10){
+		#BOT_MAX_TARGETS = .@max_targets;
+		if(#BOT_MULTI_TARGET)
+			setautoattack("17;1;" + .@max_targets);
+		next;
+		mes "[Set Max Targets]";
+		mes "^008000Success^000000";
+		mes " ";
+		mes "Max targets set to: ^FF0000" + .@max_targets + "^000000";
+		mes " ";
+		mes "Bot will attack up to " + .@max_targets;
+		mes "monsters at the same time";
+	} else {
+		next;
+		mes "[Set Max Targets]";
+		mes "^FF0000Invalid number^000000";
+		mes " ";
+		mes "Please use value between";
+		mes "2 and 10 targets";
+	}
+	next;
+	goto smart_ai_menu;
+
+melee_attack:
+	clear;
+	.@menu$ = "[Melee attack]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes getautoattackstring(6,0);
+
+	.@melee_menu = select(getautoattackint(6,0)?"Enable":"Disable","[Cancel]");
+
+	if( .@melee_menu == 1 ){
+		if(getautoattackint(6,0))
+			setautoattack("6;0");
+		else
+			setautoattack("6;1");
+		clear;
+
+		goto(melee_attack);
+	}
+
+	goto(config_menu);
+	end;
+
+
+regeneration_menu:
+	mes "[Regeneration Settings]";
+	mes "^0000FFChoose regeneration option^000000";
+	
+	switch(select(
+		"Auto-Heal Skills",
+		"HP SP Potions",
+		"Sit to Rest",
+		"Back"
+	)){
+		case 1: goto heal_menu;
+		case 2: goto potion_menu;
+		case 3: goto sit_regen_menu;
+		case 4: goto config_menu;
+	}
+	end;
+
+heal_menu:
+	if(!getskilllv(28) && !getskilllv(2051) && !getskilllv(231)){
+		mes "[Auto-Heal]";
+		mes "^FF0000You dont have any heal skills^000000";
+		mes " ";
+		mes "Available heal skills";
+		mes "Heal ID 28";
+		mes "Highness Heal ID 2051";
+		mes "Potion Pitcher ID 231";
+		next;
+		goto regeneration_menu;
+	}
+	
+	mes "[Auto-Heal]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(0,0);
+	mes " ";
+	next;
+	
+	switch(select(
+		"Add Modify Heal Skill",
+		"Disable Heal Skill",
+		"Back"
+	)){
+		case 1:
+			mes "[Auto-Heal]";
+			mes "Available Skills";
+			if(getskilllv(28))
+				mes "^0000FF28 Heal Lv " + getskilllv(28) + "^000000";
+			if(getskilllv(2051))
+				mes "^0000FF2051 Highness Heal Lv " + getskilllv(2051) + "^000000";
+			if(getskilllv(231))
+				mes "^0000FF231 Potion Pitcher Lv " + getskilllv(231) + "^000000";
+			mes " ";
+			mes "Enter Skill ID";
+			input .@heal_skillid;
+			
+			if((.@heal_skillid != 28 && .@heal_skillid != 2051 && .@heal_skillid != 231) || !getskilllv(.@heal_skillid)){
+				mes " ";
+				mes "^FF0000Invalid skill^000000";
+				next;
+				goto heal_menu;
+			}
+			
+			mes " ";
+			mes "Enter Skill Level 1 to " + getskilllv(.@heal_skillid);
+			input .@heal_skilllv;
+			
+			if(.@heal_skilllv < 1 || .@heal_skilllv > getskilllv(.@heal_skillid)){
+				mes " ";
+				mes "^FF0000Invalid level^000000";
+				next;
+				goto heal_menu;
+			}
+			
+			mes " ";
+			mes "Use when HP below 5 to 90 percent";
+			input .@heal_minhpvalue;
+			
+			if(.@heal_minhpvalue < 5 || .@heal_minhpvalue > 90){
+				mes " ";
+				mes "^FF0000Invalid percentage^000000";
+				next;
+				goto heal_menu;
+			}
+			
+			setautoattack("0;1;" + .@heal_skillid + ";" + .@heal_skilllv + ";" + .@heal_minhpvalue);
+			
+			mes " ";
+			mes "^00FF00Heal skill configured^000000";
+			next;
+			goto heal_menu;
+			
+		case 2:
+			if(getautoattackint(0,0) == 0){
+				mes "[Auto-Heal]";
+				mes "^FF0000No active heal skill to disable^000000";
+				next;
+				goto heal_menu;
+			}
+			
+			mes "[Auto-Heal]";
+			mes "Enter Skill ID to disable";
+			input .@heal_skillid;
+			
+			setautoattack("0;0;" + .@heal_skillid + ";0;0");
+			mes " ";
+			mes "^00FF00Heal skill disabled^000000";
+			next;
+			goto heal_menu;
+			
+		case 3:
+			goto regeneration_menu;
+	}
+	end;
+
+potion_menu:
+	mes "[HP SP Potions]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(1,0);
+	mes " ";
+	next;
+	
+	switch(select(
+		"Add Modify Potion",
+		"Disable Potion",
+		"Back"
+	)){
+		case 1:
+			mes "[HP SP Potions]";
+			mes "Enter Item ID";
+			mes " ";
+			mes "Common potions";
+			mes "607 = Yggdrasil Berry";
+			mes "608 = Yggdrasil Seed";
+			mes "504 = White Potion";
+			mes "505 = Blue Potion";
+			input .@potion_id;
+			
+			mes " ";
+			mes "Use when HP below percent";
+			mes "0 to disable or 5 to 90";
+			input .@potion_minhpvalue;
+			
+			if(.@potion_minhpvalue != 0 && (.@potion_minhpvalue < 5 || .@potion_minhpvalue > 90)){
+				mes "^FF0000Invalid HP percentage^000000";
+				next;
+				goto potion_menu;
+			}
+			
+			mes " ";
+			mes "Use when SP below percent";
+			mes "0 to disable or 5 to 90";
+			input .@potion_minspvalue;
+			
+			if(.@potion_minspvalue != 0 && (.@potion_minspvalue < 5 || .@potion_minspvalue > 90)){
+				mes "^FF0000Invalid SP percentage^000000";
+				next;
+				goto potion_menu;
+			}
+			
+			setautoattack("1;1;" + .@potion_id + ";" + .@potion_minhpvalue + ";" + .@potion_minspvalue);
+			mes " ";
+			mes "^00FF00Potion configured^000000";
+			next;
+			goto potion_menu;
+			
+		case 2:
+			mes "[HP SP Potions]";
+			mes "Enter Item ID to disable";
+			input .@potion_id;
+			
+			setautoattack("1;0;" + .@potion_id + ";0;0");
+			mes " ";
+			mes "^00FF00Potion disabled^000000";
+			next;
+			goto potion_menu;
+			
+		case 3:
+			goto regeneration_menu;
+	}
+	end;
+
+sit_regen_menu:
+	mes "[Sit to Rest]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(2,0);
+	mes getautoattackstring(2,1);
+	mes getautoattackstring(2,2);
+	mes " ";
+	next;
+	
+	.@is_enabled = getautoattackint(2,0);
+	
+	switch(select(
+		.@is_enabled ? "Modify Settings" : "Enable Sit Regen",
+		.@is_enabled ? "Disable Sit Regen" : "Back",
+		"Back"
+	)){
+		case 1:
+			mes "[Sit to Rest]";
+			mes "Sit when HP below percent";
+			mes "0 to disable or 5 to 90";
+			input .@sit_regen_minhpvalue;
+			
+			if(.@sit_regen_minhpvalue != 0 && (.@sit_regen_minhpvalue < 5 || .@sit_regen_minhpvalue > 90)){
+				mes "^FF0000Invalid value^000000";
+				next;
+				goto sit_regen_menu;
+			}
+			
+			.@sit_regen_maxhpvalue = 0;
+			if(.@sit_regen_minhpvalue > 0){
+				mes " ";
+				mes "Stand when HP above percent";
+				mes "Must be greater than " + .@sit_regen_minhpvalue;
+				input .@sit_regen_maxhpvalue;
+				
+				if(.@sit_regen_maxhpvalue <= .@sit_regen_minhpvalue || .@sit_regen_maxhpvalue > 90){
+					mes "^FF0000Invalid value^000000";
+					next;
+					goto sit_regen_menu;
+				}
+			}
+			
+			mes " ";
+			mes "Sit when SP below percent";
+			mes "0 to disable or 5 to 90";
+			input .@sit_regen_minspvalue;
+			
+			if(.@sit_regen_minspvalue != 0 && (.@sit_regen_minspvalue < 5 || .@sit_regen_minspvalue > 90)){
+				mes "^FF0000Invalid value^000000";
+				next;
+				goto sit_regen_menu;
+			}
+			
+			.@sit_regen_maxspvalue = 0;
+			if(.@sit_regen_minspvalue > 0){
+				mes " ";
+				mes "Stand when SP above percent";
+				mes "Must be greater than " + .@sit_regen_minspvalue;
+				input .@sit_regen_maxspvalue;
+				
+				if(.@sit_regen_maxspvalue <= .@sit_regen_minspvalue || .@sit_regen_maxspvalue > 90){
+					mes "^FF0000Invalid value^000000";
+					next;
+					goto sit_regen_menu;
+				}
+			}
+			
+			setautoattack("2;1;" + .@sit_regen_minhpvalue + ";" + .@sit_regen_maxhpvalue + ";" + .@sit_regen_minspvalue + ";" + .@sit_regen_maxspvalue);
+			mes " ";
+			mes "^00FF00Sit regen configured^000000";
+			next;
+			goto sit_regen_menu;
+			
+		case 2:
+			if(.@is_enabled){
+				setautoattack("2;0;0;0;0;0");
+				mes "[Sit to Rest]";
+				mes "^00FF00Sit regen disabled^000000";
+				next;
+			}
+			goto sit_regen_menu;
+			
+		case 3:
+			goto regeneration_menu;
+	}
+	end;
+
+attackskills_menu:
+	mes "[Attack Skills]";
+	mes "--- Current configuration ---";
+	mes getautoattackstring(4,0);
+	next;
+	
+	switch(select(
+		"Add skills",
+		"Add skill manually (by ID)",
+		"Modify skills",
+		"Disable a skill",
+		"Back"
+	)){
+		case 1: goto attackskills_add;
+		case 2: goto attackskills_manual;
+		case 3: goto attackskills_modify;
+		case 4: goto attackskills_disable;
+		case 5: goto config_menu;
+	}
+	end;
+
+attackskills_add:
+	mes "[Attack Skills]";
+	mes "Enter the id of the skill choosen";
+	mes "--- List of skills availables ---";
+	mes getautoattackstring(4,-1);
+	next;
+	mes getautoattackstring(4,-2);
+	
+	input .@attack_skillid;
+	if(.@attack_skillid < 1)
+		goto attackskills_menu;
+	if(!getskillinfoint(2,.@attack_skillid) || !getskilllv(.@attack_skillid)){
+		next;
+		mes "[Attack Skills]";
+		mes "Sorry, you don't have that skill or this skill doesn't exist or is not attack type";
+		next;
+		goto attackskills_menu;
+	}
+	
+	do{
+		next;
+		mes "[Attack Skills]";
+		mes "Choose the skill lv to use";
+		mes "[" + getskillinfostring(0,.@attack_skillid) + "]" + " - Max lv : " + getskilllv(.@attack_skillid);
+		input .@attack_skilllv;
+	} while(.@attack_skilllv < 1 || .@attack_skilllv > getskilllv(.@attack_skillid));
+	
+	setautoattack("4;1;"+ .@attack_skillid + ";" + .@attack_skilllv);
+	next;
+	mes "[Attack Skills]";
+	mes "^00FF00Skill added successfully^000000";
+	next;
+	goto attackskills_menu;
+
+attackskills_manual:
+	mes "[Attack Skills]";
+	mes "^FF0000[Manual Skill Entry]^000000";
+	mes "Select a skill from the list below:";
+	next;
+	
+	// Custom Skills List - Edit here
+	setarray .@custom_skillnames$[0],
+		"All Bomb",
+		"Soul Vulcan Strike",
+		"Mystery Illusion",
+		"Dragon Breath",
+		"Thunder Storm",
+		"[Input manually]";
+	
+	setarray .@custom_skillids[0],
+		5222,  // All Bomb
+		5220,  // Soul Vulcan Strike
+		5217,  // Mystery Illusion
+		2004,  // Dragon Breath
+		2021,  // Thunder Storm
+		0;     // Manual input option
+	
+	// Build menu
+	.@menu_options$ = "";
+	for(.@i = 0; .@i < getarraysize(.@custom_skillnames$); .@i++){
+		if(.@custom_skillids[.@i] > 0)
+			.@menu_options$ += .@custom_skillnames$[.@i] + " (" + .@custom_skillids[.@i] + ")";
+		else
+			.@menu_options$ += .@custom_skillnames$[.@i];
+		
+		if(.@i < getarraysize(.@custom_skillnames$) - 1)
+			.@menu_options$ += ":";
+	}
+	
+	.@selected = select(.@menu_options$) - 1;
+	
+	// Manual input
+	if(.@custom_skillids[.@selected] == 0){
+		mes "[Attack Skills]";
+		mes "^0000FFEnter the Skill ID manually:^000000";
+		input .@attack_skillid;
+		
+		if(.@attack_skillid < 1){
+			mes "Invalid Skill ID!";
+			next;
+			goto attackskills_menu;
+		}
+		
+		if(!getskilllv(.@attack_skillid)){
+			next;
+			mes "[Attack Skills]";
+			mes "^FF0000You don't have this skill!^000000";
+			mes "Skill ID: " + .@attack_skillid;
+			next;
+			goto attackskills_menu;
+		}
+		
+		do{
+			next;
+			mes "[Attack Skills]";
+			mes "Skill ID: ^0000FF" + .@attack_skillid + "^000000";
+			mes "Your max level: ^00FF00" + getskilllv(.@attack_skillid) + "^000000";
+			mes " ";
+			mes "Choose the skill level to use:";
+			input .@attack_skilllv;
+			
+			if(.@attack_skilllv < 1 || .@attack_skilllv > getskilllv(.@attack_skillid)){
+				mes "^FF0000Invalid level! Please enter 1-" + getskilllv(.@attack_skillid) + "^000000";
+				next;
+			}
+		} while(.@attack_skilllv < 1 || .@attack_skilllv > getskilllv(.@attack_skillid));
+	} else {
+		// Auto select from list
+		.@attack_skillid = .@custom_skillids[.@selected];
+		
+		if(!getskilllv(.@attack_skillid)){
+			next;
+			mes "[Attack Skills]";
+			mes "^FF0000You don't have this skill!^000000";
+			mes .@custom_skillnames$[.@selected] + " [ID: " + .@attack_skillid + "]";
+			next;
+			goto attackskills_menu;
+		}
+		
+		.@attack_skilllv = getskilllv(.@attack_skillid);
+	}
+	
+	setautoattack("4;1;"+ .@attack_skillid + ";" + .@attack_skilllv);
+	next;
+	mes "[Attack Skills]";
+	mes "^00FF00Skill added successfully!^000000";
+	if(.@custom_skillids[.@selected] > 0)
+		mes .@custom_skillnames$[.@selected] + " [ID: " + .@attack_skillid + "]";
+	else
+		mes "Skill ID: " + .@attack_skillid;
+	mes "Level: " + .@attack_skilllv;
+	next;
+	goto attackskills_menu;
+
+attackskills_modify:
+	if(getautoattackint(4,0) == 0){
+		mes "[Attack Skills]";
+		mes "There is no active auto attack skills to modify";
+		next;
+		goto attackskills_menu;
+	}
+	
+	mes "Enter the id of the skill choosen";
+	input .@attack_skillid;
+	if(.@attack_skillid < 1)
+		goto attackskills_menu;
+	if(!getskillinfoint(2,.@attack_skillid) || !getskilllv(.@attack_skillid)){
+		next;
+		mes "[Attack Skills]";
+		mes "Sorry, you don't have that skill or this skill doesn't exist or is not attack type";
+		next;
+		goto attackskills_menu;
+	}
+	
+	do{
+		next;
+		mes "[Attack Skills]";
+		mes "Choose the skill lv to use";
+		mes "[" + getskillinfostring(0,.@attack_skillid) + "]" + " - Max lv : " + getskilllv(.@attack_skillid);
+		input .@attack_skilllv;
+	} while(.@attack_skilllv < 1 || .@attack_skilllv > getskilllv(.@attack_skillid));
+	
+	setautoattack("4;1;"+ .@attack_skillid + ";" + .@attack_skilllv);
+	next;
+	mes "[Attack Skills]";
+	mes "^00FF00Skill modified successfully^000000";
+	next;
+	goto attackskills_menu;
+
+attackskills_disable:
+	if(getautoattackint(4,0) == 0){
+		mes "[Attack Skills]";
+		mes "There is no active auto attack skills to delete";
+		next;
+		goto attackskills_menu;
+	}
+	
+	mes "Enter the id of the skill choosen";
+	input .@attack_skillid;
+	if(.@attack_skillid < 1)
+		goto attackskills_menu;
+	if(!getskillinfoint(2,.@attack_skillid) || !getskilllv(.@attack_skillid)){
+		next;
+		mes "[Attack Skills]";
+		mes "Sorry, you don't have that skill or this skill doesn't exist or is not attack type";
+		next;
+		goto attackskills_menu;
+	}
+	
+	setautoattack("4;0;"+ .@attack_skillid + ";0");
+	next;
+	mes "[Attack Skills]";
+	mes "^00FF00Skill disabled successfully^000000";
+	next;
+	goto attackskills_menu;
+
+buffskills_menu:
+	mes "[Buff Skills]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(3,0);
+	mes " ";
+	next;
+	
+	switch(select(
+		"Add or Modify Buff Skill",
+		"Disable Buff Skill",
+		"Back"
+	)){
+		case 1: goto buffskills_add;
+		case 2: goto buffskills_disable;
+		case 3: goto config_menu;
+	}
+	end;
+
+buffskills_add:
+	mes "[Buff Skills]";
+	mes "^0000FFAvailable Buff Skills^000000";
+	mes " ";
+	mes getautoattackstring(3,-1);
+	mes " ";
+	mes getautoattackstring(3,-2);
+	mes " ";
+	next;
+	
+	mes "[Buff Skills]";
+	mes "Enter Skill ID";
+	input .@buff_skillid;
+	
+	if(!getskillinfoint(1,.@buff_skillid) || !getskilllv(.@buff_skillid)){
+		next;
+		mes "[Buff Skills]";
+		mes "^FF0000Invalid buff skill^000000";
+		mes " ";
+		mes "Please choose a valid skill ID";
+		mes "from the available list";
+		next;
+		goto buffskills_menu;
+	}
+	
+	mes "[Buff Skills]";
+	mes "Skill: ^0000FF" + getskillinfostring(0,.@buff_skillid) + "^000000";
+	mes "Max Level: ^FF0000" + getskilllv(.@buff_skillid) + "^000000";
+	mes " ";
+	mes "Enter Skill Level 1 to " + getskilllv(.@buff_skillid);
+	input .@buff_skilllv;
+	
+	if(.@buff_skilllv < 1 || .@buff_skilllv > getskilllv(.@buff_skillid)){
+		next;
+		mes "[Buff Skills]";
+		mes "^FF0000Invalid level^000000";
+		mes " ";
+		mes "Please use level between 1 and " + getskilllv(.@buff_skillid);
+		next;
+		goto buffskills_menu;
+	}
+	
+	setautoattack("3;1;" + .@buff_skillid + ";" + .@buff_skilllv);
+	next;
+	mes "[Buff Skills]";
+	mes "^008000SUCCESS^000000";
+	mes " ";
+	mes "Skill: ^0000FF" + getskillinfostring(0,.@buff_skillid) + "^000000";
+	mes "Level: ^FF0000" + .@buff_skilllv + "^000000";
+	mes " ";
+	mes "Buff skill has been configured";
+	next;
+	goto buffskills_menu;
+
+buffskills_disable:
+	if(getautoattackint(3,0) == 0){
+		mes "[Buff Skills]";
+		mes "^FF0000No active buff skill to disable^000000";
+		mes " ";
+		mes "Add some buff skills first";
+		next;
+		goto buffskills_menu;
+	}
+	
+	mes "[Buff Skills]";
+	mes "^0000FFCurrent Active Skills^000000";
+	mes " ";
+	mes getautoattackstring(3,0);
+	mes " ";
+	next;
+	
+	mes "[Buff Skills]";
+	mes "Enter Skill ID to disable";
+	input .@buff_skillid;
+	
+	if(!getskillinfoint(1,.@buff_skillid)){
+		mes "[Buff Skills]";
+		mes "^FF0000Invalid skill^000000";
+		next;
+		goto buffskills_menu;
+	}
+	
+	setautoattack("3;0;" + .@buff_skillid + ";0");
+	mes "[Buff Skills]";
+	mes "^00FF00Buff skill disabled^000000";
+	next;
+	goto buffskills_menu;
+
+buffitems_menu:
+	mes "[Buff Items]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(5,656);
+	mes getautoattackstring(5,645);
+	mes getautoattackstring(5,657);
+	mes " ";
+	next;
+	
+	switch(select(
+		"Add or Modify Buff Item",
+		"Disable Buff Item",
+		"Back"
+	)){
+		case 1: goto buffitems_add;
+		case 2: goto buffitems_disable;
+		case 3: goto config_menu;
+	}
+	end;
+
+buffitems_add:
+	mes "[Buff Items]";
+	mes "Available Buff Items";
+	mes "656 = Awakening Potion";
+	mes "645 = Concentration Potion";
+	mes "657 = Berserk Potion";
+	mes " ";
+	mes "Enter Item ID";
+	input .@buffitem_id;
+	
+	if(.@buffitem_id != 656 && .@buffitem_id != 645 && .@buffitem_id != 657){
+		mes " ";
+		mes "^FF0000Invalid item Use 656 645 or 657^000000";
+		next;
+		goto buffitems_menu;
+	}
+	
+	mes " ";
+	mes "Delay between uses";
+	mes "5 to 3600 seconds";
+	input .@buffitem_delayvalue;
+	
+	if(.@buffitem_delayvalue < 5 || .@buffitem_delayvalue > 3600){
+		mes " ";
+		mes "^FF0000Invalid delay^000000";
+		next;
+		goto buffitems_menu;
+	}
+	
+	setautoattack("5;1;" + .@buffitem_id + ";" + .@buffitem_delayvalue);
+	mes " ";
+	mes "^00FF00Buff item configured^000000";
+	next;
+	goto buffitems_menu;
+
+buffitems_disable:
+	if(getautoattackint(5,0) == 0){
+		mes "[Buff Items]";
+		mes "^FF0000No active buff item to disable^000000";
+		next;
+		goto buffitems_menu;
+	}
+	
+	mes "[Buff Items]";
+	mes "Enter Item ID to disable";
+	mes "656 645 or 657";
+	input .@buffitem_id;
+	
+	if(.@buffitem_id != 656 && .@buffitem_id != 645 && .@buffitem_id != 657){
+		mes " ";
+		mes "^FF0000Invalid item^000000";
+		next;
+		goto buffitems_menu;
+	}
+	
+	setautoattack("5;0;" + .@buffitem_id + ";0");
+	mes " ";
+	mes "^00FF00Buff item disabled^000000";
+	next;
+	goto buffitems_menu;
+
+teleport_menu:
+	mes "[Teleport Settings]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(7,0);
+	mes " ";
+	next;
+	
+	switch(select(
+		getautoattackint(7,0) ? "Disable Teleport Skill" : "Enable Teleport Skill",
+		getautoattackint(7,1) ? "Disable Fly Wing" : "Enable Fly Wing",
+		"Set Emergency HP Percent",
+		"Set Teleport Delay",
+		"Back"
+	)){
+		case 1: goto teleport_toggle_skill;
+		case 2: goto teleport_toggle_wing;
+		case 3: goto teleport_hp;
+		case 4: goto teleport_delay;
+		case 5: goto config_menu;
+	}
+	end;
+
+teleport_toggle_skill:
+	if(getautoattackint(7,0))
+		setautoattack("7;0;0");
+	else
+		setautoattack("7;0;1");
+	mes "[Teleport]";
+	mes "^008000Teleport skill " + (getautoattackint(7,0) ? "enabled" : "disabled") + "^000000";
+	next;
+	goto teleport_menu;
+
+teleport_toggle_wing:
+	if(getautoattackint(7,1))
+		setautoattack("7;1;0");
+	else
+		setautoattack("7;1;1");
+	mes "[Teleport]";
+	mes "^008000Fly Wing " + (getautoattackint(7,1) ? "enabled" : "disabled") + "^000000";
+	next;
+	goto teleport_menu;
+
+teleport_hp:
+	mes "[Teleport]";
+	mes "Emergency teleport when HP below";
+	mes "0 to disable or 5 to 90";
+	input .@teleport_minhpvalue;
+	
+	if(.@teleport_minhpvalue != 0 && (.@teleport_minhpvalue < 5 || .@teleport_minhpvalue > 90)){
+		mes " ";
+		mes "^FF0000Invalid value^000000";
+		next;
+		goto teleport_menu;
+	}
+	
+	setautoattack("7;2;" + .@teleport_minhpvalue);
+	mes " ";
+	mes "^008000Emergency HP set to " + .@teleport_minhpvalue + " percent^000000";
+	next;
+	goto teleport_menu;
+
+teleport_delay:
+	mes "[Teleport]";
+	mes "Auto teleport delay in seconds";
+	mes "0 to disable or 2 to 600";
+	input .@teleport_delayvalue;
+	
+	if(.@teleport_delayvalue != 0 && (.@teleport_delayvalue < 2 || .@teleport_delayvalue > 600)){
+		mes " ";
+		mes "^FF0000Invalid value^000000";
+		next;
+		goto teleport_menu;
+	}
+	
+	setautoattack("7;3;" + .@teleport_delayvalue);
+	mes " ";
+	mes "^008000Teleport delay set to " + .@teleport_delayvalue + " seconds^000000";
+	next;
+	goto teleport_menu;
+
+monsters_menu:
+	mes "[Monsters Selection]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(8,0);
+	mes " ";
+	mes "Total Monsters: ^FF0000" + getautoattackint(8,1) + " of 20^000000";
+	mes " ";
+	next;
+	
+	switch(select(
+		"Add Monster to List",
+		"Remove Monster from List",
+		"Clear All Monsters",
+		getautoattackint(8,0) ? "Attack Aggressive Monsters" : "Ignore Aggressive Monsters",
+		"Back"
+	)){
+		case 1: goto monsters_add;
+		case 2: goto monsters_remove;
+		case 3: goto monsters_clear;
+		case 4: goto monsters_toggle;
+		case 5: goto config_menu;
+	}
+	end;
+
+monsters_add:
+	if(getautoattackint(8,1) >= 20){
+		mes "[Monsters Selection]";
+		mes "^FF0000Monster list is full 20 of 20^000000";
+		mes "Remove some monsters first";
+		next;
+		goto monsters_menu;
+	}
+	
+	mes "[Monsters Selection]";
+	mes "Enter Monster ID to add";
+	mes " ";
+	mes "Example: 1002 = Poring";
+	input .@mob_id;
+	
+	if(.@mob_id < 1){
+		mes " ";
+		mes "^FF0000Invalid Monster ID^000000";
+		next;
+		goto monsters_menu;
+	}
+	
+	setautoattack("8;1;" + .@mob_id + ";" + getautoattackint(8,0));
+	mes " ";
+	mes "^008000Monster added to list^000000";
+	next;
+	goto monsters_menu;
+
+monsters_remove:
+	if(getautoattackint(8,1) == 0){
+		mes "[Monsters Selection]";
+		mes "^FF0000No monsters in list^000000";
+		next;
+		goto monsters_menu;
+	}
+	
+	mes "[Monsters Selection]";
+	mes "Enter Monster ID to remove";
+	input .@mob_id;
+	
+	if(.@mob_id < 1){
+		mes " ";
+		mes "^FF0000Invalid Monster ID^000000";
+		next;
+		goto monsters_menu;
+	}
+	
+	setautoattack("8;0;" + .@mob_id + ";" + getautoattackint(8,0));
+	mes " ";
+	mes "^008000Monster removed from list^000000";
+	next;
+	goto monsters_menu;
+
+monsters_clear:
+	setautoattack("8;-1;0;0");
+	mes "[Monsters Selection]";
+	mes "^008000All monsters cleared^000000";
+	next;
+	goto monsters_menu;
+
+monsters_toggle:
+	if(getautoattackint(8,0))
+		setautoattack("8;0;0;0");
+	else
+		setautoattack("8;0;0;1");
+	mes "[Monsters Selection]";
+	mes "^008000Setting updated^000000";
+	next;
+	goto monsters_menu;
+
+pickupitems_menu:
+	mes "[Items Pickup Selection]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(9,0);
+	mes " ";
+	mes "Total Items: ^FF0000" + getautoattackint(9,1) + " of 20^000000";
+	mes " ";
+	next;
+	
+	switch(select(
+		"Loot or Fight Priority",
+		"Pickup Configuration",
+		"Add Item to List",
+		"Remove Item from List",
+		"Clear All Items",
+		"Back"
+	)){
+		case 1: goto pickup_priority;
+		case 2: goto pickup_config;
+		case 3: goto pickup_add;
+		case 4: goto pickup_remove;
+		case 5: goto pickup_clear;
+		case 6: goto config_menu;
+	}
+	end;
+
+pickup_priority:
+	.@current_prio = getautoattackint(9,3);
+	mes "[Pickup Priority]";
+	mes "Current: " + (.@current_prio ? "^00FF00LOOT PRIORITY^000000" : "FIGHT PRIORITY");
+	mes " ";
+	mes "Choose priority";
+	next;
+	
+	.@new_prio = select(
+		"Fight Priority Kill first",
+		"Loot Priority Pickup first"
+	) - 1;
+	
+	setautoattack("9;3;" + .@new_prio);
+	mes " ";
+	mes "^008000Priority updated^000000";
+	next;
+	goto pickupitems_menu;
+
+pickup_config:
+	.@current_config = getautoattackint(9,2);
+	mes "[Pickup Configuration]";
+	mes "Current mode: ";
+	switch(.@current_config){
+		case 0: mes "^008000Pick up ALL items^000000"; break;
+		case 1: mes "^008000Pick ONLY listed items^000000"; break;
+		case 2: mes "^FF0000DO NOT pickup any items^000000"; break;
+	}
+	mes " ";
+	mes "Choose mode";
+	next;
+	
+	.@new_config = select(
+		"Pick up ALL items",
+		"Pick ONLY listed items",
+		"DO NOT pickup any items"
+	) - 1;
+	
+	setautoattack("9;2;" + .@new_config);
+	mes " ";
+	mes "^008000Pickup mode updated^000000";
+	next;
+	goto pickupitems_menu;
+
+pickup_add:
+	if(getautoattackint(9,1) >= 20){
+		mes "[Items Pickup]";
+		mes "^FF0000Item list is full 20 of 20^000000";
+		mes "Remove some items first";
+		next;
+		goto pickupitems_menu;
+	}
+	
+	mes "[Items Pickup]";
+	mes "Enter Item ID to add";
+	mes " ";
+	mes "Example: 909 = Jellopy";
+	input .@itempickup_id;
+	
+	if(.@itempickup_id < 1){
+		mes " ";
+		mes "^FF0000Invalid Item ID^000000";
+		next;
+		goto pickupitems_menu;
+	}
+	
+	setautoattack("9;1;" + .@itempickup_id);
+	mes " ";
+	mes "^008000Item added to list^000000";
+	next;
+	goto pickupitems_menu;
+
+pickup_remove:
+	if(getautoattackint(9,1) == 0){
+		mes "[Items Pickup]";
+		mes "^FF0000No items in list^000000";
+		next;
+		goto pickupitems_menu;
+	}
+	
+	mes "[Items Pickup]";
+	mes "Enter Item ID to remove";
+	input .@itempickup_id;
+	
+	if(.@itempickup_id < 1){
+		mes " ";
+		mes "^FF0000Invalid Item ID^000000";
+		next;
+		goto pickupitems_menu;
+	}
+	
+	setautoattack("9;0;" + .@itempickup_id);
+	mes " ";
+	mes "^008000Item removed from list^000000";
+	next;
+	goto pickupitems_menu;
+
+pickup_clear:
+	setautoattack("9;-1;0");
+	mes "[Items Pickup]";
+	mes "^008000All items cleared^000000";
+	next;
+	goto pickupitems_menu;
+
+reset_all:
+	mes "[Reset Settings]";
+	mes " ";
+	mes "^FF0000WARNING^000000";
+	mes "This will reset ALL bot settings";
+	mes " ";
+	mes "Smart AI settings";
+	mes "All skills configuration";
+	mes "Monsters selection";
+	mes "Items pickup";
+	mes "Everything";
+	mes " ";
+	mes "^FF0000Are you sure^000000";
+	mes " ";
+	next;
+	
+	if(select("Yes RESET ALL", "No cancel") == 1){
+		setautoattack("10;0");
+		#BOT_SMART_MOVE = 0;
+		#BOT_MOVE_RANGE = 7;
+		#BOT_KITING = 0;
+		#BOT_MULTI_TARGET = 0;
+		#BOT_MAX_TARGETS = 3;
+		
+		mes "[Reset Settings]";
+		mes "^008000All settings have been reset^000000";
+		mes " ";
+		mes "You can now reconfigure";
+		mes "everything from scratch";
+	} else {
+		mes "[Reset Settings]";
+		mes "Reset cancelled";
+	}
+	next;
+	goto config_menu;
+}

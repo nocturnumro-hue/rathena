@@ -1,0 +1,32 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC TRADER
+// ============================================
+askald,159,111,5	script	Thanatos Weapon	563,{
+	mes "[Accessory Trader]";
+	mes "Well Come Thanatos Revamp Item!";
+	mes "Please select shop Type:";
+	next;
+	
+	switch(select("Brilliant Light Weapons:Sinful Weapons:Exit")) {
+		case 1:
+			mes "[Brilliant Light Weapons]";
+			mes "Open Brilliant Light Weapons...";
+			close2;
+			callshop "Weapon_Brilliant_Light";
+			end;
+
+		case 2:
+			mes "[Sinful Weapons]";
+			mes "Open Sinful Weapons...";
+			close2;
+			callshop "Weapon_Sinful";
+			end;
+		case 3:
+			mes "Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

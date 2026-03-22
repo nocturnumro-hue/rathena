@@ -1,0 +1,148 @@
+// No.01 - Done
+prt_mz03_i,22,194,0	warp	mazewarp5101_i	1,1,prt_mz03_i,175,48	/*To No.1-20*/
+prt_mz03_i,5,186,0	warp	mazewarp5102_i	1,1,prt_mz03_i,151,134	/*To No.1-9*/
+// No.03 - Done
+prt_mz03_i,102,165,0	warp	mazewarp5104_i	1,1,prt_mz03_i,137,71	/*To No.1-19*/
+prt_mz03_i,85,174,0	warp	mazewarp5105_i	1,1,prt_mz03_i,14,48	/*To No.1-16*/
+// No.04 - Done
+prt_mz03_i,154,181,0	warp	mazewarp5106_i	1,1,prt_mz03_i,139,48	/*To No.1-19*/
+prt_mz03_i,125,171,0	warp	mazewarp5107_i	1,1,prt_mz03_i,105,111	/*To No.1-13*/
+// No.05 - Done
+prt_mz03_i,175,165,0	warp	mazewarp5108_i	1,1,prt_mz03_i,71,12	/*To No.1-22*/
+prt_mz03_i,194,175,0	warp	mazewarp5109_i	1,1,prt_mz03_i,191,139	/*To No.1-10*/
+// No.06 - Done
+prt_mz03_i,18,154,0	warp	mazewarp5110_i	1,1,prt_mz03_i,48,21	/*To No.1-22*/
+prt_mz03_i,23,125,0	warp	mazewarp5111_i	1,1,prt_mz03_i,177,71	/*To No.1-20*/
+prt_mz03_i,5,140,0	warp	mazewarp5112_i	1,1,prt_mz03_i,111,56	/*To No.1-18*/
+// No.07 - Done
+prt_mz03_i,54,154,0	warp	mazewarp5113_i	1,1,prt_mz03_i,142,111	/*To No.1-14*/
+prt_mz03_i,63,125,0	warp	mazewarp5114_i	1,1,prt_mz03_i,88,97	/*To No.1-13*/
+// No.08 - Done
+prt_mz03_i,98,154,0	warp	mazewarp5115_i	1,1,prt_mz03_i,99,31	/*To No.1-23*/
+prt_mz03_i,114,145,0	warp	mazewarp5116_i	1,1,prt_mz03_i,168,22	/*To No.1-25*/
+prt_mz03_i,85,146,0	warp	mazewarp5117_i	1,1,prt_mz03_i,22,88	/*To No.1-11*/
+// No.09 - Done
+prt_mz03_i,137,125,0	warp	mazewarp5118_i	1,1,prt_mz03_i,71,71	/*To No.1-17*/
+prt_mz03_i,154,134,0	warp	mazewarp5119_i	1,1,prt_mz03_i,8,186	/*To No.1-1*/
+// No.10 - Done
+prt_mz03_i,194,139,0	warp	mazewarp5120_i	1,1,prt_mz03_i,191,175	/*To No.1-5*/
+prt_mz03_i,166,139,0	warp	mazewarp5121_i	1,1,prt_mz03_i,63,88	/*To No.1-12*/
+// No.11 - Done
+prt_mz03_i,17,114,0	warp	mazewarp5122_i	1,1,prt_mz03_i,128,105	/*To No.1-14*/
+prt_mz03_i,22,85,0	warp	mazewarp5123_i	1,1,prt_mz03_i,88,146	/*To No.1-8*/
+// No.12 - Done
+prt_mz03_i,63,114,0	warp	mazewarp5124_i	1,1,prt_mz03_i,14,71	/*To No.1-16*/
+prt_mz03_i,63,85,0	warp	mazewarp5125_i	1,1,prt_mz03_i,169,139	/*To No.1-10*/
+prt_mz03_i,74,97,0	warp	mazewarp5126_i	1,1,prt_mz03_i,54,8	/*To No.1-22*/
+prt_mz03_i,45,104,0	warp	mazewarp5127_i	1,1,prt_mz03_i,96,48	/*To No.1-18*/
+// No.13 - Done
+prt_mz03_i,105,114,0	warp	mazewarp5128_i	1,1,prt_mz03_i,128,171	/*To No.1-4*/
+prt_mz03_i,114,95,0	warp	mazewarp5129_i	1,1,prt_mz03_i,176,8	/*To No.1-25*/
+prt_mz03_i,85,97,0	warp	mazewarp5130_i	1,1,prt_mz03_i,63,128	/*To No.1-7*/
+// No.14 - Done
+prt_mz03_i,142,114,0	warp	mazewarp5131_i	1,1,prt_mz03_i,54,151	/*To No.1-7*/
+prt_mz03_i,125,105,0	warp	mazewarp5132_i	1,1,prt_mz03_i,58,191	/*To No.1-2*/
+// No.15 - Done
+prt_mz03_i,194,94,0	warp	mazewarp5134_i	1,1,prt_mz03_i,151,22	/*To No.1-24*/
+prt_mz03_i,168,94,0	warp	mazewarp5135_i	1,1,prt_mz03_i,191,54	/*To No.1-20*/
+// No.16 - Done
+prt_mz03_i,14,74,0	warp	mazewarp5136_i	1,1,prt_mz03_i,63,111	/*To No.1-12*/
+prt_mz03_i,14,45,0	warp	mazewarp5137_i	1,1,prt_mz03_i,88,174	/*To No.1-3*/
+prt_mz03_i,5,58,0	warp	mazewarp5138_i	1,1,prt_mz03_i,191,15	/*To No.1-25*/
+// No.17 - Done
+prt_mz03_i,52,45,0	warp	mazewarp5140_i	1,1,prt_mz03_i,16,31	/*To No.1-21*/
+// No.18 - Done
+prt_mz03_i,104,74,0	warp	mazewarp5141_i	1,1,prt_mz03_i,111,22	/*To No.1-23*/
+prt_mz03_i,96,45,0	warp	mazewarp5142_i	1,1,prt_mz03_i,48,104	/*To No.1-12*/
+prt_mz03_i,114,56,0	warp	mazewarp5143_i	1,1,prt_mz03_i,8,140	/*To No.1-6*/
+prt_mz03_i,85,56,0	warp	mazewarp5144_i	1,1,prt_mz03_i,176,31	/*To No.1-25*/
+// No.19 - Done
+prt_mz03_i,137,74,0	warp	mazewarp5145_i	1,1,prt_mz03_i,102,168	/*To No.1-3*/
+// No.20 - Done
+prt_mz03_i,177,74,0	warp	mazewarp5147_i	1,1,prt_mz03_i,23,128	/*To No.1-6*/
+prt_mz03_i,175,45,0	warp	mazewarp5148_i	1,1,prt_mz03_i,22,191	/*To No.1-1*/
+prt_mz03_i,194,54,0	warp	mazewarp5149_i	1,1,prt_mz03_i,171,94	/*To No.1-15*/
+// No.21 - Done
+prt_mz03_i,16,34,0	warp	mazewarp5150_i	1,1,prt_mz03_i,52,48	/*To No.1-17*/
+prt_mz03_i,23,5,0	warp	mazewarp5151_i	1,1,prt_mz03_i,88,13	/*To No.1-23*/
+// No.22 - Done
+prt_mz03_i,54,5,0	warp	mazewarp5152_i	1,1,prt_mz03_i,71,97	/*To No.1-12*/
+prt_mz03_i,74,12,0	warp	mazewarp5153_i	1,1,prt_mz03_i,175,168	/*To No.1-5*/
+prt_mz03_i,45,21,0	warp	mazewarp5154_i	1,1,prt_mz03_i,18,151	/*To No.1-6*/
+// No.23 - Done
+prt_mz03_i,99,34,0	warp	mazewarp5155_i	1,1,prt_mz03_i,98,151	/*To No.1-8*/
+prt_mz03_i,114,22,0	warp	mazewarp5156_i	1,1,prt_mz03_i,104,71	/*To No.1-18*/
+prt_mz03_i,85,13,0	warp	mazewarp5157_i	1,1,prt_mz03_i,23,8	/*To No.1-21*/
+// No.25 - Done
+prt_mz03_i,176,34,0	warp	mazewarp5159_i	1,1,prt_mz03_i,88,56	/*To No.1-18*/
+prt_mz03_i,176,5,0	warp	mazewarp5160_i	1,1,prt_mz03_i,111,95	/*To No.1-13*/
+prt_mz03_i,194,15,0	warp	mazewarp5161_i	1,1,prt_mz03_i,8,58	/*To No.1-16*/
+prt_mz03_i,165,22,0	warp	mazewarp5162_i	1,1,prt_mz03_i,111,145	/*To No.1-8*/
+
+//prt_mz03_i,182,85,0 Exit
+
+prt_mz03_i,154,22,0	script	mazewarp5158_i	45,1,1,{
+	switch(rand(57)) {
+		case 1:  warp "prt_mz03_i",111,145; break;
+		case 2:  warp "prt_mz03_i",8,58; break;
+		case 3: warp "prt_mz03_i",111,95; break;
+		case 4: warp "prt_mz03_i",88,56; break;
+		case 5: warp "prt_mz03_i",23,8; break;
+		case 6: warp "prt_mz03_i",104,71; break;
+		case 7: warp "prt_mz03_i",98,151; break;
+		case 8: warp "prt_mz03_i",18,151; break;
+		case 9: warp "prt_mz03_i",175,168; break;
+		case 10: warp "prt_mz03_i",71,97; break;
+		case 11: warp "prt_mz03_i",88,13; break;
+		case 12: warp "prt_mz03_i",52,48; break;
+		case 13: warp "prt_mz03_i",171,94; break;
+		case 14: warp "prt_mz03_i",22,191; break;
+		case 15: warp "prt_mz03_i",23,128; break;
+		case 16: warp "prt_mz03_i",102,168; break;
+		case 17: warp "prt_mz03_i",176,31; break;
+		case 18: warp "prt_mz03_i",8,140; break;
+		case 19: warp "prt_mz03_i",48,104; break;
+		case 20: warp "prt_mz03_i",111,22; break;
+		case 21: warp "prt_mz03_i",16,31; break;
+		case 22: warp "prt_mz03_i",191,15; break;
+		case 23: warp "prt_mz03_i",88,174; break;
+		case 24: warp "prt_mz03_i",63,111; break;
+		case 25: warp "prt_mz03_i",191,54; break;
+		case 26: warp "prt_mz03_i",151,22; break;
+		case 27: warp "prt_mz03_i",58,191; break;
+		case 28: warp "prt_mz03_i",54,151; break;
+		case 29: warp "prt_mz03_i",63,128; break;
+		case 30: warp "prt_mz03_i",176,8; break;
+		case 31: warp "prt_mz03_i",128,171; break;
+		case 32: warp "prt_mz03_i",96,48; break;
+		case 33: warp "prt_mz03_i",54,8; break;
+		case 34: warp "prt_mz03_i",169,139; break;
+		case 35: warp "prt_mz03_i",14,71; break;
+		case 36: warp "prt_mz03_i",88,146; break;
+		case 37: warp "prt_mz03_i",128,105; break;
+		case 38: warp "prt_mz03_i",63,88; break;
+		case 39: warp "prt_mz03_i",191,175; break;
+		case 40: warp "prt_mz03_i",8,186; break;
+		case 41: warp "prt_mz03_i",71,71; break;
+		case 42: warp "prt_mz03_i",22,88; break;
+		case 43: warp "prt_mz03_i",168,22; break;
+		case 44: warp "prt_mz03_i",99,31; break;
+		case 45: warp "prt_mz03_i",88,97; break;
+		case 46: warp "prt_mz03_i",142,111; break;
+		case 47: warp "prt_mz03_i",111,56; break;
+		case 48: warp "prt_mz03_i",177,71; break;
+		case 49: warp "prt_mz03_i",48,21; break;
+		case 50: warp "prt_mz03_i",191,139; break;
+		case 51: warp "prt_mz03_i",71,12; break;
+		case 52: warp "prt_mz03_i",105,111; break;
+		case 53: warp "prt_mz03_i",139,48; break;
+		case 54: warp "prt_mz03_i",14,48; break;
+		case 55: warp "prt_mz03_i",137,71; break;
+		case 56: warp "prt_mz03_i",151,134; break;
+		case 57: warp "prt_mz03_i",175,48; break;
+	}
+}
+
+prt_mz03_i,58,194,0	duplicate(mazewarp5158_i)	mazewarp5158_i2	45,1,1
+prt_mz03_i,74,74,0	duplicate(mazewarp5158_i)	mazewarp5158_i3	45,1,1
+prt_mz03_i,139,45,0	duplicate(mazewarp5158_i)	mazewarp5158_i4	45,1,1

@@ -1,0 +1,502 @@
+//===== rAthena Script =======================================
+//= Bot Core System - Main Bot Logic (GMT+7)
+//===== By: ==================================================
+//= Enhanced with Vietnam Timezone (GMT+7)
+//= Fixed: Death detection using timer instead of events
+//= Added: SC_AUTOTIMEON icon when bot is running (shows countdown)
+//=         SC_AUTOTIME icon when bot OFF (red icon, no number)
+//===== Description: =========================================
+//= Core bot time management and auto-attack system
+//= Handles time tracking, updates, and bot status
+//= Commands: @boton, @botoff, @bottime
+//============================================================
+
+-	script	bot_time_manager	-1,{
+
+OnInit:
+	// Configuration Variables
+	.ZenyPerHour = 15000000;
+	.FreeHoursDaily = 4;
+	.VIPBonusHours = 4;
+	.VIPGroupID = 5;
+	.GMT_Offset = 7; // Vietnam GMT+7
+	.MaxWeightPercent = 90; // Auto-stop bot at 90% weight
+	
+	// Register Commands
+	bindatcmd "boton", strnpcinfo(3)+"::OnBotOn", 0, 100;
+	bindatcmd "botoff", strnpcinfo(3)+"::OnBotOff", 0, 100;
+	bindatcmd "bottime", strnpcinfo(3)+"::OnCheckTime", 0, 100;
+	
+	initnpctimer;
+	end;
+
+OnBotOn:
+	if(#BOT_TIME <= 0){
+		dispbottom "No bot time remaining";
+		dispbottom "Visit Bot Time Manager";
+		dispbottom "Location: Prontera 143 179";
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			dispbottom "VIP: Get 8 hours FREE daily";
+		} else {
+			dispbottom "Get 4 hours FREE daily";
+		}
+		end;
+	}
+	
+	// Check if player is dead
+	if(hp <= 0){
+		dispbottom "^FF0000Cannot start bot while dead^000000";
+		dispbottom "Please respawn first";
+		end;
+	}
+	
+	// Check weight before starting bot
+	.@current_weight = Weight * 100 / MaxWeight;
+	
+	if(.@current_weight >= getvariableofnpc(.MaxWeightPercent, "bot_time_manager")){
+		dispbottom "================================================";
+		dispbottom "^FF0000CANNOT START BOT - OVERWEIGHT^000000";
+		dispbottom "Current Weight: ^FF0000" + .@current_weight + "%^000000";
+		dispbottom "^FF0000Please reduce weight below 90%^000000";
+		dispbottom "Store items in Kafra or drop unnecessary items";
+		dispbottom "================================================";
+		end;
+	}
+	
+	// Warning if weight is high
+	if(.@current_weight >= 70){
+		dispbottom "^FFFF00WARNING: Current weight is " + .@current_weight + "%^000000";
+		dispbottom "^FFFF00Bot will auto-stop at 90% weight^000000";
+	}
+	
+	sc_end SC_AUTOATTACK;
+	goto(main_menu);
+
+OnBotOff:
+	if(!#BOT_ACTIVE){
+		dispbottom "Bot is not running";
+		end;
+	}
+	
+	// Calculate time used since last update
+	.@current_time = gettimetick(2);
+	.@used = .@current_time - #BOT_LAST_UPDATE;
+	
+	if(.@used >= 1){
+		#BOT_TIME = (#BOT_TIME - .@used > 0) ? (#BOT_TIME - .@used) : 0;
+	}
+	
+	// Stop SC_AUTOATTACK + SC_AUTOTIMEON
+	sc_end SC_AUTOATTACK;
+	sc_end SC_AUTOTIMEON;
+	
+	#BOT_ACTIVE = 0;
+	#BOT_START_TIME = 0;
+	#BOT_LAST_UPDATE = 0;
+	
+	// Apply SC_AUTOTIME idle icon (red icon, no countdown)
+	if(#BOT_TIME > 0){
+		sc_start SC_AUTOTIME, INFINITE_TICK, 1;
+	}
+	
+	// Display session summary
+	.@total_used = .@current_time - #BOT_START_TIME;
+	.@uh = .@total_used / 3600;
+	.@um = (.@total_used % 3600) / 60;
+	.@rh = #BOT_TIME / 3600;
+	.@rm = (#BOT_TIME % 3600) / 60;
+	
+	dispbottom "================================================";
+	dispbottom "Bot Stopped";
+	dispbottom "Session: " + .@uh + "h " + .@um + "m";
+	dispbottom "Remaining: " + .@rh + "h " + .@rm + "m";
+	dispbottom "================================================";
+	end;
+
+OnCheckTime:
+	if(#BOT_TIME <= 0){
+		dispbottom "No bot time remaining";
+		dispbottom "Visit Bot Time Manager to buy time";
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			dispbottom "VIP: Claim 8 hours FREE daily";
+		} else {
+			dispbottom "Or claim your 4 hours FREE daily";
+		}
+		end;
+	}
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		dispbottom "VIP MEMBER";
+	}
+	dispbottom "Bot Time: " + .@d + "d " + .@h + "h " + .@m + "m";
+	
+	if(#BOT_ACTIVE){
+		dispbottom "Status: RUNNING";
+	} else {
+		dispbottom "Status: STOPPED";
+	}
+	end;
+
+main_menu:
+	mes "[Auto Attack Configuration]";
+	.@h = #BOT_TIME / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Bot Time: ^FF0000" + .@h + "h " + .@m + "m^000000";
+	
+	// Display weight status
+	.@current_weight = Weight * 100 / MaxWeight;
+	if(.@current_weight >= 85){
+		mes "Weight: ^FF0000" + .@current_weight + "% CRITICAL^000000";
+	}
+	else if(.@current_weight >= 70){
+		mes "Weight: ^FFFF00" + .@current_weight + "% WARNING^000000";
+	}
+	else{
+		mes "Weight: ^00FF00" + .@current_weight + "%^000000";
+	}
+	
+	if(#BOT_ACTIVE){
+		mes "Status: ^008000RUNNING^000000";
+	} else {
+		mes "Status: STOPPED";
+	}
+	
+	mes " ";
+	mes "^0000FFSafety Features^000000";
+	mes "Auto-stop at 90% weight";
+	mes "Auto-stop on death";
+	mes "Time auto-saved";
+	
+	mes " ";
+	mes "^0000FFActive Features^000000";
+	
+	if(#BOT_SMART_MOVE){
+		mes "^008000Smart Movement^000000";
+		mes "Range: " + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells";
+	}
+	
+	if(#BOT_KITING){
+		mes "^008000Kiting Mode^000000";
+	}
+	
+	if(#BOT_MULTI_TARGET){
+		mes "^00FF00Multi Target Attack^000000";
+		mes "Max Targets: " + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3);
+	}
+	
+	if(!#BOT_SMART_MOVE && !#BOT_KITING && !#BOT_MULTI_TARGET){
+		mes "No special features enabled";
+	}
+	
+	next;
+	
+	.@main_menu = select("Start Bot","Configuration","Smart AI Settings","Cancel");
+	
+	switch(.@main_menu){
+		case 1:
+			if(#BOT_TIME <= 0){
+				mes "[Bot Manager]";
+				mes "^FF0000No bot time remaining^000000";
+				close;
+			}
+			
+			// Check if dead
+			if(hp <= 0){
+				mes "[Bot Manager]";
+				mes "^FF0000Cannot start - You are dead^000000";
+				mes "Please respawn first";
+				close;
+			}
+			
+			// Final weight check before starting
+			.@current_weight = Weight * 100 / MaxWeight;
+			if(.@current_weight >= getvariableofnpc(.MaxWeightPercent, "bot_time_manager")){
+				mes "[Bot Manager]";
+				mes "^FF0000Cannot start - Overweight^000000";
+				mes "Current: ^FF0000" + .@current_weight + "%^000000";
+				mes " ";
+				mes "Please reduce weight first";
+				close;
+			}
+			
+			.@duration = (#BOT_TIME > 86400) ? 86400000 : (#BOT_TIME * 1000);
+			
+			// Start SC_AUTOATTACK (bot logic)
+			sc_start4 SC_AUTOATTACK, .@duration, 1, 0, 0, 0;
+			
+			// Start SC_AUTOTIMEON icon (bot running indicator)
+			sc_end SC_AUTOTIME;
+			sc_start SC_AUTOTIMEON, .@duration, 1;
+			
+			#BOT_ACTIVE = 1;
+			#BOT_START_TIME = gettimetick(2);
+			#BOT_LAST_UPDATE = gettimetick(2);
+			
+			dispbottom "================================================";
+			dispbottom "Bot Started";
+			dispbottom "Time: " + .@h + "h " + .@m + "m";
+			dispbottom "Weight: " + .@current_weight + "%";
+			dispbottom "^00FF00Safety: Auto-stop at 90% weight or death^000000";
+			if(#BOT_SMART_MOVE)
+				dispbottom "^00FF00SMART MOVE: ON^000000";
+			if(#BOT_KITING)
+				dispbottom "^00FF00KITING: ON^000000";
+			if(#BOT_MULTI_TARGET)
+				dispbottom "^00FF00MULTI TARGET: " + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3) + " targets^000000";
+			dispbottom "Use @botoff to stop";
+			dispbottom "================================================";
+			close;
+			
+		case 2:
+			doevent "bot_configuration::OnConfigMenu";
+			end;
+			
+		case 3:
+			doevent "bot_configuration::OnSmartAIMenu";
+			end;
+			
+		case 4:
+			close;
+	}
+	end;
+
+// Timer - Update bot time every 60 seconds AND check death/weight
+OnTimer60000:
+	.@online = getunits(BL_PC, .@players);
+	
+	for(.@i = 0; .@i < .@online; .@i++){
+		if(attachrid(.@players[.@i])){
+			if(#BOT_ACTIVE && #BOT_TIME > 0){
+				
+				// ===== CHECK DEATH FIRST (PRIORITY) =====
+				if(hp <= 0){
+					// Calculate time used
+					.@current_time = gettimetick(2);
+					.@elapsed = .@current_time - #BOT_LAST_UPDATE;
+					
+					if(.@elapsed >= 1){
+						#BOT_TIME = (#BOT_TIME - .@elapsed > 0) ? (#BOT_TIME - .@elapsed) : 0;
+					}
+					
+					// Stop bot + icons
+					sc_end SC_AUTOATTACK;
+					sc_end SC_AUTOTIMEON;
+					
+					#BOT_ACTIVE = 0;
+					#BOT_START_TIME = 0;
+					#BOT_LAST_UPDATE = 0;
+					
+					// Apply SC_AUTOTIME idle icon (red icon, no countdown)
+					if(#BOT_TIME > 0){
+						sc_start SC_AUTOTIME, INFINITE_TICK, 1;
+					}
+					
+					// Notification
+					dispbottom "================================================";
+					dispbottom "^FF0000BOT AUTO STOPPED - PLAYER DIED^000000";
+					dispbottom "Bot stopped to prevent time waste";
+					dispbottom "Time saved: ^00FF00" + (#BOT_TIME / 3600) + "h " + ((#BOT_TIME % 3600) / 60) + "m^000000";
+					dispbottom "Use @boton to restart after respawn";
+					dispbottom "================================================";
+					
+					// Log
+					logmes "Bot auto-stopped: Player died at " + callfunc("F_GetVNTime", 3);
+					
+					continue; // Skip to next player
+				}
+				
+				// ===== CHECK WEIGHT =====
+				.@current_weight = Weight * 100 / MaxWeight;
+				
+				if(.@current_weight >= .MaxWeightPercent){
+					// Calculate time used
+					.@current_time = gettimetick(2);
+					.@elapsed = .@current_time - #BOT_LAST_UPDATE;
+					
+					if(.@elapsed >= 1){
+						#BOT_TIME = (#BOT_TIME - .@elapsed > 0) ? (#BOT_TIME - .@elapsed) : 0;
+					}
+					
+					// Stop bot + icons
+					sc_end SC_AUTOATTACK;
+					sc_end SC_AUTOTIMEON;
+					
+					#BOT_ACTIVE = 0;
+					#BOT_START_TIME = 0;
+					#BOT_LAST_UPDATE = 0;
+					
+					// Apply SC_AUTOTIME idle icon (red icon, no countdown)
+					if(#BOT_TIME > 0){
+						sc_start SC_AUTOTIME, INFINITE_TICK, 1;
+					}
+					
+					// Notification
+					dispbottom "================================================";
+					dispbottom "^FF0000BOT AUTO STOPPED - OVERWEIGHT^000000";
+					dispbottom "Current Weight: ^FF0000" + .@current_weight + "%^000000";
+					dispbottom "^FF0000Please reduce weight below 90%^000000";
+					dispbottom "Time saved: ^00FF00" + (#BOT_TIME / 3600) + "h " + ((#BOT_TIME % 3600) / 60) + "m^000000";
+					dispbottom "Use @boton to restart after reducing weight";
+					dispbottom "================================================";
+					
+					// Log
+					logmes "Bot auto-stopped: Overweight " + .@current_weight + "% at " + callfunc("F_GetVNTime", 3);
+					
+					continue; // Skip to next player
+				}
+				
+				// ===== NORMAL TIME UPDATE =====
+				.@current_time = gettimetick(2);
+				.@elapsed = .@current_time - #BOT_LAST_UPDATE;
+				
+				if(.@elapsed >= 1){
+					#BOT_TIME = (#BOT_TIME - .@elapsed > 0) ? (#BOT_TIME - .@elapsed) : 0;
+					#BOT_LAST_UPDATE = .@current_time;
+				}
+				
+				// Check if time expired
+				if(#BOT_TIME <= 0){
+					#BOT_TIME = 0;
+					#BOT_ACTIVE = 0;
+					#BOT_START_TIME = 0;
+					#BOT_LAST_UPDATE = 0;
+					
+					// Stop all icons
+					sc_end SC_AUTOATTACK;
+					sc_end SC_AUTOTIMEON;
+					sc_end SC_AUTOTIME;
+					
+					dispbottom "================================================";
+					dispbottom "Bot time EXPIRED";
+					dispbottom "Bot has been stopped";
+					if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+						dispbottom "VIP: Claim 8 hours FREE daily";
+					} else {
+						dispbottom "Claim 4 hours FREE or buy more time";
+					}
+					dispbottom "================================================";
+				}
+				// Warning notifications
+				else if(#BOT_TIME <= 300 && #BOT_TIME > 240){
+					dispbottom "Warning: Only " + (#BOT_TIME / 60) + " minutes remaining";
+				}
+				else if(#BOT_TIME <= 3600 && #BOT_TIME > 3540){
+					dispbottom "Notice: 1 hour of bot time remaining";
+				}
+				
+				// Weight warnings (75%, 80%, 85%)
+				if(.@current_weight >= 85 && .@current_weight < 90){
+					dispbottom "^FF0000WARNING: Weight at " + .@current_weight + "% - Bot will stop at 90%^000000";
+				}
+				else if(.@current_weight >= 80 && .@current_weight < 85){
+					dispbottom "^FFFF00CAUTION: Weight at " + .@current_weight + "%^000000";
+				}
+				else if(.@current_weight >= 75 && .@current_weight < 80){
+					dispbottom "^00FF00Notice: Weight at " + .@current_weight + "%^000000";
+				}
+			}
+		}
+	}
+	
+	initnpctimer;
+	end;
+
+// Handle logout - save remaining time
+OnPCLogoutEvent:
+	if(#BOT_ACTIVE){
+		.@current_time = gettimetick(2);
+		.@elapsed = .@current_time - #BOT_LAST_UPDATE;
+		
+		if(.@elapsed >= 1){
+			#BOT_TIME = (#BOT_TIME - .@elapsed > 0) ? (#BOT_TIME - .@elapsed) : 0;
+		}
+		
+		// Stop bot + icons on logout
+		sc_end SC_AUTOATTACK;
+		sc_end SC_AUTOTIMEON;
+		sc_end SC_AUTOTIME;
+		
+		#BOT_ACTIVE = 0;
+		#BOT_START_TIME = 0;
+		#BOT_LAST_UPDATE = 0;
+	}
+	end;
+
+// Handle login - restore SC_AUTOTIME icon (red, no countdown) if has time but not running
+OnPCLoginEvent:
+	if(#BOT_TIME > 0 && !#BOT_ACTIVE){
+		sc_start SC_AUTOTIME, INFINITE_TICK, 1;
+	}
+	end;
+}
+
+//===== Utility Functions ====================================
+
+// Function to get Vietnam time (GMT+7)
+function	script	F_GetVNTime	{
+	.@type = getarg(0); // 0=date (YYYYMMDD), 1=hour, 2=minute, 3=datetime string
+	.@offset = 7 * 3600; // GMT+7 offset in seconds
+	.@timestamp = gettimetick(2) + .@offset;
+	
+	.@year = 1970 + (.@timestamp / 31536000);
+	.@day_of_year = (.@timestamp % 31536000) / 86400;
+	
+	// Simple date calculation
+	.@month = 1;
+	.@day = .@day_of_year + 1;
+	
+	while(.@day > 31){
+		if(.@month == 2){
+			.@days_in_month = 28;
+			if(.@year % 4 == 0) .@days_in_month = 29;
+		}
+		else if(.@month == 4 || .@month == 6 || .@month == 9 || .@month == 11){
+			.@days_in_month = 30;
+		}
+		else{
+			.@days_in_month = 31;
+		}
+		
+		if(.@day > .@days_in_month){
+			.@day -= .@days_in_month;
+			.@month++;
+		}
+		else break;
+	}
+	
+	.@hour = (.@timestamp % 86400) / 3600;
+	.@minute = (.@timestamp % 3600) / 60;
+	.@second = .@timestamp % 60;
+	
+	switch(.@type){
+		case 0: return (.@year * 10000 + .@month * 100 + .@day); // YYYYMMDD
+		case 1: return .@hour;
+		case 2: return .@minute;
+		case 3: 
+			.@date$ = .@year + "/" + (.@month < 10 ? "0" : "") + .@month + "/" + (.@day < 10 ? "0" : "") + .@day;
+			.@time$ = (.@hour < 10 ? "0" : "") + .@hour + ":" + (.@minute < 10 ? "0" : "") + .@minute;
+			return .@date$ + " " + .@time$;
+	}
+	return 0;
+}
+
+// Function to format time remaining until reset
+function	script	F_TimeToReset	{
+	.@offset = 7 * 3600; // GMT+7
+	.@timestamp = gettimetick(2) + .@offset;
+	.@current_hour = (.@timestamp % 86400) / 3600;
+	.@current_minute = (.@timestamp % 3600) / 60;
+	
+	// Calculate seconds until midnight
+	.@seconds_today = (.@current_hour * 3600) + (.@current_minute * 60);
+	.@seconds_until_reset = 86400 - .@seconds_today;
+	
+	.@hours = .@seconds_until_reset / 3600;
+	.@minutes = (.@seconds_until_reset % 3600) / 60;
+	
+	return .@hours + "h " + .@minutes + "m";
+}

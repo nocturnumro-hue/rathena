@@ -1,0 +1,377 @@
+/* =============================================================
+/* Item Betting Slot Machine - Single Slot (30% win, x2)
+/* =============================================================*/
+
+askald,32,71,1	script	Single Slot Machine	563,{
+	
+	mes "^FF6600[ Item Betting - Single Slot ]^000000";
+	mes "~";
+	mes "^00CC00Win Rate: 40%^000000";
+	mes "^4169E1Prize: x2 your bet item^000000";
+	mes "^FF0000Costs: 1,000,000 Zeny per play^000000";
+	mes " ";
+	mes "^FFA500Current Zeny: ^00A000" + Zeny + "z^000000";
+	next;
+	
+	// Initial check
+	if(Zeny < 1000000) {
+		mes "^FF0000You don't have enough Zeny!^000000";
+		mes "You need 1,000,000 Zeny to play.";
+		close;
+	}
+	
+	// Main game loop
+	set @menu, 1;
+	while(@menu == 1) {
+		mes "^FF6600[ Item Betting - Single Slot ]^000000";
+		mes "~";
+		mes "Select an item from your inventory to bet:";
+		mes "(The item will be lost if you lose)";
+		next;
+		
+		// Get item from inventory
+		getinventorylist;
+		
+		if(@inventorylist_count <= 0) {
+			mes "^FF0000Your inventory is empty!^000000";
+			close;
+		}
+		
+		// Build item selection menu
+		set .@menu$, "";
+		set .@count, 0;
+		
+		for(set .@i, 0; .@i < @inventorylist_count; set .@i, .@i + 1) {
+			set .@item_id, @inventorylist_id[.@i];
+			set .@amount, @inventorylist_amount[.@i];
+			set .@equipped, @inventorylist_equip[.@i];
+			
+			// Skip equipped items
+			if(.@equipped) continue;
+			
+			// Skip cards and zero items
+			if(getiteminfo(.@item_id, 2) == 6) continue;
+			if(.@amount <= 0) continue;
+			
+			set @item_list[.@count], .@item_id;
+			set @item_amount[.@count], .@amount;
+			set .@menu$, .@menu$ + getitemname(.@item_id) + " (" + .@amount + "x):";
+			set .@count, .@count + 1;
+			
+			if(.@count >= 100) break;
+		}
+		
+		if(.@count == 0) {
+			mes "^FF0000No valid items to bet!^000000";
+			mes "^666666(Cards are not allowed)^000000";
+			close;
+		}
+		
+		set .@menu$, .@menu$ + "Cancel";
+		set .@choice, select(.@menu$);
+		set .@selected, .@choice - 1;
+		
+		if(.@selected >= .@count) {
+			close;
+		}
+		
+		set .@bet_item, @item_list[.@selected];
+		set .@max_amount, @item_amount[.@selected];
+		
+		// Auto-bet if only 1 item
+		if(.@max_amount == 1) {
+			set .@bet_amount, 1;
+		} else {
+			next;
+			mes "^FF6600[ Item Betting - Single Slot ]^000000";
+			mes "~";
+			mes "Selected: ^00A000" + getitemname(.@bet_item) + "^000000";
+			mes "You have: ^00A000" + .@max_amount + "x^000000";
+			mes " ";
+			mes "How many do you want to bet?";
+			mes "(Enter 0 to cancel)";
+			input .@bet_amount;
+			
+			if(.@bet_amount <= 0 || .@bet_amount > .@max_amount) {
+				mes "^FF0000Invalid amount!^000000";
+				close;
+			}
+		}
+		
+		next;
+		mes "^FF6600[ Confirm Bet ]^000000";
+		mes "~";
+		mes "Betting: ^FF0000" + .@bet_amount + "x " + getitemname(.@bet_item) + "^000000";
+		mes "Fee: ^FF00001,000,000 Zeny^000000";
+		mes " ";
+		mes "^00CC00If Win (40%): Get back x2 = " + (.@bet_amount * 2) + "x^000000";
+		mes "^FF0000If Lose (60%): Lose all bet items^000000";
+		next;
+		
+		if(select("Confirm:Cancel") == 2) close;
+		
+		// Pay fee and remove bet items
+		set Zeny, Zeny - 1000000;
+		delitem .@bet_item, .@bet_amount;
+		
+		if(.soundeffects) { soundeffect "se_cash_provider.wav",0; }
+		
+		// Roll for result (FAKE 40% display, REAL 30% win rate)
+		// Displayed: 40% win, 60% lose
+		// Reality: 30% win, 70% lose (cheating -10%)
+		set .@roll, rand(1,1000);
+		if(.@roll <= 300) {  // 300/1000 = 30% REAL WIN RATE
+			set .@a, 2; // Success
+		} else { 
+			set .@a, 1; // Fail
+		}
+		
+		// Animation
+		set .@b, 1;
+		while(.@b < atoi(.ssm_animate$[.@a])) {
+			cutin .ssm_animate$[3] + .@b,4; 
+			sleep2 ((atoi(.ssm_animate$[4]) * 1000) / atoi(.ssm_animate$[.@a])); 
+			set .@b, .@b + 1;
+		}
+		cutin .ssm_animate$[3] + atoi(.ssm_animate$[.@a]),4;
+		
+		if(.@a == 2) {
+			// Win
+			getitem .@bet_item, (.@bet_amount * 2);
+			if(.soundeffects) { soundeffect "rog_steal_coin.wav",0; }
+			next;
+			mes "^00FF00=== YOU WIN! ===^000000";
+			mes "~";
+			mes "You received: ^00A000" + (.@bet_amount * 2) + "x " + getitemname(.@bet_item) + "^000000";
+		} else {
+			// Lose
+			next;
+			mes "^FF0000=== YOU LOSE ===^000000";
+			mes "~";
+			mes "You lost: ^FF0000" + .@bet_amount + "x " + getitemname(.@bet_item) + "^000000";
+		}
+		
+		// Check if can continue
+		if(select("Another Round:I'm done") == 2 || Zeny < 1000000) { 
+			if(Zeny < 1000000) {
+				mes "^FF0000You don't have enough Zeny to continue!^000000";
+			}
+			cutin "",255; 
+			close; 
+		}
+		next;
+	}
+	
+	cutin "",255;
+	close;
+
+OnInit:
+	.soundeffects = 1;
+	
+	// Animation settings
+	// [0] = Fail Rate (not used here, using fixed 30%)
+	// [1] = Fail frame count
+	// [2] = Success frame count
+	// [3] = File prefix
+	// [4] = Animation duration (seconds)
+	setarray .ssm_animate$[0],"30","29","33","slot_","3";
+	end;
+}
+
+/* =============================================================
+/* Item Betting Slot Machine - Triple Slot (10% win, x3)
+/* =============================================================*/
+
+askald,32,82,1	script	Triple Slot Machine	563,{
+	
+	mes "^FF6600[ Item Betting - Triple Slot ]^000000";
+	mes "~";
+	mes "^FF0000Win Rate: 30%^000000";
+	mes "^4169E1Prize: x3 your bet item^000000";
+	mes "^FF0000Costs: 1,000,000 Zeny per play^000000";
+	mes " ";
+	mes "^FFA500Current Zeny: ^00A000" + Zeny + "z^000000";
+	next;
+	
+	// Initial check
+	if(Zeny < 1000000) {
+		mes "^FF0000You don't have enough Zeny!^000000";
+		mes "You need 1,000,000 Zeny to play.";
+		close;
+	}
+	
+	// Main game loop
+	set @menu, 1;
+	while(@menu == 1) {
+		mes "^FF6600[ Item Betting - Triple Slot ]^000000";
+		mes "~";
+		mes "Select an item from your inventory to bet:";
+		mes "(The item will be lost if you lose)";
+		next;
+		
+		// Get item from inventory
+		getinventorylist;
+		
+		if(@inventorylist_count <= 0) {
+			mes "^FF0000Your inventory is empty!^000000";
+			close;
+		}
+		
+		// Build item selection menu
+		set .@menu$, "";
+		set .@count, 0;
+		
+		for(set .@i, 0; .@i < @inventorylist_count; set .@i, .@i + 1) {
+			set .@item_id, @inventorylist_id[.@i];
+			set .@amount, @inventorylist_amount[.@i];
+			set .@equipped, @inventorylist_equip[.@i];
+			
+			// Skip equipped items
+			if(.@equipped) continue;
+			
+			// Skip cards and zero items
+			if(getiteminfo(.@item_id, 2) == 6) continue;
+			if(.@amount <= 0) continue;
+			
+			set @item_list[.@count], .@item_id;
+			set @item_amount[.@count], .@amount;
+			set .@menu$, .@menu$ + getitemname(.@item_id) + " (" + .@amount + "x):";
+			set .@count, .@count + 1;
+			
+			if(.@count >= 100) break;
+		}
+		
+		if(.@count == 0) {
+			mes "^FF0000No valid items to bet!^000000";
+			mes "^666666(Cards are not allowed)^000000";
+			close;
+		}
+		
+		set .@menu$, .@menu$ + "Cancel";
+		set .@choice, select(.@menu$);
+		set .@selected, .@choice - 1;
+		
+		if(.@selected >= .@count) {
+			close;
+		}
+		
+		set .@bet_item, @item_list[.@selected];
+		set .@max_amount, @item_amount[.@selected];
+		
+		// Auto-bet if only 1 item
+		if(.@max_amount == 1) {
+			set .@bet_amount, 1;
+		} else {
+			next;
+			mes "^FF6600[ Item Betting - Triple Slot ]^000000";
+			mes "~";
+			mes "Selected: ^00A000" + getitemname(.@bet_item) + "^000000";
+			mes "You have: ^00A000" + .@max_amount + "x^000000";
+			mes " ";
+			mes "How many do you want to bet?";
+			mes "(Enter 0 to cancel)";
+			input .@bet_amount;
+			
+			if(.@bet_amount <= 0 || .@bet_amount > .@max_amount) {
+				mes "^FF0000Invalid amount!^000000";
+				close;
+			}
+		}
+		
+		next;
+		mes "^FF6600[ Confirm Bet ]^000000";
+		mes "~";
+		mes "Betting: ^FF0000" + .@bet_amount + "x " + getitemname(.@bet_item) + "^000000";
+		mes "Fee: ^FF00001,000,000 Zeny^000000";
+		mes " ";
+		mes "^00CC00If Win (30%): Get back x3 = " + (.@bet_amount * 3) + "x^000000";
+		mes "^FF0000If Lose (70%): Lose all bet items^000000";
+		next;
+		
+		if(select("Confirm:Cancel") == 2) close;
+		
+		// Pay fee and remove bet items
+		set Zeny, Zeny - 1000000;
+		delitem .@bet_item, .@bet_amount;
+		
+		if(.soundeffects) { soundeffect "se_cash_provider.wav",0; }
+		
+		// Roll for result (FAKE 30% display, REAL 20% win rate)
+		// Displayed: 30% win, 70% lose
+		// Reality: 20% win, 80% lose (cheating -10%)
+		set .@roll, rand(1,1000);
+		
+		// Determine animation based on result
+		// Using original logic: slot 2 and slot 3 rolls
+		set .@slot2, rand(1,100);
+		set .@slot3, rand(1,100);
+		
+		if(.@roll <= 200) {  // 200/1000 = 20% REAL WIN RATE
+			// Win - show SSS animation
+			set .@a, 2;
+		} else {
+			// Lose - show random fail animation
+			if(.@slot2 <= 30 && .@slot3 <= 30) { 
+				set .@a, 8; // SFF
+			} else if(.@slot2 <= 30 && .@slot3 > 30) { 
+				set .@a, 6; // SFS
+			} else if(.@slot2 > 30 && .@slot3 <= 30) { 
+				set .@a, 4; // SSF
+			} else { 
+				set .@a, 8; // SFF
+			}
+		}
+		
+		// Animation
+		set .@b, 1;
+		while(.@b < atoi(.tsm_animate$[.@a+1])) {
+			cutin .tsm_animate$[.@a] + .@b,4; 
+			sleep2 ((atoi(.tsm_animate$[10]) * 1000) / atoi(.tsm_animate$[.@a+1])); 
+			set .@b, .@b + 1;
+		}
+		cutin .tsm_animate$[.@a] + atoi(.tsm_animate$[.@a+1]),4;
+		
+		if(.@a == 2) {
+			// Win
+			getitem .@bet_item, (.@bet_amount * 3);
+			if(.soundeffects) { soundeffect "rog_steal_coin.wav",1; }
+			next;
+			mes "^00FF00=== YOU WIN! ===^000000";
+			mes "~";
+			mes "You received: ^00A000" + (.@bet_amount * 3) + "x " + getitemname(.@bet_item) + "^000000";
+		} else {
+			// Lose
+			next;
+			mes "^FF0000=== YOU LOSE ===^000000";
+			mes "~";
+			mes "You lost: ^FF0000" + .@bet_amount + "x " + getitemname(.@bet_item) + "^000000";
+		}
+		
+		// Check if can continue
+		if(select("Another Round:I'm done") == 2 || Zeny < 1000000) { 
+			if(Zeny < 1000000) {
+				mes "^FF0000You don't have enough Zeny to continue!^000000";
+			}
+			cutin "",255; 
+			close; 
+		}
+		next;
+	}
+	
+	cutin "",255;
+	close;
+
+OnInit:
+	.soundeffects = 1;
+	
+	// Animation settings
+	// [0] = Slot 2 fail rate (for animation variety)
+	// [1] = Slot 3 fail rate (for animation variety)
+	// [2] = SSS prefix, [3] = SSS frame count
+	// [4] = SSF prefix, [5] = SSF frame count
+	// [6] = SFS prefix, [7] = SFS frame count
+	// [8] = SFF prefix, [9] = SFF frame count
+	// [10] = Animation duration (seconds)
+	setarray .tsm_animate$[0],"30","30","SSS_","41","SSF_","37","SFS_","41","SFF_","45","3";
+	end;
+}

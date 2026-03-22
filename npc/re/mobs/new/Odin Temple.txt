@@ -1,0 +1,16 @@
+//==================================================
+// odin_past - Ancient Odin's Temple
+//==================================================
+odin_past,0,0	monster	Blue Plant	1079,5,5000
+odin_past,0,0	monster	Shining Plant	1083,2,5000
+odin_past,0,0	monster	Angelgolt	20604,40,5000
+odin_past,0,0	monster	Angelgolt	20605,60,5000
+odin_past,0,0	monster	Plasma Spectrum	20609,5,5000
+odin_past,0,0	monster	Arch Plasma	20608,5,5000
+odin_past,0,0	monster	Holy Frus	20606,45,5000
+odin_past,0,0	monster	Holy Skogul	20607,45,5000
+odin_past,0,0	boss_monster	Valkyrie Reginleif	20610,1,10800000,600000,0
+odin_past,0,0	boss_monster	Valkyrie Ingrid	20611,1,10800000,600000,0
+
+odin_tem03,276,236,108,0	warp	atemplewarp001	1,1,odin_past,291,230
+odin_past,291,234,108,0	warp	atemplewarp002	1,1,odin_tem03,276,230

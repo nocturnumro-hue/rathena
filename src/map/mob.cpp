@@ -202,8 +202,111 @@ void mvptomb_create(mob_data *md, char *killer, time_t time)
 	nd->type = BL_NPC;
 
 	safestrncpy(nd->name, msg_txt(nullptr,656), sizeof(nd->name));
+	safestrncpy(nd->name, md->name, sizeof(nd->name));
+
+	std::vector<std::pair<int, int>> mobClassId = {
+        {1038, 19100},
+		{1046, 19101},
+		{1059, 19102},
+		{1086, 19103},
+		{1087, 19104},
+		{1112, 19105},
+		{1115, 19106},
+		{1147, 19107},
+		{1150, 19108},
+		{1157, 19109},
+		{1159, 19110},
+		{1190, 19111},
+		{1251, 19112},
+		{1252, 19113},
+		{1272, 19114},
+		{1312, 19115},
+		{1373, 19116},
+		{1389, 19117},
+		{1418, 19118},
+		{1492, 19119},
+		{1511, 19120},
+		{1583, 19121},
+		{1623, 19122},
+		{1630, 19123},
+		{1646, 19124},
+		{1647, 19125},
+		{1648, 19126},
+		{1649, 19127},
+		{1650, 19128},
+		{1651, 19129},
+		{1685, 19130},
+		{1688, 19131},
+		{1708, 19132},
+		{1719, 19133},
+		{1734, 19134},
+		{1751, 19135},
+		{1768, 19136},
+		{1779, 19137},
+		{1785, 19138},
+		{1832, 19139},
+		{1885, 19140},
+		{1917, 19141},
+		{2022, 19142},
+		{2068, 19143},
+		{2087, 19144},
+		{2131, 19145},
+		{2156, 19146},
+		{2165, 19147},
+		{2202, 19148},
+		{2236, 19149},
+		{2237, 19150},
+		{2238, 19151},
+		{2239, 19152},
+		{2240, 19153},
+		{2241, 19154},
+		{2249, 19155},
+		{2251, 19156},
+		{2253, 19157},
+		{2255, 19158},
+		{2319, 19159},
+		{2362, 19160},
+		{2441, 19161},
+		{2442, 19162},
+		{2446, 19163},
+		{2529, 19164},
+		{2532, 19165},
+		{2533, 19166},
+		{2534, 19167},
+		{2535, 19168},
+		{2996, 19169},
+		{3000, 19170},
+		{3029, 19171},
+		{3073, 19172},
+		{3074, 19173},
+		{3091, 19174},
+		{3092, 19175},
+		{3096, 19176},
+		{3097, 19177},
+		{3124, 19178},
+		{3181, 19179},
+		{3254, 19180},
+		{3426, 19181},
+		{3427, 19182},
+		{3428, 19183},
+		{3429, 19184},
+		{3430, 19185},
+		{3450, 19186},
+		{3628, 19187},
+		{3633, 19188},
+		{3757, 19189},
+		{3758, 19190}
+    };
 
 	nd->class_ = 565;
+
+	for (const auto& pair : mobClassId) {
+        if (md->mob_id == pair.first) {
+            nd->class_ = pair.second;
+            break;
+        }
+    }
+
 	nd->speed = DEFAULT_NPC_WALK_SPEED;
 	nd->subtype = NPCTYPE_TOMB;
 
@@ -494,6 +597,9 @@ mob_data* mob_spawn_dataset(struct spawn_data *data)
 	unit_dataset(md);
 
 	map_addiddb(md);
+	// ===== MOB LEVEL UP: Khởi tạo level data =====
+	mob_level_init(md);
+	// ===== END MOB LEVEL UP =====	
 	return md;
 }
 
@@ -1322,6 +1428,15 @@ static int32 mob_ai_sub_hard_activesearch(block_list *bl,va_list ap)
 	md=va_arg(ap,mob_data *);
 	target= va_arg(ap,block_list**);
 	mode= static_cast<enum e_mode>(va_arg(ap, int32));
+
+	if(battle_config.feature_autoattack_teleport_mvp && bl->type == BL_PC){
+		TBL_PC *sd = BL_CAST(BL_PC, bl);
+		e_mob_bosstype bosstype = md->get_bosstype();
+
+		if(bosstype != BOSSTYPE_NONE){
+			aa_teleport(sd);
+		}
+	}
 
 	//If can't seek yet, not an enemy, or you can't attack it, skip.
 	if ((*target) == bl || !status_check_skilluse(md, bl, 0, 0))
@@ -2778,6 +2893,11 @@ void mob_damage(mob_data *md, block_list *src, int32 damage)
 		mob_log_damage(md, src, static_cast<int64>(damage));
 	}
 
+	if(src && src->type == BL_PC){
+		map_session_data *sd = (map_session_data *)src;
+		sd->aa.last_attack = gettick();
+	}
+
 	if (battle_config.show_mob_info&3)
 		clif_name_area(md);
 
@@ -2927,6 +3047,152 @@ map_session_data* mob_data::get_mvp_player(map_session_data* first_sd) {
 	return mvp_sd;
 }
 
+// ===== MOB LEVEL UP SYSTEM =====
+
+t_exp mob_get_next_exp(uint16 level) {
+    if (level >= MOB_MAX_LEVEL)
+        return 0;
+    // x5 slower than original formula
+    return (t_exp)(pow((double)level, 3.0) * 50.0 + (double)level * 500.0);
+}
+
+void mob_level_init(mob_data *md) {
+    if (!md) return;
+    md->mob_level_data.level    = 1;
+    md->mob_level_data.exp      = 0;
+    md->mob_level_data.next_exp = mob_get_next_exp(1);
+}
+
+void mob_level_up_stats(mob_data *md) {
+    if (!md) return;
+    uint16 lvl = md->mob_level_data.level;
+
+    // +2% Max HP per level
+    uint32 hp_bonus = md->status.max_hp / 50;
+    if (hp_bonus < 1) hp_bonus = 1;
+    md->status.max_hp += hp_bonus;
+    md->status.hp      = md->status.max_hp;
+
+    // +5 ATK per level
+    md->status.rhw.atk  += 5;
+    md->status.rhw.atk2 += 5;
+
+    // +3 MATK per level
+    md->status.matk_min += 3;
+    md->status.matk_max += 3;
+
+    // +1 DEF every 5 levels
+    if (lvl % 5 == 0)
+        md->status.def++;
+
+    // +1 MDEF every 10 levels
+    if (lvl % 10 == 0)
+        md->status.mdef++;
+
+    // +2 HIT per level
+    md->status.hit += 2;
+	
+    // +1 all stats per level (base, áp dụng tất cả)
+    md->status.str  += 1;
+    md->status.agi  += 1;
+    md->status.vit  += 1;
+    md->status.int_ += 1;
+    md->status.dex  += 1;
+    md->status.luk  += 1;
+
+    // ============================================================
+    // Class bonus:
+    //   1st/2nd : Physical +1 STR  | Magic +1 INT  (total +2/level)
+    //   3rd     : Physical +2 STR  | Magic +2 INT  (total +3/level)
+    //   4th     : Physical +3 STR  | Magic +3 INT  (total +4/level)
+    // ============================================================
+    switch (md->mob_id) {
+
+        // ---------- 1ST / 2ND CLASS PHYSICAL (+1 STR) ----------
+        case 30171: case 30172: case 30174: case 30176: case 30177:
+        case 30178: case 30179: case 30182: case 30183: case 30184:
+        case 30185: case 30186: case 30187: case 30189: case 30191:
+        case 30192: case 30194: case 30195: case 30197: case 30199:
+        case 30200:
+            md->status.str += 1;
+            break;
+
+        // ---------- 1ST / 2ND CLASS MAGIC (+1 INT) ----------
+        case 30173: case 30175: case 30180: case 30181: case 30188:
+        case 30190: case 30193: case 30196: case 30198:
+            md->status.int_ += 1;
+            break;
+
+        // ---------- 3RD CLASS PHYSICAL (+2 STR) ----------
+        case 30275: case 30277: case 30279: case 30280: case 30281:
+        case 30285: case 30287: case 30288: case 30290: case 30292:
+        case 30293: case 30294: case 30298: case 30300:
+            md->status.str += 2;
+            break;
+
+        // ---------- 3RD CLASS MAGIC (+2 INT) ----------
+        case 30276: case 30278: case 30282: case 30283: case 30284:
+        case 30286: case 30289: case 30291: case 30295: case 30296:
+        case 30297: case 30299:
+            md->status.int_ += 2;
+            break;
+
+        // ---------- 4TH CLASS PHYSICAL (+3 STR) ----------
+        case 30251: case 30252: case 30253: case 30254: case 30255:
+        case 30258: case 30259: case 30260: case 30261: case 30263:
+        case 30268: case 30270: case 30271: case 30272:
+            md->status.str += 3;
+            break;
+
+        // ---------- 4TH CLASS MAGIC (+3 INT) ----------
+        case 30256: case 30257: case 30262: case 30264: case 30265:
+        case 30266: case 30267: case 30269: case 30273: case 30274:
+            md->status.int_ += 3;
+            break;
+
+        default:
+            break;
+    }
+}
+
+void mob_level_up_effect(mob_data *md) {
+    if (!md) return;
+    uint16 lvl = md->mob_level_data.level;
+
+    // Level up effect (same as player base level up)
+    clif_misceffect(*md, NOTIFYEFFECT_BASE_LEVEL_UP);
+
+    // Aura at level 99
+    if (lvl == MOB_AURA_LEVEL1) {
+        clif_hat_effect_single(*md, HAT_EF_LEVEL99_150, true);
+    }
+    // Aura at level 275 (max level)
+    if (lvl == MOB_AURA_LEVEL2) {
+        clif_hat_effect_single(*md, HAT_EF_LEVEL99_150, false);
+        clif_hat_effect_single(*md, HAT_EF_LEVEL160_RED, true);
+    }
+}
+
+void mob_gain_exp(mob_data *md, t_exp exp) {
+    if (!md || exp == 0) return;
+    if (md->mob_level_data.level >= MOB_MAX_LEVEL) return;
+
+    md->mob_level_data.exp += exp;
+
+    while (md->mob_level_data.level < MOB_MAX_LEVEL &&
+           md->mob_level_data.next_exp > 0 &&
+           md->mob_level_data.exp >= md->mob_level_data.next_exp)
+    {
+        md->mob_level_data.exp     -= md->mob_level_data.next_exp;
+        md->mob_level_data.level++;
+        mob_level_up_stats(md);
+        mob_level_up_effect(md);
+        md->mob_level_data.next_exp = mob_get_next_exp(md->mob_level_data.level);
+    }
+}
+
+// ===== END MOB LEVEL UP SYSTEM =====
+
 /*==========================================
  * Signals death of mob.
  * type&1 -> no drops, type&2 -> no exp
@@ -2971,6 +3237,18 @@ int32 mob_dead(mob_data *md, block_list *src, int32 type)
 
 	if(src && src->type == BL_MOB)
 		mob_unlocktarget((mob_data *)src,tick);
+
+	// ===== MOB LEVEL UP: Killer mob nhận exp =====
+	if (src && src->type == BL_MOB) {
+		mob_data *killer_mob = (mob_data *)src;
+		if (killer_mob->mob_level_data.level > 0 &&
+			killer_mob->mob_level_data.level < MOB_MAX_LEVEL) {
+			t_exp gain_exp = (t_exp)(md->db->base_exp / 10);
+			if (gain_exp < 1) gain_exp = 1;
+			mob_gain_exp(killer_mob, gain_exp);
+		}
+	}
+	// ===== END MOB LEVEL UP =====
 
 	// filter out entries not eligible for exp distribution
 	memset(tmpsd,0,sizeof(tmpsd));
@@ -3248,7 +3526,7 @@ int32 mob_dead(mob_data *md, block_list *src, int32 type)
 		}
 	}
 
-	if( !(type&1) && !map_getmapflag(m, MF_NOMOBLOOT) && !md->state.rebirth && (
+	if( !(type&1) && !map_getmapflag(m, MF_NOMOBLOOT) && !(md->get_bosstype() == BOSSTYPE_NONE && map_getmapflag(m, MF_NOLOOTNORMALMOB)) && !md->state.rebirth && (
 		!md->special_state.ai || //Non special mob
 		battle_config.alchemist_summon_reward == 2 || //All summoned give drops
 		(md->special_state.ai==AI_SPHERE && battle_config.alchemist_summon_reward == 1) //Marine Sphere Drops items.

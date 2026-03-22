@@ -25484,9 +25484,9 @@ Body:
             .@a = getskilllv("OB_ZANGETSU");
             .@b = getskilllv("KG_KAGEHUMI");
             if (.@a > .@b)
-               skill "OB_ZANGETSU",.@a;
+               skill "KG_KAGEHUMI",.@a;
             else
-               skill "KG_KAGEHUMI",.@b;
+               skill "OB_ZANGETSU",.@b;
             bonus2 bAddEle,Ele_All,15;
             if (.@sum >= 18) {
                bonus2 bSkillAtk,"KO_JYUMONJIKIRI",25;
@@ -46094,6 +46094,9 @@ Body:
          bonus2 bSkillCooldown,"IG_CROSS_RAIN",-1000;
          bonus2 bSkillAtk,"LG_RAYOFGENESIS",.@sum;
       }
+      if (getskilllv("IG_JUDGEMENT_CROSS") > 0) {
+            bonus4 bAutoSpellOnSkill,"IG_CROSS_RAIN","IG_JUDGEMENT_CROSS",getskilllv("IG_JUDGEMENT_CROSS"),1000;
+        }
   - Combos:
       - Combo:
           - Dimen_BO_Sword   # 500093

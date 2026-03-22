@@ -1,0 +1,108 @@
+//===== rAthena Script =======================================
+//= Fabre Event NPC
+//===== By: rAthena AI Assistant ============================
+//= Spawns Fabre monsters that trigger an event when killed.
+//= This event runs automatically every 2 hours with a countdown.
+//= @reloadnpcfile npc/custom/manuel_npc/fabre_kill_event.txt
+//============================================================
+
+-	script	FabreEventNPC	-1,{
+	OnInit:
+		// Set the timer to trigger every 2 hours (7200000 milliseconds = 120 minutes).
+		// Start immediately upon script loading.
+		$@EventActive = 0; // Biến toàn cục để kiểm tra trạng thái sự kiện
+		initnpctimer;
+		startnpctimer;
+		end;
+
+	// Trigger every 2 hours
+	OnTimer7200000:
+		if ($@EventActive == 0) {
+			initnpctimer;
+			startnpctimer; // Restart the timer.
+			goto OnEventStart;
+		}
+		end;
+
+	OnEventStart:
+		if ($@EventActive == 1) end; // Ngăn spawn nếu sự kiện đang hoạt động
+		$@EventActive = 1;
+		// Start the countdown for the Fabre spawn.
+		announce "Fabre Hunt Event is about to begin!", bc_all, 0x00CC00; // Announce event start.
+		sleep 10000; // Pause for 10 seconds.
+		announce "Fabre Hunt Event will begin in 2 minutes! Prepare yourselves!", bc_all, 0x00CC00;
+		sleep 60000; // Pause for 1 minute.
+		announce "Fabre Hunt Event will begin in 1 minute! Prepare yourselves!", bc_all, 0x00CC00;
+		sleep 30000; // Pause for 30 seconds.
+		announce "Fabre Hunt Event will begin in 30 seconds! Prepare yourselves!", bc_all, 0x00CC00;
+		sleep 20000; // Pause for 20 seconds.
+		announce "Fabre Hunt Event will begin in 10 seconds! Prepare yourselves!", bc_all, 0x00CC00;
+		for (.@i = 9; .@i > 0; .@i--) {
+			announce "Fabre Hunt Event will begin in " + .@i + " seconds! Prepare yourselves!", bc_all, 0x00CC00;
+			sleep 1000; // Pause for 1 second per countdown.
+		}
+		
+		// Start to Spawn
+		goto OnSpawnFabres;
+		end;
+
+	OnSpawnFabres:
+		// Define a list of maps where Fabres can spawn.
+		setarray .@spawn_map$, "prontera", "morocc", "alberta", "izlude", "aldebaran", "xmas", "comodo", "yuno", "amatsu", "gonryun";
+		.randMapIndex1 = rand(getarraysize(.@spawn_map$));
+		.@map$ = .@spawn_map$[.randMapIndex1];
+
+		// Get a random valid spawn position
+		getfreecell .@map$, .@x, .@y, 1; // 1 = only walkable cells
+		if (.@x <= 0 || .@y <= 0) {
+			announce "Failed to spawn Fabre due to no available space in " + .@map$ + "!", bc_all, 0xFF0000;
+			$@EventActive = 0;
+			end;
+		}
+
+		// Clear old Fabres if any
+		killmonster .@map$, "FabreEventNPC::OnFabreKilled";
+
+		// Spawn 5 Fabre monsters at random locations.
+		monster .@map$, .@x, .@y, "Fabre Hunt Event", 1007, 5, "FabreEventNPC::OnFabreKilled";
+
+		// Announce event start with map and next spawn time
+		.@next_hour = (gettime(DT_HOUR) + 2) % 24;
+		.@next_time$ = (.@next_hour < 10 ? "0" + .@next_hour : "" + .@next_hour) + ":00 +07";
+		announce "Fabre Hunt Event has begun! Hunt them down at " + .@map$ + "! Next event at " + .@next_time$ + ".", bc_all, 0x00CC00;
+
+		// Reset the Fabre kill counter for this new event.
+		$@FabreKilledCount = 0;
+		end;
+
+	OnFabreKilled:
+		// Check if a player is attached (meaning a player killed it).
+		if (playerattached()) {
+			// Increment the global kill counter.
+			$@FabreKilledCount++;
+
+			// Announce who killed a Fabre.
+			announce strcharinfo(0) + " has killed a Fabre!", bc_all, 0x00FF00;
+
+			// Give rewards for each kill by a player.
+			getitem 7227, 3;   //TCG Ticket
+			getitem 25723, 5;  //Core Cor
+			getitem 25669, 5;  //Unknown Part
+			getitem 25271, 5;  //llusion Stone
+
+			// Check if all 5 Fabres have been killed.
+			if ($@FabreKilledCount >= 5) {
+				announce "Fabre Hunt Event: All Fabres have been defeated! Well done, adventurers!", bc_all, 0x00CC00;
+				$@EventActive = 0; // Reset event status
+			}
+		} else {
+			// If killed by a monster or other non-player entity.
+			$@FabreKilledCount++;
+			announce "A Fabre has been defeated by a monster!", bc_all, 0xFF0000;
+			if ($@FabreKilledCount >= 5) {
+				announce "Fabre Hunt Event: All Fabres have been defeated! The hunt is over!", bc_all, 0xFF0000;
+				$@EventActive = 0; // Reset event status
+			}
+		}
+		end;
+}

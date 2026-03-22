@@ -1,0 +1,89 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+//Episode19 Shop
+// ============================================
+askald,71,113,1	script	Episode19 SHOP	10464,{
+	.@points_ice_castle = get_reputation_points(4); // Ice Castle
+	
+	// Random PNG chat image (1-5)
+	.@random_png = rand(1,5);
+	.@png_file$ = "ep19_leon0" + .@random_png + ".png";
+	
+	disable_items;
+	cutin .@png_file$, 2;
+	mes "[Ice Castle Trader]";
+	mes "Welcome to the ^0000FFIce Castle Material Exchange^000000!";
+	mes "^FF8800Current Reputation Points:^000000";
+	mes "^0000FFIce Castle:^000000 " + (.@points_ice_castle >= 500 ? "^00FF00" + .@points_ice_castle + "/500^000000" : "^FF0000" + .@points_ice_castle + "/500^000000");
+	mes "^9900FFIce Castle VIP:^000000 " + (.@points_ice_castle >= 1000 ? "^00FF00" + .@points_ice_castle + "/1000^000000" : "^FF0000" + .@points_ice_castle + "/1000^000000");
+	mes " ";
+	
+	// Build menu based on reputation
+	.@menu$ = "";
+	.@ice_castle_available = 0;
+	.@ice_castle_vip_available = 0;
+	
+	if (.@points_ice_castle >= 500) {
+		.@menu$ = .@menu$ + "Ice Castle Shop:";
+		.@ice_castle_available = 1;
+	}
+	if (.@points_ice_castle >= 1000) {
+		.@menu$ = .@menu$ + "Ice Castle VIP Shop:";
+		.@ice_castle_vip_available = 1;
+	}
+	.@menu$ = .@menu$ + "Exit";
+	
+	if (.@ice_castle_available == 0 && .@ice_castle_vip_available == 0) {
+		cutin "ep19_leon02.png", 2;
+		mes "You don't have enough reputation points!";
+		mes " ";
+		mes "^FF0000Required reputation:^000000";
+		mes "- Ice Castle: 500 points";
+		mes "- Ice Castle VIP: 1000 points";
+		cutin "ep19_leon00.png", 2;
+		close;
+	}
+	
+	mes "Please select your shop:";
+	next;
+	
+	cutin "ep19_leon02.png", 2;
+	.@choice = select(.@menu$);
+	.@option_count = 1;
+	
+	// Check Ice Castle Normal
+	if (.@ice_castle_available == 1) {
+		if (.@choice == .@option_count) {
+			mes "[Ice Castle Shop]";
+			mes "Opening Ice Castle shop...";
+			cutin "", 255;
+			close2;
+			callshop "Episode19_ETC";
+			end;
+		}
+		.@option_count++;
+	}
+	
+	// Check Ice Castle VIP
+	if (.@ice_castle_vip_available == 1) {
+		if (.@choice == .@option_count) {
+			cutin "ep19_leon03.png", 2;
+			mes "[Ice Castle VIP Shop]";
+			mes "Opening Ice Castle VIP shop...";
+			cutin "", 255;
+			close2;
+			callshop "Episode19_Weapon";
+			end;
+		}
+		.@option_count++;
+	}
+	
+	// Exit
+	cutin "ep19_leon04.png", 2;
+	mes "[Ice Castle Trader]";
+	mes "Have a good day!";
+	mes "Good Bye!";
+	cutin "ep19_leon05.png", 2;
+	close;
+}

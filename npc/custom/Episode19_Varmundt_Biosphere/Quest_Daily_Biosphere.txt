@@ -1,0 +1,414 @@
+//===== rAthena Script =======================================
+//= Biosphere Daily Quest (UPDATED v4)
+//===== Description: =========================================
+//= Daily hunting quests for Biosphere dungeons
+//= Requires level 240+
+//= Uses 24h cooldown system per dungeon
+//= Dungeons: Ice, Fire, Grass, Death, Soul, Venom, Temple
+//= Hunt: 500 monsters | Double rewards & EXP
+//============================================================
+
+ba_in01,310,45,4	script	Biosphere Daily Quest	10344,{
+	
+	if (BaseLevel < 240) {
+		mes "[Admin Beta]";
+		mes "These dungeons can only be entered at level 240.";
+		mes "Come back when you're stronger!";
+		close;
+	}
+	
+	// ============================================================
+	// CHECK & CLEAR EXPIRED COOLDOWNS FIRST
+	// ============================================================
+	
+	if (checkquest(17612, PLAYTIME) == 2) erasequest 17612; // Ice
+	if (checkquest(17613, PLAYTIME) == 2) erasequest 17613; // Fire
+	if (checkquest(17614, PLAYTIME) == 2) erasequest 17614; // Grass
+	if (checkquest(17615, PLAYTIME) == 2) erasequest 17615; // Death
+	if (checkquest(70271, PLAYTIME) == 2) erasequest 70271; // Soul
+	if (checkquest(70273, PLAYTIME) == 2) erasequest 70273; // Venom
+	if (checkquest(70275, PLAYTIME) == 2) erasequest 70275; // Temple
+	
+	// ============================================================
+	// CHECK IF QUEST COMPLETED - GIVE REWARDS
+	// ============================================================
+	
+	// Biosphere Ice - Quest 17608
+	if (checkquest(17608, HUNTING) == 2) {
+		if (checkquest(17612, PLAYTIME) >= 0) {
+			mes "[Admin Beta]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 17608;
+			close;
+		}
+		
+		mes "[Admin Beta]";
+		mes "Congratulations! You have completed the quest in Biosphere Ice.";
+		mes "Here is your reward!";
+		next;
+		
+		getitem 1000642, 50; // Rune x50
+		getitem 1001140, 20; // Essence x20
+		getexp 24000000000, 6000000000; // Base: 24B, Job: 6B
+		
+		erasequest 17608;
+		setquest 17612; // Set 24h cooldown
+		
+		mes "[Admin Beta]";
+		mes "Rewards received!";
+		mes " ";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		mes "You can do this quest again tomorrow.";
+		close;
+	}
+	
+	// Biosphere Fire - Quest 17609
+	if (checkquest(17609, HUNTING) == 2) {
+		if (checkquest(17613, PLAYTIME) >= 0) {
+			mes "[Admin Beta]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 17609;
+			close;
+		}
+		
+		mes "[Admin Beta]";
+		mes "Congratulations! You have completed the quest in Biosphere Fire.";
+		mes "Here is your reward!";
+		next;
+		
+		getitem 1000641, 50;
+		getitem 1001139, 20;
+		getexp 24000000000, 6000000000;
+		
+		erasequest 17609;
+		setquest 17613;
+		
+		mes "[Admin Beta]";
+		mes "Rewards received!";
+		mes " ";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		mes "You can do this quest again tomorrow.";
+		close;
+	}
+
+	// Biosphere Grass - Quest 17610
+	if (checkquest(17610, HUNTING) == 2) {
+		if (checkquest(17614, PLAYTIME) >= 0) {
+			mes "[Admin Beta]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 17610;
+			close;
+		}
+		
+		mes "[Admin Beta]";
+		mes "Congratulations! You have completed the quest in Biosphere Grass.";
+		mes "Here is your reward!";
+		next;
+		
+		getitem 1000640, 50;
+		getitem 1001138, 20;
+		getexp 24000000000, 6000000000;
+		
+		erasequest 17610;
+		setquest 17614;
+		
+		mes "[Admin Beta]";
+		mes "Rewards received!";
+		mes " ";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		mes "You can do this quest again tomorrow.";
+		close;
+	}
+
+	// Biosphere Death - Quest 17611
+	if (checkquest(17611, HUNTING) == 2) {
+		if (checkquest(17615, PLAYTIME) >= 0) {
+			mes "[Admin Beta]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 17611;
+			close;
+		}
+		
+		mes "[Admin Beta]";
+		mes "Congratulations! You have completed the quest in Biosphere Death.";
+		mes "Here is your reward!";
+		next;
+		
+		getitem 1000643, 50;
+		getitem 1001141, 20;
+		getexp 24000000000, 6000000000;
+		
+		erasequest 17611;
+		setquest 17615;
+		
+		mes "[Admin Beta]";
+		mes "Rewards received!";
+		mes " ";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		mes "You can do this quest again tomorrow.";
+		close;
+	}
+
+	// Biosphere Soul - Quest 70270
+	if (checkquest(70270, HUNTING) == 2) {
+		if (checkquest(70271, PLAYTIME) >= 0) {
+			mes "[Admin Beta]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70270;
+			close;
+		}
+		
+		mes "[Admin Beta]";
+		mes "Congratulations! You have completed the quest in Biosphere Soul.";
+		mes "Here is your reward!";
+		next;
+		
+		getitem 1001182, 50; // Soul Rune x50 (adjust item ID as needed)
+		getitem 1001185, 20; // Soul Essence x20 (adjust item ID as needed)
+		getexp 24000000000, 6000000000;
+		
+		erasequest 70270;
+		setquest 70271; // Set 24h cooldown
+		
+		mes "[Admin Beta]";
+		mes "Rewards received!";
+		mes " ";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		mes "You can do this quest again tomorrow.";
+		close;
+	}
+
+	// Biosphere Venom - Quest 70272
+	if (checkquest(70272, HUNTING) == 2) {
+		if (checkquest(70273, PLAYTIME) >= 0) {
+			mes "[Admin Beta]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70272;
+			close;
+		}
+		
+		mes "[Admin Beta]";
+		mes "Congratulations! You have completed the quest in Biosphere Venom.";
+		mes "Here is your reward!";
+		next;
+		
+		getitem 1001180, 50; // Venom Rune x50 (adjust item ID as needed)
+		getitem 1001184, 20; // Venom Essence x20 (adjust item ID as needed)
+		getexp 24000000000, 6000000000;
+		
+		erasequest 70272;
+		setquest 70273; // Set 24h cooldown
+		
+		mes "[Admin Beta]";
+		mes "Rewards received!";
+		mes " ";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		mes "You can do this quest again tomorrow.";
+		close;
+	}
+
+	// Biosphere Temple - Quest 70274
+	if (checkquest(70274, HUNTING) == 2) {
+		if (checkquest(70275, PLAYTIME) >= 0) {
+			mes "[Admin Beta]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70274;
+			close;
+		}
+		
+		mes "[Admin Beta]";
+		mes "Congratulations! You have completed the quest in Biosphere Temple.";
+		mes "Here is your reward!";
+		next;
+		
+		getitem 1001178, 50; // Temple Rune x50 (adjust item ID as needed)
+		getitem 1001183, 20; // Temple Essence x20 (adjust item ID as needed)
+		getexp 24000000000, 6000000000;
+		
+		erasequest 70274;
+		setquest 70275; // Set 24h cooldown
+		
+		mes "[Admin Beta]";
+		mes "Rewards received!";
+		mes " ";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		mes "You can do this quest again tomorrow.";
+		close;
+	}
+
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+	
+	.@activeQuest = 0;
+	
+	if (checkquest(17608, HUNTING) == 1) .@activeQuest = 1; // Ice active
+	if (checkquest(17609, HUNTING) == 1) .@activeQuest = 2; // Fire active
+	if (checkquest(17610, HUNTING) == 1) .@activeQuest = 3; // Grass active
+	if (checkquest(17611, HUNTING) == 1) .@activeQuest = 4; // Death active
+	if (checkquest(70270, HUNTING) == 1) .@activeQuest = 5; // Soul active
+	if (checkquest(70272, HUNTING) == 1) .@activeQuest = 6; // Venom active
+	if (checkquest(70274, HUNTING) == 1) .@activeQuest = 7; // Temple active
+	
+	if (.@activeQuest > 0) {
+		mes "[Admin Beta]";
+		mes "You already have an active quest:";
+		switch(.@activeQuest) {
+			case 1: mes "^0000FFBiosphere Ice^000000"; break;
+			case 2: mes "^FF0000Biosphere Fire^000000"; break;
+			case 3: mes "^00FF00Biosphere Grass^000000"; break;
+			case 4: mes "^8B00FFBiosphere Death^000000"; break;
+			case 5: mes "^4B0082Biosphere Soul^000000"; break;
+			case 6: mes "^00FF7FBiosphere Venom^000000"; break;
+			case 7: mes "^B8860BBiosphere Temple^000000"; break;
+		}
+		mes " ";
+		mes "Complete it to claim your rewards!";
+		close;
+	}
+
+	// ============================================================
+	// CHECK COOLDOWNS
+	// ============================================================
+	
+	.@iceCooldown = (checkquest(17612, PLAYTIME) >= 0);
+	.@fireCooldown = (checkquest(17613, PLAYTIME) >= 0);
+	.@grassCooldown = (checkquest(17614, PLAYTIME) >= 0);
+	.@deathCooldown = (checkquest(17615, PLAYTIME) >= 0);
+	.@soulCooldown = (checkquest(70271, PLAYTIME) >= 0);
+	.@venomCooldown = (checkquest(70273, PLAYTIME) >= 0);
+	.@templeCooldown = (checkquest(70275, PLAYTIME) >= 0);
+	
+	// Count available quests
+	.@available = 0;
+	if (!.@iceCooldown) .@available++;
+	if (!.@fireCooldown) .@available++;
+	if (!.@grassCooldown) .@available++;
+	if (!.@deathCooldown) .@available++;
+	if (!.@soulCooldown) .@available++;
+	if (!.@venomCooldown) .@available++;
+	if (!.@templeCooldown) .@available++;
+
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+
+	mes "[Admin Beta]";
+	mes "Welcome adventurer!";
+	mes "I have daily hunting quests for the Biosphere dungeons.";
+	mes " ";
+	mes "^00FF00Available Quests: " + .@available + "/7^000000";
+	next;
+	
+	if (.@available == 0) {
+		mes "[Admin Beta]";
+		mes "All quests are currently on cooldown.";
+		mes "Each quest has a 24-hour cooldown after completion.";
+		mes " ";
+		mes "^FF0000Come back later!^000000";
+		close;
+	}
+	
+	switch(select("View Available Quests:Quest Information:Cancel")) {
+		case 1:
+			break;
+			
+		case 2:
+			mes "[Admin Beta]";
+			mes "^FFFFFFQuest Details:^000000";
+			mes " ";
+			mes "^0000FF[Biosphere Ice]^000000";
+			mes "^FF0000[Biosphere Fire]^000000";
+			mes "^00FF00[Biosphere Grass]^000000";
+			mes "^8B00FF[Biosphere Death]^000000";
+			mes "^4B0082[Biosphere Soul]^000000";
+			mes "^00FF7F[Biosphere Venom]^000000";
+			mes "^B8860B[Biosphere Temple]^000000";
+			mes " ";
+			mes "^FF6600Hunt 500 monsters in any dungeon^000000";
+			mes " ";
+			mes "^00FF00Rewards:^000000";
+			mes "• Rune x50";
+			mes "• Essence x20";
+			mes "• Base EXP: 24,000,000,000";
+			mes "• Job EXP: 6,000,000,000";
+			mes " ";
+			mes "^FF0000Cooldown: 24 hours per dungeon^000000";
+			close;
+			
+		case 3:
+			mes "[Admin Beta]";
+			mes "Come back anytime!";
+			close;
+	}
+	
+	// ============================================================
+	// QUEST SELECTION
+	// ============================================================
+	
+	mes "[Admin Beta]";
+	mes "Which dungeon would you like to hunt in?";
+	mes " ";
+	mes "^00FF00Green = Available^000000";
+	mes "^FF0000Red = On Cooldown^000000";
+	next;
+	
+	// Build dynamic menu
+	setarray .@questIds[0], 17608, 17609, 17610, 17611, 70270, 70272, 70274;
+	setarray .@questNames$[0], "Biosphere Ice", "Biosphere Fire", "Biosphere Grass", "Biosphere Death", "Biosphere Soul", "Biosphere Venom", "Biosphere Temple";
+	setarray .@questColors$[0], "^0000FF", "^FF0000", "^00FF00", "^8B00FF", "^4B0082", "^00FF7F", "^B8860B";
+	setarray .@cooldowns[0], .@iceCooldown, .@fireCooldown, .@grassCooldown, .@deathCooldown, .@soulCooldown, .@venomCooldown, .@templeCooldown;
+	
+	.@menu$ = "";
+	for (.@i = 0; .@i < 7; .@i++) {
+		if (.@cooldowns[.@i]) {
+			.@menu$ += .@questColors$[.@i] + .@questNames$[.@i] + " ^FF0000(Cooldown)^000000:";
+		} else {
+			.@menu$ += .@questColors$[.@i] + .@questNames$[.@i] + " ^00FF00(Available)^000000:";
+		}
+	}
+	.@menu$ += "Cancel";
+	
+	.@choice = select(.@menu$) - 1;
+	
+	if (.@choice == 7) {
+		mes "[Admin Beta]";
+		mes "Come back anytime!";
+		close;
+	}
+	
+	// Check if selected quest is on cooldown
+	if (.@cooldowns[.@choice]) {
+		mes "[Admin Beta]";
+		mes "This quest is on cooldown.";
+		mes "Please wait 24 hours after completing it.";
+		close;
+	}
+	
+	// Accept quest
+	mes "[Admin Beta]";
+	mes "You have selected:";
+	mes .@questColors$[.@choice] + .@questNames$[.@choice] + "^000000";
+	mes " ";
+	mes "Hunt ^FF6600500 monsters^000000 to complete this quest.";
+	next;
+	
+	if (select("Accept Quest:Cancel") == 2) {
+		mes "[Admin Beta]";
+		mes "Come back when you're ready!";
+		close;
+	}
+	
+	mes "[Admin Beta]";
+	mes "Good luck, adventurer!";
+	mes "Return when you've completed the hunt.";
+	setquest .@questIds[.@choice];
+	close;
+}

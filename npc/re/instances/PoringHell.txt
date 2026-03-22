@@ -1,0 +1,1021 @@
+//===== rAthena Script =======================================
+//= Poring Hell
+//===== Description: =========================================
+//= [Walkthrough Conversion]
+//= Poring Hell instance by Velda
+//===== Changelogs: ==========================================
+//= 1.0 First version. Made in 2023 by [Velda]
+//============================================================
+
+1@phell,0,0,0	script	Poring_Hell	-1,{
+
+/*OnReward:
+	//addrid(2,0,.party_id);
+	set(Zeny,Zeny+.zeny);
+	callfunc("package_func",512,1,100,getcharid(3));
+	end;*/
+
+//Counter
+OnMob: 'mob++; end;
+
+//Room 01=========================================================
+//"map", "mobid", "x1", "y1", "x2", "y2", "amount", "trigger";
+
+OnInstanceInit:
+	debugmes "Instance Created! "+'party_id; //93, 112, 106, 98 middle area
+	enablenpc instance_npcname("Bronya#ph1");
+	end;
+
+OnMob01_0:
+		mapannounce instance_mapname("1@phell"), "There are "+mobcount( instance_mapname("1@phell"), instance_npcname("Poring_Hell")+"::OnMob01_0" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("1@phell"), instance_npcname("Poring_Hell")+"::OnMob01_0" ) ) {
+		viewpoint 1,140,177,1,0xFF0000;
+		viewpoint 1,192,182,2,0xFF0000;
+		viewpoint 1,50,180,3,0xFF0000;
+		viewpoint 1,46,122,4,0xFF0000;
+		viewpoint 1,94,121,5,0xFF0000;
+		mapannounce instance_mapname("1@phell"), "Watch out! New monsters just spawned on the map. Find them and destroy them. ", bc_map, 0xFFFF00;
+		areamonster instance_mapname("1@phell"), 140,177, 146,181, "--en--", "PH_DROPS",10, instance_npcname("Poring_Hell")+"::OnMob01_1";
+		areamonster instance_mapname("1@phell"), 192,182, 184,176, "--en--", "PH_DROPS",10, instance_npcname("Poring_Hell")+"::OnMob01_1";
+		areamonster instance_mapname("1@phell"), 50,180, 65,154, "--en--", "PH_ASHRING",15, instance_npcname("Poring_Hell")+"::OnMob01_1";
+		areamonster instance_mapname("1@phell"), 46,122, 53,119, "--en--", "PH_VOLCARING",15, instance_npcname("Poring_Hell")+"::OnMob01_1";
+		areamonster instance_mapname("1@phell"), 94,121, 104,115, "--en--", "PH_VOLCARING",10, instance_npcname("Poring_Hell")+"::OnMob01_1";
+		}
+	end;
+
+OnMob01_1:
+		viewpoint 2,140,177,1,0xFF0000;
+		viewpoint 2,192,182,2,0xFF0000;
+		viewpoint 2,50,180,3,0xFF0000;
+		viewpoint 2,46,122,4,0xFF0000;
+		viewpoint 2,94,121,5,0xFF0000;
+		mapannounce instance_mapname("1@phell"), "There are "+mobcount( instance_mapname("1@phell"), instance_npcname("Poring_Hell")+"::OnMob01_1" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("1@phell"), instance_npcname("Poring_Hell")+"::OnMob01_1" ) ) {
+		viewpoint 1,110,66,1,0xFF0000;
+		viewpoint 1,150,47,2,0xFF0000;
+		viewpoint 1,67,56,3,0xFF0000;
+		viewpoint 1,106,110,4,0xFF0000;
+		viewpoint 1,179,115,5,0xFF0000;
+		viewpoint 1,202,155,6,0xFF0000;
+		viewpoint 1,158,89,7,0xFF0000;
+		areamonster instance_mapname("1@phell"), 110,66, 102,61, "--en--", "PH_GOLDRING",15, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 150,47, 161,41, "--en--", "PH_GOLDRING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 150,47, 161,41, "--en--", "PH_ASHRING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 67,56, 74,51, "--en--", "PH_ASHRING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 67,56, 74,51, "--en--", "PH_DROPS",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 106,110, 110,105, "--en--", "PH_VOLCARING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 106,110, 110,105, "--en--", "PH_GOLDRING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 202,155, 212,143, "--en--", "PH_ASHRING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 202,155, 212,143, "--en--", "PH_DROPS",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 179,115, 184,113, "--en--", "PH_VOLCARING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 179,115, 184,113, "--en--", "PH_GOLDRING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 158,89, 153,83, "--en--", "PH_ASHRING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 158,89, 153,83, "--en--", "PH_DROPS",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		areamonster instance_mapname("1@phell"), 158,89, 153,83, "--en--", "PH_VOLCARING",10, instance_npcname("Poring_Hell")+"::OnMob01_2";
+		mapannounce instance_mapname("1@phell"), "Watch out! New monsters just spawned on the map. Find them and destroy them. ", bc_map, 0xFFFF00;
+		}
+	end;
+
+OnMob01_2:
+		viewpoint 2,110,66,1,0xFF0000;
+		viewpoint 2,150,47,2,0xFF0000;
+		viewpoint 2,67,56,3,0xFF0000;
+		viewpoint 2,106,10,4,0xFF0000;
+		viewpoint 2,179,115,5,0xFF0000;
+		viewpoint 2,202,155,6,0xFF0000;
+		viewpoint 2,158,89,7,0xFF0000;
+		mapannounce instance_mapname("1@phell"), "There are "+mobcount( instance_mapname("1@phell"), instance_npcname("Poring_Hell")+"::OnMob01_2" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("1@phell"), instance_npcname("Poring_Hell")+"::OnMob01_2" ) ) {
+		mapannounce instance_mapname("1@phell"), "Bronya: Wow~ You are quite strong! You defeated all these twisted Porings!", bc_map, 0xFFFF00;
+		sleep2 2000;
+		mapannounce instance_mapname("1@phell"), "Bronya: They are servings of Hell... Be careful!", bc_map, 0xFFFF00;
+		enablenpc instance_npcname("Bronya#phdummy");
+		sleep2 2000;
+		mapannounce instance_mapname("1@phell"), "Bronya: Let's catch a breath. Talk to me for a while, would you?", bc_map, 0xFFFF00;
+		sleep2 2000;
+		}
+	end;
+
+//Room02=====================================================================
+OnMob02_0:
+	if( !mobcount( instance_mapname("2@phell"), instance_npcname("Poring_Hell")+"::OnMob02_0" ) )
+		areamonster instance_mapname("2@phell"), 172,21, 177,16, "--en--", "PH_GOLDRING",10, instance_npcname("Poring_Hell")+"::OnMob02_1",2;
+	end;
+OnMob02_1:
+		mapannounce instance_mapname("2@phell"), "Bronya: This seems to be some kind of nest, i guess... be careful.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("2@phell"), instance_npcname("Poring_Hell")+"::OnMob02_1" ) )
+		areamonster instance_mapname("2@phell"), 154,27, 150,22, "--en--", "PH_MARIN",20, instance_npcname("Poring_Hell")+"::OnMob02_2",2;
+	end;
+OnMob02_2:
+	if( !mobcount( instance_mapname("2@phell"), instance_npcname("Poring_Hell")+"::OnMob02_2" ) ) {
+		mapannounce instance_mapname("2@phell"), "Bronya: Well.. that was quite interesting. I'm glad we made it!.", bc_map, 0xFFFF00;
+		sleep2 8000;
+		mapannounce instance_mapname("2@phell"), "Bronya: What was that?", bc_map, 0xFFFF00;
+		sleep2 5000;
+		mapannounce instance_mapname("2@phell"), "Bronya: Some strange noise. You heard that too..? ", bc_map, 0xFFFF00;
+		sleep2 5000;
+		mapannounce instance_mapname("2@phell"), "Bronya: Ohh noooo.. It's a Giant Blazering! Watch out! ", bc_map, 0xFFFF00;
+		sleep2 4000;
+		instance_announce -1,"The [Giant Blazering] was just spawned! Fight back!",bc_map,"0x00ff99";
+		areamonster instance_mapname("2@phell"), 139,59, 148,55, "--en--", "PH_GBLAZERING",1, instance_npcname("Poring_Hell")+"::OnBossDead01",2;
+	}
+	end;
+
+//Room03===================================================================
+OnBossDead01:
+if( !mobcount( instance_mapname("2@phell"), instance_npcname("Poring_Hell")+"::OnBossDead01" ) ) {
+	enablenpc instance_npcname("Bronya#ph2dummy");
+	mapannounce instance_mapname("2@phell"), "Bronya: Ooph, that was close, right?", bc_map, 0xFFFF00;
+	sleep2 2000;
+	mapannounce instance_mapname("2@phell"), "Bronya: Let's move along.", bc_map, 0xFFFF00;
+	sleep2 2000;
+	enablenpc instance_npcname("Bronya#ph3dummy");
+	}
+	end;
+
+OnMob03_0:
+		disablenpc instance_npcname("Bronya#ph2dummy");
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_0" ) ){
+		mapannounce instance_mapname("3@phell"), "Bronya: Demons... They are our demons...", bc_map, 0xFFFF00;
+		sleep2 8000;
+		mapannounce instance_mapname("3@phell"), "Bronya: And what the hell is THIS?! Brace yourself!", bc_map, 0xFFFF00;
+		areamonster instance_mapname("3@phell"), 54,232, 49,223, "--en--", "PH_SKELING",10, instance_npcname("Poring_Hell")+"::OnMob03_1",2;
+		areamonster instance_mapname("3@phell"), 52,212, 52,208, "--en--", "PH_DEMONRING",5, instance_npcname("Poring_Hell")+"::OnMob03_1",2;
+		areamonster instance_mapname("3@phell"), 52,212, 52,208, "--en--", "PH_PORING",10, instance_npcname("Poring_Hell")+"::OnMob03_1",2;
+		viewpoint 1,52,212,1,0xFF0000;
+		viewpoint 1,54,232,2,0xFF0000;
+		}
+	end;
+OnMob03_1:
+		viewpoint 2,52,212,1,0xFF0000;
+		viewpoint 2,54,232,2,0xFF0000;
+		mapannounce instance_mapname("3@phell"), "There are "+mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_1" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_1" ) ){
+		areamonster instance_mapname("3@phell"), 30,235, 35,226, "--en--", "PH_DEMONRING",15, instance_npcname("Poring_Hell")+"::OnMob03_2",2;
+		areamonster instance_mapname("3@phell"), 72,235, 66,227, "--en--", "PH_PORING",15, instance_npcname("Poring_Hell")+"::OnMob03_2",2;
+		mapannounce instance_mapname("3@phell"), "Watch out! New monsters just spawned on the map. Find them and destroy them. ", bc_map, 0xFFFF00;
+		viewpoint 1,72,235,1,0xFF0000;
+		viewpoint 1,30,235,2,0xFF0000;
+		}
+	end;
+OnMob03_2:
+		viewpoint 2,72,235,1,0xFF0000;
+		viewpoint 2,30,235,2,0xFF0000;
+		mapannounce instance_mapname("3@phell"), "There are "+mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_2" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_2" ) ){
+		areamonster instance_mapname("3@phell"), 72,235, 66,227, "--en--", "PH_PORING",15, instance_npcname("Poring_Hell")+"::OnMob03_3",2;
+		areamonster instance_mapname("3@phell"), 30,235, 35,226, "--en--", "PH_DEMONRING",15, instance_npcname("Poring_Hell")+"::OnMob03_3",2;
+		mapannounce instance_mapname("3@phell"), "Watch out! New monsters just spawned on the map. Find them and destroy them. ", bc_map, 0xFFFF00;
+		sleep2 2000;
+		mapannounce instance_mapname("3@phell"), "Bronya: More of them!", bc_map, 0xFFFF00;
+		viewpoint 1,72,235,1,0xFF0000;
+		viewpoint 1,30,235,2,0xFF0000;
+		}
+	end;
+OnMob03_3:
+		viewpoint 2,72,235,1,0xFF0000;
+		viewpoint 2,30,235,2,0xFF0000;
+		mapannounce instance_mapname("3@phell"), "There are "+mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_3" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_3" ) ){
+		areamonster instance_mapname("3@phell"), 49,240, 55,235, "--en--", "PH_MARIN",15,instance_npcname("Poring_Hell")+"::OnMob03_4",2;
+		areamonster instance_mapname("3@phell"), 49,240, 55,235, "--en--", "PH_SKELING",15,instance_npcname("Poring_Hell")+"::OnMob03_4",2;
+		mapannounce instance_mapname("3@phell"), "Watch out! New monsters just spawned on the map. Find them and destroy them. ", bc_map, 0xFFFF00;
+		sleep2 2000;
+		mapannounce instance_mapname("3@phell"), "Bronya: Stay strong guys! We can do this!", bc_map, 0xFFFF00;
+		viewpoint 1,49,240,1,0xFF0000;
+		}
+	end;
+OnMob03_4:
+		viewpoint 2,49,240,1,0xFF0000;
+		mapannounce instance_mapname("3@phell"), "There are "+mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_4" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_4" ) ){
+		areamonster instance_mapname("3@phell"), 31,253, 38,247, "--en--", "PH_SKELING",15, instance_npcname("Poring_Hell")+"::OnMob03_5",2;
+		areamonster instance_mapname("3@phell"), 76,252, 67,248, "--en--", "PH_DEMONRING",15, instance_npcname("Poring_Hell")+"::OnMob03_5",2;
+		areamonster instance_mapname("3@phell"), 31,253, 38,247, "--en--", "PH_PORING",15, instance_npcname("Poring_Hell")+"::OnMob03_5",2;
+		areamonster instance_mapname("3@phell"), 76,252, 67,248, "--en--", "PH_MARIN",15, instance_npcname("Poring_Hell")+"::OnMob03_5",2;
+		mapannounce instance_mapname("3@phell"), "Watch out! New monsters just spawned on the map. Find them and destroy them. ", bc_map, 0xFFFF00;
+		viewpoint 1,31,253,1,0xFF0000;
+		viewpoint 1,76,252,2,0xFF0000;
+		sleep2 2000;
+		mapannounce instance_mapname("3@phell"), "Bronya: You will never get us!", bc_map, 0xFFFF00;
+		}
+	end;
+OnMob03_5:
+		viewpoint 2,31,253,1,0xFF0000;
+		viewpoint 2,76,252,2,0xFF0000;
+		mapannounce instance_mapname("3@phell"), "There are "+mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_5" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_5" ) ){
+		areamonster instance_mapname("3@phell"), 49,230, 54,225, "--en--", "PH_GHOLLOWRING",1, instance_npcname("Poring_Hell")+"::OnBossDead02",2;
+		instance_announce -1,"The [Giant Hollowring] was just spawned! Destroy him!",bc_map,"0x00ff99";
+		viewpoint 1,49,230,1,0xFF0000;
+		sleep2 5000;
+		mapannounce instance_mapname("3@phell"), "Bronya: This isn't real, this can't be real... I'm so scared... But i have to be strong!", bc_map, 0xFFFF00;
+		sleep2 5000;
+		mapannounce instance_mapname("3@phell"), "Bronya: Fight him together. We cannot let him win!", bc_map, 0xFFFF00;
+		}
+	end;
+	
+OnBossDead02:
+		viewpoint 2,49,230,1,0xFF0000;
+if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnBossDead02" ) ) {
+		enablenpc instance_npcname("warper#3-3a");
+		areamonster instance_mapname("3@phell"), 57,37, 59,35, "--en--", "PH_SKELING",1,instance_npcname("Poring_Hell")+"::OnMob03_3a",2;
+	}
+	end;
+OnMob03_3a:
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_3a" ) ){
+		mapannounce instance_mapname("3@phell"), "Bronya: Ohh no, not again....", bc_map, 0xFFFF00;
+		sleep2 3000;
+		mapannounce instance_mapname("3@phell"), "Bronya: We're still in the despair and fear realm.", bc_map, 0xFFFF00;
+		sleep2 3000;
+		mapannounce instance_mapname("3@phell"), "Bronya: But we're getting closer to the core, i can feel it...", bc_map, 0xFFFF00;
+		enablenpc instance_npcname("warper#3-3b");
+		areamonster instance_mapname("3@phell"), 57,37, 59,35, "--en--", "PH_SKELING",10,instance_npcname("Poring_Hell")+"::OnMob03_3c",2;
+		areamonster instance_mapname("3@phell"), 57,37, 59,35, "--en--", "PH_MARIN",10,instance_npcname("Poring_Hell")+"::OnMob03_3c",2;
+		areamonster instance_mapname("3@phell"), 57,37, 59,35, "--en--", "PH_SKELING",10,instance_npcname("Poring_Hell")+"::OnMob03_3c",2;
+		}
+	end;
+OnMob03_3c:
+		viewpoint 1,56,77,1,0x00FF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_3c" ) ){
+		areamonster instance_mapname("3@phell"), 213,225, 219,220, "--en--", "PH_MARIN",10,instance_npcname("Poring_Hell")+"::OnMob03_boss",2;
+		areamonster instance_mapname("3@phell"), 213,225, 219,220, "--en--", "PH_SKELING",10,instance_npcname("Poring_Hell")+"::OnMob03_boss",2;
+		areamonster instance_mapname("3@phell"), 213,225, 219,220, "--en--", "PH_DEMONRING",10,instance_npcname("Poring_Hell")+"::OnMob03_boss",2;
+		areamonster instance_mapname("3@phell"), 213,225, 219,220, "--en--", "PH_DROPS",10,instance_npcname("Poring_Hell")+"::OnMob03_boss",2;
+		}
+	end;
+OnMob03_boss:
+		viewpoint 1,56,77,1,0x00FF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob03_boss" ) ){
+		enablenpc instance_npcname("Bronya#ph3dummy2");
+		}
+	end;
+
+//Room04==========================================================================
+OnMob04_0:
+		viewpoint 2,56,77,1,0x00FF00;
+	if( !mobcount( instance_mapname("3@phell"), instance_npcname("Poring_Hell")+"::OnMob04_0" ) ){
+		mapannounce instance_mapname("3@phell"), "Bronya: We made it! The Lord Poring is no more.", bc_map, 0xFFFF00;
+		enablenpc instance_npcname("Bronya#ph3dummy3");
+		areamonster instance_mapname("4@phell"), 143,252, 150,251, "--en--", "PH_SKELING",10,instance_npcname("Poring_Hell")+"::OnMob04_1",2;
+		areamonster instance_mapname("4@phell"), 143,252, 150,251, "--en--", "PH_MARIN",10, instance_npcname("Poring_Hell")+"::OnMob04_1",2;
+		}
+	end;
+	
+OnMob04_1:
+		mapannounce instance_mapname("4@phell"), "There are "+mobcount( instance_mapname("4@phell"), instance_npcname("Poring_Hell")+"::OnMob04_1" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("4@phell"), instance_npcname("Poring_Hell")+"::OnMob04_1" ) ){
+		areamonster instance_mapname("4@phell"), 179,213, 171,209, "--en--", "PH_PORING",20, instance_npcname("Poring_Hell")+"::OnMob04_2",2;
+		areamonster instance_mapname("4@phell"), 167,165, 172,160, "--en--", "PH_BLAZERING",25, instance_npcname("Poring_Hell")+"::OnMob04_2",2;
+		areamonster instance_mapname("4@phell"), 220,150, 215,146, "--en--", "PH_VOLCARING",20, instance_npcname("Poring_Hell")+"::OnMob04_2",2;
+		areamonster instance_mapname("4@phell"), 180,132, 187,137, "--en--", "PH_ASHRING",20, instance_npcname("Poring_Hell")+"::OnMob04_2",2;
+		areamonster instance_mapname("4@phell"), 214,157, 210,148, "--en--", "PH_GOLDRING",20, instance_npcname("Poring_Hell")+"::OnMob04_2",2;
+		mapannounce instance_mapname("4@phell"), "Watch out! New monsters just spawned on the map. Find them and destroy them. ", bc_map, 0xFFFF00;
+		viewpoint 1,179,213,1,0xFF0000;
+		viewpoint 1,167,165,2,0xFF0000;
+		viewpoint 1,220,150,3,0xFF0000;
+		viewpoint 1,180,132,4,0xFF0000;
+		viewpoint 1,214,157,5,0xFF0000;
+		sleep2 2000;
+		mapannounce instance_mapname("4@phell"), "Bronya: I think that this will be the last test for us.", bc_map, 0xFFFF00;
+		sleep2 2000;
+		mapannounce instance_mapname("4@phell"), "Bronya: Watch your steps!", bc_map, 0xFFFF00;
+		disablenpc instance_npcname("Bronya#ph3dummy3");
+		}
+	end;
+	
+OnMob04_2:
+		viewpoint 2,179,213,1,0xFF0000;
+		viewpoint 2,167,165,2,0xFF0000;
+		viewpoint 2,220,150,3,0xFF0000;
+		viewpoint 2,180,132,4,0xFF0000;
+		viewpoint 2,214,157,5,0xFF0000;
+		mapannounce instance_mapname("4@phell"), "There are "+mobcount( instance_mapname("4@phell"), instance_npcname("Poring_Hell")+"::OnMob04_2" )+" monsters remaining on the map.", bc_map, 0xFFFF00;
+	if( !mobcount( instance_mapname("4@phell"), instance_npcname("Poring_Hell")+"::OnMob04_2" ) ) {
+		instance_announce -1,"[Poring Girl] appeared!",bc_map,"0x00ff99";
+		viewpoint 1,158,147,1,0x00FF00;
+		enablenpc instance_npcname("Poring Girl#1");
+	}
+	end;
+
+//Final Boss dead=======================================================================
+OnBossDead3:
+		viewpoint 2,158,147,1,0x00FF00;
+if( !mobcount( instance_mapname("4@phell"), instance_npcname("Poring_Hell")+"::OnBossDead3" ) ) {
+		enablenpc instance_npcname("Bronya#1");
+		disablenpc instance_npcname("Poring Girl#1");
+		enablenpc instance_npcname("Marin#1");
+		instance_announce -1,"Congratulations you finished the instance!",bc_yellow;
+	}
+	end;
+}
+
+//======================================================================================
+// Here you'll find all the warp npcs
+1@phell,143,81,3	script	warper#1-2	45,2,2,{ OnTouch: warp instance_mapname("2@phell"),185,57; end; OnInstanceInit: disablenpc instance_npcname("warper#1-2"); }
+2@phell,128,65,3	script	warper#2-3	45,2,2,{ OnTouch: warp instance_mapname("3@phell"),51,197; end; OnInstanceInit: disablenpc instance_npcname("warper#2-3"); }
+3@phell,52,256,3	script	warper#3-3a	45,2,2,{ OnTouch: warp instance_mapname("3@phell"),59,18; end; OnInstanceInit: disablenpc instance_npcname("warper#3-3a"); }
+3@phell,58,81,3	script	warper#3-3b	45,2,2,{ OnTouch: warp instance_mapname("3@phell"),215,200; end; OnInstanceInit: disablenpc instance_npcname("warper#3-3b"); }
+3@phell,229,233,3	script	warper#3-4	45,2,2,{ OnTouch: warp instance_mapname("4@phell"),142,279; end; OnInstanceInit: disablenpc instance_npcname("warper#3-4"); }
+//2@phell,149,161,3	script	warper#2-4	45,2,2,{ OnTouch: warp instance_mapname("4@phell"),116,25; end; OnInstanceInit: disablenpc instance_npcname("warper#2-4"); }
+//4@phell,98,104,3	script	warper#4-5	45,2,2,{ OnTouch: warp instance_mapname("5@phell"),98,104; end; OnInstanceInit: disablenpc instance_npcname("warper#4-5"); }
+
+// ======================These are the npcs I've enabled throughout the instance=============================
+//Final Boss Summon======================================================
+4@phell,158,148,3	script	Poring Girl#1	4_PORINGG1,{
+	if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) { //Party leader check
+		mes "[ Poring Girl ]";
+		mes "Hey - you!";
+		mes "Yes! You!!";
+		soundeffectall "letmeout_marin.wav",0;
+		next;
+		cutin "poringg1",4;
+		select( "Why are you Poring?" );
+		mes "I'm not a poring, you silly!";
+		next;
+		mes "I'm just trapped here in this glass sphere!";
+		mes "Free me, please, fast! Just break the glass!";
+		mes "I'll explain later!";
+		next;
+		mes "But be prepare!";
+		mes "It will probably wake up my prisoner!";
+		select( "Free the girl!" );
+		mes "[ King of the Poring Hell ]";
+		mes "You crazy mortals!";
+		mes "You dared step into my domain!?";
+		instance_announce -1,"~You can hear evil laugh~",bc_map,"0x00ff99";
+		soundeffectall "evil_laugh.wav",0;
+		next;
+		mes "[ King of the Poring Hell ]";
+		mes "You will regret this!";
+		mes "Fools! I will never let you leave this realm alive... Hahaha!";
+		instance_announce -1,"[King of the Poring Hell]: Fools! I will never let you leave this realm alive... Hahaha!",bc_map,"0x00ff99";
+		npctalk "Bronya: King of the Poring Hell! Kill him!!!";
+		areamonster instance_mapname("4@phell"), 163,164, 169,160, "--en--", "PH_KING_PORING",1, instance_npcname("Poring_Hell")+"::OnBossDead3",2;
+		instance_announce -1,"The [King of the Poring Hell] just raises to destroy you!",bc_map,"0x00ff99";
+		disablenpc instance_npcname("Poring Girl#1");
+		cutin "",255;
+		close;
+	} else {
+		mes "[ Poring Girl ]";
+		mes "I'll only talk to your leader!";
+		cutin "",255;
+		close;
+	}
+	end;
+
+OnInstanceInit:
+	disablenpc instance_npcname("Poring Girl#1");
+}
+
+4@phell,161,149,3	script	Bronya#1	906,{
+		cutin "bronya8",4;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "We made it! We're the best!";
+		soundeffect "thatsit_bronya.wav",0;
+		if ( select("I'm staying...:I'd like to warp out.") == 2 ) {
+			warp "comodo",51,166;
+			end;
+		}
+		cutin "",255;
+		soundeffect "okay_bronya.wav",0;
+		close;
+end;
+OnInstanceInit:
+	disablenpc instance_npcname("Bronya#1");
+}
+
+4@phell,158,148,3	script	Marin#1	4_MARIN,{
+		cutin "marin5",1;
+		select( "Listen to the story" );
+		mes "[ Poring Girl ]";
+		mes "Thank you for freeing me, my heroes!";
+		mes "Uh, i'm dizzy.. but let me introduce myself.";
+		mes "I'm Marin and i was a student in a Kiel Hyre Academy once.";
+		soundeffect "thanks_marin.wav",0;
+		next;
+		cutin "bronya31",2;
+		mes "[ Bronya ]";
+		mes "Marin!!";
+		mes "We found you! I was so worried.";
+		mes "I'm so happy to see you alive!";
+		soundeffect "worried_bronya.wav",0;
+		next;
+		cutin "marin14",0;
+		mes "[ Marin ]";
+		mes "Yes, my dear Bronya, it's me and i'm in one piece thanks to you. ";
+		mes "I'm pleased to see you too!";
+		next;
+		cutin "bronya21",2;
+		mes "[ Bronya ]";
+		mes "But what exactly happened?";
+		next;
+		cutin "marin8",0;
+		mes "[ Marin ]";
+		mes "Well, few months ago i went home from a class.";
+		mes "When suddenly strange girl appeared, performed her magic, and teleported me here.";
+		mes "She trapped me into this sphere from which you freed me. ";
+		next;
+		mes "[ Marin ]";
+		mes "Later, she told me that she is a prisoner too, in some way.";
+		mes "And that she needs me as energy for this realm's ruler.";
+		next;
+		mes "[ Marin ]";
+		mes "Ah, it's HER!";
+		cutin "",255;
+		enablenpc instance_npcname("Mysterious Girl#ph");
+		close;
+end;
+OnInstanceInit:
+	disablenpc instance_npcname("Marin#1");
+}
+
+4@phell,167,156,3	script	Mysterious Girl#ph	2_f_sign1,{
+		if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) { //Party leader check
+		cutin "mgirl2",1;
+		mes "[ Mysterious Girl ]";
+		mes "And i told you that correctly, dear Marin.";
+		mes "Long time ago, i was trapped here too, just like you.";
+		mes "But i managed to free myself for a price.";
+		mes "I had to serve [King of the Poring Hell].";
+		soundeffectall "trapped_mystg.wav",0;
+		next;
+		mes "[ Mysterious Girl ]";
+		mes "He needed trapped souls like yours to feed his anger.";
+		mes "And to feed hatred of his minions.";
+		mes "In case you'll remain here longer you could become one of his servant too.";
+		mes "I was driven mad.";
+		mes "Even now, i can still feel it...";
+		next;
+		select( "Are you saying that you're gonna trap us too?!" );
+		mes "[ Mysterious Girl ]";
+		mes "No, don't worry friends!";
+		mes "Since by the kill of [The King of the Poring Hell] you freed me too!";
+		mes "I wasn't transformed yet fully.";
+		mes "It feels to me now like i'm waking up from a long slumber.";
+		mes "Your good hearts and bravery saved us all.";
+		next;
+		cutin "mgirl1",2;
+		mes "[ Mysterious Girl ]";
+		mes "Althought, we were lost in this hell seemingly forever.";
+		mes "Your actions gave us a chance to purge our souls and be free from evil.";
+		mes "For there is always chance for lost souls.";
+		mes "As far as hope and bravery remains.";
+		next;
+		mes "[ Mysterious Girl ]";
+		mes "In the end, we weren't here by an accident...";
+		select( "How is that?" );
+		mes "[ Mysterious Girl ]";
+		mes "You have done some bad things before i trapped you, [Marin].";
+		mes "Am i right?";
+		next;
+		cutin "marin1",0;
+		mes "[ Marin ]";
+		mes "Yes, ma'am... *shy*";
+		next;
+		cutin "mgirl2",2;
+		mes "[ Mysterious Girl]";
+		mes "And so do I, my dear, so do I...";
+		mes "But that's a different story which i'll tell you other time.";
+		emotion 28;
+		next;
+		cutin "mgirl1",2;
+		mes "[ Mysterious Girl]";
+		mes "Anyway, thanks to you, heroes, we've got a second chance.";
+		mes "So thank you, truly.";
+		next;
+		cutin "mgirl2",2;
+		mes "[ Mysterious Girl]";
+		mes "But there are lots of more trapped souls in this place.";
+		mes "So please, try to help them too, if you'll get a chance.";
+		next;
+		mes "[ Mysterious Girl]";
+		mes "Now, go in piece.";
+		mes "Until we'll meet again...";
+		mes "And once more - thank you.";
+		getitem	7517,150;
+		soundeffectall "thanks_mystg.wav",0;
+		next;
+		mes "[ Mysterious Girl]";
+		mes "...";
+		disablenpc instance_npcname("Mysterious Girl#ph");
+		disablenpc instance_npcname("Marin#1");
+		enablenpc instance_npcname("Marin#2");
+		cutin "",255;
+		close;
+end;
+}
+else{ // Has a party but isn't the leader.
+			mes "[ Mysterious Girl ]";
+			mes "Can I talk to the party leader?";
+			close2;
+			cutin "",255;
+		}
+		end;
+OnInstanceInit:
+disablenpc instance_npcname("Mysterious Girl#ph");
+	}
+
+4@phell,158,148,3	script	Marin#2	4_MARIN,{
+		cutin "marin1",0;
+		select( "So what we will do now?" );
+		mes "[ Marin ]";
+		mes "I don't know..";
+		mes "It's great to be free again and start over.";
+		mes "Nevertheless, i'm feeling depressed and shaken now, if i'm being honest...";
+		next;
+		cutin "bronya13",2;
+		mes "[ Bronya ]";
+		mes "I know how to cheer you up..!";
+		soundeffect "cheer_bronya.wav",0;
+		next;
+		cutin "bronya31",2;
+		mes "I'm definitely going back to the beach.";
+		mes "Will you join me, Marin?";
+		mes "Let's have some fun!";
+		next;
+		cutin "marin18",0;
+		mes "[ Marin ]";
+		mes "Sounds perfect, Bronya!";
+		mes "I'm really glad to have you here.";
+		emotion ET_THROB;
+		next;
+		cutin "marin19",0;
+		mes "[ Marin ]";
+		mes "Just wait a sec.";
+		mes "Till i'll change my clothes.";
+		next;
+		cutin "bronya12",2;
+		mes "[ Bronya ]";
+		mes "Yeah, me too!";
+		next;
+		cutin "marin13",0;
+		mes "[ Marin ]";
+		mes "Splendide!";
+		mes "I'm ready.";
+		next;
+		cutin "bronya4",2;
+		mes "[ Bronya ]";
+		mes "Same for me.";
+		mes "You look marvelous!";
+		soundeffect "perfect_bronya.wav",0;
+		next;
+		mes "[ Bronya and Marin ]";
+		cutin "marin_bronya",4;
+		mes "And what about you our friends?";
+		next;
+		cutin "marin_bronya1",4;
+		mes "[ Bronya and Marin ]";
+		mes "Will you join us?";
+		next;
+		soundeffect "join_bronya.wav",0;
+		select ( "Sure! Party on the beach it is!");
+		mes "Than let's go!";
+		if ( select("I want to look around more...:To the beach!") == 2 ) {
+			warp "comodo",51,166;
+			end;
+		}
+		cutin "",255;
+		close;
+		end;
+OnInstanceInit:
+	disablenpc instance_npcname("Marin#2");
+}
+
+comodo,55,161,3	script	Bronya and Marin#ph	4_BEACHG,{
+		cutin "bronya4",2;
+		mes "[ Bronya ]";
+		mes "Wohooo, it's so fun here!";
+		next;
+		cutin "marin13",0;
+		mes "[ Marin ]";
+		mes "It's great to just sunbathing and swimming!";
+		next;
+		cutin "marin_bronya",4;
+		mes "[ Bronya and Marin ]";
+		mes "Come and join us! ^^";
+		soundeffect "join2_bronya.wav",0;
+		next;
+		cutin "",255;
+		mes "[ Bronya and Marin ]";
+		mes "...";
+		close;
+}
+
+//Start of the instance NPC===========================================================
+1@phell,88,205,3	script	Bronya#ph1	906,4,4,{
+	if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) { //Party leader check
+	cutin "bronya14",4;
+	mes "[ Bronya, the Silver Wolf ]";
+	mes "So this is the Poring Hell?";
+	mes "Hmm.. seems interesting.";
+	mes "Shall we proceed?";
+	next;
+	soundeffectall "ready_bronya.wav",0;
+	switch(select("Let's get rolling.","Wait..."))	{
+	case 1:
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Let's go!";
+		soundeffectall "letsgo_bronya.wav",0;
+		areamonster instance_mapname("1@phell"), 99,195, 105,197, "--en--", "PH_DROPS",5, instance_npcname("Poring_Hell")+"::OnMob01_0";
+		cutin "",255;
+		disablenpc instance_npcname("Bronya#ph1");
+		close;
+		end;
+	case 2:
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Alright.";
+		soundeffectall "okay_bronya.wav",0;
+		cutin "",255;
+		end;
+		}
+	end;
+	}else{ // Has a party but isn't the leader.
+			mes "[ Bronya, the Silver Wolf ]";
+			mes "Can I talk to the party leader?";
+			close2;
+			cutin "",255;
+		}
+		end;
+	}
+//NPCs - Instance playthrough=============================================================================
+1@phell,145,82,3	script	Bronya#phdummy	906,{
+		if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) { //Party leader check
+		cutin "bronya15",4;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "I'm a student on a Kiel Hyre Academy, you know?.";
+		mes "I learned about this realm from the old scrolls.";
+		mes "Some said that it's the domain of King of the Hell himself.";
+		mes "Very dangerous place...";
+		soundeffectall "student_bronya.wav",0;
+		next;
+		cutin "bronya22",4;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "But we will fight our way through with your help!";
+		mes "I will not leave my friend trapped here!";
+		next;
+		cutin "bronya23",4;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Let's go.";
+		next;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "I'm right behind you.";
+		soundeffectall "letsgo_bronya.wav",0;
+		cutin "",255;
+		enablenpc instance_npcname("warper#1-2");
+		areamonster instance_mapname("2@phell"), 182,34, 187,30, "--en--", "PH_GOLDRING",3, instance_npcname("Poring_Hell")+"::OnMob02_0",2;
+		disablenpc instance_npcname("Bronya#phdummy");
+		getitem	7517,50;
+		close;
+end;
+		}else{ // Has a party but isn't the leader.
+			mes "[ Bronya, the Silver Wolf ]";
+			mes "Can I talk to the party leader?";
+			close2;
+			cutin "",255;
+		}
+		end;
+OnInstanceInit:
+disablenpc instance_npcname("Bronya#phdummy");
+	}
+
+2@phell,134,65,3	script	Bronya#ph2dummy	906,{
+		cutin "bronya21",4;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "This was one of the Hell King's servants.";
+		mes "I've got a bad feeling about what awaits us next...";
+		soundeffect "feeling_bronya.wav",0;
+		next;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Stay strong guys. I'm right behind you!";
+		enablenpc instance_npcname("warper#2-3");
+		cutin "",255;
+		close;
+end;
+OnInstanceInit:
+	disablenpc instance_npcname("Bronya#ph2dummy");
+}
+
+3@phell,51,200,3	script	Bronya#ph3dummy	906,{
+		if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) { //Party leader check
+		cutin "bronya29",2;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Uh, i need to sit here for a moment. Come, join me.";
+		soundeffectall "sit_bronya.wav",0;
+		next;
+		mes "This must be the realm of despair and fear...";
+		mes "Don't let the feelings of despair to overcome you.";
+		next;
+		cutin "bronya30",2;
+		mes "Fill your mind with joy. You're not alone here!";
+		next;
+		areamonster instance_mapname("3@phell"), 52,201, 50,200, "--en--", "PH_DEMONRING",5,instance_npcname("Poring_Hell")+"::OnMob03_0",2;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Watch out!";
+		cutin "",255;
+		soundeffectall "watchout_bronya.wav",0;
+		disablenpc instance_npcname("Bronya#ph3dummy");
+		getitem	7517,50;
+		close;
+end;
+}
+		else{ // Has a party but isn't the leader.
+			mes "[ Bronya, the Silver Wolf ]";
+			mes "Can I talk to the party leader?";
+			close2;
+			cutin "",255;
+		}
+		end;
+OnInstanceInit:
+disablenpc instance_npcname("Bronya#ph3dummy");
+	}
+
+3@phell,217,227,3	script	Bronya#ph3dummy2	906,{
+		if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) { //Party leader check
+		cutin "bronya13",2;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Seems that we are in some throne room.";
+		soundeffectall "throne_bronya.wav",0;
+		next;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "I'm curious what awaits us.";
+		next;
+		areamonster instance_mapname("3@phell"), 215,243, 217,241, "--en--", "PH_AMERING",1, instance_npcname("Poring_Hell")+"::OnMob04_0",2;
+		instance_announce -1,"The [Lord Poring] was just spawned! Defend yourself!",bc_map,"0x00ff99";
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Oh noo! The Lord Poring himself! Fight for your life!";
+		getitem	7517,50;
+		soundeffectall "fight_bronya.wav",0;
+		disablenpc instance_npcname("Bronya#ph3dummy2");
+		cutin "",255;
+		close;
+end;
+}
+		else{ // Has a party but isn't the leader.
+			mes "[ Bronya, the Silver Wolf ]";
+			mes "Can I talk to the party leader?";
+			close2;
+			cutin "",255;
+		}
+		end;
+OnInstanceInit:
+disablenpc instance_npcname("Bronya#ph3dummy2");
+	}
+
+3@phell,223,231,2	script	Bronya#ph3dummy3	906,{
+		cutin "bronya11",4;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "That's it.";
+		mes "We fought our way through the domain of despair and fear.";
+		soundeffect "thatsit_bronya.wav",0;
+		next;
+		cutin "bronya12",4;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "It was the lords of these two emotions back there";
+		mes "The final test awaits us now, if i'm not mistaken.";
+		next;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Let's go to the final round!";
+		mes "I'm right behind you.";
+		soundeffect "letsmove_bronya.wav",0;
+		enablenpc instance_npcname("warper#3-4");
+		cutin "",255;
+		close;
+end;
+OnInstanceInit:
+	disablenpc instance_npcname("Bronya#ph3dummy3");
+}
+
+//Entering Instance NPC=================================================================
+askald,159,145,2	script	Bronya#ph	906,4,4,{
+	if (instance_id(IM_PARTY) > 0) {
+		switch(select("Warp me back","Cancel")) {
+		case 1:
+		warp instance_mapname("1@phell", instance_id(IM_PARTY)), 85, 205;
+		case 2:
+		close;
+		}
+	} else {
+		
+	set .@party_id, getcharid( 1 );     // Set party ID.
+	set .@playtime, checkquest( .cooldown, PLAYTIME ); // Set Cool-down variable
+
+	npctalk "Bronya: Hey, there! May I talk to you for a minute?";
+	soundeffect "hello_bronya.wav",0;
+	cutin "bronya2",2;
+	next;
+	mes "[ Bronya, the Silver Wolf ]";
+	mes "I was just sunbathing here and suddenly you appeared!";
+	mes "My name is Bronya also known as Silver Wolf.";
+	next;
+	cutin "bronya5",2;
+	mes "[ Bronya, the Silver Wolf ]";
+	mes "I need a help from a brave adventures like you.";
+	mes "My dear friend was drag away into realm known as [Poring Hell].";
+	mes "And i'm too weak to help her alone";
+	mes "Would you help me, pretty please?";
+	next;
+	switch(select("Sure, we'll help you!","I'm not interested"))	{
+	case 1:
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Perfect!";
+		mes "But first, let me change my clothes.";
+		soundeffect "perfectch_bronya.wav",0;
+		next;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "...";
+		cutin "bronya7",2;
+		next;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Ah, that's better!";
+		cutin "bronya9",2;
+		next;
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "I can go like that.";
+		mes "Now, sit with me here and i will tell you some more intel about that.";
+		next;
+		//Tell the player about the instance requirements.
+	cutin "bronya16",2;
+	soundeffect "okay_bronya.wav",0;
+	mes "[ Bronya, the Silver Wolf ]";
+	mes "You need between ^0000ff"+.p_rest+"^000000 and ^0000ff"+.p_rest[1]+"^000000 party members to join this instance.";
+	mes "Also, your party members must be between the levels ^0000ff"+.p_lvlr+"^000000 and ^0000ff"+.p_lvlr[1]+"^000000.";
+	if( .cost ) {
+		set(.@b,-1);
+		while(.@b++<.len)
+			set .@message$, .@message$+ getitemname(.cost[.@b])+" x"+.amount[.@b]+((.len>1)?((.@b+1==.len)?"":((.@b+2==.len)?", and ":", ")):"");
+		mes "And, you'll need: ^0000ff"+.@message$+"^000000.";
+	}
+	next;
+	
+	if ( !.@party_id ) { // Our guy doesn't have a party don't let him through.
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "You need a party.";
+		close2;
+		cutin "",255;
+		end;
+	}
+	
+	//Asks the player if he'd like to destroy the instance.
+	if ( instance_mapname( .md_mapn$ ) != "" ) {
+		mes "Do you want to destroy this instance????";
+		next;
+		if(select("Yes:No")==1)
+			instance_destroy;
+	}
+	
+	mes "[ Bronya, the Silver Wolf ]";
+	mes "Are you ready?";
+	next;
+	soundeffect "ready_bronya.wav",0;
+	if( select("Create Path:Cancel")==1 ) {
+		if( getcharid(0) == getpartyleader(.@party_id,2) ) { // Check if our man is the party leader...
+			getpartymember .@party_id;                    // Get number of party members. $@partymembercid[]
+			set .@plen, $@partymembercount;                 // Move global variable to a local one.
+			
+	/*		//Example how to count only online party members.
+			getpartymember .@party_id,1;                    // Get number of party members. $@partymembercid[]
+			getpartymember .@party_id,2;                    // Get number of party members. $@partymemberaid[]
+			copyarray .@pcid[0],$@partymembercid[0],128;    // Move the global array to a local one.
+			copyarray .@paid[0],$@partymemberaid[0],128;    // Move the global array to a local one.
+			set .@plen, $@partymembercount;                 // Move global variable to a local one.
+			while(.@i<.@plen) {                             // Remove offline members from the count.
+				if(!isloggedin(.@paid[.@i],.@pcid[.@i])) {
+					deletearray .@paid[.@i],1;
+					deletearray .@pcid[.@i],1;
+				}
+				.@i++;
+			} set .@plen, getarraysize(.@paid);       // Get a new count with offline members removed.
+	*/
+	
+			//Checking all the instance requirements.
+			if( instance_mapname( .md_mapn$ ) != "" ) {
+				mes "[ Bronya, the Silver Wolf ]";
+				mes "I cannot reconnect the path... I'm sorry!";
+				close2;
+				cutin "",255;
+				end;
+			}
+			
+			if( .@plen < .p_rest[0]
+			||  .@plen > .p_rest[1] ) {
+				mes "[ Bronya, the Silver Wolf ]";
+				mes "I'm sorry but you need at least "+.p_rest[0]+" party member.";
+				mes "There is also a maximum of "+.p_rest[1]+" party members.";
+				mes "adjust your party before you may enter.";
+				close2;
+				cutin "",255;
+				end;
+			}
+			
+			if( !instance_check_party( .@party_id, .p_rest, .p_lvlr[0], .p_lvlr[1] ) ) {
+				mes "[ Bronya, the Silver Wolf ]";
+				mes "I'm sorry but your party doesn't seem to meet the instance level requirements.";
+				mes "Please adjust your party before you may enter.";
+				close2;
+				cutin "",255;
+				end;
+			}
+			
+			mes "[ Bronya, the Silver Wolf ]";
+			mes "This place is dangerous. Please go back.";
+			mes "If you don't have any business here, please go back.";
+			next;
+			while( .cost[.@a] )  // Checking for correct items.
+				if( countitem( .cost[.@a] ) < .amount[.@a] ) break;
+				else .@a++;
+					
+			if( .@a != .len ) {
+				set( .@b, -1 );
+				while( .@b++ < .len )
+					set .@message$, .@message$+ getitemname(.cost[.@b])+" x"+.amount[.@b]+((.len>1)?((.@b+1==.len)?"":((.@b+2==.len)?", and ":", ")):"");
+				mes "[ Bronya, the Silver Wolf ]";
+				mes "I'm sorry but you need: ^0000ff"+.@message$+"^000000.";
+				mes "Before you may enter this dungeon!";
+				close2;
+				cutin "",255;
+				end;
+			}
+			
+			if( .@playtime == -1 ) {}// Quest doesn't exist fall through
+			else if( .@playtime == 0 || .@playtime == 1 ) { // Player is still waiting for the Cool-down quest
+				mes "[ Bronya, the Silver Wolf ]";
+				mes "I'm sorry but you cannot enter right away.";
+				mes "The realm is not accessible yet!";
+				close2;
+				cutin "",255;
+				end;
+			} else erasequest .cooldown; // Remove completed cool down and fall through
+			
+			.@instance = instance_create( .md_name$ );
+			
+			if ( .@instance < 0 ) { // Try to create instance and set our instance ID.
+				mes "[ Bronya, the Silver Wolf ]";
+				mes "Party name is... "+getpartyname(.@party_id)+".";
+				mes "Party leader is... "+strcharinfo(0);
+				mes "^0000ff"+.md_name$+"^000000 cannot be opened now."; // Instance creation failed
+				mes "Please try again later.";
+				close2;
+				cutin "",255;
+				end;
+			}
+			
+			// Instance creation successful letting everyone through.
+			mes "[ Bronya, the Silver Wolf ]";
+			mes "I will open the portal to";
+			mes "^0000ff"+.md_name$+"^000000 good luck!";
+			while(.cost[.@g]) {
+				delitem(.cost[.@g],.amount[.@g]);
+				.@g++;
+			}
+			close2;
+			cutin "",255;
+			
+			sleep2 1000;
+			
+			mapannounce getpartyname(.@party_id)+" party has begun "+.md_name$+"!",bc_all,"0x00ff99";
+			addrid( 2, 0, .@party_id );
+			setquest .cooldown;
+			instance_enter( .md_name$ );
+			end;
+		} else { // Has a party but isn't the leader.
+			mes "[ Bronya, the Silver Wolf ]";
+			mes "Can I talk to the party leader?";
+			close2;
+			cutin "",255;
+			end;
+		}
+	} else {
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "You're not worthy!";
+		close2;
+		cutin "",255;
+		end;
+	}
+	end;
+	case 2:
+		mes "[ Bronya, the Silver Wolf ]";
+		mes "Ok, cya..*sob*";
+		soundeffect "ok_bronya.wav",0;
+		cutin "",255;
+		end;
+	}
+	}	
+// Configuration
+OnInit:
+	set .cooldown, 80000;            // Set Cool-down quest ID - Set this to correspond with your instance ID in your quest DB file.
+	set .md_name$, "Poring Hell";   // Set Instance name.
+	set .win, 10000;                 // If the party gets this or more zeny 100% to bonus.
+	setarray .p_rest, 1, 12;          // Set party restriction range.
+	setarray .p_lvlr, 200, 275;        // Party Level range.
+	setarray .md_mapn$, "1@phell"; // First map in the instance. - This has to correspond with the map in your instance DB file
+	//setarray .cost, 501, 502;        // Set Item ID.
+	//setarray .amount, 1, 3;          // Set Amount ID.
+	set .len, getarraysize(.cost);   // Length of our array.
+	//Prize is the only thing I couldn't add to the configuration area.
+	//It wouldn't've been optimal instead search for
+	//callfunc("package_func",501,1,100,502,1,100,.mem_aid[.@i-1]);
+	//and follow the function instructions to add more items.
+	//if you need help just ask.
+	end;
+}

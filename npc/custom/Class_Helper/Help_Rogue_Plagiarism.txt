@@ -1,0 +1,67 @@
+//===== rAthena Script =======================================
+//= Plagiarism Master NPC
+//===== Description: =========================================
+//= NPC allows players to copy skills like Plagiarism
+//===== Author: ==============================================
+//= Custom Script
+//============================================================
+askald,104,78,5	script	Plagiarism Master	912,{
+mes "Which skill do you need me to cast on you?";
+set .@SkillID,select( implode( .SkillName$,":" ) ) - 1;
+mes "Selected "+.SkillName$[.@SkillID];
+// Save player info BEFORE close
+set .@targetGID, getcharid(3);
+set .@selectedSkill, .SkillID[.@SkillID];
+set .@selectedLv, .SkillLv[.@SkillID];
+close2;
+
+// Special handling for melee skills (Bash, Soul Breaker, Fly Kick, Raging Trifecta Blow)
+if (.@selectedSkill == 62 || .@selectedSkill == 379 || .@selectedSkill == 421 || .@selectedSkill == 263) {
+    // Spawn temporary monster at NPC location to cast melee skill
+    monster "askald", 111, 71, "--ja--", 22164, 1, strnpcinfo(0)+"::OnMobDead";
+    set .@mobGID, $@mobid[0];
+    
+    // Disable mob AI to prevent it from using its own skills
+    setunitdata .@mobGID, UMOB_MODE, 0x00;
+    
+    // Set mob stats to ensure hit but low damage
+    setunitdata .@mobGID, UMOB_LEVEL, 275;        // Max level for hit rate
+    setunitdata .@mobGID, UMOB_STR, 10;           // Low STR for low physical damage
+    setunitdata .@mobGID, UMOB_AGI, 10;          // High AGI
+    setunitdata .@mobGID, UMOB_INT, 10;           // Low INT for low magic damage
+    setunitdata .@mobGID, UMOB_DEX, 9999;         // High DEX for accuracy
+    setunitdata .@mobGID, UMOB_LUK, 10;          // High LUK
+    setunitdata .@mobGID, UMOB_HIT, 9999;         // Max HIT rate
+    setunitdata .@mobGID, UMOB_CRITICALRATE, 0;   // No crit to avoid variation
+    setunitdata .@mobGID, UMOB_ATK1, 1;           // Min base ATK
+    setunitdata .@mobGID, UMOB_ATK2, 1;           // Max base ATK
+    setunitdata .@mobGID, UMOB_MATK1, 1;          // Min MATK
+    setunitdata .@mobGID, UMOB_MATK2, 1;          // Max MATK
+    
+    sleep 500;
+    
+    // Only cast the selected skill
+    unitskilluseid .@mobGID, .@selectedSkill, .@selectedLv, .@targetGID;
+    
+    sleep 2000;
+    unitkill .@mobGID;
+}
+else {
+    // Magic skills use normal method (cast from NPC)
+    unitskilluseid getnpcid(0), .@selectedSkill, .@selectedLv, .@targetGID;
+}
+
+sleep 3000;
+movenpc strnpcinfo(0),104,78;
+end;
+
+OnMobDead:
+end;
+
+OnInit:
+setarray .SkillID[0],271,19,20,421,14,90,84,89,535,537,540,62,379,263;
+setarray .SkillLv[0],5,10,10,5,5,10,5,10,5,5,5,10,5,5;
+setarray .SkillName$[0],"Asura Strike","Fire Bolt","Lightning Bolt","Fly Kick","Cold Bolt","Earth Spike","Jupitel Thunder","Storm Gust","Crimson Rock","Jack Frost","Chain Lightning","Bash","Soul Breaker","Raging Trifecta Blow";
+waitingroom "Plagiarism Master", 0;
+end;
+}

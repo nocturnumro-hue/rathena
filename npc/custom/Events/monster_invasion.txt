@@ -1,0 +1,116 @@
+//===== rAthena Script =======================================
+//= Monster Invasion Event - Askald
+//===== By: rAthena AI Assistant ============================
+//= Spawns waves of monsters in Askald at coordinates (127, 144) every 2 hours.
+//= Fixed: Timer starts 2 hours after server reload
+//= @reloadnpc npc/custom/manuel_npc/monsterInvasion.txt
+//============================================================
+-	script	Monster Invasion	FAKE_NPC,{
+end;
+
+OnInit:
+	// Initialize event status
+	$@MI_Active = 0;
+	$@MI_Wave = 0;
+	
+	// Don't start immediately on reload
+	// Wait 2 hours before first event
+	initnpctimer;
+	startnpctimer;
+	end;
+
+// Trigger every 2 hours (7200000 ms = 2 hours)
+OnTimer7200000:
+	if ($@MI_Active == 0) {
+		donpcevent strnpcinfo(0) + "::OnMI_Announcement";
+	}
+	// Reset timer for next 2 hours
+	initnpctimer;
+	startnpctimer;
+	end;
+
+OnMI_Announcement:
+	if ($@MI_Active == 1) end;
+	$@MI_Active = 1;
+	killmonsterall "askald";
+	sleep 10000;
+	announce "Monster Invasion is starting in 1 minute! Please head to Askald Main Town (127, 144)!!", bc_all, 0xF7BE6E;
+	sleep 30000;
+	announce "Monster Invasion is starting in 30 seconds!", bc_all, 0xF7BE6E;
+	sleep 25000;
+	for (.@i = 5; .@i > 0; .@i--) {
+		announce "Monster Invasion is starting in " + .@i + " seconds.", bc_all, 0xF7BE6E;
+		sleep 1000;
+	}
+	announce "The Monster Invasion event has started in Askald Main Town!", bc_all, 0xF7BE6E;
+	$@MI_Wave = 1;
+	donpcevent strnpcinfo(0) + "::OnMI_Start";
+	end;
+
+OnMI_Start:
+	if ($@MI_Wave > 5) {
+		// Spawn treasure boxes
+		announce "Congratulations! The monster invasion waves have all been defeated!!", bc_all, 0xF7BE6E;
+		sleep 1000;
+		announce "Treasure Boxes are spawning in Askald Main Town! Find them quickly!", bc_all, 0x00FF00;
+		
+		for (.@i = 0; .@i < 2; .@i++) {
+			.@x = 127 + rand(-5, 5);
+			.@y = 144 + rand(-5, 5);
+			monster "askald", .@x, .@y, "Treasure Box", 2288, 1, strnpcinfo(0) + "::OnMI_TboxDestroyed";
+		}
+		
+		$@MI_Active = 0;
+		$@MI_Wave = 0;
+		end;
+	}
+	
+	// Announce wave
+	mapannounce "askald", "Wave " + $@MI_Wave + " is coming! Get ready at Askald Main Town (127, 144)!", bc_map, 0xF7BE6E;
+	sleep 1000;
+	
+	// Spawn monsters in area around 127,144
+	switch ($@MI_Wave) {
+		case 1:
+			areamonster "askald", 120, 137, 134, 151, "Poring", 1002, 10, strnpcinfo(0) + "::OnWaveClear";
+			break;
+		case 2:
+			areamonster "askald", 120, 137, 134, 151, "Succubus", 1370, 8, strnpcinfo(0) + "::OnWaveClear";
+			break;
+		case 3:
+			areamonster "askald", 120, 137, 134, 151, "Baphomet Jr.", 1101, 7, strnpcinfo(0) + "::OnWaveClear";
+			break;
+		case 4:
+			areamonster "askald", 120, 137, 134, 151, "Poporing", 1031, 9, strnpcinfo(0) + "::OnWaveClear";
+			break;
+		case 5:
+			areamonster "askald", 120, 137, 134, 151, "Drops", 1113, 12, strnpcinfo(0) + "::OnWaveClear";
+			break;
+	}
+	end;
+
+OnWaveClear:
+	// Check if all monsters are dead
+	if (mobcount("askald", strnpcinfo(0) + "::OnWaveClear") <= 0) {
+		mapannounce "askald", "Wave " + $@MI_Wave + " cleared!", bc_map, 0x00FF00;
+		$@MI_Wave++;
+		sleep 3000; // 3 second delay between waves
+		donpcevent strnpcinfo(0) + "::OnMI_Start";
+	}
+	end;
+
+OnMI_TboxDestroyed:
+	// Get player who killed the treasure box
+	if (!getcharid(3)) end; // No player attached
+	
+	// Give rewards
+	getitem 7227, 3;   // TCG Card x3
+	getitem 25271, 10; // Illusion Stone x10
+	
+	// Announce
+	announce strcharinfo(0) + " has claimed a Treasure Box reward in Askald Main Town! (3x TCG Card, 10x Illusion Stone)", bc_all, 0xFFD700;
+	
+	// Visual effect
+	specialeffect2 EF_MVP;
+	end;
+}

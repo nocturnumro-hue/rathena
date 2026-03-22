@@ -1,0 +1,408 @@
+//============================================================
+// Combined NPC Skip Quest Episodes 16.1, 16.2, 17.1, 17.2, 18
+// All episodes in one NPC - Fixed Version
+// EP16: Full setquest/completequest + variables (v6 fix)
+//============================================================
+prontera,164,172,4	script	SKIP QUEST#CombinedSkip	4_F_KAFRA7,{
+
+	// --- Configuration ---
+	.@ticket_16 = 1000282;  // Episode 16 Clear Ticket
+	.@ticket_17 = 1000287;  // Episode 17 Clear Ticket
+	.@ticket_18 = 1000288;  // Episode 18 Clear Ticket
+
+	mes "[Elena]";
+	mes "Hello adventurer!";
+	mes "I can help you complete Episodes 16, 17, or 18.";
+	mes " ";
+	mes "What would you like to do?";
+	next;
+
+	.@menu = select(
+		"Skip Episode 16.1 & 16.2",
+		"Skip Episode 17.1 & 17.2",
+		"Skip Episode 18",
+		"Check My Progress",
+		"Cancel"
+	);
+
+	// ========== EPISODE 16 SKIP ==========
+	if (.@menu == 1) {
+		mes "[Elena]";
+		mes "I can help you complete ^0000FFEpisode 16^000000 instantly.";
+		mes "^FF0000This will skip Episode 16.1 & 16.2.^000000";
+		next;
+
+		mes "[Elena]";
+		mes "^00FF00===== YOUR CURRENT STATUS =====^000000";
+		mes " ";
+		mes "^0000FFEpisode 16 (terra_gloria):^000000 " + terra_gloria_main + "/25";
+		mes "^0000FFEP16 Ticket:^000000 " + ((countitem(.@ticket_16) > 0) ? "^00FF00Yes^000000" : "^FF0000No^000000");
+		next;
+
+		if (terra_gloria_main >= 25) {
+			mes "[Elena]";
+			mes "^00FF00You have already completed Episode 16!^000000";
+			mes " ";
+			mes "Your EP16 Progress: ^00FF00" + terra_gloria_main + "^000000/25";
+			close;
+		}
+
+		if (countitem(.@ticket_16) < 1) {
+			mes "[Elena]";
+			mes "^FF0000You don't have the required ticket!^000000";
+			mes " ";
+			mes "You need: ^0000FFEpisode 16 Clear Ticket^000000";
+			mes "Item ID: ^FF6600" + .@ticket_16 + "^000000";
+			close;
+		}
+
+		mes "[Elena]";
+		mes "^00FF00All requirements met!^000000";
+		mes " ";
+		mes "This will:";
+		mes "^00FF00[Complete all EP16 quest entries]^000000";
+		mes "^00FF00[Set Episode 16 to complete (25/25)]^000000";
+		mes "^00FF00[Unlock Episode 17 content]^000000";
+		next;
+
+		mes "[Elena]";
+		mes "^00FF00===== CONFIRMATION =====^000000";
+		mes " ";
+		mes "Current EP16: ^FFAA00" + terra_gloria_main + "^000000/25";
+		mes "After Skip: ^00FF0025^000000/25";
+		mes " ";
+		mes "Shall I consume the ticket?";
+		next;
+
+		if (select("Yes, complete Episode 16:Cancel") == 2) {
+			mes "[Elena]";
+			mes "Come back anytime!";
+			close;
+		}
+
+		delitem .@ticket_16, 1;
+		specialeffect EF_POTION_BERSERK;
+
+		mes "[Elena]";
+		mes "Ticket verified!";
+		mes "Completing Episode 16...";
+		mes "Please wait...";
+		next;
+
+		// ============================================
+		// EP16 Quest IDs - setquest + completequest
+		// Erase first only if character already has it
+		// Removed 7704 and 18219 (not in quest_db)
+		// ============================================
+		setarray .@q16[0],
+			7681, 7682, 7683, 7684, 7685, 7686, 7687, 7688, 7689, 7690,
+			7691, 7695, 7696, 7697, 7698, 7699, 7703,
+			7732, 7733, 7734, 7735, 7736, 7737, 7738, 7739, 7740,
+			7741, 7742, 7743,
+			14596, 14597, 14599, 14600, 14601, 14602, 14603,
+			14614, 14615,
+			16010, 16012, 16061, 16062,
+			11455, 11456, 11457, 11458, 11459, 11460, 11461, 11462, 11463,
+			14672, 12374, 12375, 12376;
+
+		for ( set .@i, 0; .@i < getarraysize(.@q16); set .@i, .@i + 1 ) {
+			if (checkquest(.@q16[.@i]) >= 0) erasequest .@q16[.@i];
+			setquest .@q16[.@i];
+			completequest .@q16[.@i];
+		}
+
+		// Set all required variables
+		set terra_gloria_main, 25;
+		set ep_illusion, 35;
+		set ep16_royal, 25;
+		set ep16_main, 100;
+
+		dispbottom "[System] Episode 16.1 & 16.2 have been completed.";
+		dispbottom "[System] You can now begin Episode 17.";
+		specialeffect2 EF_LEVELUP;
+
+		next;
+		mes "[Elena]";
+		mes "^00FF00Everything is complete!^000000";
+		mes " ";
+		mes "^00FF00===== NEW STATUS =====^000000";
+		mes "Episode 16: ^00FF0025^000000/25 [Complete]";
+		mes " ";
+		mes "You can now start Episode 17!";
+		next;
+
+		mes "[Elena]";
+		mes "Would you like me to send you to";
+		mes "^0000FFProntera Castle^000000 to start Episode 17?";
+		next;
+
+		if (select("Yes, take me there!:No, I'll stay here") == 1) {
+			mes "[Elena]";
+			mes "Good luck, adventurer!";
+			close2;
+			warp "prt_cas_q", 134, 8;
+			end;
+		}
+		close;
+	}
+
+	// ========== EPISODE 17 SKIP ==========
+	if (.@menu == 2) {
+		mes "[Elena]";
+		mes "I can help you complete ^0000FFEpisode 17^000000 instantly.";
+		mes "^FF0000This will skip Episode 17.1 & 17.2.^000000";
+		next;
+
+		mes "[Elena]";
+		mes "^00FF00===== YOUR CURRENT STATUS =====^000000";
+		mes " ";
+		mes "^0000FFEpisode 16:^000000 " + terra_gloria_main + "/25 " + ((terra_gloria_main >= 25) ? "[^00FF00OK^000000]" : "[^FF0000NO^000000]");
+		mes "^0000FFEpisode 17:^000000 " + ep17_main + "/100 " + ((ep17_main >= 100) ? "[^00FF00OK^000000]" : "[^FF0000NO^000000]");
+		mes "^0000FFEP17 Ticket:^000000 " + ((countitem(.@ticket_17) > 0) ? "^00FF00Yes^000000" : "^FF0000No^000000");
+		next;
+
+		if (terra_gloria_main < 25) {
+			mes "[Elena]";
+			mes "^FF0000Requirement not met!^000000";
+			mes " ";
+			mes "You must finish ^FFAA00Episode 16^000000 first.";
+			mes "Your EP16 Progress: ^FF0000" + terra_gloria_main + "^000000/25";
+			close;
+		}
+
+		if (ep17_main >= 100) {
+			mes "[Elena]";
+			mes "^00FF00You have already completed Episode 17!^000000";
+			mes " ";
+			mes "Your EP17 Progress: ^00FF00" + ep17_main + "^000000/100";
+			close;
+		}
+
+		if (countitem(.@ticket_17) < 1) {
+			mes "[Elena]";
+			mes "^FF0000You don't have the required ticket!^000000";
+			mes " ";
+			mes "You need: ^0000FFEpisode 17 Clear Ticket^000000";
+			mes "Item ID: ^FF6600" + .@ticket_17 + "^000000";
+			close;
+		}
+
+		mes "[Elena]";
+		mes "^00FF00All requirements met!^000000";
+		mes " ";
+		mes "This will:";
+		mes "^00FF00[Set Episode 17 to 100 (Complete)]^000000";
+		mes "^00FF00[Unlock Episode 18 content]^000000";
+		next;
+
+		mes "[Elena]";
+		mes "^00FF00===== CONFIRMATION =====^000000";
+		mes " ";
+		mes "Current EP17: ^FFAA00" + ep17_main + "^000000/100";
+		mes "After Skip: ^00FF00100^000000/100";
+		mes " ";
+		mes "Shall I consume the ticket?";
+		next;
+
+		if (select("Yes, complete Episode 17:Cancel") == 2) {
+			mes "[Elena]";
+			mes "Come back anytime!";
+			close;
+		}
+
+		delitem .@ticket_17, 1;
+		specialeffect EF_POTION_BERSERK;
+
+		mes "[Elena]";
+		mes "Ticket verified!";
+		mes "Completing Episode 17...";
+		mes "Please wait...";
+		next;
+
+		// ============================================
+		// EP17.1 - Final quest: 16360
+		// Variable: ep_illusion = 48
+		// Source: rAthena forum (ryukazuna)
+		// ============================================
+		if (checkquest(16360) >= 0) erasequest 16360;
+		setquest 16360;
+		completequest 16360;
+		set ep_illusion, 48;
+
+		// ============================================
+		// EP17.2 - Final quest: 18020
+		// Variable: ep17_2_main = 36
+		// Source: Balheele official script
+		// ============================================
+		if (checkquest(18020) >= 0) erasequest 18020;
+		setquest 18020;
+		completequest 18020;
+		set ep17_2_main, 36;
+
+		// Set main tracker variable
+		set ep17_main, 100;
+
+		dispbottom "[System] Episode 17.1 and 17.2 have been completed.";
+		dispbottom "[System] You can now begin Episode 18.";
+		specialeffect2 EF_LEVELUP;
+
+		next;
+		mes "[Elena]";
+		mes "^00FF00Everything is complete!^000000";
+		mes " ";
+		mes "^00FF00===== NEW STATUS =====^000000";
+		mes "Episode 17: ^00FF00100^000000/100 [Complete]";
+		mes " ";
+		mes "You're now ready to start Episode 18!";
+		next;
+
+		mes "[Elena]";
+		mes "Would you like me to send you to";
+		mes "^0000FFRachel Temple^000000 to start Episode 18?";
+		next;
+
+		if (select("Yes, take me there!:No, I'll stay here") == 1) {
+			mes "[Elena]";
+			mes "Good luck on your next adventure!";
+			close2;
+			warp "ra_temin", 259, 111;
+			end;
+		}
+		close;
+	}
+
+	// ========== EPISODE 18 SKIP ==========
+	if (.@menu == 3) {
+		mes "[Elena]";
+		mes "I can help you complete ^0000FFEpisode 18^000000 instantly.";
+		mes "^FF0000This will skip all Episode 18 main quests.^000000";
+		next;
+
+		mes "[Elena]";
+		mes "^00FF00===== YOUR CURRENT STATUS =====^000000";
+		mes " ";
+		mes "^0000FFEpisode 17:^000000 " + ep17_main + "/100 " + ((ep17_main >= 100) ? "[^00FF00OK^000000]" : "[^FF0000NO^000000]");
+		mes "^0000FFEpisode 18:^000000 " + ep18_main + "/100 " + ((ep18_main >= 100) ? "[^00FF00OK^000000]" : "[^FF0000NO^000000]");
+		mes "^0000FFEP18 Ticket:^000000 " + ((countitem(.@ticket_18) > 0) ? "^00FF00Yes^000000" : "^FF0000No^000000");
+		next;
+
+		if (ep17_main < 100) {
+			mes "[Elena]";
+			mes "^FF0000Requirement not met!^000000";
+			mes " ";
+			mes "You must finish ^FFAA00Episode 17^000000 first.";
+			mes "Your EP17 Progress: ^FF0000" + ep17_main + "^000000/100";
+			close;
+		}
+
+		if (ep18_main >= 100) {
+			mes "[Elena]";
+			mes "^00FF00You have already completed Episode 18!^000000";
+			mes " ";
+			mes "Your EP18 Progress: ^00FF00" + ep18_main + "^000000/100";
+			close;
+		}
+
+		if (countitem(.@ticket_18) < 1) {
+			mes "[Elena]";
+			mes "^FF0000You don't have the required ticket!^000000";
+			mes " ";
+			mes "You need: ^0000FFEpisode 18 Clear Ticket^000000";
+			mes "Item ID: ^FF6600" + .@ticket_18 + "^000000";
+			close;
+		}
+
+		mes "[Elena]";
+		mes "^00FF00All requirements met!^000000";
+		mes " ";
+		mes "This will:";
+		mes "^00FF00[Set Episode 18 to 100 (Complete)]^000000";
+		mes "^00FF00[Unlock Gray Wolf Village]^000000";
+		mes "^00FF00[Unlock Episode 18 Enchant system]^000000";
+		next;
+
+		mes "[Elena]";
+		mes "^00FF00===== CONFIRMATION =====^000000";
+		mes " ";
+		mes "Current EP18: ^FFAA00" + ep18_main + "^000000/100";
+		mes "After Skip: ^00FF00100^000000/100";
+		mes " ";
+		mes "Shall I consume the ticket?";
+		next;
+
+		if (select("Yes, complete Episode 18:Cancel") == 2) {
+			mes "[Elena]";
+			mes "Come back anytime!";
+			close;
+		}
+
+		delitem .@ticket_18, 1;
+		specialeffect EF_POTION_BERSERK;
+
+		mes "[Elena]";
+		mes "Ticket verified!";
+		mes "Completing Episode 18...";
+		mes "Please wait...";
+		next;
+
+		ep18_main = 100;
+
+		dispbottom "[System] Episode 18 has been completed.";
+		dispbottom "[System] Gray Wolf Village unlocked.";
+		dispbottom "[System] Episode 18 Enchant system unlocked.";
+		specialeffect2 EF_LEVELUP;
+
+		next;
+		mes "[Elena]";
+		mes "^00FF00Everything is complete!^000000";
+		mes " ";
+		mes "^00FF00===== NEW STATUS =====^000000";
+		mes "Episode 18: ^00FF00100^000000/100 [Complete]";
+		mes " ";
+		mes "You can now:";
+		mes "^00FF00[Access Gray Wolf Village]^000000";
+		mes "^00FF00[Use Episode 18 Enchant system]^000000";
+		mes "^00FF00[Start Episode 18 daily quests]^000000";
+		next;
+
+		mes "[Elena]";
+		mes "Would you like me to send you to";
+		mes "^0000FFGray Wolf Village^000000 now?";
+		next;
+
+		if (select("Yes, take me there!:No, I'll stay here") == 1) {
+			mes "[Elena]";
+			mes "Safe journey, adventurer!";
+			close2;
+			warp "wolfvill", 163, 136;
+			end;
+		}
+		close;
+	}
+
+	// ========== CHECK PROGRESS ==========
+	if (.@menu == 4) {
+		mes "[Elena]";
+		mes "^00FF00===== YOUR EPISODE PROGRESS =====^000000";
+		mes " ";
+		mes "^0000FFEpisode 16:^000000 " + terra_gloria_main + "/25 " + ((terra_gloria_main >= 25) ? "[^00FF00Complete^000000]" : "[^FF0000Incomplete^000000]");
+		mes "^0000FFEpisode 17:^000000 " + ep17_main + "/100 " + ((ep17_main >= 100) ? "[^00FF00Complete^000000]" : "[^FF0000Incomplete^000000]");
+		mes "^0000FFEpisode 18:^000000 " + ep18_main + "/100 " + ((ep18_main >= 100) ? "[^00FF00Complete^000000]" : "[^FF0000Incomplete^000000]");
+		next;
+
+		mes "[Elena]";
+		mes "^00FF00===== YOUR TICKETS =====^000000";
+		mes " ";
+		mes "^0000FFEP16 Clear Ticket:^000000 " + countitem(.@ticket_16);
+		mes "^0000FFEP17 Clear Ticket:^000000 " + countitem(.@ticket_17);
+		mes "^0000FFEP18 Clear Ticket:^000000 " + countitem(.@ticket_18);
+		close;
+	}
+
+	// ========== CANCEL ==========
+	if (.@menu == 5) {
+		mes "[Elena]";
+		mes "Come back anytime!";
+		close;
+	}
+}

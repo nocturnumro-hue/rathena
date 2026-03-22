@@ -1,0 +1,14 @@
+//===== rAthena Script =======================================
+//= Varmundt's Biosphere 
+//===== Description: =========================================
+//= [Walkthrough Conversion]
+//= Halloween Event dungeons Monster Spawn Script.
+//= Note: Boss respawn time is unknown.
+//============================================================
+
+Hallow01	monster	--Halloween Almaosce--	30018,25
+Hallow01	monster	--Halloween Golem--	30019,25
+Hallow01	monster	--Halloween Skeleton--	30020,15
+Hallow01	monster	--Halloween Tantalus--	30021,15
+
+Hallow01,106,140	boss_monster	--Chaos Devill Dragon--	30022,1,21600000,600000,0

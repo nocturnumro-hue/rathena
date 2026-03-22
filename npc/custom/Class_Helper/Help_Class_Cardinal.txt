@@ -1,0 +1,173 @@
+//===== rAthena Script =======================================
+//= Holy Blessing NPC
+//===== Description: =========================================
+//= Grants class-specific buffs to Acolyte_High / High_Priest / Cardinal
+//= Requires 10,000,000 Zeny | Duration: 6 Hours
+//============================================================
+askald,104,83,5	script	Holy Blessing Spirit	911,{
+	mes "^4169E1[ Holy Blessing Spirit ]^000000";
+	mes "Hello, " + strcharinfo(0) + "!";
+	
+	// -------------------------------------------------------
+	// Check class
+	// -------------------------------------------------------
+	if(Class != Job_Acolyte_High && Class != Job_High_Priest && Class != Job_Cardinal) {
+		mes "This blessing is only for the ^4169E1Holy^000000 classes.";
+		mes "Eligible classes:";
+		mes " ^4169E1> Acolyte High^000000";
+		mes " ^4169E1> High Priest^000000";
+		mes " ^4169E1> Cardinal^000000";
+		mes "Your current class: ^777777" + jobname(Class) + "^000000";
+		close;
+	}
+
+	// -------------------------------------------------------
+	// Build buff list display based on class
+	// -------------------------------------------------------
+	mes "I can bestow the ^4169E1Holy Blessing^000000 upon you!";
+	mes "Duration: ^00AA006 Hours^000000";
+	mes "Cost: ^FF000010,000,000 Zeny^000000";
+	
+	// High Priest / Acolyte High buffs (shared)
+	if(Class == Job_Acolyte_High || Class == Job_High_Priest) {
+		mes "^777777-- Holy Priest Buffs --^000000";
+		mes " ^4169E1> Angelus^000000 Lv10";
+		mes " ^4169E1> Increase Agility^000000 Lv10";
+		mes " ^4169E1> Blessing^000000 Lv10";
+		mes " ^4169E1> Impositio Manus^000000 Lv5";
+		mes " ^4169E1> Suffragium^000000 Lv5";
+		mes " ^4169E1> Assumptio^000000 Lv5";
+		mes " ^4169E1> Expiatio^000000 Lv5";
+		mes " ^4169E1> Sacrament^000000 Lv5";
+	}
+
+	// Cardinal buffs
+	if(Class == Job_Cardinal) {
+		mes "^777777-- Holy Priest Buffs --^000000";
+		mes " ^4169E1> Angelus^000000 Lv10";
+		mes " ^4169E1> Increase Agility^000000 Lv10";
+		mes " ^4169E1> Blessing^000000 Lv10";
+		mes " ^4169E1> Impositio Manus^000000 Lv5";
+		mes " ^4169E1> Suffragium^000000 Lv5";
+		mes " ^4169E1> Assumptio^000000 Lv5";
+		mes " ^4169E1> Expiatio^000000 Lv5";
+		mes " ^4169E1> Sacrament^000000 Lv5";
+		mes " ";
+		mes "^777777-- Cardinal Buffs --^000000";
+		mes " ^FF6600> Benedictum^000000 Lv5";
+		mes " ^FF6600> Religio^000000 Lv5";
+		mes " ^FF6600> Argutus Telum^000000 Lv5";
+		mes " ^FF6600> Argutus Vita^000000 Lv5";
+		mes " ^FF6600> Presens Acies^000000 Lv5";
+		mes " ^FF6600> Mediale Votum^000000 Lv5";
+	}
+
+	mes " ";
+	mes "Your Zeny: ^0055FF" + callfunc("F_InsertComma", Zeny) + "^000000";
+	next;
+
+	if(select(" - [1] Yes! Bless me!: - [2] No thanks.") == 2) {
+		mes "^4169E1[ Holy Blessing Spirit ]^000000";
+		mes "May the light guide you. Come back anytime!";
+		close;
+	}
+
+	mes "^4169E1[ Holy Blessing Spirit ]^000000";
+
+	// -------------------------------------------------------
+	// Check Zeny
+	// -------------------------------------------------------
+	if(Zeny < 10000000) {
+		mes "^FF0000You don't have enough Zeny!^000000";
+		mes " ";
+		mes "You need:  ^FF000010,000,000 Zeny^000000";
+		mes "You have: ^777777" + callfunc("F_InsertComma", Zeny) + " Zeny^000000";
+		close;
+	}
+
+	// -------------------------------------------------------
+	// Deduct Zeny
+	// -------------------------------------------------------
+	Zeny -= 10000000;
+
+	// -------------------------------------------------------
+	// Apply buffs - All 3 classes nhận buff HP
+	// Duration: 6 hours = 21600000 ms
+	// -------------------------------------------------------
+	if(Class == Job_Acolyte_High || Class == Job_High_Priest || Class == Job_Cardinal) {
+		// Basic buffs - dùng SC đã test OK từ healer
+		specialeffect2 EF_ANGELUS;    sc_start SC_ANGELUS,     21600000, 10;  // AL_ANGELUS
+		specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI, 21600000, 10;  // AL_INCAGI
+		specialeffect2 EF_BLESSING;   sc_start SC_BLESSING,    21600000, 10;  // AL_BLESSING
+		// 2nd class buffs
+		sc_start SC_IMPOSITIO,  21600000, 5;   // PR_IMPOSITIO
+		sc_start SC_SUFFRAGIUM, 21600000, 5;   // PR_SUFFRAGIUM
+		sc_start SC_ASSUMPTIO,  21600000, 5;   // HP_ASSUMPTIO
+		// 3rd class buffs - dùng tên AB_ prefix
+		sc_start SC_EXPIATIO,  21600000, 5; // AB_EXPIATIO - Status: Expiatio
+		sc_start SC_SECRAMENT, 21600000, 5; // AB_SECRAMENT - Status: Secrament
+	}
+
+	// -------------------------------------------------------
+	// Apply buffs - Cardinal (additional 4th class)
+	// SC names from status.yml Status field
+	// -------------------------------------------------------
+	if(Class == Job_Cardinal) {
+		sc_start SC_BENEDICTUM, 21600000, 5;  // CD_BENEDICTUM
+		sc_start SC_RELIGIO,    21600000, 5;  // CD_RELIGIO
+		sc_start SC_A_TELUM,    21600000, 5;  // CD_ARGUTUS_TELUM
+		sc_start SC_A_VITA,     21600000, 5;  // CD_ARGUTUS_VITA
+		sc_start SC_PRE_ACIES,  21600000, 5;  // CD_PRESENS_ACIES
+		sc_start SC_MEDIALE,    21600000, 5;  // CD_MEDIALE_VOTUM
+	}
+
+	// -------------------------------------------------------
+	// Visual effects
+	// -------------------------------------------------------
+	specialeffect2 EF_MAGNUS;
+	specialeffect2 EF_RESURRECTION;
+	specialeffect2 EF_JOBLVUP;
+
+	next;
+	mes "^4169E1[ Holy Blessing Spirit ]^000000";
+	mes "Holy Blessing activated for ^00AA006 Hours^000000!";
+	mes " ";
+
+	if(Class == Job_Acolyte_High || Class == Job_High_Priest) {
+		mes " ^4169E1> Angelus^000000 Lv10 ✓";
+		mes " ^4169E1> Increase Agility^000000 Lv10 ✓";
+		mes " ^4169E1> Blessing^000000 Lv10 ✓";
+		mes " ^4169E1> Impositio Manus^000000 Lv5 ✓";
+		mes " ^4169E1> Suffragium^000000 Lv5 ✓";
+		mes " ^4169E1> Assumptio^000000 Lv5 ✓";
+		mes " ^4169E1> Expiatio^000000 Lv5 ✓";
+		mes " ^4169E1> Sacrament^000000 Lv5 ✓";
+	}
+
+	if(Class == Job_Cardinal) {
+		mes " ^4169E1> Angelus^000000 Lv10 ✓";
+		mes " ^4169E1> Increase Agility^000000 Lv10 ✓";
+		mes " ^4169E1> Blessing^000000 Lv10 ✓";
+		mes " ^4169E1> Impositio Manus^000000 Lv5 ✓";
+		mes " ^4169E1> Suffragium^000000 Lv5 ✓";
+		mes " ^4169E1> Assumptio^000000 Lv5 ✓";
+		mes " ^4169E1> Expiatio^000000 Lv5 ✓";
+		mes " ^4169E1> Sacrament^000000 Lv5 ✓";
+		mes " ^FF6600> Benedictum^000000 Lv5 ✓";
+		mes " ^FF6600> Religio^000000 Lv5 ✓";
+		mes " ^FF6600> Argutus Telum^000000 Lv5 ✓";
+		mes " ^FF6600> Argutus Vita^000000 Lv5 ✓";
+		mes " ^FF6600> Presens Acies^000000 Lv5 ✓";
+		mes " ^FF6600> Mediale Votum^000000 Lv5 ✓";
+	}
+
+	mes " ";
+	mes "^FF0000Zeny deducted: 10,000,000^000000";
+	mes "Remaining Zeny: ^0055FF" + callfunc("F_InsertComma", Zeny) + "^000000";
+	close;
+
+OnInit:
+	.npc_name$ = "[Holy Blessing Spirit]";
+	waitingroom "Priest Helper", 0;
+	end;
+}

@@ -1,0 +1,967 @@
+//============================================================
+//= @reloadnpcfile npc/custom/olympus/npc_vip_warper.txt
+//= Author: Nam (enhanced version with sub-menus)
+//= Compatible with rAthena 2024–2025
+//============================================================
+
+-	script	Warp List	-1,{
+	mes "[Warp List]";
+	mes "Hi " + strcharinfo(0) + "!";
+	mes "Where do you want to go today?";
+	next;
+	
+	while (true) {
+		// Build dynamic menu with history
+		.@menu$ = "[1] Main Town:[2] New Towns:^CC0000[3] Dungeons^000000:[4] Item Episode:^9933FF[5] Instance New^000000:^CC0000[6] Episode 20^000000:^CC0000[7] Episode 21^000000:^008800[8] Material Maps^000000:[9] Event Maps";
+		
+		if (@warp_history$ != "") {
+			.@menu$ = "Last Location (" + @warp_history_name$ + "):" + .@menu$;
+			.@offset = 1;
+		}
+		.@menu$ = .@menu$ + ":Cancel";
+		
+		.@choice = select(.@menu$);
+		
+		// Handle Last Location option
+		if (.@offset && .@choice == 1) {
+			warp @warp_history$, @warp_history_x, @warp_history_y;
+			end;
+		}
+		
+		// Adjust choice if history option was shown
+		if (.@offset) .@choice--;
+		
+		switch(.@choice) {
+		//====================================
+		case 1: // Main Town - Askald
+			@warp_history$ = "askald"; 
+			@warp_history_x = 128; 
+			@warp_history_y = 118;
+			@warp_history_name$ = "Askald";
+			warp "askald",128,118; 
+			end;
+			
+		//====================================
+		case 2: // Towns
+			mes "[Warp List]";
+			mes "^0099FF== Select a Town ==^000000";
+			next;
+			switch(select(
+				"[1] The Fair",
+				"[2] Byako",
+				"[3] Sky City",
+				"[4] Lengend",
+				"Cancel")) {
+				case 1: 
+					@warp_history$ = "the_fair"; 
+					@warp_history_x = 273; 
+					@warp_history_y = 181;
+					@warp_history_name$ = "The Fair";
+					warp "the_fair",273,181; 
+					end;
+				case 2: 
+					@warp_history$ = "byako"; 
+					@warp_history_x = 134; 
+					@warp_history_y = 81;
+					@warp_history_name$ = "Byako";
+					warp "byako",134,81; 
+					end;
+				case 3: 
+					@warp_history$ = "skycity"; 
+					@warp_history_x = 150; 
+					@warp_history_y = 182;
+					@warp_history_name$ = "Sky City";
+					warp "skycity",150,182; 
+					end;
+				case 4: 
+					@warp_history$ = "league"; 
+					@warp_history_x = 148; 
+					@warp_history_y = 161;
+					@warp_history_name$ = "Lengend";
+					warp "league",148,161; 
+					end;
+				case 5: 
+					close;
+			}
+			break;
+			
+		//====================================
+		case 3: // Dungeons - Organized by Level
+			mes "[Warp List]";
+			mes "^FF0000========================^000000";
+			mes "^FF0000   DUNGEON CATEGORY   ^000000";
+			mes "^FF0000========================^000000";
+			next;
+			switch(select(
+				"^0000FF[1] Level 150-199^000000",
+				"^FF0000[2] Level 250+^000000",
+				"^CC0000[3] New Dungeon^000000",
+				"Cancel")) {				
+				
+				case 1: // Level 150-199 Dungeons
+					mes "[Warp List]";
+					mes "^0000FF== Level 150-199 Dungeons ==^000000";
+					next;
+					switch(select(
+						"[1] Eda Biolab ^777777(Lv 150+)^000000",
+						"Cancel")) {
+				
+						case 1:
+							@warp_history$ = "1@gol1"; 
+							@warp_history_x = 197; 
+							@warp_history_y = 38;
+							@warp_history_name$ = "Eda Biolab";
+							warp "1@gol1",197,38; 
+							end;
+				
+						case 2:
+							close;
+					}
+					break;
+					
+				case 2: // Level 250+ Dungeons
+					mes "[Warp List]";
+					mes "^FF0000== Level 250+ Dungeons ==^000000";
+					next;
+					switch(select(
+						"[1] Mjolnir Cave",
+						"[2] Twisted Plains",
+						"[3] Varmundt's Biosphere",
+						"[4] Clock Tower Basement",
+						"[5] Niflheim Pumpkin Farm",
+						"[6] Ancient Temple Akhet",
+						"[7] Forgotten Time",
+						"Cancel")) {
+						
+						case 1: // Mjolnir Cave
+							@warp_history$ = "mjo_wst01"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Mjolnir Cave";
+							warp "mjo_wst01",0,0; 
+							end;
+							
+						case 2: // Twisted Plains
+							@warp_history$ = "ra_pol01"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Twisted Plains";
+							warp "ra_pol01",0,0; 
+							end;
+							
+						case 3: // Varmundt's Biosphere Sub-menu
+							mes "[Warp List]";
+							mes "^0000FF== Varmundt's Biosphere ==^000000";
+							next;
+							switch(select(
+								"[1] DEATH",
+								"[2] FIRE",
+								"[3] GRASS",
+								"[4] ICE",
+								"[5] VENOM",
+								"[6] TEMPLE",
+								"[7] SOUL",
+								"Cancel")) {
+								case 1:
+									@warp_history$ = "bl_death"; 
+									@warp_history_x = 314; 
+									@warp_history_y = 64;
+									@warp_history_name$ = "Bio DEATH";
+									warp "bl_death",314,64; 
+									end;
+								case 2:
+									@warp_history$ = "bl_lava"; 
+									@warp_history_x = 163; 
+									@warp_history_y = 21;
+									@warp_history_name$ = "Bio FIRE";
+									warp "bl_lava",163,21; 
+									end;
+								case 3:
+									@warp_history$ = "bl_grass"; 
+									@warp_history_x = 156; 
+									@warp_history_y = 20;
+									@warp_history_name$ = "Bio GRASS";
+									warp "bl_grass",156,20; 
+									end;
+								case 4:
+									@warp_history$ = "bl_ice"; 
+									@warp_history_x = 39; 
+									@warp_history_y = 81;
+									@warp_history_name$ = "Bio ICE";
+									warp "bl_ice",39,81; 
+									end;
+								case 5:
+									@warp_history$ = "bl_venom"; 
+									@warp_history_x = 146; 
+									@warp_history_y = 26;
+									@warp_history_name$ = "Bio VENOM";
+									warp "bl_venom",146,26; 
+									end;
+								case 6:
+									@warp_history$ = "bl_temple"; 
+									@warp_history_x = 53; 
+									@warp_history_y = 90;
+									@warp_history_name$ = "Bio TEMPLE";
+									warp "bl_temple",53,90; 
+									end;
+								case 7:
+									@warp_history$ = "bl_soul"; 
+									@warp_history_x = 156; 
+									@warp_history_y = 24;
+									@warp_history_name$ = "Bio SOUL";
+									warp "bl_soul",156,24; 
+									end;
+								case 8: 
+									close;
+							}
+							break;
+							
+						case 4: // Clock Tower
+							@warp_history$ = "clock_01"; 
+							@warp_history_x = 86; 
+							@warp_history_y = 41;
+							@warp_history_name$ = "Clock Tower";
+							warp "clock_01",86,41; 
+							end;
+							
+						case 5: // Pumpkin Farm
+							@warp_history$ = "nif_fild03"; 
+							@warp_history_x = 258; 
+							@warp_history_y = 46;
+							@warp_history_name$ = "Pumpkin Farm";
+							warp "nif_fild03",258,46; 
+							end;
+							
+						case 6: // Akhet Temple
+							@warp_history$ = "moc_akhet"; 
+							@warp_history_x = 190; 
+							@warp_history_y = 54;
+							@warp_history_name$ = "Akhet Temple";
+							warp "moc_akhet",190,54; 
+							end;
+							
+						case 7: // Forgotten Time Sub-menu
+							mes "[Warp List]";
+							mes "^0000FF== Forgotten Time ==^000000";
+							next;
+							switch(select(
+								"[1] Forgotten Time F1",
+								"[2] Forgotten Time F2",
+								"Cancel")) {
+								case 1:
+									@warp_history$ = "for_dun01"; 
+									@warp_history_x = 0; 
+									@warp_history_y = 0;
+									@warp_history_name$ = "Forgotten Time F1";
+									warp "for_dun01",0,0; 
+									end;
+								case 2:
+									@warp_history$ = "for_dun02"; 
+									@warp_history_x = 0; 
+									@warp_history_y = 0;
+									@warp_history_name$ = "Forgotten Time F2";
+									warp "for_dun02",0,0; 
+									end;
+								case 3: 
+									close;
+							}
+							break;
+							
+						case 8: 
+							close;
+					}
+					break;
+					
+				case 3: // NEW DUNGEON - ALL DUNGEONS HERE
+					mes "[Warp List]";
+					mes "^CC0000========================^000000";
+					mes "^CC0000   NEW DUNGEON LIST   ^000000";
+					mes "^CC0000========================^000000";
+					next;
+					switch(select(
+						"[1] Ruined Geffen ^777777(Lv 175+)^000000",
+						"[2] Airship Crash ^777777(Lv 200+)^000000",
+						"[3] Quiet Ice Lake ^FF6600(Hard)^000000",
+						"[4] Encroached Geffenia ^FF3300(Very Hard)^000000",
+						"[5] Destroyed Geffen ^FF0000(Master)^000000",
+						"[6] Magma Dungeon F4 ^9900FF(Nightmare)^000000",
+						"[7] Moscovia F4 ^9900FF(Nightmare)^000000",
+						"[8] Destroyed Verus ^CC0000(Extreme)^000000",
+						"[9] Underwater Sea ^777777(Lv 240+)^000000",
+						"[10] Biosphere Depths ^0099FF(Rebirth)^000000",
+						"[11] Unknown Blue Hole ^CC0000(Ultimate)^000000",
+						"[12] West Encroached Geffenia ^CC0000(Ultimate)^000000",
+						"[13] Distorted Brimir ^CC0000(Ultimate)^000000",
+						"[14] Destroyed Valkyrie Realm ^CC0000(Ultimate)^000000",
+						"Cancel")) {
+						
+						case 1: // Ruined Geffen
+							@warp_history$ = "ch1_geffen"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Ruined Geffen";
+							warp "ch1_geffen",0,0; 
+							end;
+						
+						case 2: // Airship Crash
+							@warp_history$ = "1@mjo1"; 
+							@warp_history_x = 219; 
+							@warp_history_y = 376;
+							@warp_history_name$ = "Airship Crash";
+							warp "1@mjo1",219,376; 
+							end;
+						
+						case 3: // Ice Lake
+							@warp_history$ = "ice2xlake"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Ice Lake";
+							warp "ice2xlake",0,0; 
+							end;
+						
+						case 4: // Encroached Geffenia
+							@warp_history$ = "ch1_que01"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Encroached Geffenia";
+							warp "ch1_que01",0,0; 
+							end;
+						
+						case 5: // Destroyed Geffen
+							@warp_history$ = "hem_fild"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Destroyed Geffen";
+							warp "hem_fild",0,0; 
+							end;
+						
+						case 6: // Magma F4
+							@warp_history$ = "mag_dun03_"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Magma F4";
+							warp "mag_dun03_",0,0; 
+							end;
+						
+						case 7: // Moscovia F4
+							@warp_history$ = "mosk_dun04"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Moscovia F4";
+							warp "mosk_dun04",0,0; 
+							end;
+						
+						case 8: // Destroyed Verus
+							@warp_history$ = "hem_dun01";
+							@warp_history_x = 0;
+							@warp_history_y = 0;
+							@warp_history_name$ = "Destroyed Verus";
+							warp "hem_dun01",0,0;
+							end;
+						
+						case 9: // Underwater Sea
+							@warp_history$ = "lasa_sea";
+							@warp_history_x = 20;
+							@warp_history_y = 142;
+							@warp_history_name$ = "Underwater Sea";
+							warp "lasa_sea",20,142;
+							end;
+						
+						case 10: // Biosphere Depths Sub-menu
+							mes "[Warp List]";
+							mes "^0099FF== Biosphere Depths ==^000000";
+							next;
+							switch(select(
+								"[1] Depth 1F",
+								"[2] Depth 2F",
+								"Cancel")) {
+								case 1:
+									@warp_history$ = "bl_depth1"; 
+									@warp_history_x = 179; 
+									@warp_history_y = 179;
+									@warp_history_name$ = "Depth 1F";
+									warp "bl_depth1",179,179; 
+									end;
+								case 2:
+									@warp_history$ = "bl_depth2"; 
+									@warp_history_x = 141; 
+									@warp_history_y = 137;
+									@warp_history_name$ = "Depth 2F";
+									warp "bl_depth2",141,137; 
+									end;
+								case 3: 
+									close;
+							}
+							break;
+						
+						case 11: // Unknown Blue Hole
+							@warp_history$ = "cmd_bhole"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Blue Hole";
+							warp "cmd_bhole",0,0; 
+							end;
+						
+						case 12: // West Encroached Geffenia
+							@warp_history$ = "ch1_gfn03"; 
+							@warp_history_x = 150; 
+							@warp_history_y = 150;
+							@warp_history_name$ = "West Geffenia";
+							warp "ch1_gfn03",150,150; 
+							end;
+						
+						case 13: // Distorted Brimir Sub-menu
+							mes "[Warp List]";
+							mes "^CC0000== Distorted Brimir ==^000000";
+							next;
+							switch(select(
+								"[1] Brimir 1F",
+								"[2] Brimir 2F",
+								"Cancel")) {
+								case 1:
+									@warp_history$ = "uknw_ruin"; 
+									@warp_history_x = 0; 
+									@warp_history_y = 0;
+									@warp_history_name$ = "Brimir 1F";
+									warp "uknw_ruin",0,0; 
+									end;
+								case 2:
+									@warp_history$ = "uknw_ruin2"; 
+									@warp_history_x = 0; 
+									@warp_history_y = 0;
+									@warp_history_name$ = "Brimir 2F";
+									warp "uknw_ruin2",0,0; 
+									end;
+								case 3: 
+									close;
+							}
+							break;
+						
+						case 14: // Destroyed Valkyrie Realm
+							@warp_history$ = "hem_dun02"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Valkyrie Realm";
+							warp "hem_dun02",0,0; 
+							end;
+						
+						case 15: 
+							close;
+					}
+					break;
+					
+				case 4: 
+					close;
+			}
+			break;
+			
+		//====================================
+		case 4: // Item Episode
+			mes "[Warp List]";
+			mes "^9933FF== Item Episode NPC ==^000000";
+			next;
+			switch(select(
+				"[1] EP 16.1",
+				"[2] EP 16.2",
+				"[3] EP 17.1",
+				"[4] EP 17.2",
+				"[5] EP 18",
+				"[6] EP 19",
+				"Cancel")) {
+				case 1: 
+					@warp_history$ = "prt_cas"; 
+					@warp_history_x = 165; 
+					@warp_history_y = 258;
+					@warp_history_name$ = "EP 16.1";
+					warp "prt_cas",165,258; 
+					end;
+				case 2: 
+					@warp_history$ = "rebel_in"; 
+					@warp_history_x = 94; 
+					@warp_history_y = 52;
+					@warp_history_name$ = "EP 16.2";
+					warp "rebel_in",94,52; 
+					end;
+				case 3: 
+					@warp_history$ = "sp_cor"; 
+					@warp_history_x = 137; 
+					@warp_history_y = 154;
+					@warp_history_name$ = "EP 17.1";
+					warp "sp_cor",137,154; 
+					end;
+				case 4: 
+					@warp_history$ = "ba_in01"; 
+					@warp_history_x = 85; 
+					@warp_history_y = 376;
+					@warp_history_name$ = "EP 17.2";
+					warp "ba_in01",85,376; 
+					end;
+				case 5: 
+					@warp_history$ = "wolfvill"; 
+					@warp_history_x = 165; 
+					@warp_history_y = 134;
+					@warp_history_name$ = "EP 18";
+					warp "wolfvill",165,134; 
+					end;
+				case 6: 
+					@warp_history$ = "icas_in"; 
+					@warp_history_x = 183; 
+					@warp_history_y = 57;
+					@warp_history_name$ = "EP 19";
+					warp "icas_in",183,57; 
+					end;
+				case 7: 
+					close;
+			}
+			break;
+			
+		//====================================
+		case 5: // Instance New
+			mes "[Warp List]";
+			mes "^9933FF== Instance New ==^000000";
+			next;
+			switch(select(
+				"[1] Tomb of Remorse ^777777(200+)^000000",
+				"[2] Old Glast Heim CM ^777777(170+)^000000",
+				"[3] Geffen Night Arena ^777777(210+)^000000",
+				"[4] Constellation Tower ^777777(240+)^000000",
+				"[5] Leveling Tower ^777777(40-275)^000000",
+				"[6] Fall of Glastheim ^777777(130-170)^000000",				
+				"[7] Old Glast Heim Hard ^777777(160+)^000000",				
+				"Cancel")) {
+				case 1: 
+					@warp_history$ = "dali02"; 
+					@warp_history_x = 76; 
+					@warp_history_y = 114;
+					@warp_history_name$ = "Tomb of Remorse";
+					warp "dali02",76,114; 
+					end;
+				case 2:
+					@warp_history$ = "glast_01"; 
+					@warp_history_x = 138; 
+					@warp_history_y = 287;
+					@warp_history_name$ = "Glast Heim CM";
+					warp "glast_01",138,287; 
+					end;
+				case 3:
+					@warp_history$ = "geffen_in"; 
+					@warp_history_x = 82; 
+					@warp_history_y = 62;
+					@warp_history_name$ = "Night Arena";
+					warp "geffen_in",82,62; 
+					end;
+				case 4:
+					@warp_history$ = "askald"; 
+					@warp_history_x = 61; 
+					@warp_history_y = 230;
+					@warp_history_name$ = "Constellation Tower";
+					warp "askald",61,230; 
+					end;
+				case 5:
+					@warp_history$ = "askald"; 
+					@warp_history_x = 61; 
+					@warp_history_y = 225;
+					@warp_history_name$ = "Leveling Tower";
+					warp "askald",61,225; 
+					end;
+				case 6:
+					@warp_history$ = "glast_01"; 
+					@warp_history_x = 245; 
+					@warp_history_y = 290;
+					@warp_history_name$ = "Fall of Glastheim";
+					warp "glast_01",245,290; 
+					end;
+				case 7:
+					@warp_history$ = "glast_01"; 
+					@warp_history_x = 181; 
+					@warp_history_y = 281;
+					@warp_history_name$ = "Fall of Glastheim";
+					warp "glast_01",181,281; 
+					end;					
+				case 8: 
+					close;
+			}
+			break;
+			
+		//====================================
+		case 6: // Episode 20 Maps
+			mes "[Warp List]";
+			mes "^CC0000========================^000000";
+			mes "^CC0000  EPISODE 20 LOCATIONS ^000000";
+			mes "^CC0000========================^000000";
+			next;
+			switch(select(
+				"[1] Jor Back Series",
+				"[2] Jor Root Series",
+				"[3] Jor Special Maps",
+				"[4] Ice Castle",
+				"Cancel")) {
+				
+				case 1: // Jor Back Series
+					mes "[Warp List]";
+					mes "^0099FF== Jor Back Series ==^000000";
+					next;
+					switch(select(
+						"[1] Frozen Scale Glacier",
+						"[2] Frozen Scale Beach",
+						"[3] Ice Canyon East",
+						"[4] Ice Canyon West",
+						"Cancel")) {
+						case 1:
+							@warp_history$ = "jor_back3"; 
+							@warp_history_x = 158; 
+							@warp_history_y = 356;
+							@warp_history_name$ = "Jor Back 3";
+							warp "jor_back3",158,356; 
+							end;
+						case 2:
+							@warp_history$ = "jor_back4"; 
+							@warp_history_x = 273; 
+							@warp_history_y = 19;
+							@warp_history_name$ = "Jor Back 4";
+							warp "jor_back4",273,19; 
+							end;
+						case 3:
+							@warp_history$ = "jor_back5"; 
+							@warp_history_x = 340; 
+							@warp_history_y = 20;
+							@warp_history_name$ = "Jor Back 5";
+							warp "jor_back5",340,20; 
+							end;
+						case 4:
+							@warp_history$ = "jor_back6"; 
+							@warp_history_x = 388; 
+							@warp_history_y = 263;
+							@warp_history_name$ = "Jor Back 6";
+							warp "jor_back6",388,263; 
+							end;
+						case 5: 
+							close;
+					}
+					break;
+					
+				case 2: // Jor Root Series
+					mes "[Warp List]";
+					mes "^0099FF== Jor Root Series ==^000000";
+					next;
+					switch(select(
+						"[1] Snake Root 1F",
+						"[2] Snake Root 2F",
+						"[3] Deep Root Cave",
+						"[4] Snake Nest",
+						"Cancel")) {
+						case 1:
+							@warp_history$ = "jor_root1"; 
+							@warp_history_x = 59; 
+							@warp_history_y = 281;
+							@warp_history_name$ = "Jor Root 1";
+							warp "jor_root1",59,281; 
+							end;
+						case 2:
+							@warp_history$ = "jor_root2"; 
+							@warp_history_x = 25; 
+							@warp_history_y = 17;
+							@warp_history_name$ = "Jor Root 2";
+							warp "jor_root2",25,17; 
+							end;
+						case 3:
+							@warp_history$ = "jor_root3"; 
+							@warp_history_x = 367; 
+							@warp_history_y = 129;
+							@warp_history_name$ = "Jor Root 3";
+							warp "jor_root3",367,129; 
+							end;
+						case 4:
+							@warp_history$ = "jor_nest"; 
+							@warp_history_x = 38; 
+							@warp_history_y = 270;
+							@warp_history_name$ = "Jor Nest";
+							warp "jor_nest",38,270; 
+							end;
+						case 5: 
+							close;
+					}
+					break;
+					
+				case 3: // Jor Special
+					mes "[Warp List]";
+					mes "^0099FF== Jor Special Maps ==^000000";
+					next;
+					switch(select(
+						"[1] Sacred Root",
+						"[2] Snake Labyrinth",
+						"[3] Jor Twice",
+						"[4] Jor Twig",
+						"[5] Safe Place",
+						"Cancel")) {
+						case 1:
+							@warp_history$ = "jor_sanct"; 
+							@warp_history_x = 150; 
+							@warp_history_y = 47;
+							@warp_history_name$ = "Jor Sanct";
+							warp "jor_sanct",150,47; 
+							end;
+						case 2:
+							@warp_history$ = "jor_maze"; 
+							@warp_history_x = 23; 
+							@warp_history_y = 40;
+							@warp_history_name$ = "Jor Maze";
+							warp "jor_maze",23,40; 
+							end;
+						case 3:
+							if (ep20_main < 34) {
+								mes "[Warp List]";
+								mes "^FF0000Complete EP20 quest first!^000000";
+								close;
+							}
+							@warp_history$ = "jor_twice"; 
+							@warp_history_x = 42; 
+							@warp_history_y = 55;
+							@warp_history_name$ = "Jor Twice";
+							warp "jor_twice",42,55; 
+							end;
+						case 4:
+							if (ep20_main < 34) {
+								mes "[Warp List]";
+								mes "^FF0000Complete EP20 quest first!^000000";
+								close;
+							}
+							@warp_history$ = "jor_twig"; 
+							@warp_history_x = 212; 
+							@warp_history_y = 114;
+							@warp_history_name$ = "Jor Twig";
+							warp "jor_twig",212,114; 
+							end;
+						case 5:
+							@warp_history$ = "jor_safty2"; 
+							@warp_history_x = 199; 
+							@warp_history_y = 369;
+							@warp_history_name$ = "Safe Place";
+							warp "jor_safty2",199,369; 
+							end;
+						case 6: 
+							close;
+					}
+					break;
+					
+				case 4: // Ice Castle
+					mes "[Warp List]";
+					mes "^0099FF== Ice Castle ==^000000";
+					next;
+					switch(select(
+						"[1] Ice Castle",
+						"[2] Ice Castle In 2",
+						"Cancel")) {
+						case 1:
+							@warp_history$ = "icecastle"; 
+							@warp_history_x = 51; 
+							@warp_history_y = 164;
+							@warp_history_name$ = "Ice Castle";
+							warp "icecastle",51,164; 
+							end;
+						case 2:
+							if (ep20_main < 61) {
+								mes "[Warp List]";
+								mes "^FF0000Door locked! Complete EP20 quest.^000000";
+								close;
+							}
+							@warp_history$ = "icas_in2"; 
+							@warp_history_x = 248; 
+							@warp_history_y = 112;
+							@warp_history_name$ = "Ice Castle In 2";
+							warp "icas_in2",248,112; 
+							end;
+						case 3: 
+							close;
+					}
+					break;
+					
+				case 5: 
+					close;
+			}
+			break;
+		
+		//====================================
+		case 7: // Episode 21 Maps
+			mes "[Warp List]";
+			mes "^CC0000========================^000000";
+			mes "^CC0000 EPISODE 21: AGE OF HEROES ^000000";
+			mes "^CC0000========================^000000";
+			next;
+			switch(select(
+				"[1] Jormungandr Village",
+				"[2] Rising Lands",
+				"[3] Temple Maps",
+				"Cancel")) {
+				
+				case 1: // Jormungandr Village
+					@warp_history$ = "jor_base"; 
+					@warp_history_x = 0; 
+					@warp_history_y = 0;
+					@warp_history_name$ = "Jormungandr Village";
+					warp "jor_base",0,0; 
+					end;
+					
+				case 2: // Rising Lands
+					mes "[Warp List]";
+					mes "^0099FF== Rising Lands ==^000000";
+					next;
+					switch(select(
+						"[1] Northern Region",
+						"[2] Southern Region",
+						"Cancel")) {
+						case 1:
+							@warp_history$ = "jor_raise1"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Rising Lands North";
+							warp "jor_raise1",0,0; 
+							end;
+						case 2:
+							@warp_history$ = "jor_raise2"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Rising Lands South";
+							warp "jor_raise2",0,0; 
+							end;
+						case 3: 
+							close;
+					}
+					break;
+					
+				case 3: // Temple Maps
+					mes "[Warp List]";
+					mes "^0099FF== Temple Maps ==^000000";
+					next;
+					switch(select(
+						"[1] Cult Temple 1",
+						"[2] Cult Temple 2",
+						"Cancel")) {
+						case 1:
+							@warp_history$ = "jor_tmple1"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Temple 1";
+							warp "jor_tmple1",0,0; 
+							end;
+						case 2:
+							@warp_history$ = "jor_tmple2"; 
+							@warp_history_x = 0; 
+							@warp_history_y = 0;
+							@warp_history_name$ = "Temple 2";
+							warp "jor_tmple2",0,0; 
+							end;
+						case 3: 
+							close;
+					}
+					break;
+					
+				case 4: 
+					close;
+			}
+			break;
+			
+		//====================================
+		case 8: // Material Maps
+			mes "[Warp List]";
+			mes "^008800========================^000000";
+			mes "^008800   MATERIAL FARMING    ^000000";
+			mes "^008800========================^000000";
+			next;
+			switch(select(
+				"[1] Twisted Darkness ^777777(Lv200+)^000000",
+				"[2] Outer Volund ^777777(Lv200+)^000000",
+				"Cancel")) {
+				
+				case 1: // Twisted Land
+					mes "[Twisted Land of Darkness]";
+					mes "^FF0000Level:^000000 200+";
+					mes "^FF0000Difficulty:^000000 Hard";
+					mes "^FF0000Type:^000000 Material Farming";
+					mes " ";
+					mes "^0000FFDrops:^000000";
+					mes "- Dim Glacier Weapon Box";
+					mes "- Glacier Weapon Box";
+					mes "- Flower Petals, Cat Whiskers";
+					mes "- Armor/Weapon/Accessory Stone Lv3";
+					mes "- ^00CC00Silver Card^000000";
+					next;
+					if (select("^008800[1] Warp Here^000000:^FF0000[2] Back^000000") == 1) {
+						@warp_history$ = "ygg_roots"; 
+						@warp_history_x = 100; 
+						@warp_history_y = 100;
+						@warp_history_name$ = "Twisted Land";
+						warp "ygg_roots",100,100; 
+						end;
+					}
+					break;
+					
+				case 2: // Outer Volund
+					mes "[Outer Volund Valley]";
+					mes "^FF0000Level:^000000 200+";
+					mes "^FF0000Difficulty:^000000 Very Hard";
+					mes "^FF0000Type:^000000 Material Farming";
+					mes " ";
+					mes "^0000FFDrops (x2 Rate):^000000";
+					mes "- Dim Glacier Weapon Box";
+					mes "- Glacier Weapon Box";
+					mes "- Flower Petals, Cat Whiskers";
+					mes "- Armor/Weapon/Accessory Stone Lv3";
+					mes "- ^00CC00Silver Card - Gold Card^000000";
+					next;
+					if (select("^008800[1] Warp Here^000000:^FF0000[2] Back^000000") == 1) {
+						@warp_history$ = "mu_fild01"; 
+						@warp_history_x = 0; 
+						@warp_history_y = 0;
+						@warp_history_name$ = "Outer Volund";
+						warp "mu_fild01",0,0; 
+						end;
+					}
+					break;
+					
+				case 3: 
+					close;
+			}
+			break;
+			
+		//====================================
+		case 9: // Event Maps
+			mes "[Warp List]";
+			mes "^FF6600== Special Events ==^000000";
+			next;
+			switch(select(
+				"[1] TEST DMG",
+				"[2] Halloween",
+				"Cancel")) {
+				case 1: 
+					@warp_history$ = "tra_fild"; 
+					@warp_history_x = 107; 
+					@warp_history_y = 163;
+					@warp_history_name$ = "TEST DMG";
+					warp "tra_fild",107,163; 
+					end;
+				case 2: 
+					@warp_history$ = "Hallow01"; 
+					@warp_history_x = 106; 
+					@warp_history_y = 98;
+					@warp_history_name$ = "Halloween";
+					warp "Hallow01",106,98; 
+					end;
+				case 3: 
+					close;
+			}
+			break;
+			
+		//====================================
+		case 10:
+			mes "[Warp List]";
+			mes "See you next time!";
+			close;
+		}
+	}
+}
+
+// Duplicates
+//============================================================
+prontera,168,198,4	duplicate(Warp List)	Warp List#prt	21887
+askald,122,162,4	duplicate(Warp List)	Warp List#ask	21887

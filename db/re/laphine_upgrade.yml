@@ -857,6 +857,7 @@ Body:
       - Item: S_R_Bearers_Earring
       - Item: S_Mega_Blitz_Shield
       - Item: S_Mega_Blitz_Weapon
+      - Item: S_Master_Weapon
   - Item: Cursed_Blood
     RandomOptionGroup: CURSED_BLOOD
     TargetItems:
@@ -2399,14 +2400,15 @@ Body:
       - Item: S_R_Bearers_Earring
       - Item: S_Mega_Blitz_Shield
       - Item: S_Mega_Blitz_Weapon
-#  - Item: Abyss_Ddbox
-#    TargetItems:
-#      - Item: DragonA_Red
-#      - Item: DragonA_Green
-#      - Item: DragonA_Gold
-#      - Item: DragonA_Purple
-#      - Item: DragonA_Blue
-#      - Item: DragonA_Silver
+  - Item: Abyss_Ddbox
+    RandomOptionGroup: DRAGON_PLATES
+    TargetItems:
+      - Item: DragonA_Red
+      - Item: DragonA_Green
+      - Item: DragonA_Gold
+      - Item: DragonA_Purple
+      - Item: DragonA_Blue
+      - Item: DragonA_Silver
   - Item: ILL_Piece_A
     RandomOptionGroup: ILL_PIECE_A
     TargetItems:
@@ -3046,20 +3048,23 @@ Body:
       - Item: Grace_Tiger_Suit
       - Item: Grace_Snovice_Suit
       - Item: Grace_Snovice_Robe
-#  - Item: Abyss_Ddbox2
-#    TargetItems:
-#      - Item: DragonA_Red
-#      - Item: DragonA_Green
-#      - Item: DragonA_Gold
-#      - Item: DragonA_Purple
-#      - Item: DragonA_Blue
-#      - Item: DragonA_Silver
-#  - Item: Abyss_Ddbox3
-#    TargetItems:
-#      - Item: Drag_Manteau
-#  - Item: Abyss_Ddbox4
-#    TargetItems:
-#      - Item: Dragon_Boots
+  - Item: Abyss_Ddbox2
+    RandomOptionGroup: DRAGON_PLATES2
+    TargetItems:
+      - Item: DragonA_Red
+      - Item: DragonA_Green
+      - Item: DragonA_Gold
+      - Item: DragonA_Purple
+      - Item: DragonA_Blue
+      - Item: DragonA_Silver
+  - Item: Abyss_Ddbox3
+    RandomOptionGroup: DRAGON_HOOD
+    TargetItems:
+      - Item: Drag_Manteau
+  - Item: Abyss_Ddbox4
+    RandomOptionGroup: DRAGON_BOOTS
+    TargetItems:
+      - Item: Dragon_Boots
   - Item: Auto_Imp_Melee_1
     RandomOptionGroup: AUTO_IMP_MELEE_1
     TargetItems:
@@ -4184,28 +4189,28 @@ Body:
       - Item: Antique_Cello
       - Item: Farthezan
       - Item: Estal
-#  - Item: MD_Geffen_Rarmor
-#    CardsAllowed: true
-#    TargetItems:
-#      - Item: MD_Geffen_Suits
-#      - Item: MD_Geffen_Robe
-#  - Item: MD_Geffen_Rhood
-#    CardsAllowed: true
-#    TargetItems:
-#      - Item: MD_Geffen_Hood
-#      - Item: MD_Geffen_Hood2
-#      - Item: MD_Geffen_Hood3
-#      - Item: MD_Geffen_Hood4
-#  - Item: MD_Geffen_Racc
-#    CardsAllowed: true
-#    TargetItems:
-#      - Item: MD_Geffen_Ring
-#      - Item: MD_Geffen_Ring2
-#  - Item: MD_Geffen_Rsheild
-#    CardsAllowed: true
-#    TargetItems:
-#      - Item: MD_Geffen_Shield
-#      - Item: MD_Geffen_Shield2
+  - Item: MD_Geffen_Rarmor
+    RandomOptionGroup: Geffen_Night_Arena_Amor
+    TargetItems:
+      - Item: MD_Geffen_Suits
+      - Item: MD_Geffen_Robe
+  - Item: MD_Geffen_Rhood
+    RandomOptionGroup: Geffen_Night_Arena_Amor
+    TargetItems:
+      - Item: MD_Geffen_Hood
+      - Item: MD_Geffen_Hood2
+      - Item: MD_Geffen_Hood3
+      - Item: MD_Geffen_Hood4
+  - Item: MD_Geffen_Racc
+    RandomOptionGroup: Geffen_Night_Arena_Accessory
+    TargetItems:
+      - Item: MD_Geffen_Ring
+      - Item: MD_Geffen_Ring2
+  - Item: MD_Geffen_Rsheild
+    RandomOptionGroup: Geffen_Night_Arena_Shield
+    TargetItems:
+      - Item: MD_Geffen_Shield
+      - Item: MD_Geffen_Shield2
   - Item: Moonlight_Box_IL
     ResultRefineMinimum: 7
     ResultRefineMaximum: 10
@@ -4544,167 +4549,171 @@ Body:
 #      - Item: MD_Airboat_Boots4
 #      - Item: MD_Airboat_Boots5
 #      - Item: MD_Airboat_Boots6
-#  - Item: Sakray_Fury
-#    TargetItems:
-#      - Item: Poenitentia_Ensis
-#      - Item: Poenitentia_Catapulta
-#      - Item: Poenitentia_Gladius
-#      - Item: Poenitentia_Hasta
-#      - Item: Poenitentia_Ascia
-#      - Item: Poenitentia_Clava
-#      - Item: Poenitentia_Pendulus
-#      - Item: Poenitentia_Ligula
-#      - Item: Poenitentia_Termes
-#      - Item: Poenitentia_Virga
-#      - Item: Poenitentia_Scipio
-#      - Item: Poenitentia_Codex
-#      - Item: Poenitentia_Liber
-#      - Item: Poenitentia_Crystallum
-#      - Item: Poenitentia_Caestus
-#      - Item: Poenitentia_Ungula
-#      - Item: Poenitentia_Manus
-#      - Item: Poenitentia_Mucro
-#      - Item: Poenitentia_Tenon
-#      - Item: Poenetentia_Dilacero
-#      - Item: Poenitentia_Nervus
-#      - Item: Poenetentia_Attendo
-#      - Item: Poenitentia_Chorda
-#      - Item: Poenitentia_Flagellum
-#      - Item: Poenetentia_Vatia
-#      - Item: Poenitentia_Foramen
-#      - Item: Poenitentia_Penet
-#      - Item: Poenitentia_Veloci
-#      - Item: Poenitentia_Ruina
-#      - Item: Poenitentia_Orbis
-#      - Item: Poenitentia_Sol
-#      - Item: Poenitentia_Jana
-#      - Item: Poenitentia_Radius
-#      - Item: Poenitentia_Ramus
-#      - Item: Poenitentia_Planta
-#      - Item: Poenitentia_Ferrum
-#  - Item: Sakray_Fury2
-#    TargetItems:
-#      - Item: Poenitentia_Ensis
-#      - Item: Poenitentia_Catapulta
-#      - Item: Poenitentia_Gladius
-#      - Item: Poenitentia_Hasta
-#      - Item: Poenitentia_Ascia
-#      - Item: Poenitentia_Clava
-#      - Item: Poenitentia_Pendulus
-#      - Item: Poenitentia_Ligula
-#      - Item: Poenitentia_Termes
-#      - Item: Poenitentia_Virga
-#      - Item: Poenitentia_Scipio
-#      - Item: Poenitentia_Codex
-#      - Item: Poenitentia_Liber
-#      - Item: Poenitentia_Crystallum
-#      - Item: Poenitentia_Caestus
-#      - Item: Poenitentia_Ungula
-#      - Item: Poenitentia_Manus
-#      - Item: Poenitentia_Mucro
-#      - Item: Poenitentia_Tenon
-#      - Item: Poenetentia_Dilacero
-#      - Item: Poenitentia_Nervus
-#      - Item: Poenetentia_Attendo
-#      - Item: Poenitentia_Chorda
-#      - Item: Poenitentia_Flagellum
-#      - Item: Poenetentia_Vatia
-#      - Item: Poenitentia_Foramen
-#      - Item: Poenitentia_Penet
-#      - Item: Poenitentia_Veloci
-#      - Item: Poenitentia_Ruina
-#      - Item: Poenitentia_Orbis
-#      - Item: Poenitentia_Sol
-#      - Item: Poenitentia_Jana
-#      - Item: Poenitentia_Radius
-#      - Item: Poenitentia_Ramus
-#      - Item: Poenitentia_Planta
-#      - Item: Poenitentia_Ferrum
+  - Item: Sakray_Fury
+    RandomOptionGroup: REMORSE_PHYS
+    TargetItems:
+      - Item: Poenitentia_Ensis
+      - Item: Poenitentia_Catapulta
+      - Item: Poenitentia_Gladius
+      - Item: Poenitentia_Hasta
+      - Item: Poenitentia_Ascia
+      - Item: Poenitentia_Clava
+      - Item: Poenitentia_Pendulus
+      - Item: Poenitentia_Ligula
+      - Item: Poenitentia_Termes
+      - Item: Poenitentia_Virga
+      - Item: Poenitentia_Scipio
+      - Item: Poenitentia_Codex
+      - Item: Poenitentia_Liber
+      - Item: Poenitentia_Crystallum
+      - Item: Poenitentia_Caestus
+      - Item: Poenitentia_Ungula
+      - Item: Poenitentia_Manus
+      - Item: Poenitentia_Mucro
+      - Item: Poenitentia_Tenon
+      - Item: Poenetentia_Dilacero
+      - Item: Poenitentia_Nervus
+      - Item: Poenetentia_Attendo
+      - Item: Poenitentia_Chorda
+      - Item: Poenitentia_Flagellum
+      - Item: Poenetentia_Vatia
+      - Item: Poenitentia_Foramen
+      - Item: Poenitentia_Penet
+      - Item: Poenitentia_Veloci
+      - Item: Poenitentia_Ruina
+      - Item: Poenitentia_Orbis
+      - Item: Poenitentia_Sol
+      - Item: Poenitentia_Jana
+      - Item: Poenitentia_Radius
+      - Item: Poenitentia_Ramus
+      - Item: Poenitentia_Planta
+      - Item: Poenitentia_Ferrum
+  - Item: Sakray_Fury2
+    RandomOptionGroup: REMORSE_PHYS2
+    TargetItems:
+      - Item: Poenitentia_Ensis
+      - Item: Poenitentia_Catapulta
+      - Item: Poenitentia_Gladius
+      - Item: Poenitentia_Hasta
+      - Item: Poenitentia_Ascia
+      - Item: Poenitentia_Clava
+      - Item: Poenitentia_Pendulus
+      - Item: Poenitentia_Ligula
+      - Item: Poenitentia_Termes
+      - Item: Poenitentia_Virga
+      - Item: Poenitentia_Scipio
+      - Item: Poenitentia_Codex
+      - Item: Poenitentia_Liber
+      - Item: Poenitentia_Crystallum
+      - Item: Poenitentia_Caestus
+      - Item: Poenitentia_Ungula
+      - Item: Poenitentia_Manus
+      - Item: Poenitentia_Mucro
+      - Item: Poenitentia_Tenon
+      - Item: Poenetentia_Dilacero
+      - Item: Poenitentia_Nervus
+      - Item: Poenetentia_Attendo
+      - Item: Poenitentia_Chorda
+      - Item: Poenitentia_Flagellum
+      - Item: Poenetentia_Vatia
+      - Item: Poenitentia_Foramen
+      - Item: Poenitentia_Penet
+      - Item: Poenitentia_Veloci
+      - Item: Poenitentia_Ruina
+      - Item: Poenitentia_Orbis
+      - Item: Poenitentia_Sol
+      - Item: Poenitentia_Jana
+      - Item: Poenitentia_Radius
+      - Item: Poenitentia_Ramus
+      - Item: Poenitentia_Planta
+      - Item: Poenitentia_Ferrum
   - Item: Overclocker
     RandomOptionGroup: OVERCLOCKER
     CardsAllowed: true
     TargetItems:
       - Item: Battle_Processor_
-#  - Item: Sakray_Regret
-#    TargetItems:
-#      - Item: Poenitentia_Ensis
-#      - Item: Poenitentia_Catapulta
-#      - Item: Poenitentia_Gladius
-#      - Item: Poenitentia_Hasta
-#      - Item: Poenitentia_Ascia
-#      - Item: Poenitentia_Clava
-#      - Item: Poenitentia_Pendulus
-#      - Item: Poenitentia_Ligula
-#      - Item: Poenitentia_Termes
-#      - Item: Poenitentia_Virga
-#      - Item: Poenitentia_Scipio
-#      - Item: Poenitentia_Codex
-#      - Item: Poenitentia_Liber
-#      - Item: Poenitentia_Crystallum
-#      - Item: Poenitentia_Caestus
-#      - Item: Poenitentia_Ungula
-#      - Item: Poenitentia_Manus
-#      - Item: Poenitentia_Mucro
-#      - Item: Poenitentia_Tenon
-#      - Item: Poenetentia_Dilacero
-#      - Item: Poenitentia_Nervus
-#      - Item: Poenetentia_Attendo
-#      - Item: Poenitentia_Chorda
-#      - Item: Poenitentia_Flagellum
-#      - Item: Poenetentia_Vatia
-#      - Item: Poenitentia_Foramen
-#      - Item: Poenitentia_Penet
-#      - Item: Poenitentia_Veloci
-#      - Item: Poenitentia_Ruina
-#      - Item: Poenitentia_Orbis
-#      - Item: Poenitentia_Sol
-#      - Item: Poenitentia_Jana
-#      - Item: Poenitentia_Radius
-#      - Item: Poenitentia_Ramus
-#      - Item: Poenitentia_Planta
-#      - Item: Poenitentia_Ferrum
-#  - Item: Sakray_Regret2
-#    TargetItems:
-#      - Item: Poenitentia_Ensis
-#      - Item: Poenitentia_Catapulta
-#      - Item: Poenitentia_Gladius
-#      - Item: Poenitentia_Hasta
-#      - Item: Poenitentia_Ascia
-#      - Item: Poenitentia_Clava
-#      - Item: Poenitentia_Pendulus
-#      - Item: Poenitentia_Ligula
-#      - Item: Poenitentia_Termes
-#      - Item: Poenitentia_Virga
-#      - Item: Poenitentia_Scipio
-#      - Item: Poenitentia_Codex
-#      - Item: Poenitentia_Liber
-#      - Item: Poenitentia_Crystallum
-#      - Item: Poenitentia_Caestus
-#      - Item: Poenitentia_Ungula
-#      - Item: Poenitentia_Manus
-#      - Item: Poenitentia_Mucro
-#      - Item: Poenitentia_Tenon
-#      - Item: Poenetentia_Dilacero
-#      - Item: Poenitentia_Nervus
-#      - Item: Poenetentia_Attendo
-#      - Item: Poenitentia_Chorda
-#      - Item: Poenitentia_Flagellum
-#      - Item: Poenetentia_Vatia
-#      - Item: Poenitentia_Foramen
-#      - Item: Poenitentia_Penet
-#      - Item: Poenitentia_Veloci
-#      - Item: Poenitentia_Ruina
-#      - Item: Poenitentia_Orbis
-#      - Item: Poenitentia_Sol
-#      - Item: Poenitentia_Jana
-#      - Item: Poenitentia_Radius
-#      - Item: Poenitentia_Ramus
-#      - Item: Poenitentia_Planta
-#      - Item: Poenitentia_Ferrum
-#  - Item: Dark_Stone
-#    TargetItems:
-#      - Item: Blue_Mental_Pendant
-#      - Item: Red_Force_Pendant
+  - Item: Sakray_Regret
+    RandomOptionGroup: REMORSE_MAG
+    TargetItems:
+      - Item: Poenitentia_Ensis
+      - Item: Poenitentia_Catapulta
+      - Item: Poenitentia_Gladius
+      - Item: Poenitentia_Hasta
+      - Item: Poenitentia_Ascia
+      - Item: Poenitentia_Clava
+      - Item: Poenitentia_Pendulus
+      - Item: Poenitentia_Ligula
+      - Item: Poenitentia_Termes
+      - Item: Poenitentia_Virga
+      - Item: Poenitentia_Scipio
+      - Item: Poenitentia_Codex
+      - Item: Poenitentia_Liber
+      - Item: Poenitentia_Crystallum
+      - Item: Poenitentia_Caestus
+      - Item: Poenitentia_Ungula
+      - Item: Poenitentia_Manus
+      - Item: Poenitentia_Mucro
+      - Item: Poenitentia_Tenon
+      - Item: Poenetentia_Dilacero
+      - Item: Poenitentia_Nervus
+      - Item: Poenetentia_Attendo
+      - Item: Poenitentia_Chorda
+      - Item: Poenitentia_Flagellum
+      - Item: Poenetentia_Vatia
+      - Item: Poenitentia_Foramen
+      - Item: Poenitentia_Penet
+      - Item: Poenitentia_Veloci
+      - Item: Poenitentia_Ruina
+      - Item: Poenitentia_Orbis
+      - Item: Poenitentia_Sol
+      - Item: Poenitentia_Jana
+      - Item: Poenitentia_Radius
+      - Item: Poenitentia_Ramus
+      - Item: Poenitentia_Planta
+      - Item: Poenitentia_Ferrum
+  - Item: Sakray_Regret2
+    RandomOptionGroup: REMORSE_MAG2
+    TargetItems:
+      - Item: Poenitentia_Ensis
+      - Item: Poenitentia_Catapulta
+      - Item: Poenitentia_Gladius
+      - Item: Poenitentia_Hasta
+      - Item: Poenitentia_Ascia
+      - Item: Poenitentia_Clava
+      - Item: Poenitentia_Pendulus
+      - Item: Poenitentia_Ligula
+      - Item: Poenitentia_Termes
+      - Item: Poenitentia_Virga
+      - Item: Poenitentia_Scipio
+      - Item: Poenitentia_Codex
+      - Item: Poenitentia_Liber
+      - Item: Poenitentia_Crystallum
+      - Item: Poenitentia_Caestus
+      - Item: Poenitentia_Ungula
+      - Item: Poenitentia_Manus
+      - Item: Poenitentia_Mucro
+      - Item: Poenitentia_Tenon
+      - Item: Poenetentia_Dilacero
+      - Item: Poenitentia_Nervus
+      - Item: Poenetentia_Attendo
+      - Item: Poenitentia_Chorda
+      - Item: Poenitentia_Flagellum
+      - Item: Poenetentia_Vatia
+      - Item: Poenitentia_Foramen
+      - Item: Poenitentia_Penet
+      - Item: Poenitentia_Veloci
+      - Item: Poenitentia_Ruina
+      - Item: Poenitentia_Orbis
+      - Item: Poenitentia_Sol
+      - Item: Poenitentia_Jana
+      - Item: Poenitentia_Radius
+      - Item: Poenitentia_Ramus
+      - Item: Poenitentia_Planta
+      - Item: Poenitentia_Ferrum
+  - Item: Dark_Stone
+    TargetItems:
+      - Item: Blue_Mental_Pendant
+      - Item: Red_Force_Pendant
   - Item: GrayWolf_7_Ticket
     ResultRefine: 7
     MaximumRefine: 6
@@ -4912,6 +4921,11 @@ Body:
       - Item: BioWeapon_Helm_SR
       - Item: BioWeapon_Helm_SC
       - Item: BioWeapon_Helm_GC
+      - Item: Zodiac_Helm_Emperor
+      - Item: Zodiac_Helm_Reaper
+      - Item: Zodiac_Helm_Kagerou
+      - Item: Zodiac_Helm_Rebellion
+      - Item: Zodiac_Helm_SuperNovice      
   - Item: Twins_Box_IL
     ResultRefineMinimum: 7
     ResultRefineMaximum: 10

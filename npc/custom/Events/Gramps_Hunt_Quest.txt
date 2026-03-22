@@ -1,0 +1,624 @@
+//===== rAthena Script =======================================
+//= Gramps Monster Hunt Quest - Level Based System
+//===== Description: =========================================
+//= Daily hunting quests based on player level
+//= Level 100-149: Quest 70251-70253
+//= Level 150-199: Quest 70254-70256
+//= Level 200-249: Quest 70257-70259
+//= Level 250+: Quest 70260-70262
+//= Cooldown: 70263 (Reset at 00:00 VN Time GMT+7)
+//= @reloadnpcfile npc/custom/Events/Gramps_Hunt_Quest.txt
+//= - Daily reset at 00:00 VN Time (GMT+7) using Unix timestamp
+//= - Cooldown countdown display (Xh Xm Xs)
+//= - Remove cooldown: 500 TCG Card + 200M Zeny
+//============================================================
+
+askald,120,97,1	script	Gramps#hunt	10536,{
+
+	// ============================================================
+	// LEVEL CHECK
+	// ============================================================
+	if (BaseLevel < 100) {
+		mes "[Gramps]";
+		mes "You need to be at least Level 100 to take on my quests.";
+		close;
+	}
+
+	// ============================================================
+	// CHECK AND CLEAR EXPIRED COOLDOWN (00:00 VN TIME GMT+7)
+	// ============================================================
+	// VN time = UTC+7 (+25200s)
+	// "today's reset" = floor((now + 25200) / 86400) * 86400 - 25200
+	.@now        = gettimetick(2);
+	.@vn_now     = .@now + 25200;
+	.@reset_utc  = (.@vn_now / 86400) * 86400 - 25200;
+
+	// Auto-expire cooldown if it was set before today's 00:00 VN
+	if (gramps_cd_ts > 0 && gramps_cd_ts < .@reset_utc) {
+		gramps_cd_ts = 0;
+		erasequest 70263;
+	}
+
+	// Migration: quest 70263 exists but variable missing -> clear it (treat as expired)
+	if (checkquest(70263, PLAYTIME) >= 0 && gramps_cd_ts == 0) {
+		gramps_cd_ts = 0;
+		erasequest 70263;
+	}
+
+	// ============================================================
+	// CHECK COMPLETED QUESTS - GIVE REWARDS
+	// ============================================================
+	for (.@check_id = 70251; .@check_id <= 70262; .@check_id++) {
+		if (checkquest(.@check_id, HUNTING) == 2) {
+
+			// Determine tier from quest ID
+			if (.@check_id >= 70251 && .@check_id <= 70253) {
+				.@completed_tier = 1;
+				.@tier_name$ = "Tier 1 (Lv 100-149)";
+			} else if (.@check_id >= 70254 && .@check_id <= 70256) {
+				.@completed_tier = 2;
+				.@tier_name$ = "Tier 2 (Lv 150-199)";
+			} else if (.@check_id >= 70257 && .@check_id <= 70259) {
+				.@completed_tier = 3;
+				.@tier_name$ = "Tier 3 (Lv 200-249)";
+			} else {
+				.@completed_tier = 4;
+				.@tier_name$ = "Tier 4 (Lv 250+)";
+			}
+
+			// Determine difficulty
+			.@base_quest_id = 70251 + ((.@completed_tier - 1) * 3);
+			.@offset = .@check_id - .@base_quest_id;
+			if (.@offset == 0) {
+				.@difficulty_type = 1;
+				.@difficulty_name$ = "Easy";
+			} else if (.@offset == 1) {
+				.@difficulty_type = 2;
+				.@difficulty_name$ = "Normal";
+			} else {
+				.@difficulty_type = 3;
+				.@difficulty_name$ = "Hard";
+			}
+
+			// Block if already claimed today
+			if (gramps_cd_ts >= .@reset_utc) {
+				mes "[Gramps]";
+				mes "You've already claimed a reward today.";
+				mes "Quest will reset at ^0000FF00:00 VN Time (GMT+7)^000000";
+				erasequest .@check_id;
+				close;
+			}
+
+			mes "[Gramps]";
+			mes "^00FF00Congratulations!^000000";
+			mes "You have completed the ^0000FF" + .@difficulty_name$ + " Mode^000000 quest!";
+			mes .@tier_name$;
+			next;
+
+			// Check weight
+			if (!checkweight(7227, 500)) {
+				mes "[Gramps]";
+				mes "Your inventory is too heavy!";
+				close;
+			}
+
+			// Calculate EXP
+			if (.@difficulty_type == 1) {
+				if (.@completed_tier == 1)      { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 3); }
+				else if (.@completed_tier == 2) { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 3); }
+				else if (.@completed_tier == 3) { .@base_exp = callfunc("Gramps_Calculate_Exp", BaseLevel); }
+				else                            { .@base_exp = callfunc("Gramps_Calculate_Exp", BaseLevel) / 3; }
+			} else if (.@difficulty_type == 2) {
+				if (.@completed_tier == 1)      { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 5); }
+				else if (.@completed_tier == 2) { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 5); }
+				else if (.@completed_tier == 3) { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 3); }
+				else                            { .@base_exp = callfunc("Gramps_Calculate_Exp", BaseLevel); }
+			} else {
+				if (.@completed_tier == 1)      { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 10); }
+				else if (.@completed_tier == 2) { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 8); }
+				else if (.@completed_tier == 3) { .@base_exp = callfunc("Gramps_Calculate_Multi_Level_Exp", BaseLevel, 5); }
+				else                            { .@base_exp = callfunc("Gramps_Calculate_Exp", BaseLevel) * 2; }
+			}
+			.@job_exp = (.@base_exp * 70) / 100;
+
+			// Show rewards
+			mes "[Gramps]";
+			mes "^00FF00===== QUEST REWARDS =====^000000";
+			mes " ";
+			if (.@difficulty_type == 1) {
+				mes "^FF6600Zeny:^000000 50,000,000";
+				mes "^FF6600TCG Card:^000000 300";
+				mes "^FF6600Illusion Stone:^000000 500";
+				mes "^FF6600Base EXP:^000000 " + .@base_exp;
+				mes "^FF6600Job EXP:^000000 " + .@job_exp;
+			} else if (.@difficulty_type == 2) {
+				mes "^FF6600Zeny:^000000 100,000,000";
+				mes "^FF6600TCG Card:^000000 500";
+				mes "^FF6600Kachua:^000000 10";
+				mes "^FF6600Event Coin:^000000 20";
+				mes "^FF6600Grudge Fragment:^000000 200";
+				mes "^FF6600Energy Fragment:^000000 20";
+				mes "^FF6600Base EXP:^000000 " + .@base_exp;
+				mes "^FF6600Job EXP:^000000 " + .@job_exp;
+			} else {
+				mes "^FF6600Zeny:^000000 200,000,000";
+				mes "^FF6600Jewel:^000000 200";
+				mes "^FF6600Spell:^000000 200";
+				mes "^FF6600Fragment:^000000 200";
+				mes "^FF6600Grudge Fragment:^000000 500";
+				mes "^FF6600Base EXP:^000000 " + .@base_exp;
+				mes "^FF6600Job EXP:^000000 " + .@job_exp;
+			}
+			mes " ";
+			mes "^00FF00========================^000000";
+			next;
+
+			// Give rewards
+			if (.@difficulty_type == 1) {
+				Zeny += 50000000;
+				getitem 7227, 300;
+				getitem 25271, 500;
+				getexp .@base_exp, .@job_exp;
+				announce strcharinfo(0) + " has completed Gramps Quest [Easy Mode] - " + .@tier_name$ + "!", bc_all, 0x00FF00;
+			} else if (.@difficulty_type == 2) {
+				Zeny += 100000000;
+				getitem 7227, 500;
+				getitem 1000274, 10;
+				getitem 7000, 20;
+				getitem 23016, 200;
+				getitem 6820, 20;
+				getexp .@base_exp, .@job_exp;
+				announce strcharinfo(0) + " has completed Gramps Quest [Normal Mode] - " + .@tier_name$ + "!", bc_all, 0x00FF00;
+			} else {
+				Zeny += 200000000;
+				getitem 25865, 200;
+				getitem 25866, 200;
+				getitem 25867, 200;
+				getitem 23016, 500;
+				getexp .@base_exp, .@job_exp;
+				announce strcharinfo(0) + " has completed Gramps Quest [Hard Mode] - " + .@tier_name$ + "!", bc_all, 0x00FF00;
+			}
+
+			erasequest .@check_id;
+			gramps_cd_ts = .@now;
+			setquest 70263;
+
+			mes "[Gramps]";
+			mes "^00FF00Rewards have been delivered!^000000";
+			mes " ";
+			mes "^FF0000Quest will reset at 00:00 VN Time (GMT+7)^000000";
+			close;
+		}
+	}
+
+	// ============================================================
+	// DETERMINE TIER BASED ON LEVEL
+	// ============================================================
+	if (BaseLevel >= 100 && BaseLevel < 150) {
+		.@tier = 1;
+		.@easy_id = 70251; .@normal_id = 70252; .@hard_id = 70253;
+		.@tier_name$ = "Tier 1 (Lv 100-149)";
+	} else if (BaseLevel >= 150 && BaseLevel < 200) {
+		.@tier = 2;
+		.@easy_id = 70254; .@normal_id = 70255; .@hard_id = 70256;
+		.@tier_name$ = "Tier 2 (Lv 150-199)";
+	} else if (BaseLevel >= 200 && BaseLevel < 250) {
+		.@tier = 3;
+		.@easy_id = 70257; .@normal_id = 70258; .@hard_id = 70259;
+		.@tier_name$ = "Tier 3 (Lv 200-249)";
+	} else {
+		.@tier = 4;
+		.@easy_id = 70260; .@normal_id = 70261; .@hard_id = 70262;
+		.@tier_name$ = "Tier 4 (Lv 250+)";
+	}
+
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+	.@activeQuest = 0;
+	for (.@i = 70251; .@i <= 70262; .@i++) {
+		if (checkquest(.@i, HUNTING) == 1 || checkquest(.@i, HUNTING) == 0) {
+			.@activeQuest = .@i;
+			break;
+		}
+	}
+
+	if (.@activeQuest > 0) {
+		switch(.@activeQuest) {
+			case 70251: .@quest_name$ = "Easy Mode";   .@active_tier$ = "Tier 1 (Lv 100-149)"; break;
+			case 70252: .@quest_name$ = "Normal Mode"; .@active_tier$ = "Tier 1 (Lv 100-149)"; break;
+			case 70253: .@quest_name$ = "Hard Mode";   .@active_tier$ = "Tier 1 (Lv 100-149)"; break;
+			case 70254: .@quest_name$ = "Easy Mode";   .@active_tier$ = "Tier 2 (Lv 150-199)"; break;
+			case 70255: .@quest_name$ = "Normal Mode"; .@active_tier$ = "Tier 2 (Lv 150-199)"; break;
+			case 70256: .@quest_name$ = "Hard Mode";   .@active_tier$ = "Tier 2 (Lv 150-199)"; break;
+			case 70257: .@quest_name$ = "Easy Mode";   .@active_tier$ = "Tier 3 (Lv 200-249)"; break;
+			case 70258: .@quest_name$ = "Normal Mode"; .@active_tier$ = "Tier 3 (Lv 200-249)"; break;
+			case 70259: .@quest_name$ = "Hard Mode";   .@active_tier$ = "Tier 3 (Lv 200-249)"; break;
+			case 70260: .@quest_name$ = "Easy Mode";   .@active_tier$ = "Tier 4 (Lv 250+)";    break;
+			case 70261: .@quest_name$ = "Normal Mode"; .@active_tier$ = "Tier 4 (Lv 250+)";    break;
+			case 70262: .@quest_name$ = "Hard Mode";   .@active_tier$ = "Tier 4 (Lv 250+)";    break;
+		}
+
+		mes "[Gramps]";
+		mes "You have an active quest:";
+		mes "^00FF00" + .@quest_name$ + "^000000";
+		mes .@active_tier$;
+		mes " ";
+		mes "What would you like to do?";
+		next;
+
+		switch(select("Warp to Hunting Ground:Cancel Quest:Close")) {
+			case 1:
+				switch(.@activeQuest) {
+					case 70251: .@warp_map$ = "pay_d03_i"; break;
+					case 70252: .@warp_map$ = "gef_d01_i"; break;
+					case 70253: .@warp_map$ = "ein_dun03";  break;
+					case 70254: .@warp_map$ = "gef_d01_i"; break;
+					case 70255: .@warp_map$ = "ein_dun03";  break;
+					case 70256: .@warp_map$ = "abyss_04";   break;
+					case 70257: .@warp_map$ = "nif_dun01";  break;
+					case 70258: .@warp_map$ = "ra_pol01";   break;
+					case 70259: .@warp_map$ = "jor_ab01";   break;
+					case 70260: .@warp_map$ = "nif_dun02";  break;
+					case 70261: .@warp_map$ = "amicitia2";  break;
+					case 70262: .@warp_map$ = "bl_temple";  break;
+				}
+				close2;
+				warp .@warp_map$, 0, 0;
+				end;
+
+			case 2:
+				mes "[Gramps]";
+				mes "^FF0000Are you sure you want to cancel?^000000";
+				mes "You will lose all progress!";
+				next;
+				if (select("Yes, cancel it:No, keep it") == 1) {
+					erasequest .@activeQuest;
+					mes "[Gramps]";
+					mes "Quest cancelled. You can take a new quest now.";
+					close;
+				}
+				mes "[Gramps]";
+				mes "Quest kept. Good luck!";
+				close;
+
+			case 3:
+				mes "[Gramps]";
+				mes "Good luck with your hunt!";
+				close;
+		}
+	}
+
+	// ============================================================
+	// CHECK COOLDOWN
+	// ============================================================
+	.@cooldown = (gramps_cd_ts >= .@reset_utc) ? 1 : 0;
+
+	// Pre-calculate cooldown time for display
+	if (.@cooldown) {
+		.@next_reset = .@reset_utc + 86400;
+		.@time_diff  = .@next_reset - .@now;
+		.@cd_hours   = .@time_diff / 3600;
+		.@cd_minutes = (.@time_diff % 3600) / 60;
+		.@cd_seconds = .@time_diff % 60;
+	}
+
+	// ============================================================
+	// MAIN MENU - Accessible regardless of cooldown
+	// ============================================================
+	mes "[Gramps]";
+	mes "Welcome adventurer!";
+	mes "I need your help hunting dangerous monsters!";
+	mes " ";
+	mes "Your Level: ^0000FF" + BaseLevel + "^000000";
+	mes "Current Tier: ^00FF00" + .@tier_name$ + "^000000";
+	mes " ";
+
+	if (.@cooldown) {
+		mes "Status: ^FF0000On Cooldown^000000";
+		mes " ";
+		mes "^00BFFFTime until reset:^000000";
+		mes "^FF0000" + .@cd_hours + "h " + .@cd_minutes + "m " + .@cd_seconds + "s^000000";
+	} else {
+		mes "Status: ^00FF00Available^000000";
+	}
+	next;
+
+	// ============================================================
+	// MAIN MENU OPTIONS
+	// ============================================================
+	mes "[Gramps]";
+	mes "What would you like to do?";
+
+	// Show dungeon list for current tier so player can browse info anytime
+	switch(.@tier) {
+		case 1:
+			mes " ";
+			mes "^0000FF[Easy]^000000   Illusion of Moonlight";
+			mes "^00AA00[Normal]^000000 Illusion of Vampire";
+			mes "^FF0000[Hard]^000000   Einbech Dungeon 3";
+			break;
+		case 2:
+			mes " ";
+			mes "^0000FF[Easy]^000000   Illusion of Vampire";
+			mes "^00AA00[Normal]^000000 Einbech Dungeon 3";
+			mes "^FF0000[Hard]^000000   Abyss Lake 4";
+			break;
+		case 3:
+			mes " ";
+			mes "^0000FF[Easy]^000000   Niflheim Dungeon F1";
+			mes "^00AA00[Normal]^000000 Power Twisted Plains";
+			mes "^FF0000[Hard]^000000   Abandoned Pit F1";
+			break;
+		case 4:
+			mes " ";
+			mes "^0000FF[Easy]^000000   Niflheim Dungeon F2";
+			mes "^00AA00[Normal]^000000 Amicitia F2";
+			mes "^FF0000[Hard]^000000   Varmundt's Biosphere Temple";
+			break;
+	}
+	next;
+
+	// Build menu based on cooldown state
+	if (.@cooldown) {
+		switch(select("View Quest Information:[^FF0000Remove Cooldown^000000] 500 TCG + 200M Zeny:Cancel")) {
+			case 1: goto L_QuestInfo;
+			case 2: goto L_RemoveCooldown;
+			case 3:
+				mes "[Gramps]";
+				mes "Come back anytime!";
+				close;
+		}
+	} else {
+		switch(select("View Available Quests:View Quest Information:Cancel")) {
+			case 1: goto L_QuestSelect;
+			case 2: goto L_QuestInfo;
+			case 3:
+				mes "[Gramps]";
+				mes "Come back anytime!";
+				close;
+		}
+	}
+
+	// ============================================================
+	// QUEST INFORMATION
+	// ============================================================
+	L_QuestInfo:
+		mes "[Gramps]";
+		mes "^00FF00===== QUEST INFORMATION =====^000000";
+		mes "^0000FF[Easy Mode]^000000";
+		mes "- Hunt 1200 monsters";
+		mes "^FF6600Rewards:^000000";
+		mes "  => 50M Zeny";
+		mes "  => 300 TCG Card";
+		mes "  => 500 Illusion Stone";
+		mes "  => Base/Job EXP";
+		next;
+
+		mes "[Gramps]";
+		mes "^00AA00[Normal Mode]^000000";
+		mes "- Hunt 3000 monsters";
+		mes "^FF6600Rewards:^000000";
+		mes "  => 100M Zeny";
+		mes "  => 500 TCG Card";
+		mes "  => 10 Kachua";
+		mes "  => 20 Event Coin";
+		mes "  => 200 Grudge Fragment";
+		mes "  => 20 Energy Fragment";
+		mes "  => Base/Job EXP";
+		next;
+
+		mes "[Gramps]";
+		mes "^FF0000[Hard Mode]^000000";
+		mes "- Hunt 5000 monsters";
+		mes "^FF6600Rewards:^000000";
+		mes "  => 200M Zeny";
+		mes "  => 200 Jewel";
+		mes "  => 200 Spell";
+		mes "  => 200 Fragment";
+		mes "  => 500 Grudge Fragment";
+		mes "  => Base/Job EXP";
+		next;
+
+		mes "[Gramps]";
+		mes "^FF0000IMPORTANT:^000000";
+		mes "=> One quest per day only!";
+		mes "=> Resets at ^0000FF00:00 VN Time (GMT+7)^000000";
+		mes "=> Remove cooldown: 500 TCG + 200M Zeny";
+		close;
+
+	// ============================================================
+	// REMOVE COOLDOWN
+	// ============================================================
+	L_RemoveCooldown:
+		mes "[Gramps]";
+		mes "^FF6600Remove cooldown instantly?^000000";
+		mes "^FF0000Cost: 500 TCG Card + 200,000,000 Zeny^000000";
+		mes " ";
+		mes "^00BFFFTime remaining:^000000 ^FF0000" + .@cd_hours + "h " + .@cd_minutes + "m " + .@cd_seconds + "s^000000";
+		next;
+
+		if (countitem(7227) < 500) {
+			mes "[Gramps]";
+			mes "^FF0000Not enough TCG Cards!^000000";
+			mes "Need: ^FF6600500^000000  |  Have: ^FF6600" + countitem(7227) + "^000000";
+			close;
+		}
+		if (Zeny < 200000000) {
+			mes "[Gramps]";
+			mes "^FF0000Not enough Zeny!^000000";
+			mes "Need: ^FF6600200,000,000^000000  |  Have: ^FF6600" + Zeny + "^000000";
+			close;
+		}
+
+		mes "[Gramps]";
+		mes "^FF0000Confirm:^000000";
+		mes "Pay 500 TCG Card + 200M Zeny to remove cooldown?";
+		next;
+
+		if (select("^00FF00Yes, remove cooldown^000000:No, cancel") == 1) {
+			// Re-check trước khi trừ (tránh race condition)
+			if (countitem(7227) < 500) {
+				mes "[Gramps]";
+				mes "^FF0000Not enough TCG Cards!^000000";
+				close;
+			}
+			if (Zeny < 200000000) {
+				mes "[Gramps]";
+				mes "^FF0000Not enough Zeny!^000000";
+				close;
+			}
+			// Trừ Zeny trước, TCG sau — đảm bảo cả 2 đều bị trừ
+			Zeny -= 200000000;
+			delitem 7227, 500;
+			gramps_cd_ts = 0;
+			erasequest 70263;
+			mes "[Gramps]";
+			mes "^00FF00Cooldown removed!^000000";
+			mes "You can now take a new quest.";
+			close;
+		}
+		mes "[Gramps]";
+		mes "Cancelled. Come back tomorrow!";
+		close;
+	// ============================================================
+	// QUEST SELECTION (only reachable when NOT on cooldown)
+	// ============================================================
+	L_QuestSelect:
+		mes "[Gramps]";
+		mes "Choose difficulty for " + .@tier_name$ + ":";
+		mes " ";
+
+		switch(.@tier) {
+			case 1:
+				mes "^0000FF[Easy]^000000   Illusion of Moonlight";
+				mes "^00AA00[Normal]^000000 Illusion of Vampire";
+				mes "^FF0000[Hard]^000000   Einbech Dungeon 3";
+				break;
+			case 2:
+				mes "^0000FF[Easy]^000000   Illusion of Vampire";
+				mes "^00AA00[Normal]^000000 Einbech Dungeon 3";
+				mes "^FF0000[Hard]^000000   Abyss Lake 4";
+				break;
+			case 3:
+				mes "^0000FF[Easy]^000000   Niflheim Dungeon F1";
+				mes "^00AA00[Normal]^000000 Power Twisted Plains";
+				mes "^FF0000[Hard]^000000   Abandoned Pit F1";
+				break;
+			case 4:
+				mes "^0000FF[Easy]^000000   Niflheim Dungeon F2";
+				mes "^00AA00[Normal]^000000 Amicitia F2";
+				mes "^FF0000[Hard]^000000   Varmundt's Biosphere Temple";
+				break;
+		}
+		next;
+
+		.@difficulty = select(
+			"^0000FFEasy Mode^000000 (1200 monsters):^00AA00Normal Mode^000000 (3000 monsters):^FF0000Hard Mode^000000 (5000 monsters):Cancel"
+		);
+
+		if (.@difficulty == 4) {
+			mes "[Gramps]";
+			mes "Come back anytime!";
+			close;
+		}
+
+		switch(.@difficulty) {
+			case 1:
+				.@quest_id = .@easy_id;
+				.@hunt_count = 1200;
+				.@difficulty_name$ = "Easy";
+				.@color$ = "^0000FF";
+				break;
+			case 2:
+				.@quest_id = .@normal_id;
+				.@hunt_count = 3000;
+				.@difficulty_name$ = "Normal";
+				.@color$ = "^00AA00";
+				break;
+			case 3:
+				.@quest_id = .@hard_id;
+				.@hunt_count = 5000;
+				.@difficulty_name$ = "Hard";
+				.@color$ = "^FF0000";
+				break;
+		}
+
+		// MAP SELECTION BASED ON QUEST ID
+		switch(.@quest_id) {
+			case 70251: .@warp_map$ = "pay_d03_i"; .@map_name$ = "Illusion of Moonlight";         break;
+			case 70252: .@warp_map$ = "gef_d01_i"; .@map_name$ = "Illusion of Vampire";           break;
+			case 70253: .@warp_map$ = "ein_dun03";  .@map_name$ = "Einbech Dungeon 3";             break;
+			case 70254: .@warp_map$ = "gef_d01_i"; .@map_name$ = "Illusion of Vampire";           break;
+			case 70255: .@warp_map$ = "ein_dun03";  .@map_name$ = "Einbech Dungeon 3";             break;
+			case 70256: .@warp_map$ = "abyss_04";   .@map_name$ = "Abyss Lake 4";                 break;
+			case 70257: .@warp_map$ = "nif_dun01";  .@map_name$ = "Niflheim Dungeon F1";           break;
+			case 70258: .@warp_map$ = "ra_pol01";   .@map_name$ = "Power Twisted Plains";          break;
+			case 70259: .@warp_map$ = "jor_ab01";   .@map_name$ = "Abandoned Pit F1";              break;
+			case 70260: .@warp_map$ = "nif_dun02";  .@map_name$ = "Niflheim Dungeon F2";           break;
+			case 70261: .@warp_map$ = "amicitia2";  .@map_name$ = "Amicitia F2";                   break;
+			case 70262: .@warp_map$ = "bl_temple";  .@map_name$ = "Varmundt's Biosphere Temple";  break;
+		}
+
+		mes "[Gramps]";
+		mes .@color$ + .@difficulty_name$ + " Mode^000000";
+		mes "Hunt ^FF6600" + .@hunt_count + " monsters^000000";
+		mes " ";
+		mes "^0000FFHunting Location:^000000 " + .@map_name$;
+		mes " ";
+		mes "^FF0000Remember: One quest per day only!^000000";
+		mes "^0000FFResets at 00:00 VN Time (GMT+7)^000000";
+		next;
+
+		mes "[Gramps]";
+		mes "Good luck, adventurer!";
+		mes "You will be warped now.";
+
+		setquest .@quest_id;
+		close2;
+		warp .@warp_map$, 0, 0;
+		end;
+
+OnInit:
+	while (1) {
+		showscript "Super Experience Points And Top Quest Rewards?", getnpcid(0, "Gramps#hunt"), AREA;
+		sleep 3000;
+		showscript "Gramps Daily Quests Available!", getnpcid(0, "Gramps#hunt"), AREA;
+		sleep 3000;
+		showscript "Level 100+ Players Welcome!", getnpcid(0, "Gramps#hunt"), AREA;
+		sleep 3000;
+		showscript "Easy, Normal, Hard Modes!", getnpcid(0, "Gramps#hunt"), AREA;
+		sleep 6000;
+	}
+	end;
+}
+
+// ============================================================
+// HELPER FUNCTION - CALCULATE EXP FOR MULTIPLE LEVELS
+// ============================================================
+function	script	Gramps_Calculate_Multi_Level_Exp	{
+	.@current_level = getarg(0);
+	.@level_count   = getarg(1);
+	.@total_exp     = 0;
+
+	for (.@i = 0; .@i < .@level_count; .@i++) {
+		.@check_level = .@current_level + .@i;
+		if (.@check_level >= 250) {
+			.@total_exp += 10000000000;
+		} else {
+			.@level_exp = nextbaseexp;
+			if (.@i > 0) {
+				.@level_exp = .@level_exp * (100 + (.@i * 15)) / 100;
+			}
+			.@total_exp += .@level_exp;
+		}
+	}
+	return .@total_exp;
+}
+
+// ============================================================
+// HELPER FUNCTION - CALCULATE EXP (LEGACY)
+// ============================================================
+function	script	Gramps_Calculate_Exp	{
+	return nextbaseexp;
+}

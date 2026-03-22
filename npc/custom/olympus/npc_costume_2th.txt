@@ -1,0 +1,623 @@
+// @reloadnpcfile npc/custom/olympus/npc_costume_2th.txt
+// Costume enchant NPC - All costumes accepted, 90% success rate
+askald,45,195,1	script	Costume Enchant Second#cos_ask	4_F_OPERATION,{
+	disable_items;
+	mes "[Admin TranVy]";
+	mes "Welcome to Fashion Stone!!";
+	next;
+	mes "[Admin TranVy]";
+	mes "We accept ALL costume items for enchanting!";
+	mes "^00FF00Success Rate: 90%^000000";
+	next;
+
+	// Auto-scan costumes on player
+	.@eq_top = getequipid(EQI_COSTUME_HEAD_TOP);
+	.@eq_mid = getequipid(EQI_COSTUME_HEAD_MID);
+	.@eq_low = getequipid(EQI_COSTUME_HEAD_LOW);
+	.@eq_garment = getequipid(EQI_COSTUME_GARMENT);
+
+	mes "[Admin TranVy]";
+	mes "Let me check your costumes...";
+	next;
+
+	mes "[Admin TranVy]";
+	mes "^FF0000=== Your Costumes ===^000000";
+
+	.@has_costume = 0;
+
+	if (.@eq_top > -1) {
+		mes "^0000FF[Upper] " + getitemname(.@eq_top) + "^000000";
+		.@has_costume = 1;
+	}
+	if (.@eq_mid > -1) {
+		mes "^0000FF[Middle] " + getitemname(.@eq_mid) + "^000000";
+		.@has_costume = 1;
+	}
+	if (.@eq_low > -1) {
+		mes "^0000FF[Lower] " + getitemname(.@eq_low) + "^000000";
+		.@has_costume = 1;
+	}
+	if (.@eq_garment > -1) {
+		mes "^0000FF[Garment] " + getitemname(.@eq_garment) + "^000000";
+		.@has_costume = 1;
+	}
+
+	if (!.@has_costume) {
+		mes " ";
+		mes "^FF0000You don't have any costume equipped!^000000";
+		next;
+		mes "[Admin TranVy]";
+		mes "Please wear a costume and come back!";
+		close;
+	}
+
+	next;
+	mes "[Admin TranVy]";
+	mes "If you want cool styling for your costume, please come to me 'Admin TranVy'!";
+	mes "Don't forget to bring ^ff0000your costume stones^000000~";
+	mes " ";
+	mes "^00FF00Success Rate: 90% for all enchants!^000000";
+	next;
+
+	.@choice = select("Apply enchant.", "End Conversation.");
+
+	if (.@choice == 2) {
+		mes "[Admin TranVy]";
+		mes "Please check our other upgrading services~";
+		close;
+	}
+
+	if (checkweight(1119,3) == 0) {
+		mes "[Admin TranVy]";
+		mes "Kiaaaaach!!!";
+		mes "I hate bulging bags!";
+		mes "No matter how cool your costume looks, that fat bag of yours is a fashion terror you know!";
+		next;
+		mes "[Admin TranVy]";
+		mes "It seems you have too many items on you.";
+		mes "Come back after clearing some inventory space.";
+		close;
+	}
+
+	// Select which costume to enchant
+	.@menu$ = "";
+	if (.@eq_top > -1)
+		.@menu$ += "^0000FF[Upper] " + getitemname(.@eq_top) + "^000000:";
+	if (.@eq_mid > -1)
+		.@menu$ += "^0000FF[Middle] " + getitemname(.@eq_mid) + "^000000:";
+	if (.@eq_low > -1)
+		.@menu$ += "^0000FF[Lower] " + getitemname(.@eq_low) + "^000000:";
+	if (.@eq_garment > -1)
+		.@menu$ += "^0000FF[Garment] " + getitemname(.@eq_garment) + "^000000:";
+	.@menu$ += "Cancel";
+
+	.@select = select(.@menu$);
+
+	// Map the selection back to the correct slot
+	.@slot_select = .@select;
+	if (.@eq_top > -1) {
+		if (.@slot_select == 1) {
+			.@part = EQI_COSTUME_HEAD_TOP;
+			.@equip_id = .@eq_top;
+			.@is_garment = 0;
+		}
+		.@slot_select--;
+	}
+	if (.@slot_select > 0 && .@eq_mid > -1) {
+		if (.@slot_select == 1) {
+			.@part = EQI_COSTUME_HEAD_MID;
+			.@equip_id = .@eq_mid;
+			.@is_garment = 0;
+		}
+		.@slot_select--;
+	}
+	if (.@slot_select > 0 && .@eq_low > -1) {
+		if (.@slot_select == 1) {
+			.@part = EQI_COSTUME_HEAD_LOW;
+			.@equip_id = .@eq_low;
+			.@is_garment = 0;
+		}
+		.@slot_select--;
+	}
+	if (.@slot_select > 0 && .@eq_garment > -1) {
+		if (.@slot_select == 1) {
+			.@part = EQI_COSTUME_GARMENT;
+			.@equip_id = .@eq_garment;
+			.@is_garment = 1;
+		}
+		.@slot_select--;
+	}
+
+	// Cancel selected (nothing matched)
+	if (.@slot_select > 0) {
+		mes "[Admin TranVy]";
+		mes "Please check our other upgrading services~";
+		close;
+	}
+
+	.@location = getiteminfo(.@equip_id, ITEMINFO_LOCATIONS);
+	.@equip_refine = getequiprefinerycnt(.@part);
+	setarray .@card[0], getequipcardid(.@part, 0), getequipcardid(.@part, 1), getequipcardid(.@part, 2), getequipcardid(.@part, 3);
+
+	mes "[Admin TranVy]";
+	mes "Wow~ This ^0000FF" + getitemname(.@equip_id) + "^000000!!! looks great on you!!";
+
+	// =========================================================
+	// GARMENT ENCHANT
+	// =========================================================
+	if (.@is_garment) {
+		mes "What kind of enchant do you want?";
+		mes "^00FF00Success Rate: 90%^000000";
+		next;
+		.@enchant_type = select("Single Enchant (Slot 1) - 90%", "Dual Enchant (Slot 1 + 2) - 90%", "Cancel");
+
+		if (.@enchant_type == 3) {
+			mes "[Admin TranVy]";
+			mes "Please check our other upgrading services~";
+			close;
+		}
+
+		if (.@enchant_type == 2) {
+			if (.@card[0] == 0) {
+				mes "[Admin TranVy]";
+				mes "^FF0000You need to enchant Slot 1 first before doing Dual Enchant!^000000";
+				close;
+			}
+			.@is_dual = 1;
+			.@enchant_slot = 1;
+		} else {
+			.@is_dual = 0;
+			.@enchant_slot = 0;
+		}
+
+		// Garment enchant stones (stone_id, enchant_card, description)
+		setarray .@stone_id[0],
+			6908, 4807, "ASPD +1",
+			6963, 4992, "1% chance to absorb 1% physical damage into HP.",
+			6964, 4993, "1% chance to absorb 1% physical damage into SP.",
+			25067, 29056, "Decreases Fixed Casting Time of all skills by 0.5 seconds.",
+			25170, 29154, "Decreases Fixed Casting Time of all skills by 0.3 seconds.",
+			25302, 29362, "Enables the use of Level 3 Double Attack.",
+			25303, 29361, "Increases Critical Damage by 20%.",
+			25306, 29358, "Decreases Variable Casting Time by 10%.",
+			25412, 29426, "Increases damage of Rampage Blaster by 15%.",
+			25416, 29431, "Increases damage of Arrow Storm by 10%.",
+			25420, 29435, "Increases damage of Psychic Wave by 10%.",
+			25448, 29463, "Increases damage of Dragon Breath - Water by 10%.",
+			25449, 29467, "Increases damage of Cart Cannon by 10%.",
+			25456, 29471, "Increases damage of Crimson Rock by 10%.",
+			25493, 29480, "Increases damage of Triangle Shot by 15%.",
+			25497, 29484, "Increases damage of Axe Tornado by 15%.",
+			25501, 29488, "Increases damage of Severe Rainstorm by 15%.",
+			25709, 29516, "Increases damage of Adoramus by 15%.",
+			25713, 29520, "Increases damage of Banishing Point by 15%.",
+			25717, 29524, "Increases damage of Rolling Cutter by 15%.",
+			25797, 29427, "Increases damage of Knuckle Arrow by 15%.",
+			25801, 29614, "Increases damage of Diamond Dust by 15%.",
+			25805, 29618, "Increases damage of Fatal Menace by 15%.",
+			25842, 29654, "Increases damage of Eswhoo by 20%.",
+			25849, 29658, "Increases damage of Falling Star, Solar Burst and Full Moon Kick by 20%.",
+			25853, 29662, "Increases damage of Swirling Petal by 25%.",
+			25854, 29663, "Increases damage of Flaming Petals by 20%.",
+			25858, 29667, "Increases damage of Hammer of God and Round Trip by 20%.",
+			25862, 29671, "Increases damage of Picky Peck and Catnip Meteor by 20%.",
+			1000011, 310003, "Increases damage of Aimed Bolt by 15%.",
+			1000015, 310007, "Increases damage of Arms Cannon by 15%.",
+			1000019, 310011, "Increases damage of Judex by 15%.",
+			1000213, 310180, "Increases damage of Comet by 15%.",
+			1000217, 310184, "Increases damage of Ray of Genesis by 15%.",
+			1000221, 310188, "Increases Critical Damage by 15%. Enables Double Attack Level 3 if you have learned Katar Mastery Level 10",
+			1000296, 310257, "Increases damage of Ignition Break by 15%.",
+			1000300, 310261, "Increases damage of Crazy Weed by 20%.",
+			1000304, 310265, "Increases damage of Reverberation by 15%.";
+
+		.@size = getarraysize(.@stone_id);
+
+		.@menu$ = "";
+		for (.@i = 0; .@i < .@size; .@i += 3) {
+			.@id = .@stone_id[.@i];
+			.@menu$ += sprintf("%d. %s (%d) left:", (.@i/3)+1, getitemname(.@id), countitem(.@id));
+		}
+		.@menu$ += "Cancel";
+
+		.@sel = select(.@menu$);
+		.@total_stones = .@size / 3;
+
+		if (.@sel > .@total_stones) {
+			mes "[Admin TranVy]";
+			mes "Please check our other upgrading services~";
+			close;
+		}
+
+		.@s = (.@sel - 1) * 3;
+		.@stone = .@stone_id[.@s];
+		.@enchant = .@stone_id[.@s+1];
+		.@desc$ = .@stone_id[.@s+2];
+	}
+	// =========================================================
+	// HEADGEAR ENCHANT
+	// =========================================================
+	else {
+		mes "What type of stone do you want?";
+		mes "^00FF00Success Rate: 90%^000000";
+		next;
+		.@is_dual = 0;
+
+		.@menu$ = "";
+		.@stone_type = select("Effect Stones (Upper/Mid/Low)", "Stat Stones (Upper/Middle/Lower)", "Cancel");
+
+		if (.@stone_type == 3) {
+			mes "[Admin TranVy]";
+			mes "Please check our other upgrading services~";
+			close;
+		}
+
+		if (.@stone_type == 1) {
+			// Effect Stones - Select slot
+			.@menu$ = "";
+			if (.@part == EQI_COSTUME_HEAD_TOP)
+				.@enchant_slot = select("Upper Effect", "Middle Effect", "Lower Effect", "Cancel") - 1;
+			else if (.@part == EQI_COSTUME_HEAD_MID)
+				.@enchant_slot = select("Middle Effect", "Lower Effect", "Cancel") - 1;
+			else
+				.@enchant_slot = 2; // Low always goes to slot 2
+
+			// Remap enchant_slot for MID (no Upper option)
+			if (.@part == EQI_COSTUME_HEAD_MID) {
+				if (.@enchant_slot == 0) .@enchant_slot = 1;
+				else if (.@enchant_slot == 1) .@enchant_slot = 2;
+				else .@enchant_slot = 99; // Cancel
+			}
+
+			switch(.@enchant_slot) {
+			case 0:
+				setarray .@stone_id[0],
+					25058, 29041;	// Twinkle Effect Stone - Twinkle Effect (Upper)
+				break;
+			case 1:
+				setarray .@stone_id[0],
+					25059, 29040,	// Ghost Effect Stone - Ghost Effect (Mid)
+					25138, 29144,	// Shrink Effect Stone - Shrink Effect (Mid)
+					25206, 29142,	// Electric Effect Stone - Electric Effect (Mid)
+					25178, 29161,	// Pink Glow Effect Stone - Pink Glow Effect (Mid)
+					25177, 29162,	// Shadow Effect Stone - Shadow Effect (Mid)
+					25176, 29160,	// Blue Aura Effect Stone - Blue Aura Effect (Mid)
+					25225, 29226,	// Crimson Wave Stone - Crimson Wave Effect (Mid)
+					25224, 29224;	// Body White Effect Stone - White Body Effect (Mid)
+				break;
+			case 2:
+				setarray .@stone_id[0],
+					25226, 29225,	// Water Field Effect Stone - Water Field Effect (Low)
+					25137, 29143;	// Green Flare Effect Stone - Green Flare Effect (Low)
+				break;
+			default:
+				mes "[Admin TranVy]";
+				mes "Please check our other upgrading services~";
+				close;
+			}
+		} else {
+			// Stat Stones - Select slot
+			.@menu$ = "";
+			if (.@part == EQI_COSTUME_HEAD_TOP)
+				.@enchant_slot = select("Upper", "Middle", "Lower", "Cancel") - 1;
+			else if (.@part == EQI_COSTUME_HEAD_MID)
+				.@enchant_slot = select("Middle", "Lower", "Cancel") - 1;
+			else
+				.@enchant_slot = 2;
+
+			// Remap enchant_slot for MID (no Upper option)
+			if (.@part == EQI_COSTUME_HEAD_MID) {
+				if (.@enchant_slot == 0) .@enchant_slot = 1;
+				else if (.@enchant_slot == 1) .@enchant_slot = 2;
+				else .@enchant_slot = 99; // Cancel
+			}
+
+			switch(.@enchant_slot) {
+			case 0:
+				setarray .@stone_id[0],
+					6636, 4700,		// STR Stone Top - Strength1
+					6637, 4710,		// INT Stone Top - Intelligence1
+					6638, 4730,		// AGI Stone Top - Agility1
+					6639, 4720,		// DEX Stone Top - Dexterity1
+					6640, 4740,		// VIT Stone Top - Vitality1
+					6641, 4750,		// LUK Stone Top - Luck1
+					6716, 4926,		// Critical Stone - Critical1
+					6740, 4930,		// Heal Stone Top - HEAL2
+					6741, 4805,		// Heal Stone2 Top - Heal Amount2
+					6790, 4936,		// Big Stone Top - ATK BIG1
+					6791, 4937,		// Medium Stone Top - ATK MEDIUM1
+					6792, 4938,		// Small Stone Top - ATK SMALL1
+					6943, 29028,	// ATK Stone Top - Atk1p Top
+					6944, 29030,	// MATK Stone Top - Matk1p Top
+					6999, 29013,	// HP Drain Stone Top - HPdrain3
+					25000, 29032,	// SP Drain Stone Top - SPdrain1 Top
+					25068, 4807,	// ASPD Stone Top - Atk Speed1
+					25069, 29053,	// Reload Stone Top - Skill Delay1 Top
+					25171, 29159,	// EXP Stone Top - EXP2TOP
+					25172, 29156,	// Casting Stone Top - Casting Top
+					25304, 29359,	// Critical Stone Top - Fatal Top
+					25409, 29423,	// Sura Stone Top
+					25413, 29428,	// Ranger Stone Top
+					25417, 29432,	// Sorcerer Stone Top
+					25445, 29460,	// Rune Knight Stone Top
+					25450, 29464,	// Genetic Stone Top
+					25453, 29468,	// Warlock Stone Top
+					25490, 29477,	// Shadow Chaser Stone Top
+					25494, 29481,	// Mechanic Stone Top
+					25498, 29485,	// Wander Minstrel Stone Top
+					25706, 29513,	// High Priest Stone Top
+					25710, 29517,	// Paladin Stone Top
+					25714, 29521,	// Assassin Cross Stone Top
+					25800, 29613,	// Sura Stone Top2
+					25804, 29617,	// Sorcerer Stone Top2
+					25808, 29621,	// Shadow Chaser Stone Top2
+					25843, 29651,	// Soul Linker Stone Top
+					25846, 29655,	// Star Gladiator Stone Top
+					25850, 29659,	// Ninja Stone Top
+					25855, 29664,	// Gunslinger Stone Top
+					25859, 29668,	// Doram Stone Top
+					1000669, 311008,// Genetic Stone Upper
+					1000008, 310000,// Ranger Stone II Top
+					1000012, 310004,// Mechanic Stone II Top
+					1000016, 310008,// High Priest Stone II Top
+					1000214, 310181,// Warlock Stone Top2
+					1000218, 310187,// Royal Guard Stone Top2
+					1000222, 310191,// Guillotine Cross Stone Top2
+					1000297, 310258,// Rune Knight Stone Top2
+					1000301, 310262,// Genetic Stone Top2
+					1000305, 310266,// Wander Minstrel Stone Top2
+					1000375, 310325,// Ranged Stone (Top)
+					1000528, 310664,// Magic Power Stone (Top)
+					1000377, 310327;// Melee Stone (Top)
+				break;
+			case 1:
+				setarray .@stone_id[0],
+					6642, 4882,		// ATK Stone Middle - Atk1p
+					6643, 4883,		// MATK Stone Middle - Matk1p
+					6717, 4927,		// MaxHP Stone - HP50
+					6742, 4931,		// Heal Stone Middle - HEALHP1
+					6743, 4861,		// HP Stone Middle - MHP1
+					6744, 4929,		// SP Stone Middle - MSP1
+					6945, 4700,		// STR Stone Middle - Strength1
+					6946, 4710,		// INT Stone Middle - Intelligence1
+					6947, 4730,		// AGI Stone Middle - Agility1
+					6948, 4720,		// DEX Stone Middle - Dexterity1
+					6949, 4740,		// VIT Stone Middle - Vitality1
+					6950, 4750,		// LUK Stone Middle - Luck1
+					25001, 29026,	// DEF Stone Middle - Def20
+					25002, 29024,	// Change LUK Middle - LUK3STR
+					25003, 29014,	// Change STR Middle - STR3INT
+					25004, 29022,	// Change AGI Middle - AGI3LUK
+					25005, 29016,	// Change INT Middle - INT3DEX
+					25006, 29020,	// Change VIT Middle - VIT3AGI
+					25007, 29018,	// Change DEX Middle - DEX3VIT
+					25060, 29047,	// Critical Stone - Fatal0
+					25061, 29048,	// Range Stone - Expert Archer0
+					25070, 29054,	// Reload Stone Middle - Skill Delay1 Middle
+					25141, 29145,	// EXP Stone Middle - EXP2MIDDLE
+					25173, 29157,	// Casting Stone Middle - Casting Middle
+					25175, 29155,	// Lex Aeterna Stone Middle - LexAeterna
+					25410, 29424,	// Sura Stone Middle
+					25414, 29429,	// Ranger Stone Middle
+					25418, 29433,	// Sorcerer Stone Middle
+					25446, 29461,	// Rune Knight Stone Middle
+					25451, 29465,	// Genetic Stone Middle
+					25454, 29469,	// Warlock Stone Middle
+					25491, 29478,	// Shadow Chaser Stone Middle
+					25495, 29482,	// Mechanic Stone Middle
+					25499, 29486,	// Wander Minstrel Stone Middle
+					25707, 29514,	// High Priest Stone Middle
+					25711, 29518,	// Paladin Stone Middle
+					25715, 29522,	// Assassin Cross Stone Middle
+					25799, 29612,	// Sura Stone Middle2
+					25803, 29616,	// Sorcerer Stone Middle2
+					25807, 29620,	// Shadow Chaser Stone Middle2
+					25844, 29652,	// Soul Linker Stone Middle
+					25847, 29656,	// Star Gladiator Stone Middle
+					25851, 29660,	// Ninja Stone Middle
+					25856, 29665,	// Gunslinger Stone Middle
+					25860, 29669,	// Doram Stone Middle
+					1000009, 310001,// Ranger Stone II Middle
+					1000013, 310005,// Mechanic Stone II Middle
+					1000017, 310009,// High Priest Stone II Middle
+					1000215, 310182,// Warlock Stone Middle2
+					1000219, 310186,// Royal Guard Stone Middle2
+					1000223, 310190,// Guillotine Cross Stone Middle2
+					1000298, 310259,// Rune Knight Stone Middle2
+					1000302, 310263,// Genetic Stone Middle2
+					1000306, 310267;// Wander Minstrel Stone Middle2
+				break;
+			case 2:
+				setarray .@stone_id[0],
+					6644, 4884,		// HIT Stone Bottom - HIT1
+					6645, 4859,		// FLEE Stone Bottom - Evasion1
+					6718, 4928,		// MaxSP Stone - SP10
+					6745, 4932,		// Heal Stone Bottom - HEALSP1
+					6951, 4861,		// HP Stone Bottom - MHP1
+					25008, 29021,	// Change VIT Bottom - VIT3LUK
+					25009, 29023,	// Change AGI Bottom - AGI3STR
+					25010, 29019,	// Change DEX Bottom - DEX3AGI
+					25011, 29025,	// Change LUK Bottom - LUK3INT
+					25012, 29015,	// Change STR Bottom - STR3DEX
+					25013, 29017,	// Change INT Bottom - INT3VIT
+					25014, 29033,	// MDEF Stone Bottom - Mdef4 Bottom
+					25015, 29027,	// EXP Stone Bottom - EXP2
+					25016, 29029,	// ATK Stone Bottom - Atk1p Bottom
+					25017, 29031,	// MATK Stone Bottom - Matk1p Bottom
+					25062, 29046,	// Greed Stone - Greed
+					25063, 29049,	// MaxHP2 Stone - HP100
+					25064, 29050,	// MaxSP2 Stone - SP50
+					25065, 29051,	// Detoxify Stone - Detoxify
+					25066, 29052,	// Recovery Stone - Recovery
+					25071, 29055,	// Reload Stone Bottom - Skill Delay1 Bottom
+					25072, 29057,	// Kyrie Stone - Kyrie
+					25139, 29146,	// Identify Stone - Identify
+					25174, 29158,	// Casting Stone Bottom - Casting Bottom
+					25227, 29227,	// Heal Stone - Heal
+					25228, 29229,	// Teleport Stone - Teleport
+					25229, 29228,	// Steal Stone - Steal
+					25305, 29360,	// Critical Stone Bottom - Fatal Bottom
+					25411, 29425,	// Sura Stone Bottom
+					25415, 29430,	// Ranger Stone Bottom
+					25419, 29434,	// Sorcerer Stone Bottom
+					25447, 29462,	// Rune Knight Stone Bottom
+					25452, 29466,	// Genetic Stone Bottom
+					25455, 29470,	// Warlock Stone Bottom
+					25492, 29479,	// Shadow Chaser Stone Bottom
+					25496, 29483,	// Mechanic Stone Bottom
+					25500, 29487,	// Wander Minstrel Stone Bottom
+					25708, 29515,	// High Priest Stone Bottom
+					25712, 29519,	// Paladin Stone Bottom
+					25716, 29523,	// Assassin Cross Stone Bottom
+					25798, 29611,	// Sura Stone Bottom2
+					25802, 29615,	// Sorcerer Stone Bottom2
+					25806, 29619,	// Shadow Chaser Stone Bottom2
+					25845, 29653,	// Soul Linker Stone Bottom
+					25848, 29657,	// Star Gladiator Stone Bottom
+					25852, 29661,	// Ninja Stone Bottom
+					25857, 29666,	// Gunslinger Stone Bottom
+					25861, 29670,	// Doram Stone Bottom
+					1000010, 310002,// Ranger Stone II Bottom
+					1000014, 310006,// Mechanic Stone II Bottom
+					1000018, 310010,// High Priest Stone II Bottom
+					1000216, 310183,// Warlock Stone Bottom2
+					1000220, 310185,// Royal Guard Stone Bottom2
+					1000224, 310189,// Guillotine Cross Stone Bottom2
+					1000299, 310260,// Rune Knight Stone Bottom2
+					1000303, 310264,// Genetic Stone Bottom2
+					1000307, 310268;// Wander Minstrel Stone Bottom2
+				break;
+			default:
+				mes "[Admin TranVy]";
+				mes "Please check our other upgrading services~";
+				close;
+			}
+		}
+
+		.@size = getarraysize(.@stone_id);
+		.@max_menu_size = 2047;
+		.@offset = 0;
+
+		do {
+			.@menu$ = "";
+			.@page_start = .@offset;
+
+			for (.@i = .@page_start; .@i < .@size; .@i += 2) {
+				.@str$ = sprintf("%d. %s [%d] left:", (.@i/2)+1, getitemname(.@stone_id[.@i]), countitem(.@stone_id[.@i]));
+				if ((getstrlen(.@menu$ + .@str$) + 8) >= .@max_menu_size) {
+					.@menu$ += "^0000FFNext^000000:";
+					break;
+				}
+				.@menu$ += .@str$;
+			}
+			if (.@i >= .@size)
+				.@menu$ += "Cancel";
+
+			.@sel2 = select(.@menu$);
+
+			.@page_entries = (.@i - .@page_start) / 2;
+			if (.@i < .@size && .@sel2 > .@page_entries) {
+				.@offset = .@i;
+				.@i = .@offset;
+			} else {
+				.@i = .@size + 1;
+			}
+		} while (.@i <= .@size);
+
+		.@s = (.@page_start / 2 + .@sel2 - 1) * 2;
+
+		if (.@s >= .@size) {
+			mes "[Admin TranVy]";
+			mes "Please check our other upgrading services~";
+			close;
+		}
+
+		.@stone = .@stone_id[.@s];
+		.@enchant = .@stone_id[.@s+1];
+	}
+
+	// Verify costume is still equipped
+	if (getequipid(.@part) < 0) {
+		mes "[Admin TranVy]";
+		mes "^FF0000ERROR: Costume is no longer equipped!^000000";
+		mes "Please wear your costume again.";
+		close;
+	}
+
+	// Verify player has the required stone
+	if (countitem(.@stone) < 1) {
+		mes "[Admin TranVy]";
+		mes "^FF0000ERROR: You don't have this stone!^000000";
+		mes "Stone needed: ^0000FF" + getitemname(.@stone) + "^000000 (ID: " + .@stone + ")";
+		mes "You have: ^FF0000" + countitem(.@stone) + "^000000";
+		next;
+		mes "[Admin TranVy]";
+		mes "Please get the stone and come back!";
+		close;
+	}
+
+	// Confirmation dialog
+	mes "^FF0000   !!! Caution !!!^000000";
+	mes "^00FF00Success Rate: 90%^000000";
+	if (.@is_garment) {
+		if (.@is_dual) {
+			mes "^FF0000Dual Enchant: If it fails, BOTH enchants will be lost!^000000";
+			mes "^0000FFCurrent Slot 1: " + getitemname(.@card[0]) + "^000000";
+		} else {
+			mes "^FF0000If the item already has an enchant in Slot 1, it will be reset.^000000";
+		}
+		mes "^0000FFEffect: " + .@desc$ + "^000000";
+	} else {
+		mes "^FF0000If the item already has an enchant in this slot, it will be reset.^000000";
+	}
+	mes "^FF0000Are you sure about upgrading this item?^000000";
+	next;
+
+	if (select("Yes.", "No.") == 2) {
+		mes "[Admin TranVy]";
+		mes "Please check our other upgrading services~";
+		close;
+	}
+
+	delitem .@stone, 1;
+
+	if (callfunc("F_IsEquipIDHack", .@part, .@equip_id) ||
+		callfunc("F_IsEquipCardHack", .@part, .@card[0], .@card[1], .@card[2], .@card[3]) ||
+		callfunc("F_IsEquipRefineHack", .@part, .@equip_refine))
+		close;
+
+	delequip .@part;
+
+	// Success rate: 90%
+	if (rand(1,100) <= 90) {
+		mes "[Admin TranVy]";
+		if (.@is_garment) {
+			mes "Beautiful!!";
+			mes "Did I really make this myself?!!!";
+			if (.@is_dual)
+				mes "^00FF00Both enchants are perfect!^000000";
+		} else {
+			mes "Wow... Elegance!!";
+			mes "This is perfect... Wow!";
+		}
+		.@card[.@enchant_slot] = .@enchant;
+	} else {
+		mes "[Admin TranVy]";
+		if (.@is_garment) {
+			mes "Oh no!";
+			mes "Crash!!!!! I cannot show this failure to the world!!!";
+			if (.@is_dual) {
+				mes "^FF0000Both enchants are lost!^000000";
+				.@card[0] = 0;
+			}
+		} else {
+			mes "History is known for failure...";
+			mes "Just like the history of fashion...";
+			mes "Sorry... to disappoint you.. LoL.";
+		}
+		.@card[.@enchant_slot] = 0;
+	}
+
+	getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+	close;
+}

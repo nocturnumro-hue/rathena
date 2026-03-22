@@ -1,0 +1,701 @@
+###########################################################################
+# Barter Database
+###########################################################################
+#
+# Barter Settings
+#
+###########################################################################
+#  - Name               NPC name.
+#    Map                Map name. (Default: not on a map)
+#    X                  Map x coordinate. (Default: 0)
+#    Y                  Map y coordinate. (Default: 0)
+#    Direction          Direction the NPC is looking. (Default: North)
+#    Sprite             Sprite name of the NPC. (Default: FakeNpc)
+#    Items:             List of sold items.
+#      - Index          Index of the item inside the shop. (0-...)
+#                       Maximum index depends on client.
+#        Item           Aegis name of the item.
+#        Stock          Amount of item in stock. 0 means unlimited. (Default: 0)
+#        Zeny           Cost of them item in Zeny. (Default: 0)
+#        Refine         Refine level of the item. (Default: 0)
+#        RequiredItems: List of required items (Optional)
+#          - Index      Index of the required item. (0-4)
+#            Item       Aegis name of required item.
+#            Amount     Amount of required item. (Default: 1)
+#            Refine     Refine level of required item. (Default: 0)
+###########################################################################
+
+Header:
+  Type: BARTER_DB
+  Version: 2
+
+Body:
+  - Name: Bio5_Headgear
+    Items:           
+      - Index: 0
+        Item: Old_Rune_Circlet
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 1
+        Item: Old_Mitra
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 2
+        Item: Old_Driver_Band_R
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 3
+        Item: Old_Driver_Band_Y
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 4
+        Item: Old_Shadow_Handicraft
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 5
+        Item: Old_Minstrel_Song_Hat
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 6
+        Item: Old_Midas_Whisper
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 7
+        Item: Old_Magic_Stone_Hat
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 8
+        Item: Old_Blazing_Soul
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 9
+        Item: Old_Wind_Whisper
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 10
+        Item: Old_Dying_Swan
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 11
+        Item: Old_Circlet_Of_Bone
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 12
+        Item: Old_Protect_Of_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+      - Index: 13
+        Item: Old_Camo_RabbitHood
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 100
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 100
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 100
+  - Name: Zodiac_Headgear
+    Items:
+      - Index: 0
+        Item: BioWeapon_Helm_RK
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 1
+        Item: BioWeapon_Helm_LG
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 2
+        Item: BioWeapon_Helm_WL
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 3
+        Item: BioWeapon_Helm_SO
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 4
+        Item: BioWeapon_Helm_NC
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 5
+        Item: BioWeapon_Helm_GN
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 6
+        Item: BioWeapon_Helm_RA
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 7
+        Item: BioWeapon_Helm_WM
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 8
+        Item: BioWeapon_Helm_AB
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 9
+        Item: BioWeapon_Helm_SR
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 10
+        Item: BioWeapon_Helm_SC
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 11
+        Item: BioWeapon_Helm_GC
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 12
+        Item: Zodiac_Helm_Emperor
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 13
+        Item: Zodiac_Helm_Reaper
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 14
+        Item: Zodiac_Helm_Kagerou
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 15
+        Item: Zodiac_Helm_Rebellion
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300
+      - Index: 16
+        Item: Zodiac_Helm_SuperNovice
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 300
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 300
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 300            
+  - Name: Zodiac_Shoes
+    Items:
+      - Index: 0
+        Item: Zodiac_Boots_AC
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 1
+        Item: Zodiac_Boots_SM
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 2
+        Item: Zodiac_Boots_AL
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 3
+        Item: Zodiac_Boots_MG
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 4
+        Item: Zodiac_Boots_TF
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 5
+        Item: Zodiac_Boots_MC
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 6
+        Item: Zodiac_Boots_TaeKwon
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 7
+        Item: Zodiac_Boots_KagerouOboro
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 8
+        Item: Zodiac_Boots_Rebellion
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500
+      - Index: 9
+        Item: Zodiac_Boots_SuperNovice
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 500
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 500            
+  - Name: Special_Items
+    Items:
+      - Index: 0
+        Item: Manteau_Of_Fallen
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 1000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 1000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 1000
+      - Index: 1
+        Item: Manteau_Of_Fallen_
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 1000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 1000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 1000
+      - Index: 2
+        Item: Subject_Aura
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 1000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 1000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 1000
+      - Index: 3
+        Item: Miss_Memory_Record
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 10000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 10000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 10000
+      - Index: 4
+        Item: Recol_Mem_Record
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 10000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 10000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 10000
+      - Index: 5
+        Item: Document_Acolyte_TH
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 6
+        Item: Document_Archer_TH
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 7
+        Item: Document_Mage_TH
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 8
+        Item: Document_Merchant_TH
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 9
+        Item: Document_Thief_TH
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 10
+        Item: Document_Swordsman_TH
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 11
+        Item: False_Thief1_US
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 12
+        Item: False_Swordman1_US
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000
+      - Index: 13
+        Item: False_Mage1_US
+        RequiredItems:
+          - Index: 0
+            Item: Particles_Of_Energy
+            Amount: 5000
+          - Index: 1
+            Item: Pieces_Of_Grudge
+            Amount: 5000
+          - Index: 2
+            Item: Pieces_Of_Sentiment
+            Amount: 5000            
+            

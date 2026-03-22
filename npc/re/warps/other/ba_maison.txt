@@ -59,16 +59,18 @@ ba_in01,307,31,0	warp	#ep172_hallway_to_lobby	1,1,ba_in01,255,351
 //============================================================
 // Airship Area
 //============================================================
-ba_maison,33,225,0	script	#ep172_proom2_out	WARPNPC,1,1,{
-	end;
-OnTouch:
-	if (ep17_2_main < 32)
-		warp "ba_in01",63,255;
-	else
-		warp "ba_in01",13,255;
-	end;
-}
-ba_in01,60,255,0	warp	#ep172_proom1_out	1,1,ba_maison,33,222
+//ba_maison,33,225,0	script	#ep172_proom2_out	WARPNPC,1,1,{
+//	end;
+//OnTouch:
+//	if (ep17_2_main < 32)
+//		warp "ba_in01",63,255;
+//	else
+//		warp "ba_in01",13,255;
+//	end;
+//}
+//ba_in01,60,255,0	warp	#ep172_proom1_out	1,1,ba_maison,33,222
+
+ba_maison,33,224,0	warp	#ep172_proom2_in_	1,1,ba_in01,14,255
 ba_in01,10,255,0	warp	#ep172_proom2_out_	1,1,ba_maison,33,222
 
 //============================================================

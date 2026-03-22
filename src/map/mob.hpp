@@ -33,6 +33,19 @@ struct guardian_data;
 
 //Min time between AI executions
 const t_tick MIN_MOBTHINKTIME = 100;
+
+// ===== MOB LEVEL UP SYSTEM =====
+#define MOB_MAX_LEVEL 275
+#define MOB_AURA_LEVEL1 99
+#define MOB_AURA_LEVEL2 275
+
+struct s_mob_level_data {
+    uint16 level;       // Level hiện tại (1 - 275)
+    t_exp  exp;         // Exp tích lũy
+    t_exp  next_exp;    // Exp cần để lên level tiếp
+};
+// ===== END MOB LEVEL UP SYSTEM =====
+
 //Min time before mobs do a check to call nearby friends for help (or for slaves to support their master)
 const t_tick MIN_MOBLINKTIME = 1000;
 //Min time between random walks
@@ -337,6 +350,7 @@ struct s_dmglog{
 struct mob_data : public block_list {
 	struct unit_data  ud;
 	struct view_data *vd;
+	tmp_data tmpd;	
 	bool vd_changed;
 	struct status_data status, *base_status; //Second one is in case of leveling up mobs, or tiny/large mobs.
 	status_change sc;
@@ -397,6 +411,10 @@ struct mob_data : public block_list {
 	 **/
 	int32 tomb_nid;
 	uint16 damagetaken;
+	
+// ===== MOB LEVEL UP SYSTEM =====
+struct s_mob_level_data mob_level_data;
+// ===== END MOB LEVEL UP SYSTEM =====
 
 	e_mob_bosstype get_bosstype() const;
 	map_session_data* get_mvp_player(map_session_data* first_sd);
@@ -581,6 +599,14 @@ void mvptomb_create(mob_data *md, char *killer, time_t time);
 void mvptomb_destroy(mob_data *md);
 
 void mob_setdropitem_option( item& itm, const std::shared_ptr<s_mob_drop>& mobdrop );
+
+// ===== MOB LEVEL UP SYSTEM =====
+t_exp  mob_get_next_exp(uint16 level);
+void   mob_level_init(mob_data *md);
+void   mob_level_up_stats(mob_data *md);
+void   mob_level_up_effect(mob_data *md);
+void   mob_gain_exp(mob_data *md, t_exp exp);
+// ===== END MOB LEVEL UP SYSTEM =====
 
 #define CHK_MOBSIZE(size) ((size) >= SZ_SMALL && (size) < SZ_MAX) /// Check valid Monster Size
 

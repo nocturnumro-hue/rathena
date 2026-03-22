@@ -1,0 +1,21 @@
+//----- [Episode21] ----- Age of Heroes
+//=============================================================
+//= jor_tmple2 <=> jor_tmple1 (Left Side)
+jor_tmple2,20,173,0	warp2	jor_tmple2_to_tmple1_left1	1,1,jor_tmple1,44,205
+jor_tmple2,20,127,0	warp2	jor_tmple2_to_tmple1_left2	1,1,jor_tmple1,44,134
+jor_tmple1,40,134,0	warp2	jor_tmple1_to_tmple2_left1	1,1,jor_tmple2,25,127
+jor_tmple1,40,205,0	warp2	jor_tmple1_to_tmple2_left2	1,1,jor_tmple2,25,173
+
+//= jor_tmple2 <=> jor_tmple1 (Right Side)
+jor_tmple2,280,127,0	warp2	jor_tmple2_to_tmple1_right1	1,1,jor_tmple1,295,134
+jor_tmple2,280,173,0	warp2	jor_tmple2_to_tmple1_right2	1,1,jor_tmple1,295,205
+jor_tmple1,299,204,0	warp2	jor_tmple1_to_tmple2_right1	1,1,jor_tmple2,273,173
+jor_tmple1,299,133,0	warp2	jor_tmple1_to_tmple2_right2	1,1,jor_tmple2,273,127
+
+//= jor_raise1 <=> jor_tmple1
+jor_raise1,152,322,0	warp2	jor_raise1_to_tmple1	1,1,jor_tmple1,170,62
+jor_tmple1,170,55,0	warp2	jor_tmple1_to_raise1	1,1,jor_raise1,152,318
+
+//= jor_raise1 <=> jor_raise2
+jor_raise1,280,395,0	warp2	jor_raise1_to_raise2	1,1,jor_raise2,122,409
+jor_raise2,120,415,0	warp2	jor_raise2_to_raise1	1,1,jor_raise1,285,380

@@ -10,7 +10,7 @@
 //= 1.3 Added clan helper. [exneval]
 //============================================================
 
-prontera,138,183,7	script	Clan Helper	703,{
+prontera,126,217,7	script	Clan Helper	703,{
 	mes "[Clan Helper]";
 	mes "Do you want to build connections without being in a guild?";
 	next;

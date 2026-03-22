@@ -1,0 +1,325 @@
+askald,35,195,1	script	Costume Enchant Fourth	4_F_OPERATION,{
+	mes "[^0000FFEnchant Master^000000]";
+	mes "Hi!!";
+	mes "I can enchant every costume that you wear,";
+	mes "I just need ^FF0000 20 Silvervine Fruit^000000 to do it.";
+	next;
+	mes "[^0000FFEnchant Master^000000]";
+	mes "I also can reset your enchantment.";
+	mes "Because I am so generous, I dont charge anything to reset the enchantment.";
+	mes "What do you wanna do?";
+	next;
+	switch(select("^008000Modify Costume^000000","^FF0000Reset Costume^000000")){
+	case 1:
+		mes "[^0000FFEnchant Master^000000]";
+		mes "Please select the costume!";
+		next;
+		switch(select("^008000Costume Upper^000000","^0000FFCostume Middle^000000","^FF0000Costume Lower^000000","^008000Costume Garment^000000")){
+			case 1:
+			.@equipslot = EQI_COSTUME_HEAD_TOP;
+			break;
+			case 2:
+			.@equipslot = EQI_COSTUME_HEAD_MID;
+			break;
+			case 3:
+			.@equipslot = EQI_COSTUME_HEAD_LOW;
+			break;
+			case 4:
+			.@equipslot = EQI_COSTUME_GARMENT;
+			break;
+		}
+		
+		.@hg = getequipid(.@equipslot);
+		if(.@hg == -1) {
+			mes "[^0000FFEnchant Master^000000]";
+			mes "It looks like you dont have any costume equipped on there.";
+			close;
+		}
+		
+		mes "[^0000FFEnchant Master^000000]";
+		mes "Your costume is ^008000"+getitemname(.@hg)+"^000000!";
+		next;
+		
+		while(1) {
+			.@ref = getequiprefinerycnt(.@equipslot);
+			.@card[0] = getequipcardid(.@equipslot,0);
+			.@card[1] = getequipcardid(.@equipslot,1);
+			.@card[2] = getequipcardid(.@equipslot,2);
+			.@card[3] = getequipcardid(.@equipslot,3);
+			
+			deletearray .@OptID[0],5;
+			deletearray .@OptVal[0],5;
+			deletearray .@OptParam[0],5;
+			
+			if(getequiprandomoption(.@equipslot,0,ROA_ID) != 0) {
+				setarray .@OptID[0],getequiprandomoption(.@equipslot,0,ROA_ID),getequiprandomoption(.@equipslot,1,ROA_ID),getequiprandomoption(.@equipslot,2,ROA_ID),getequiprandomoption(.@equipslot,3,ROA_ID),getequiprandomoption(.@equipslot,4,ROA_ID);
+				setarray .@OptVal[0],getequiprandomoption(.@equipslot,0,ROA_VALUE),getequiprandomoption(.@equipslot,1,ROA_VALUE),getequiprandomoption(.@equipslot,2,ROA_VALUE),getequiprandomoption(.@equipslot,3,ROA_VALUE),getequiprandomoption(.@equipslot,4,ROA_VALUE);
+				setarray .@OptParam[0],getequiprandomoption(.@equipslot,0,ROA_PARAM),getequiprandomoption(.@equipslot,1,ROA_PARAM),getequiprandomoption(.@equipslot,2,ROA_PARAM),getequiprandomoption(.@equipslot,3,ROA_PARAM),getequiprandomoption(.@equipslot,4,ROA_PARAM);
+			}
+			
+			.@allslotsfull = 1;
+			for(set .@i,0; .@i < 4; set .@i,.@i + 1) {
+				if(!.@card[.@i]) {
+					.@allslotsfull = 0;
+					break;
+				}
+			}
+			
+			if(.@allslotsfull) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^008000All slots are already enchanted!^000000";
+				mes "You need to reset first if you want to change.";
+				close;
+			}
+			
+			mes "[^0000FFEnchant Master^000000]";
+			mes "Now select the slot!";
+			mes "^0000FFCurrent Enchantments:^000000";
+			for(set .@i,0; .@i < 4; set .@i,.@i + 1) {
+				if(.@card[.@i])
+					mes "Slot "+(.@i+1)+": ^008000"+getitemname(.@card[.@i])+"^000000";
+				else
+					mes "Slot "+(.@i+1)+": ^FF0000Empty^000000";
+			}
+			next;
+			
+			if(.@equipslot == EQI_COSTUME_GARMENT) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^FF00001st slot^000000 is for ^0000FF4th Job Stone^000000";
+				mes "^FF00002nd slot^000000 is for ^0000FFDual Stone^000000";
+				mes "^FF00003rd slot^000000 is for ^0000FFSpecial Abilities^000000";
+				mes "^FF00004th slot^000000 is for ^0000FFEffect Stone^000000";
+			} else {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^FF00001st slot^000000 is for ^0000FF4th Stone^000000";
+				mes "^FF00002nd slot^000000 is for ^0000FF4th Stone^000000";
+				mes "^FF00003rd slot^000000 is for ^0000FF4th Stone^000000";
+				mes "^FF00004th slot^000000 is for ^0000FF4th Stone^000000";
+			}
+			next;
+			
+			.@slotselect = select("^FF00001st Slot^000000","^FF00002nd Slot^000000","^FF00003rd Slot^000000","^FF00004th Slot^000000","^008000Finish Enchanting^000000");
+			
+			if(.@slotselect == 5) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^008000Thank you for using my service!^000000";
+				mes "See ya next time.";
+				close;
+			}
+			
+			.@slotselect = .@slotselect - 1;
+			
+			if(.@card[.@slotselect]) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^FF0000This slot already has an enchantment!^000000";
+				mes "You have to reset it first to continue!";
+				next;
+				continue;
+			}
+			
+			if(.@equipslot == EQI_COSTUME_GARMENT) {
+				deletearray .@enchlist[0],128;
+				if(.@slotselect == 0)
+					setArray .@enchlist[0],313059,313735,313060,312401,313325,312400,312692,313359,312477,313360,312693,313736,312478,313324,312476,313361,312398,312399,313061,313326,312694,313737;
+				else if(.@slotselect == 1)
+					setArray .@enchlist[0],311471,311925,311425,311355,311015,310662,310663,310660,310661,310659,310658,310667,311354,311014,310654;
+				else if(.@slotselect == 2)
+					setArray .@enchlist[0],29027,29056,29124,29358,29372,29361,29373;
+				else
+					setArray .@enchlist[0],29160,29161,29162,29224,29225,29041,29142,29143,29144,29226,25058;
+			} else {
+				deletearray .@enchlist[0],128;
+				setArray .@enchlist[0],311471,311925,311425,311355,311015,310662,310663,310660,310661,310659,310658,310667,311354,311014,310654;
+			}
+			
+			mes "[^0000FFEnchant Master^000000]";
+			mes "Now please select the Enchantment:";
+			next;
+			
+			set .@e_m$,"";
+			for(set .@e,0; .@e < getarraysize(.@enchlist); set .@e,.@e + 1) {
+				.@isused = 0;
+				// CHECK DUPLICATE FOR ALL COSTUME TYPES
+				for(set .@i,0; .@i < 4; set .@i,.@i + 1) {
+					if(.@i != .@slotselect && .@card[.@i] == .@enchlist[.@e]) {
+						.@isused = 1;
+						break;
+					}
+				}
+				if(.@isused)
+					set .@e_m$,.@e_m$ + "> ^FF0000"+getitemname(.@enchlist[.@e])+" (Already used)^000000"+ ((.@enchlist[.@e+1] != 0)?":":"");
+				else
+					set .@e_m$,.@e_m$ + "> "+getitemname(.@enchlist[.@e])+ ((.@enchlist[.@e+1] != 0)?":":"");
+			}
+			
+			set .@rune,select(.@e_m$) - 1;
+			
+			// PREVENT DUPLICATE SELECTION FOR ALL COSTUME TYPES
+			.@isduplicate = 0;
+			for(set .@i,0; .@i < 4; set .@i,.@i + 1) {
+				if(.@i != .@slotselect && .@card[.@i] && .@card[.@i] == .@enchlist[.@rune]) {
+					.@isduplicate = 1;
+					break;
+				}
+			}
+			
+			if(.@isduplicate) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^FF0000You cannot use the same stone twice!^000000";
+				mes "Please choose a different enchantment.";
+				next;
+				continue;
+			}
+			
+			mes "[^0000FFEnchant Master^000000]";
+			mes "Selected Enchantment: ^008000"+getitemname(.@enchlist[.@rune])+"^000000";
+			next;
+			
+			if(countitem(6417) < 20) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^FF0000But it looks like you dont have enough "+getitemname(6417)+"!^000000";
+				next;
+				continue;
+			}
+			
+			mes "[^0000FFEnchant Master^000000]";
+			mes "Proceed?";
+			next;
+			if(select("^008000Yes^000000:^FF0000No^000000") - 1) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "Cancelled.";
+				next;
+				continue;
+			}
+			
+			delitem 6417,20;
+			delequip .@equipslot;
+			.@card[.@slotselect] = .@enchlist[.@rune];
+			
+			if(getarraysize(.@OptID) > 0)
+				getitem3 .@hg, 1, 1, .@ref, 0, .@card[0], .@card[1], .@card[2], .@card[3], .@OptID, .@OptVal, .@OptParam;
+			else
+				getitem2 .@hg, 1, 1, .@ref, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+			
+			equip .@hg;
+			
+			mes "[^0000FFEnchant Master^000000]";
+			mes "^008000The enchantment was a success!^000000";
+			next;
+			
+			mes "[^0000FFEnchant Master^000000]";
+			mes "Do you want to enchant another slot?";
+			next;
+			if(select("^008000Yes, continue!^000000:^FF0000No, I'm done^000000") - 1) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^008000Thank you for using my service!^000000";
+				mes "See ya next time.";
+				close;
+			}
+		}
+		
+	case 2:
+		mes "[^0000FFEnchant Master^000000]";
+		mes "Please select the Costume you want me to reset the enchantment!";
+		next;
+		switch(select("^008000Costume Upper^000000","^0000FFCostume Middle^000000","^FF0000Costume Lower^000000","^008000Costume Garment^000000")){
+			case 1:
+			.@equipslot = EQI_COSTUME_HEAD_TOP;
+			break;
+			case 2:
+			.@equipslot = EQI_COSTUME_HEAD_MID;
+			break;
+			case 3:
+			.@equipslot = EQI_COSTUME_HEAD_LOW;
+			break;
+			case 4:
+			.@equipslot = EQI_COSTUME_GARMENT;
+			break;
+		}
+		
+		.@hg = getequipid(.@equipslot);
+		.@ref = getequiprefinerycnt(.@equipslot);
+		.@card[0] = getequipcardid(.@equipslot,0);
+		.@card[1] = getequipcardid(.@equipslot,1);
+		.@card[2] = getequipcardid(.@equipslot,2);
+		.@card[3] = getequipcardid(.@equipslot,3);
+		
+		if(.@hg == -1) {
+			mes "[^0000FFEnchant Master^000000]";
+			mes "It looks like you dont have any costume equipped on there.";
+			close;
+		}
+		
+		if(getequiprandomoption(.@equipslot,0,ROA_ID) != 0) {
+			setarray .@OptID[0],getequiprandomoption(.@equipslot,0,ROA_ID),getequiprandomoption(.@equipslot,1,ROA_ID),getequiprandomoption(.@equipslot,2,ROA_ID),getequiprandomoption(.@equipslot,3,ROA_ID),getequiprandomoption(.@equipslot,4,ROA_ID);
+			setarray .@OptVal[0],getequiprandomoption(.@equipslot,0,ROA_VALUE),getequiprandomoption(.@equipslot,1,ROA_VALUE),getequiprandomoption(.@equipslot,2,ROA_VALUE),getequiprandomoption(.@equipslot,3,ROA_VALUE),getequiprandomoption(.@equipslot,4,ROA_VALUE);
+			setarray .@OptParam[0],getequiprandomoption(.@equipslot,0,ROA_PARAM),getequiprandomoption(.@equipslot,1,ROA_PARAM),getequiprandomoption(.@equipslot,2,ROA_PARAM),getequiprandomoption(.@equipslot,3,ROA_PARAM),getequiprandomoption(.@equipslot,4,ROA_PARAM);
+		}
+		
+		mes "[^0000FFEnchant Master^000000]";
+		mes "Your costume is ^008000"+getitemname(.@hg)+"^000000!";
+		next;
+		
+		mes "[^0000FFEnchant Master^000000]";
+		mes "^0000FFCurrent Enchantments:^000000";
+		for(set .@i,0; .@i < 4; set .@i,.@i + 1) {
+			if(.@card[.@i])
+				mes "Slot "+(.@i+1)+": ^008000"+getitemname(.@card[.@i])+"^000000";
+			else
+				mes "Slot "+(.@i+1)+": ^FF0000Empty^000000";
+		}
+		next;
+		
+		mes "[^0000FFEnchant Master^000000]";
+		mes "Now select the slot!";
+		if(.@equipslot == EQI_COSTUME_GARMENT) {
+			mes "^FF00001st slot^000000 - Reset ^0000FF4th Job Stone^000000";
+			mes "^FF00002nd slot^000000 - Reset ^0000FFDual Stone^000000";
+			mes "^FF00003rd slot^000000 - Reset ^0000FFSpecial Abilities^000000";
+			mes "^FF00004th slot^000000 - Reset ^0000FFEffect Stone^000000";
+		} else {
+			mes "^FF00001st slot^000000 - Reset ^0000FF4th Stone^000000";
+			mes "^FF00002nd slot^000000 - Reset ^0000FF4th Stone^000000";
+			mes "^FF00003rd slot^000000 - Reset ^0000FF4th Stone^000000";
+			mes "^FF00004th slot^000000 - Reset ^0000FF4th Stone^000000";
+		}
+		next;
+		
+		.@slotselect = select("^FF00001st Slot^000000","^FF00002nd Slot^000000","^FF00003rd Slot^000000","^FF00004th Slot^000000","^008000All at once^000000");
+		
+		if(.@slotselect == 5) {
+			mes "[^0000FFEnchant Master^000000]";
+			mes "Do you really want to reset all the slots?";
+			next;
+			if(select("^008000Yes^000000:^FF0000No^000000") - 1) close;
+			delequip .@equipslot;
+			if(getarraysize(.@OptID) > 0)
+				getitem3 .@hg, 1, 1, .@ref, 0, 0, 0, 0, 0, .@OptID, .@OptVal, .@OptParam;
+			else
+				getitem2 .@hg, 1, 1, .@ref, 0, 0, 0, 0, 0;
+		} else {
+			.@slotselect = .@slotselect - 1;
+			if(!.@card[.@slotselect]) {
+				mes "[^0000FFEnchant Master^000000]";
+				mes "^FF0000Theres nothing to be reset!^000000";
+				close;
+			}
+			mes "[^0000FFEnchant Master^000000]";
+			mes "You selected slot "+(.@slotselect+1)+"!";
+			mes "Proceed?";
+			next;
+			if(select("^008000Yes^000000:^FF0000No^000000") - 1) close;
+			delequip .@equipslot;
+			.@card[.@slotselect] = 0;
+			if(getarraysize(.@OptID) > 0)
+				getitem3 .@hg, 1, 1, .@ref, 0, .@card[0], .@card[1], .@card[2], .@card[3], .@OptID, .@OptVal, .@OptParam;
+			else
+				getitem2 .@hg, 1, 1, .@ref, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+		}
+		
+		mes "[^0000FFEnchant Master^000000]";
+		mes "^008000The enchantment has been reset.^000000";
+		mes "See ya next time.";
+		close;
+	}
+}

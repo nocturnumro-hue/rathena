@@ -1,0 +1,14 @@
+// bl_depth1 - Biosphere Depth 1st Floor
+//==================================================
+bl_depth2	monster	BIO_DUNEYRR	22252,35
+bl_depth2	monster	BIO_NAGA	22253,35
+bl_depth2	monster	BIO_ANCIENT_TREE	22254,35
+bl_depth2	monster	BIO_DOLLOCARIS	22255,35
+bl_depth2	monster	BIO_ICE_GARGOYLE	22256,35
+bl_depth2	monster	BIO_FLAME_GHOST	22257,35
+bl_depth2	monster	BIO_ACIDUS_	22258,35
+bl_depth2	monster	BIO_MOROCC_1	22259,35
+bl_depth2	monster	BIO_SALAMANDER	22260,35
+bl_depth2	monster	BIO_MOSKILLO	22261,35
+
+// unknown respawn timer

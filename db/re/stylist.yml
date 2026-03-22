@@ -420,10 +420,10 @@ Body:
   - Look: Body2
     Options:
       - Index: 1
-        Value: 0
+        Value: 1
         CostsHuman:
             RequiredItem: Costume_Ticket
       - Index: 2
-        Value: 1
+        Value: 2
         CostsHuman:
             RequiredItem: Costume_Ticket

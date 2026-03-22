@@ -1,0 +1,16 @@
+// cmd_bhole - Unknown Blue Hole
+//==================================================
+cmd_bhole	monster	HANOM	22435,45
+cmd_bhole	monster	CP HANOM	22440,30
+cmd_bhole	monster	SIRENA	22436,45
+cmd_bhole	monster	CP SIRENA	22441,30
+cmd_bhole	monster	TATSI	22431,45
+cmd_bhole	monster	G TATSI	22432,45
+cmd_bhole	monster	CP TATSI	22433,30
+cmd_bhole	monster	DIOSA	22437,45
+cmd_bhole	monster	CP DIOSA	22442,30
+cmd_bhole	monster	GUERRERO	22434,45
+cmd_bhole	monster	CP GUERRERO	22439,45
+
+// unknown respawn timer
+cmd_bhole	boss_monster	PESKA	22438,1,7200000,600000,1

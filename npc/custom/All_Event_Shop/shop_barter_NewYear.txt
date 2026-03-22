@@ -1,0 +1,32 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC Happy New Year Event
+// ============================================
+askald,32,56,1	script	Happy New Year	22179,{
+	mes "[Happy New Year Event]";
+	mes "Welcome to New Year Shop!";
+	mes "Please select Shop Type:";
+	next;
+	
+	switch(select("New Year Coin:New Year Text:Exit")) {
+		case 1:
+			mes "[New Year Coin]";
+			mes "Open New Year Coin Trade...";
+			close2;
+			callshop "HappyNewYear_Coin";
+			end;
+		case 2:
+			mes "[New Year Text]";
+			mes "Open New Year Text Trade...";
+			close2;
+			callshop "HappyNewYear_Text";
+			end;
+		case 3:
+			mes "[Happy New Year Event]";
+			mes "Have A Good Day!";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

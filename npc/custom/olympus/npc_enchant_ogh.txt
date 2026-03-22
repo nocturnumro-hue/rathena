@@ -1,0 +1,537 @@
+//============================================================
+// @reloadnpcfile npc/custom/olympus/npc_enchant_ogh.txt
+//============================================================
+
+prontera,164,160,4	script	OGH Challenge Enchanter#pa0829	4_F_KAFRA7,{
+	disable_items;
+	
+	if (MaxWeight - Weight < 1000) {
+		mes "[Spell Enchanter]";
+		mes "Your bag is too heavy. Reduce some weight and come back.";
+		close;
+	}
+	
+	// === GLOBAL ITEM IDs ===
+	set .gemstone_id, 25865;
+	set .temporal_speed_id, 25866;
+	set .temporal_frag_id, 25867;
+	
+	// === ITEM LISTS ===
+	setarray .@hat_list[0], 19474, 19479, 19484, 19489, 19475, 19480, 19485, 19490, 19476, 19481, 19486, 19491, 19477, 19482, 19487, 19492, 19478, 19483, 19488;
+	setarray .@weapon_list[0], 1336, 18191, 21055, 28141, 32027, 32353, 1870, 2060, 13347, 18198, 26165, 26166, 26172, 26216, 28046, 28636, 28774, 28775, 28776, 32111, 32304, 32401, 32402, 32403;
+	
+	// === TEMPORAL JEWELS (Slot 2 & 3) ===
+	setarray .@jewel_str[0], 29672, 29673, 29674;
+	setarray .@jewel_int[0], 29681, 29682, 29683;
+	setarray .@jewel_agi[0], 29675, 29676, 29677;
+	setarray .@jewel_dex[0], 29684, 29685, 29686;
+	setarray .@jewel_vit[0], 29678, 29679, 29680;
+	setarray .@jewel_luk[0], 29687, 29688, 29689;
+	setarray .@jewel_sharp[0], 4818, 4817, 4816, 4843;
+	setarray .@jewel_archer[0], 4832, 4833, 4834, 4835;
+	setarray .@jewel_aad[0], 4869, 4872, 4873, 4881;
+	setarray .@jewel_spell[0], 4815, 4814, 4813, 4812;
+	
+	setarray .@all_jewels[0],
+		29672, 29673, 29674,
+		29681, 29682, 29683,
+		29675, 29676, 29677,
+		29684, 29685, 29686,
+		29678, 29679, 29680,
+		29687, 29688, 29689,
+		4818, 4817, 4816, 4843,
+		4832, 4833, 4834, 4835,
+		4869, 4872, 4873, 4881,
+		4815, 4814, 4813, 4812;
+	
+	// === SUPREME ENCHANTMENTS (Slot 4 only) ===
+	setarray .@supreme_tenacity[0], 29706, 29707, 29708, 29709, 29710, 29711, 29712, 29713, 29714, 29715;
+	setarray .@supreme_mettle[0], 29061, 29062, 29063, 29064, 29065, 29066, 29067, 29068, 29069, 29070;
+	setarray .@supreme_affection[0], 29111, 29112, 29113, 29114, 29115, 29116, 29117, 29118, 29119, 29120;
+	setarray .@supreme_adamantine[0], 29101, 29102, 29103, 29104, 29105, 29106, 29107, 29108, 29109, 29110;
+	setarray .@supreme_master_archer[0], 29091, 29092, 29093, 29094, 29095, 29096, 29097, 29098, 29099, 29100;
+	setarray .@supreme_magic_essence[0], 29071, 29072, 29073, 29074, 29075, 29076, 29077, 29078, 29079, 29080;
+	setarray .@supreme_acute[0], 29081, 29082, 29083, 29084, 29085, 29086, 29087, 29088, 29089, 29090;
+	
+	mes "[Spell Enchanter]";
+	mes "Welcome. I can enchant your items with Temporal Jewels.";
+	next;
+	
+	switch(select("How does enchanting work?:Enchant my item:Upgrade enchantment:Remove enchantment")) {
+	
+	// ============================================================
+	case 1:
+	// ============================================================
+		mes "[Spell Enchanter]";
+		mes "You need ^0000FFGemstone^000000 and ^0000FFTemporal Speed^000000 to enchant your items.";
+		next;
+		mes "[Spell Enchanter]";
+		mes "^FF0000=== ENCHANTABLE ITEMS ===^000000";
+		mes "- Specific Hats/Helmets (Slot 2, 3, 4)";
+		mes "- Specific Weapons (Slot 3, 4 only)";
+		next;
+		mes "[Spell Enchanter]";
+		mes "^FF0000=== TEMPORAL JEWELS (Slot 2 & 3) ===^000000";
+		mes "- Temporal Jewel STR/INT/AGI/DEX/VIT/LUK Lv1-3";
+		mes "- Sharp Lv1-4 (Critical Damage)";
+		mes "- Archer Lv1-4 (Ranged Damage)";
+		mes "- AAD Lv1-4 (After-cast Delay)";
+		mes "- Spell Lv1-4 (Variable Cast Time)";
+		next;
+		mes "[Spell Enchanter]";
+		mes "^FF0000=== SUPREME ENCHANTMENTS (Slot 4 ONLY) ===^000000";
+		mes "- ^FF6600Tenacity^000000 Lv1-10 (HP/Tank)";
+		mes "- ^FF6600Mettle^000000 Lv1-10 (STR)";
+		mes "- ^FF6600Affection^000000 Lv1-10 (LUK)";
+		mes "- ^FF6600Adamantine^000000 Lv1-10 (VIT)";
+		mes "- ^FF6600Master Archer^000000 Lv1-10 (DEX)";
+		mes "- ^FF6600Magic Essence^000000 Lv1-10 (INT)";
+		mes "- ^FF6600Acute^000000 Lv1-10 (AGI)";
+		next;
+		mes "[Spell Enchanter]";
+		mes "^FF0000=== COST ===^000000";
+		mes "^777777[Hat - Slot 2]^000000 150 Gem + 150 Speed + 1 Jewel";
+		mes "^777777[Hat/Weapon - Slot 3]^000000 100 Gem + 100 Speed + 1 Jewel";
+		mes "^777777[Hat/Weapon - Slot 4]^000000 50 Gem + 50 Speed (Supreme only)";
+		mes "^777777[Remove]^000000 50 Temporal Fragment";
+		close;
+	
+	// ============================================================
+	case 2:
+	// ============================================================
+		mes "[Spell Enchanter]";
+		mes "Which item do you want to enchant?";
+		next;
+		
+		.@menu$ = "";
+		.@menu_count = 0;
+		
+		if (getequipid(EQI_HEAD_TOP) > 0) {
+			.@equip_id = getequipid(EQI_HEAD_TOP);
+			for (.@i = 0; .@i < getarraysize(.@hat_list); .@i++) {
+				if (.@equip_id == .@hat_list[.@i]) {
+					.@menu$ = "Head Top [" + getequipname(EQI_HEAD_TOP) + "]";
+					.@menu_slots[.@menu_count] = EQI_HEAD_TOP;
+					.@menu_count++;
+					break;
+				}
+			}
+		}
+		
+		if (getequipid(EQI_HAND_R) > 0) {
+			.@equip_id = getequipid(EQI_HAND_R);
+			for (.@i = 0; .@i < getarraysize(.@weapon_list); .@i++) {
+				if (.@equip_id == .@weapon_list[.@i]) {
+					if (.@menu$ != "") .@menu$ += ":";
+					.@menu$ += "Weapon [" + getequipname(EQI_HAND_R) + "]";
+					.@menu_slots[.@menu_count] = EQI_HAND_R;
+					.@menu_count++;
+					break;
+				}
+			}
+		}
+		
+		if (.@menu_count == 0) {
+			mes "[Spell Enchanter]";
+			mes "You don't have any enchantable item equipped!";
+			close;
+		}
+		
+		.@menu$ += ":Cancel";
+		.@choice = select(.@menu$) - 1;
+		if (.@choice == .@menu_count) close;
+		
+		.@equip_slot = .@menu_slots[.@choice];
+		.@equip_id = getequipid(.@equip_slot);
+		.@equip_refine = getequiprefinerycnt(.@equip_slot);
+		.@is_weapon = (.@equip_slot == EQI_HAND_R) ? 1 : 0;
+		
+		setarray .@card[0],
+			getequipcardid(.@equip_slot, 0),
+			getequipcardid(.@equip_slot, 1),
+			getequipcardid(.@equip_slot, 2),
+			getequipcardid(.@equip_slot, 3);
+		
+		mes "[Spell Enchanter]";
+		mes "Select which slot to enchant:";
+		next;
+		
+		.@slot_menu$ = "";
+		.@slot_count = 0;
+		
+		// Slot 4 - available for both hat and weapon
+		if (.@card[3] == 0) {
+			.@slot_menu$ = "Slot 4 (50 Gem + 50 Speed) - SUPREME";
+			.@available_slots[.@slot_count] = 3;
+			.@slot_count++;
+		}
+		// Slot 3 - available for both hat and weapon
+		if (.@card[2] == 0) {
+			if (.@slot_menu$ != "") .@slot_menu$ += ":";
+			.@slot_menu$ += "Slot 3 (100 Gem + 100 Speed + Jewel)";
+			.@available_slots[.@slot_count] = 2;
+			.@slot_count++;
+		}
+		// Slot 2 - available for hat only
+		if (!.@is_weapon && .@card[1] == 0) {
+			if (.@slot_menu$ != "") .@slot_menu$ += ":";
+			.@slot_menu$ += "Slot 2 (150 Gem + 150 Speed + Jewel)";
+			.@available_slots[.@slot_count] = 1;
+			.@slot_count++;
+		}
+		
+		if (.@slot_count == 0) {
+			mes "[Spell Enchanter]";
+			mes "All available slots are filled!";
+			close;
+		}
+		
+		.@slot_menu$ += ":Cancel";
+		.@selected = select(.@slot_menu$) - 1;
+		if (.@selected == .@slot_count) close;
+		
+		.@target_slot = .@available_slots[.@selected];
+		
+		// Cost based on slot index
+		if (.@target_slot == 3) .@cost = 50;
+		else if (.@target_slot == 2) .@cost = 100;
+		else .@cost = 150;
+		
+		// Supreme enchant for slot 4
+		if (.@target_slot == 3) {
+			mes "[Spell Enchanter]";
+			mes "Select a Supreme Enchantment (starts at Lv1):";
+			next;
+			
+			.@sup_choice = select("Tenacity:Mettle:Affection:Adamantine:Master Archer:Magic Essence:Acute:Cancel") - 1;
+			if (.@sup_choice == 7) close;
+			
+			switch(.@sup_choice) {
+				case 0: .@jewel_id = .@supreme_tenacity[0]; break;
+				case 1: .@jewel_id = .@supreme_mettle[0]; break;
+				case 2: .@jewel_id = .@supreme_affection[0]; break;
+				case 3: .@jewel_id = .@supreme_adamantine[0]; break;
+				case 4: .@jewel_id = .@supreme_master_archer[0]; break;
+				case 5: .@jewel_id = .@supreme_magic_essence[0]; break;
+				case 6: .@jewel_id = .@supreme_acute[0]; break;
+			}
+			.@need_jewel = 0;
+		} else {
+			// Temporal jewel for slot 2 & 3
+			mes "[Spell Enchanter]";
+			mes "Select a jewel from your inventory:";
+			next;
+			
+			.@jewel_menu$ = "";
+			.@jewel_count = 0;
+			
+			for (.@i = 0; .@i < getarraysize(.@all_jewels); .@i++) {
+				if (countitem(.@all_jewels[.@i]) > 0) {
+					if (.@jewel_menu$ != "") .@jewel_menu$ += ":";
+					.@jewel_menu$ += getitemname(.@all_jewels[.@i]);
+					.@available_jewels[.@jewel_count] = .@all_jewels[.@i];
+					.@jewel_count++;
+				}
+			}
+			
+			if (.@jewel_count == 0) {
+				mes "[Spell Enchanter]";
+				mes "You don't have any Temporal Jewel in your inventory!";
+				close;
+			}
+			
+			.@jewel_menu$ += ":Cancel";
+			.@jewel_choice = select(.@jewel_menu$) - 1;
+			if (.@jewel_choice == .@jewel_count) close;
+			
+			.@jewel_id = .@available_jewels[.@jewel_choice];
+			.@need_jewel = 1;
+		}
+		
+		// Confirm
+		mes "[Spell Enchanter]";
+		mes "Item: ^FF6600" + getitemname(.@equip_id) + "^000000";
+		mes "Enchant: ^FF0000" + getitemname(.@jewel_id) + "^000000";
+		mes "Cost: ^0000FF" + .@cost + " Gemstone + " + .@cost + " Temporal Speed^000000";
+		if (.@need_jewel) mes "Material: ^0000FF1x " + getitemname(.@jewel_id) + "^000000";
+		next;
+		
+		if (select("Cancel:Confirm Enchant") == 1) close;
+		
+		if (countitem(.gemstone_id) < .@cost || countitem(.temporal_speed_id) < .@cost) {
+			mes "[Spell Enchanter]";
+			mes "You don't have enough materials!";
+			mes "Required: ^0000FF" + .@cost + " Gemstone^000000 and ^0000FF" + .@cost + " Temporal Speed^000000.";
+			close;
+		}
+		
+		if (.@need_jewel && countitem(.@jewel_id) < 1) {
+			mes "[Spell Enchanter]";
+			mes "You don't have the required jewel!";
+			close;
+		}
+		
+		delitem .gemstone_id, .@cost;
+		delitem .temporal_speed_id, .@cost;
+		if (.@need_jewel) delitem .@jewel_id, 1;
+		
+		.@card[.@target_slot] = .@jewel_id;
+		
+		delequip .@equip_slot;
+		specialeffect2 EF_REPAIRWEAPON;
+		
+		mes "[Spell Enchanter]";
+		mes "^00CC00Enchantment successful!^000000";
+		mes "^FF6600" + getitemname(.@equip_id) + "^000000 has been enchanted with ^FF0000" + getitemname(.@jewel_id) + "^000000.";
+		getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+		equip .@equip_id;
+		close;
+	
+	// ============================================================
+	case 3:
+	// ============================================================
+		mes "[Spell Enchanter]";
+		mes "Select an item to upgrade its Supreme Enchantment:";
+		next;
+		
+		.@menu$ = "";
+		.@menu_count = 0;
+		
+		if (getequipid(EQI_HEAD_TOP) > 0) {
+			.@equip_id = getequipid(EQI_HEAD_TOP);
+			for (.@i = 0; .@i < getarraysize(.@hat_list); .@i++) {
+				if (.@equip_id == .@hat_list[.@i]) {
+					.@menu$ = "Head Top [" + getequipname(EQI_HEAD_TOP) + "]";
+					.@menu_slots[.@menu_count] = EQI_HEAD_TOP;
+					.@menu_count++;
+					break;
+				}
+			}
+		}
+		
+		if (getequipid(EQI_HAND_R) > 0) {
+			.@equip_id = getequipid(EQI_HAND_R);
+			for (.@i = 0; .@i < getarraysize(.@weapon_list); .@i++) {
+				if (.@equip_id == .@weapon_list[.@i]) {
+					if (.@menu$ != "") .@menu$ += ":";
+					.@menu$ += "Weapon [" + getequipname(EQI_HAND_R) + "]";
+					.@menu_slots[.@menu_count] = EQI_HAND_R;
+					.@menu_count++;
+					break;
+				}
+			}
+		}
+		
+		if (.@menu_count == 0) {
+			mes "[Spell Enchanter]";
+			mes "No valid enchantable item equipped!";
+			close;
+		}
+		
+		.@menu$ += ":Cancel";
+		.@choice = select(.@menu$) - 1;
+		if (.@choice == .@menu_count) close;
+		
+		.@equip_slot = .@menu_slots[.@choice];
+		.@equip_id = getequipid(.@equip_slot);
+		.@equip_refine = getequiprefinerycnt(.@equip_slot);
+		
+		setarray .@card[0],
+			getequipcardid(.@equip_slot, 0),
+			getequipcardid(.@equip_slot, 1),
+			getequipcardid(.@equip_slot, 2),
+			getequipcardid(.@equip_slot, 3);
+		
+		.@current_enchant = .@card[3];
+		.@can_upgrade = 0;
+		.@current_level = 0;
+		.@enchant_type = -1;
+		
+		for (.@i = 0; .@i < 10; .@i++) {
+			if (.@current_enchant == .@supreme_tenacity[.@i])      { .@can_upgrade = 1; .@current_level = .@i + 1; .@enchant_type = 0; break; }
+			if (.@current_enchant == .@supreme_mettle[.@i])        { .@can_upgrade = 1; .@current_level = .@i + 1; .@enchant_type = 1; break; }
+			if (.@current_enchant == .@supreme_affection[.@i])     { .@can_upgrade = 1; .@current_level = .@i + 1; .@enchant_type = 2; break; }
+			if (.@current_enchant == .@supreme_adamantine[.@i])    { .@can_upgrade = 1; .@current_level = .@i + 1; .@enchant_type = 3; break; }
+			if (.@current_enchant == .@supreme_master_archer[.@i]) { .@can_upgrade = 1; .@current_level = .@i + 1; .@enchant_type = 4; break; }
+			if (.@current_enchant == .@supreme_magic_essence[.@i]) { .@can_upgrade = 1; .@current_level = .@i + 1; .@enchant_type = 5; break; }
+			if (.@current_enchant == .@supreme_acute[.@i])         { .@can_upgrade = 1; .@current_level = .@i + 1; .@enchant_type = 6; break; }
+		}
+		
+		if (!.@can_upgrade) {
+			mes "[Spell Enchanter]";
+			mes "This item does not have a Supreme Enchantment in Slot 4!";
+			close;
+		}
+		
+		if (.@current_level >= 10) {
+			mes "[Spell Enchanter]";
+			mes "This enchantment is already at maximum level (Lv10)!";
+			close;
+		}
+		
+		.@next_level = .@current_level + 1;
+		.@upgrade_cost = 50 + (.@current_level * 50);
+		
+		mes "[Spell Enchanter]";
+		mes "Item: ^FF6600" + getitemname(.@equip_id) + "^000000";
+		mes "Current: ^777777Lv" + .@current_level + "^000000  →  Upgrade to: ^00CC00Lv" + .@next_level + "^000000";
+		mes "Cost: ^0000FF" + .@upgrade_cost + " Gemstone + " + .@upgrade_cost + " Temporal Speed^000000";
+		next;
+		
+		if (select("Cancel:Confirm Upgrade") == 1) close;
+		
+		if (countitem(.gemstone_id) < .@upgrade_cost || countitem(.temporal_speed_id) < .@upgrade_cost) {
+			mes "[Spell Enchanter]";
+			mes "You don't have enough materials!";
+			mes "Required: ^0000FF" + .@upgrade_cost + " Gemstone^000000 and ^0000FF" + .@upgrade_cost + " Temporal Speed^000000.";
+			close;
+		}
+		
+		delitem .gemstone_id, .@upgrade_cost;
+		delitem .temporal_speed_id, .@upgrade_cost;
+		
+		switch(.@enchant_type) {
+			case 0: .@new_enchant = .@supreme_tenacity[.@next_level - 1]; break;
+			case 1: .@new_enchant = .@supreme_mettle[.@next_level - 1]; break;
+			case 2: .@new_enchant = .@supreme_affection[.@next_level - 1]; break;
+			case 3: .@new_enchant = .@supreme_adamantine[.@next_level - 1]; break;
+			case 4: .@new_enchant = .@supreme_master_archer[.@next_level - 1]; break;
+			case 5: .@new_enchant = .@supreme_magic_essence[.@next_level - 1]; break;
+			case 6: .@new_enchant = .@supreme_acute[.@next_level - 1]; break;
+		}
+		
+		.@card[3] = .@new_enchant;
+		
+		delequip .@equip_slot;
+		specialeffect2 EF_REPAIRWEAPON;
+		
+		mes "[Spell Enchanter]";
+		mes "^00CC00Upgrade successful!^000000";
+		mes "Supreme Enchantment upgraded to ^FF0000Lv" + .@next_level + "^000000.";
+		getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+		equip .@equip_id;
+		close;
+	
+	// ============================================================
+	case 4:
+	// ============================================================
+		mes "[Spell Enchanter]";
+		mes "Select an item to remove an enchantment from:";
+		next;
+		
+		.@menu$ = "";
+		.@menu_count = 0;
+		
+		if (getequipid(EQI_HEAD_TOP) > 0) {
+			.@equip_id = getequipid(EQI_HEAD_TOP);
+			for (.@i = 0; .@i < getarraysize(.@hat_list); .@i++) {
+				if (.@equip_id == .@hat_list[.@i]) {
+					.@menu$ = "Head Top [" + getequipname(EQI_HEAD_TOP) + "]";
+					.@menu_slots[.@menu_count] = EQI_HEAD_TOP;
+					.@menu_count++;
+					break;
+				}
+			}
+		}
+		
+		if (getequipid(EQI_HAND_R) > 0) {
+			.@equip_id = getequipid(EQI_HAND_R);
+			for (.@i = 0; .@i < getarraysize(.@weapon_list); .@i++) {
+				if (.@equip_id == .@weapon_list[.@i]) {
+					if (.@menu$ != "") .@menu$ += ":";
+					.@menu$ += "Weapon [" + getequipname(EQI_HAND_R) + "]";
+					.@menu_slots[.@menu_count] = EQI_HAND_R;
+					.@menu_count++;
+					break;
+				}
+			}
+		}
+		
+		if (.@menu_count == 0) {
+			mes "[Spell Enchanter]";
+			mes "No valid enchantable item equipped!";
+			close;
+		}
+		
+		.@menu$ += ":Cancel";
+		.@choice = select(.@menu$) - 1;
+		if (.@choice == .@menu_count) close;
+		
+		.@equip_slot = .@menu_slots[.@choice];
+		.@equip_id = getequipid(.@equip_slot);
+		.@equip_refine = getequiprefinerycnt(.@equip_slot);
+		.@is_weapon = (.@equip_slot == EQI_HAND_R) ? 1 : 0;
+		
+		setarray .@card[0],
+			getequipcardid(.@equip_slot, 0),
+			getequipcardid(.@equip_slot, 1),
+			getequipcardid(.@equip_slot, 2),
+			getequipcardid(.@equip_slot, 3);
+		
+		// Build remove menu - weapon only shows slot 3 & 4
+		.@slot_menu$ = "";
+		.@slot_menu_count = 0;
+		
+		if (.@card[3] > 0) {
+			.@slot_menu$ = "Slot 4 [" + getitemname(.@card[3]) + "]";
+			.@slot_positions[.@slot_menu_count] = 3;
+			.@slot_menu_count++;
+		}
+		if (.@card[2] > 0) {
+			if (.@slot_menu$ != "") .@slot_menu$ += ":";
+			.@slot_menu$ += "Slot 3 [" + getitemname(.@card[2]) + "]";
+			.@slot_positions[.@slot_menu_count] = 2;
+			.@slot_menu_count++;
+		}
+		// Slot 2 only for hat
+		if (!.@is_weapon && .@card[1] > 0) {
+			if (.@slot_menu$ != "") .@slot_menu$ += ":";
+			.@slot_menu$ += "Slot 2 [" + getitemname(.@card[1]) + "]";
+			.@slot_positions[.@slot_menu_count] = 1;
+			.@slot_menu_count++;
+		}
+		
+		if (.@slot_menu_count == 0) {
+			mes "[Spell Enchanter]";
+			mes "This item has no enchantments to remove!";
+			close;
+		}
+		
+		mes "[Spell Enchanter]";
+		mes "Select which slot to remove:";
+		next;
+		
+		.@slot_menu$ += ":Cancel";
+		.@slot_choice = select(.@slot_menu$) - 1;
+		if (.@slot_choice == .@slot_menu_count) close;
+		
+		.@remove_slot = .@slot_positions[.@slot_choice];
+		
+		mes "[Spell Enchanter]";
+		mes "Item: ^FF6600" + getitemname(.@equip_id) + "^000000";
+		mes "Remove: ^FF0000" + getitemname(.@card[.@remove_slot]) + "^000000 from Slot " + (.@remove_slot + 1);
+		mes "Cost: ^0000FF50 Temporal Fragment^000000";
+		next;
+		
+		if (select("Cancel:Confirm Remove") == 1) close;
+		
+		if (countitem(.temporal_frag_id) < 50) {
+			mes "[Spell Enchanter]";
+			mes "You don't have enough Temporal Fragment!";
+			mes "Required: ^0000FF50 Temporal Fragment^000000.";
+			close;
+		}
+		
+		delitem .temporal_frag_id, 50;
+		.@card[.@remove_slot] = 0;
+		
+		delequip .@equip_slot;
+		specialeffect2 EF_REPAIRWEAPON;
+		
+		mes "[Spell Enchanter]";
+		mes "^00CC00Enchantment removed successfully!^000000";
+		getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+		equip .@equip_id;
+		close;
+	}
+}

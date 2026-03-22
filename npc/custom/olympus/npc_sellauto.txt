@@ -1,0 +1,167 @@
+//==============================================================================
+//  Item Hoarder - Simple Auto Sell (Items ≥ 5000z)
+//==============================================================================
+
+prontera,138,183,7	script	Item Hoarder#1	10013,8,8,{
+
+	mes "[Item Hoarder]";
+	mes "I can help you sell items quickly!";
+	mes " ";
+	mes "Select minimum price:";
+	
+	switch(select("Sell All Items => 1,000z:Sell All Items => 5,000z:Sell All Items => 10,000z:Cancel")){
+		case 1:
+			set .@minprice, 1000;
+			break;
+		case 2:
+			set .@minprice, 5000;
+			break;
+		case 3:
+			set .@minprice, 10000;
+			break;
+		case 4:
+			close;
+	}
+	
+	// Kiểm tra Overcharge skill
+	set .@oc, getskilllv("MC_OVERCHARGE");
+	set .@bonus, 0;
+	if(.@oc > 0){
+		set .@bonus, 5 + (2 * .@oc) - (.@oc / 10);
+	}
+	
+	// Xóa arrays cũ
+	cleararray @sellids[0], 0, 128;
+	cleararray @sellcounts[0], 0, 128;
+	set @sellnum, 0;
+	set @totalmoney, 0;
+	
+	// Load inventory
+	deletearray @inventorylist_id[0], 128;
+	deletearray @inventorylist_amount[0], 128;
+	deletearray @inventorylist_equip[0], 128;
+	deletearray @inventorylist_identify[0], 128;
+	getinventorylist;
+	
+	// Quét tất cả items
+	for(set @i, 0; @i < @inventorylist_count; set @i, @i + 1){
+		set .@id, @inventorylist_id[@i];
+		set .@amt, @inventorylist_amount[@i];
+		set .@equip, @inventorylist_equip[@i];
+		set .@ident, @inventorylist_identify[@i];
+		
+		// Skip nếu đang equip
+		if(.@equip) continue;
+		
+		// Skip nếu chưa identify
+		if(!.@ident) continue;
+		
+		// Skip card (type 6)
+		set .@type, getiteminfo(.@id, 2);
+		if(.@type == 6) continue;
+		
+		// Lấy giá Tool Dealer thu (getiteminfo type 1)
+		set .@sellprice, getiteminfo(.@id, 1);
+		
+		// Lọc theo mức giá đã chọn
+		if(.@sellprice < .@minprice) continue;
+		
+		// Thêm vào danh sách bán
+		setarray @sellids[@sellnum], .@id;
+		setarray @sellcounts[@sellnum], .@amt;
+		set @sellnum, @sellnum + 1;
+	}
+	
+	// Kiểm tra có items không
+	if(@sellnum == 0){
+		clear;
+		mes "[Item Hoarder]";
+		mes "^FF0000You have no items worth "+ .@minprice +"z or more!^000000";
+		close;
+	}
+	
+	// Gộp items trùng ID
+	cleararray .@gid[0], 0, 128;
+	cleararray .@gtot[0], 0, 128;
+	set .@groups, 0;
+	
+	for(set .@i, 0; .@i < @sellnum; set .@i, .@i + 1){
+		set .@id, @sellids[.@i];
+		set .@cnt, @sellcounts[.@i];
+		
+		set .@found, -1;
+		for(set .@g, 0; .@g < .@groups; set .@g, .@g + 1){
+			if(.@gid[.@g] == .@id){
+				set .@found, .@g;
+				break;
+			}
+		}
+		
+		if(.@found == -1){
+			set .@gid[.@groups], .@id;
+			set .@gtot[.@groups], .@cnt;
+			set .@groups, .@groups + 1;
+		} else {
+			set .@gtot[.@found], .@gtot[.@found] + .@cnt;
+		}
+	}
+	
+	// Hiển thị danh sách
+	clear;
+	mes "[Item Hoarder]";
+	mes "^00FF00Items to sell (=> "+ .@minprice +"z):^000000";
+	mes " ";
+	
+	for(set .@i, 0; .@i < .@groups; set .@i, .@i + 1){
+		set .@id, .@gid[.@i];
+		set .@total, .@gtot[.@i];
+		
+		// Tính giá base (getiteminfo type 1 = Sell Price)
+		set .@sellprice, getiteminfo(.@id, 1);
+		set .@baseprice, .@sellprice * .@total;
+		
+		// Áp dụng Overcharge bonus (nếu có)
+		set .@totalprice, (.@baseprice * (100 + .@bonus)) / 100;
+		
+		mes (.@i+1) +") ^0000FF"+ getitemname(.@id) +"^000000 x^FF0000"+ .@total +"^000000";
+		mes "   = ^00FF00"+ .@totalprice +"z^000000";
+		
+		set @totalmoney, @totalmoney + .@totalprice;
+	}
+	
+	mes " ";
+	mes "^FFD700Total: "+ @totalmoney +"z^000000";
+	if(.@bonus > 0){
+		mes "^0000FF(Overcharge +"+ .@bonus +"%)^000000";
+	}
+	
+	next;
+	mes "[Item Hoarder]";
+	mes "Sell all for ^FFD700"+ @totalmoney +"z^000000?";
+	
+	if(select("^00FF00Yes, Sell All^000000:Cancel") == 2){
+		mes "[Item Hoarder]";
+		mes "Cancelled.";
+		close;
+	}
+	
+	// Xóa items
+	for(set .@i, 0; .@i < @sellnum; set .@i, .@i + 1){
+		delitem @sellids[.@i], @sellcounts[.@i];
+	}
+	
+	// Cộng tiền
+	set Zeny, Zeny + @totalmoney;
+	
+	clear;
+	mes "[Item Hoarder]";
+	mes "^00FF00Complete!^000000";
+	mes " ";
+	mes "Sold ^0000FF"+ .@groups +"^000000 types of items";
+	mes "Received ^FFD700"+ @totalmoney +"z^000000";
+	close;
+
+OnTouch:
+	showscript "[ Bulk Item Sell ]", getnpcid(0);
+	end;
+}

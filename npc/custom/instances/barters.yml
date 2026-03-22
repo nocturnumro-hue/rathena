@@ -1,0 +1,466 @@
+###########################################################################
+# Barter Database
+###########################################################################
+#
+# Barter Settings
+#
+###########################################################################
+#  - Name               NPC name.
+#    Map                Map name. (Default: not on a map)
+#    X                  Map x coordinate. (Default: 0)
+#    Y                  Map y coordinate. (Default: 0)
+#    Direction          Direction the NPC is looking. (Default: North)
+#    Sprite             Sprite name of the NPC. (Default: FakeNpc)
+#    Items:             List of sold items.
+#      - Index          Index of the item inside the shop. (0-...)
+#                       Maximum index depends on client.
+#        Item           Aegis name of the item.
+#        Stock          Amount of item in stock. 0 means unlimited. (Default: 0)
+#        Zeny           Cost of them item in Zeny. (Default: 0)
+#        Refine         Refine level of the item. (Default: 0)
+#        RequiredItems: List of required items (Optional)
+#          - Index      Index of the required item. (0-4)
+#            Item       Aegis name of required item.
+#            Amount     Amount of required item. (Default: 1)
+#            Refine     Refine level of required item. (Default: 0)
+###########################################################################
+# Barter Database
+###########################################################################
+
+Header:
+  Type: BARTER_DB
+  Version: 2
+
+Body:
+  - Name: Constellation_Tower_Basic
+    Items:
+      - Index: 0
+        Item: Meteorite_Fragment
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Dust
+            Amount: 50
+      - Index: 1
+        Item: Naght_Sieger_Soul
+        RequiredItems:
+          - Index: 0
+            Item: Betelgeuse_Soul
+            Amount: 3
+      - Index: 2
+        Item: Vague_Star_Robe
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Naght_Sieger_Soul
+            Amount: 5
+      - Index: 3
+        Item: Vague_Star_Suit
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Naght_Sieger_Soul
+            Amount: 5
+      - Index: 4
+        Item: Vague_Star_Armor
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Naght_Sieger_Soul
+            Amount: 5
+      - Index: 5
+        Item: Signet_Of_Star
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 100
+          - Index: 1
+            Item: Naght_Sieger_Soul
+            Amount: 10
+      - Index: 6
+        Item: Pow_Meteorite_Fragment
+        RequiredItems:
+          - Index: 0
+            Item: Pow_Meteorite_Dust
+            Amount: 5
+      - Index: 7
+        Item: Sta_Meteorite_Fragment
+        RequiredItems:
+          - Index: 0
+            Item: Sta_Meteorite_Dust
+            Amount: 5
+      - Index: 8
+        Item: Con_Meteorite_Fragment
+        RequiredItems:
+          - Index: 0
+            Item: Con_Meteorite_Dust
+            Amount: 5
+      - Index: 9
+        Item: Crt_Meteorite_Fragment
+        RequiredItems:
+          - Index: 0
+            Item: Crt_Meteorite_Dust
+            Amount: 5
+      - Index: 10
+        Item: Spl_Meteorite_Fragment
+        RequiredItems:
+          - Index: 0
+            Item: Spl_Meteorite_Dust
+            Amount: 5
+      - Index: 11
+        Item: Wis_Meteorite_Fragment
+        RequiredItems:
+          - Index: 0
+            Item: Wis_Meteorite_Dust
+            Amount: 5            
+  - Name: Constellation_Tower_Advanced
+    Items:
+      - Index: 0
+        Item: Star_Armor_Of_Pow
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Pow_Meteorite_Dust
+            Amount: 30
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 10
+          - Index: 3
+            Item: Vague_Star_Armor
+            Amount: 1
+      - Index: 1
+        Item: Star_Armor_Of_Sta
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Sta_Meteorite_Dust
+            Amount: 30
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 10
+          - Index: 3
+            Item: Vague_Star_Armor
+            Amount: 1
+      - Index: 2
+        Item: Star_Suit_Of_Con
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Con_Meteorite_Dust
+            Amount: 30
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 10
+          - Index: 3
+            Item: Vague_Star_Suit
+            Amount: 1
+      - Index: 3
+        Item: Star_Suit_Of_Crt
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Crt_Meteorite_Dust
+            Amount: 30
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 10
+          - Index: 3
+            Item: Vague_Star_Suit
+            Amount: 1
+      - Index: 4
+        Item: Star_Robe_Of_Spl
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Spl_Meteorite_Dust
+            Amount: 30
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 10
+          - Index: 3
+            Item: Vague_Star_Robe
+            Amount: 1
+      - Index: 5
+        Item: Star_Robe_Of_Wis
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 50
+          - Index: 1
+            Item: Wis_Meteorite_Dust
+            Amount: 30
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 10
+          - Index: 3
+            Item: Vague_Star_Robe
+            Amount: 1
+      - Index: 6
+        Item: Signet_Of_Pow_Star
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 250
+          - Index: 1
+            Item: Pow_Meteorite_Dust
+            Amount: 50
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 20
+          - Index: 3
+            Item: Signet_Of_Star
+            Amount: 1
+      - Index: 7
+        Item: Signet_Of_Sta_Star
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 250
+          - Index: 1
+            Item: Sta_Meteorite_Dust
+            Amount: 50
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 20
+          - Index: 3
+            Item: Signet_Of_Star
+            Amount: 1
+      - Index: 8
+        Item: Signet_Of_Con_Star
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 250
+          - Index: 1
+            Item: Con_Meteorite_Dust
+            Amount: 50
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 20
+          - Index: 3
+            Item: Signet_Of_Star
+            Amount: 1
+      - Index: 9
+        Item: Signet_Of_Crt_Star
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 250
+          - Index: 1
+            Item: Crt_Meteorite_Dust
+            Amount: 50
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 20
+          - Index: 3
+            Item: Signet_Of_Star
+            Amount: 1
+      - Index: 10
+        Item: Signet_Of_Spl_Star
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 250
+          - Index: 1
+            Item: Spl_Meteorite_Dust
+            Amount: 50
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 20
+          - Index: 3
+            Item: Signet_Of_Star
+            Amount: 1
+      - Index: 11
+        Item: Signet_Of_Wis_Star
+        RequiredItems:
+          - Index: 0
+            Item: Meteorite_Fragment
+            Amount: 250
+          - Index: 1
+            Item: Wis_Meteorite_Dust
+            Amount: 50
+          - Index: 2
+            Item: Betelgeuse_Soul
+            Amount: 20
+          - Index: 3
+            Item: Signet_Of_Star
+            Amount: 1
+  - Name: Poenitentia_Crown
+    Items:
+      - Index: 0
+        Item: Poenetentia_V_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4
+            Item: Green_Crystal_Fragment
+            Amount: 10000 
+      - Index: 1
+        Item: Poenetentia_B_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4
+            Item: Green_Crystal_Fragment
+            Amount: 10000
+      - Index: 2
+        Item: Poenetentia_H_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4
+            Item: Green_Crystal_Fragment
+            Amount: 10000
+      - Index: 3
+        Item: Poenetentia_D_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4
+            Item: Green_Crystal_Fragment
+            Amount: 10000
+      - Index: 4
+        Item: Poenetentia_S_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4
+            Item: Green_Crystal_Fragment
+            Amount: 10000
+      - Index: 5
+        Item: Poenetentia_M_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4
+            Item: Green_Crystal_Fragment
+            Amount: 10000
+      - Index: 6
+        Item: Remorse_C_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4
+            Item: Green_Crystal_Fragment
+            Amount: 10000
+      - Index: 7
+        Item: Remorse_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4           
+            Item: Green_Crystal_Fragment
+            Amount: 10000
+      - Index: 8
+        Item: Poenetentia_P_Crown
+        RequiredItems:
+          - Index: 0
+            Item: Mine_As
+            Amount: 1000
+          - Index: 1
+            Item: Blessing_Star
+            Amount: 1000
+          - Index: 2
+            Item: Bloody_Coin
+            Amount: 1000
+          - Index: 3
+            Item: Blue_Flame_Heart_Gem
+            Amount: 1000
+          - Index: 4            
+            Item: Green_Crystal_Fragment
+            Amount: 10000

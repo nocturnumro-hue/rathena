@@ -1,0 +1,534 @@
+//===== rAthena Script =======================================
+//= Depth Reputation Exchange NPC
+//===== Description: =========================================
+//= Exchange Depth materials for Reputation Points
+//= Choose EITHER DEEP1 OR DEEP2 (not both)
+//= - Depth Essence (10x): 2 DEEP1 OR 1 DEEP2
+//= - Depth Rune (100x): 2 DEEP1 OR 1 DEEP2
+//= - Depth Crystal (500x): 2 DEEP1 OR 1 DEEP2
+//= - Depth Energy (5000x): 2 DEEP1 OR 1 DEEP2
+//============================================================
+
+ba_in01,299,121,4	script	Depth Reputation#rep	10545,{
+	
+	// Get current reputation points
+	.@deep1 = get_reputation_points(REPU_BIO_DEEP1);
+	.@deep2 = get_reputation_points(REPU_BIO_DEEP2);
+	
+	mes "[Depth Reputation]";
+	mes "I'm collecting rare materials from the Depths.";
+	mes "I can exchange them for ^0000FFReputation Points^000000!";
+	mes "^FF6600Your Current Reputation:^000000";
+	mes "^0000FFReputation Depth1^000000: ^008000" + .@deep1 + "^000000 points";
+	mes "^0000FFReputation Depth2^000000: ^008000" + .@deep2 + "^000000 points";
+	next;
+	
+	mes "[Depth Reputation]";
+	mes "^FF6600Exchange Rates:^000000";
+	mes "=========================";
+	mes "^008000* 10x Depth Essence^000000";
+	mes "  ^0000FF-> 2 Depth1 OR 1 Depth2^000000";
+	mes "^008000* 100x Depth Rune^000000";
+	mes "  ^0000FF-> 2 Depth1 OR 1 Depth2^000000";
+	mes "^008000* 500x Depth Crystal^000000";
+	mes "  ^0000FF-> 2 Depth1 OR 1 Depth2^000000";
+	mes "^008000* 5000x Depth Energy^000000";
+	mes "  ^0000FF-> 2 Depth1 OR 1 Depth2^000000";
+	mes " ";
+	mes "^FF0000You can only choose ONE type per exchange!^000000";
+	next;
+	
+	switch(select("Exchange Depth Essence:Exchange Depth Rune:Exchange Depth Crystal:Exchange Depth Energy:Cancel")) {
+		case 1:
+			callsub S_ExchangeEssence;
+			break;
+		case 2:
+			callsub S_ExchangeRune;
+			break;
+		case 3:
+			callsub S_ExchangeCrystal;
+			break;
+		case 4:
+			callsub S_ExchangeEnergy;
+			break;
+		case 5:
+			mes "[Depth Reputation]";
+			mes "Come back anytime!";
+			close;
+	}
+	end;
+
+// ============================================================
+// SUB: Exchange Depth Essence
+// ============================================================
+S_ExchangeEssence:
+	mes "[Depth Reputation]";
+	mes "^FF6600Depth Essence Exchange^000000";
+	mes "=========================";
+	mes "Select which essence to exchange:";
+	next;
+	
+	.@select = select(
+		"^FF0000Depth Flame Essence^000000:^8B4513Depth Earth Essence^000000:^00CED1Depth Ice Essence^000000:^9370DBDepth Storm Essence^000000:^FF1493Depth Soul Essence^000000:^FFD700Depth Purifying Essence^000000:^8B008BDepth Corruption Essence^000000:^32CD32Depth Poison Essence^000000:Cancel"
+	);
+	
+	if (.@select == 9) {
+		mes "[Depth Reputation]";
+		mes "Maybe next time!";
+		close;
+	}
+	
+	// Set item ID based on selection
+	switch(.@select) {
+		case 1: .@item_id = 1001314; .@item_name$ = "Depth Flame Essence"; .@color$ = "^FF0000"; break;
+		case 2: .@item_id = 1001315; .@item_name$ = "Depth Earth Essence"; .@color$ = "^8B4513"; break;
+		case 3: .@item_id = 1001316; .@item_name$ = "Depth Ice Essence"; .@color$ = "^00CED1"; break;
+		case 4: .@item_id = 1001317; .@item_name$ = "Depth Storm Essence"; .@color$ = "^9370DB"; break;
+		case 5: .@item_id = 1001318; .@item_name$ = "Depth Soul Essence"; .@color$ = "^FF1493"; break;
+		case 6: .@item_id = 1001319; .@item_name$ = "Depth Purifying Essence"; .@color$ = "^FFD700"; break;
+		case 7: .@item_id = 1001320; .@item_name$ = "Depth Corruption Essence"; .@color$ = "^8B008B"; break;
+		case 8: .@item_id = 1001321; .@item_name$ = "Depth Poison Essence"; .@color$ = "^32CD32"; break;
+	}
+	
+	.@count = countitem(.@item_id);
+	.@max_exchange = .@count / 10;
+	
+	if (.@count < 10) {
+		mes "[Depth Reputation]";
+		mes "You don't have enough " + .@color$ + .@item_name$ + "^000000.";
+		mes "You need at least ^FF000010 essence^000000 to exchange.";
+		mes " ";
+		mes "Current: ^008000" + .@count + "^000000 essence";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "You have: ^008000" + .@count + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes "Max exchanges: ^008000" + .@max_exchange + "^000000";
+	mes " ";
+	mes "How many times do you want to exchange?";
+	mes "^0000FF(10 Essence = 2 DEEP1 OR 1 DEEP2)^000000";
+	next;
+	
+	input .@times, 0, .@max_exchange;
+	
+	if (.@times < 1) {
+		mes "[Depth Reputation]";
+		mes "^FF0000Invalid amount.^000000";
+		close;
+	}
+	
+	.@need_items = .@times * 10;
+	
+	if (countitem(.@item_id) < .@need_items) {
+		mes "[Depth Reputation]";
+		mes "^FF0000You don't have enough items!^000000";
+		close;
+	}
+	
+	// Choose which reputation to get
+	mes "[Depth Reputation]";
+	mes "Exchange ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	mes "Choose which reputation to receive:";
+	next;
+	
+	.@choice = select("^0000FF2 Reputation Depth1^000000 (x" + .@times + "):^9370DB1 Reputation Depth2^000000 (x" + .@times + "):^FF0000Cancel^000000");
+	
+	if (.@choice == 3) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^FF0000Final Confirmation^000000";
+	mes "=========================";
+	mes "Exchange: ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	if (.@choice == 1) {
+		mes "Receive: ^0000FF" + (.@times * 2) + " Reputation Depth1^000000";
+	} else {
+		mes "Receive: ^9370DB" + .@times + " Reputation Depth2^000000";
+	}
+	next;
+	
+	if (select("^008000Confirm^000000:^FF0000Cancel^000000") == 2) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	delitem .@item_id, .@need_items;
+	
+	if (.@choice == 1) {
+		add_reputation_points(REPU_BIO_DEEP1, .@times * 2);
+		.@received$ = (.@times * 2) + " Reputation Depth1";
+	} else {
+		add_reputation_points(REPU_BIO_DEEP2, .@times);
+		.@received$ = .@times + " Reputation Depth2";
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^00FF00Exchange complete!^000000";
+	mes "=========================";
+	mes "^008000Received: " + .@received$ + "^000000";
+	close;
+
+// ============================================================
+// SUB: Exchange Depth Rune
+// ============================================================
+S_ExchangeRune:
+	mes "[Depth Reputation]";
+	mes "^FF6600Depth Rune Exchange^000000";
+	mes "=========================";
+	mes "Select which rune to exchange:";
+	mes "^FF0000(Need 100x per exchange)^000000";
+	next;
+	
+	.@select = select(
+		"^FF0000Depth Flame Rune^000000:^8B4513Depth Earth Rune^000000:^00CED1Depth Ice Rune^000000:^9370DBDepth Storm Rune^000000:^FF1493Depth Soul Rune^000000:^FFD700Depth Purification Rune^000000:^8B008BDepth Corruption Rune^000000:^32CD32Depth Poison Rune^000000:Cancel"
+	);
+	
+	if (.@select == 9) {
+		mes "[Depth Reputation]";
+		mes "Maybe next time!";
+		close;
+	}
+	
+	// Set item ID based on selection
+	switch(.@select) {
+		case 1: .@item_id = 1001306; .@item_name$ = "Depth Flame Rune"; .@color$ = "^FF0000"; break;
+		case 2: .@item_id = 1001307; .@item_name$ = "Depth Earth Rune"; .@color$ = "^8B4513"; break;
+		case 3: .@item_id = 1001308; .@item_name$ = "Depth Ice Rune"; .@color$ = "^00CED1"; break;
+		case 4: .@item_id = 1001309; .@item_name$ = "Depth Storm Rune"; .@color$ = "^9370DB"; break;
+		case 5: .@item_id = 1001310; .@item_name$ = "Depth Soul Rune"; .@color$ = "^FF1493"; break;
+		case 6: .@item_id = 1001311; .@item_name$ = "Depth Purification Rune"; .@color$ = "^FFD700"; break;
+		case 7: .@item_id = 1001312; .@item_name$ = "Depth Corruption Rune"; .@color$ = "^8B008B"; break;
+		case 8: .@item_id = 1001313; .@item_name$ = "Depth Poison Rune"; .@color$ = "^32CD32"; break;
+	}
+	
+	.@count = countitem(.@item_id);
+	.@max_exchange = .@count / 100;
+	
+	if (.@count < 100) {
+		mes "[Depth Reputation]";
+		mes "You don't have enough " + .@color$ + .@item_name$ + "^000000.";
+		mes "You need at least ^FF0000100 runes^000000 to exchange.";
+		mes " ";
+		mes "Current: ^008000" + .@count + "^000000 runes";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "You have: ^008000" + .@count + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes "Max exchanges: ^008000" + .@max_exchange + "^000000";
+	mes " ";
+	mes "How many times do you want to exchange?";
+	mes "^0000FF(100 Runes = 2 DEEP1 OR 1 DEEP2)^000000";
+	next;
+	
+	input .@times, 0, .@max_exchange;
+	
+	if (.@times < 1) {
+		mes "[Depth Reputation]";
+		mes "^FF0000Invalid amount.^000000";
+		close;
+	}
+	
+	.@need_items = .@times * 100;
+	
+	if (countitem(.@item_id) < .@need_items) {
+		mes "[Depth Reputation]";
+		mes "^FF0000You don't have enough items!^000000";
+		close;
+	}
+	
+	// Choose which reputation to get
+	mes "[Depth Reputation]";
+	mes "Exchange ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	mes "Choose which reputation to receive:";
+	next;
+	
+	.@choice = select("^0000FF2 Reputation Depth1^000000 (x" + .@times + "):^9370DB1 Reputation Depth2^000000 (x" + .@times + "):^FF0000Cancel^000000");
+	
+	if (.@choice == 3) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^FF0000Final Confirmation^000000";
+	mes "=========================";
+	mes "Exchange: ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	if (.@choice == 1) {
+		mes "Receive: ^0000FF" + (.@times * 2) + " Reputation Depth1^000000";
+	} else {
+		mes "Receive: ^9370DB" + .@times + " Reputation Depth2^000000";
+	}
+	next;
+	
+	if (select("^008000Confirm^000000:^FF0000Cancel^000000") == 2) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	delitem .@item_id, .@need_items;
+	
+	if (.@choice == 1) {
+		add_reputation_points(REPU_BIO_DEEP1, .@times * 2);
+		.@received$ = (.@times * 2) + " Reputation Depth1";
+	} else {
+		add_reputation_points(REPU_BIO_DEEP2, .@times);
+		.@received$ = .@times + " Reputation Depth2";
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^00FF00Exchange complete!^000000";
+	mes "=========================";
+	mes "^008000Received: " + .@received$ + "^000000";
+	close;
+
+// ============================================================
+// SUB: Exchange Depth Crystal
+// ============================================================
+S_ExchangeCrystal:
+	mes "[Depth Reputation]";
+	mes "^FF6600Depth Crystal Exchange^000000";
+	mes "=========================";
+	mes "Select which crystal to exchange:";
+	mes "^FF0000(Need 500x per exchange)^000000";
+	next;
+	
+	.@select = select(
+		"^FF0000Depth Flame Crystal^000000:^8B4513Depth Earth Crystal^000000:^00CED1Depth Ice Crystal^000000:^9370DBDepth Storm Crystal^000000:^FF1493Depth Soul Crystal^000000:^FFD700Depth Purification Crystal^000000:^8B008BDepth Corruption Crystal^000000:^32CD32Depth Poison Crystal^000000:Cancel"
+	);
+	
+	if (.@select == 9) {
+		mes "[Depth Reputation]";
+		mes "Maybe next time!";
+		close;
+	}
+	
+	// Set item ID based on selection
+	switch(.@select) {
+		case 1: .@item_id = 1001298; .@item_name$ = "Depth Flame Crystal"; .@color$ = "^FF0000"; break;
+		case 2: .@item_id = 1001299; .@item_name$ = "Depth Earth Crystal"; .@color$ = "^8B4513"; break;
+		case 3: .@item_id = 1001300; .@item_name$ = "Depth Ice Crystal"; .@color$ = "^00CED1"; break;
+		case 4: .@item_id = 1001301; .@item_name$ = "Depth Storm Crystal"; .@color$ = "^9370DB"; break;
+		case 5: .@item_id = 1001302; .@item_name$ = "Depth Soul Crystal"; .@color$ = "^FF1493"; break;
+		case 6: .@item_id = 1001303; .@item_name$ = "Depth Purification Crystal"; .@color$ = "^FFD700"; break;
+		case 7: .@item_id = 1001304; .@item_name$ = "Depth Corruption Crystal"; .@color$ = "^8B008B"; break;
+		case 8: .@item_id = 1001305; .@item_name$ = "Depth Poison Crystal"; .@color$ = "^32CD32"; break;
+	}
+	
+	.@count = countitem(.@item_id);
+	.@max_exchange = .@count / 500;
+	
+	if (.@count < 500) {
+		mes "[Depth Reputation]";
+		mes "You don't have enough " + .@color$ + .@item_name$ + "^000000.";
+		mes "You need at least ^FF0000500 crystals^000000 to exchange.";
+		mes " ";
+		mes "Current: ^008000" + .@count + "^000000 crystals";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "You have: ^008000" + .@count + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes "Max exchanges: ^008000" + .@max_exchange + "^000000";
+	mes " ";
+	mes "How many times do you want to exchange?";
+	mes "^0000FF(500 Crystals = 2 DEEP1 OR 1 DEEP2)^000000";
+	next;
+	
+	input .@times, 0, .@max_exchange;
+	
+	if (.@times < 1) {
+		mes "[Depth Reputation]";
+		mes "^FF0000Invalid amount.^000000";
+		close;
+	}
+	
+	.@need_items = .@times * 500;
+	
+	if (countitem(.@item_id) < .@need_items) {
+		mes "[Depth Reputation]";
+		mes "^FF0000You don't have enough items!^000000";
+		close;
+	}
+	
+	// Choose which reputation to get
+	mes "[Depth Reputation]";
+	mes "Exchange ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	mes "Choose which reputation to receive:";
+	next;
+	
+	.@choice = select("^0000FF2 Reputation Depth1^000000 (x" + .@times + "):^9370DB1 Reputation Depth2^000000 (x" + .@times + "):^FF0000Cancel^000000");
+	
+	if (.@choice == 3) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^FF0000Final Confirmation^000000";
+	mes "=========================";
+	mes "Exchange: ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	if (.@choice == 1) {
+		mes "Receive: ^0000FF" + (.@times * 2) + " Reputation Depth1^000000";
+	} else {
+		mes "Receive: ^9370DB" + .@times + " Reputation Depth2^000000";
+	}
+	next;
+	
+	if (select("^008000Confirm^000000:^FF0000Cancel^000000") == 2) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	delitem .@item_id, .@need_items;
+	
+	if (.@choice == 1) {
+		add_reputation_points(REPU_BIO_DEEP1, .@times * 2);
+		.@received$ = (.@times * 2) + " Reputation Depth1";
+	} else {
+		add_reputation_points(REPU_BIO_DEEP2, .@times);
+		.@received$ = .@times + " Reputation Depth2";
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^00FF00Exchange complete!^000000";
+	mes "=========================";
+	mes "^008000Received: " + .@received$ + "^000000";
+	close;
+
+// ============================================================
+// SUB: Exchange Depth Energy
+// ============================================================
+S_ExchangeEnergy:
+	mes "[Depth Reputation]";
+	mes "^FF6600Depth Energy Exchange^000000";
+	mes "=========================";
+	mes "Select which energy to exchange:";
+	mes "^FF0000(Need 5000x per exchange)^000000";
+	next;
+	
+	.@select = select(
+		"^FF0000Depth Flame Energy^000000:^8B4513Depth Earth Energy^000000:^00CED1Depth Ice Energy^000000:^9370DBDepth Storm Energy^000000:^FF1493Depth Soul Energy^000000:^FFD700Depth Purifying Energy^000000:^8B008BDepth Corruption Energy^000000:^32CD32Depth Poison Energy^000000:Cancel"
+	);
+	
+	if (.@select == 9) {
+		mes "[Depth Reputation]";
+		mes "Maybe next time!";
+		close;
+	}
+	
+	// Set item ID based on selection
+	switch(.@select) {
+		case 1: .@item_id = 1001290; .@item_name$ = "Depth Flame Energy"; .@color$ = "^FF0000"; break;
+		case 2: .@item_id = 1001291; .@item_name$ = "Depth Earth Energy"; .@color$ = "^8B4513"; break;
+		case 3: .@item_id = 1001292; .@item_name$ = "Depth Ice Energy"; .@color$ = "^00CED1"; break;
+		case 4: .@item_id = 1001293; .@item_name$ = "Depth Storm Energy"; .@color$ = "^9370DB"; break;
+		case 5: .@item_id = 1001294; .@item_name$ = "Depth Soul Energy"; .@color$ = "^FF1493"; break;
+		case 6: .@item_id = 1001295; .@item_name$ = "Depth Purifying Energy"; .@color$ = "^FFD700"; break;
+		case 7: .@item_id = 1001296; .@item_name$ = "Depth Corruption Energy"; .@color$ = "^8B008B"; break;
+		case 8: .@item_id = 1001297; .@item_name$ = "Depth Poison Energy"; .@color$ = "^32CD32"; break;
+	}
+	
+	.@count = countitem(.@item_id);
+	.@max_exchange = .@count / 5000;
+	
+	if (.@count < 5000) {
+		mes "[Depth Reputation]";
+		mes "You don't have enough " + .@color$ + .@item_name$ + "^000000.";
+		mes "You need at least ^FF00005000 energy^000000 to exchange.";
+		mes " ";
+		mes "Current: ^008000" + .@count + "^000000 energy";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "You have: ^008000" + .@count + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes "Max exchanges: ^008000" + .@max_exchange + "^000000";
+	mes " ";
+	mes "How many times do you want to exchange?";
+	mes "^0000FF(5000 Energy = 2 DEEP1 OR 1 DEEP2)^000000";
+	next;
+	
+	input .@times, 0, .@max_exchange;
+	
+	if (.@times < 1) {
+		mes "[Depth Reputation]";
+		mes "^FF0000Invalid amount.^000000";
+		close;
+	}
+	
+	.@need_items = .@times * 5000;
+	
+	if (countitem(.@item_id) < .@need_items) {
+		mes "[Depth Reputation]";
+		mes "^FF0000You don't have enough items!^000000";
+		close;
+	}
+	
+	// Choose which reputation to get
+	mes "[Depth Reputation]";
+	mes "Exchange ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	mes "Choose which reputation to receive:";
+	next;
+	
+	.@choice = select("^0000FF2 Reputation Depth1^000000 (x" + .@times + "):^9370DB1 Reputation Depth2^000000 (x" + .@times + "):^FF0000Cancel^000000");
+	
+	if (.@choice == 3) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^FF0000Final Confirmation^000000";
+	mes "=========================";
+	mes "Exchange: ^FF6600" + .@need_items + "x^000000 " + .@color$ + .@item_name$ + "^000000";
+	mes " ";
+	if (.@choice == 1) {
+		mes "Receive: ^0000FF" + (.@times * 2) + " Reputation Depth1^000000";
+	} else {
+		mes "Receive: ^9370DB" + .@times + " Reputation Depth2^000000";
+	}
+	next;
+	
+	if (select("^008000Confirm^000000:^FF0000Cancel^000000") == 2) {
+		mes "[Depth Reputation]";
+		mes "Exchange cancelled.";
+		close;
+	}
+	
+	delitem .@item_id, .@need_items;
+	
+	if (.@choice == 1) {
+		add_reputation_points(REPU_BIO_DEEP1, .@times * 2);
+		.@received$ = (.@times * 2) + " Reputation Depth1";
+	} else {
+		add_reputation_points(REPU_BIO_DEEP2, .@times);
+		.@received$ = .@times + " Reputation Depth2";
+	}
+	
+	mes "[Depth Reputation]";
+	mes "^00FF00Exchange complete!^000000";
+	mes "=========================";
+	mes "^008000Received: " + .@received$ + "^000000";
+	close;
+
+OnInit:
+	end;
+}

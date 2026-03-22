@@ -1,0 +1,423 @@
+//===== rAthena Script =======================================
+//= NPC Market System (Standalone)
+//===== By ===================================================
+//= @reloadnpcfile npc/custom/olympus/npc_market_place.txt
+//===== Version ==============================================
+//= 1.1 - Fixed refine/card loss on cancel listing
+//=       Fixed wrong variable for re-enter price
+//=       Fixed race condition on purchase
+//=       Fixed weight check on item return
+//===== Requirements =========================================
+//= SQL Table needed (run this query first):
+/*
+CREATE TABLE IF NOT EXISTS `cp_market` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `char_id` int(11) NOT NULL,
+  `char_name` varchar(30) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `price` bigint(20) NOT NULL,
+  `refine` tinyint(4) DEFAULT 0,
+  `card0` int(11) DEFAULT 0,
+  `card1` int(11) DEFAULT 0,
+  `card2` int(11) DEFAULT 0,
+  `card3` int(11) DEFAULT 0,
+  `date_added` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `char_id` (`char_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+*/
+//============================================================
+
+askald,124,135,4	script	NPC Market	10035,{
+
+mes .n$;
+mes "Welcome to the ^0055FFNPC Market System^000000!";
+mes "Buy and sell items with other players!";
+mes " ";
+mes "^FF6600Market Tax: " + .market_tax + "%^000000";
+mes "^FF6600Listing Fee: " + .market_list_fee + " Zeny^000000";
+next;
+
+switch(select("- Browse Market:- Sell Items:- My Listings:- Close")) {
+	case 1: goto Market_Browse;
+	case 2: goto Market_Sell;
+	case 3: goto Market_MyListings;
+	case 4: close;
+}
+
+//========== BROWSE MARKET ==========
+Market_Browse:
+query_sql "SELECT `id`, `char_name`, `item_id`, `amount`, `price`, `refine`, `card0`, `card1`, `card2`, `card3` FROM `cp_market` ORDER BY `date_added` DESC LIMIT 50", .@id, .@seller$, .@itemid, .@amount, .@price, .@refine, .@card0, .@card1, .@card2, .@card3;
+
+if(getarraysize(.@id) == 0) {
+	mes .n$;
+	mes "^FF6600=== Market Listings ===^000000";
+	mes "^FF0000No items for sale!^000000";
+	close;
+}
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@id) && .@i < 20; set .@i, .@i + 1) {
+	set .@itemname$, getitemname(.@itemid[.@i]);
+	set .@refine_txt$, (.@refine[.@i] > 0) ? "+" + .@refine[.@i] + " " : "";
+	set .@price_formatted$, callfunc("FormatNumber", .@price[.@i]);
+	
+	set .@menu$, .@menu$ + "- " + .@refine_txt$ + .@itemname$ + " x" + .@amount[.@i] + " ^FF0000[" + .@price_formatted$ + "z]^000000 ^0055FF" + .@seller$[.@i] + "^000000:";
+}
+
+set .@menu$, .@menu$ + "- Back";
+
+set .@select, select(.@menu$) - 1;
+if(.@select >= getarraysize(.@id) || .@select >= 20) close;
+
+set .@price_formatted$, callfunc("FormatNumber", .@price[.@select]);
+
+mes .n$;
+mes "^FF6600=== Item Details ===^000000";
+mes "-[<ITEM>" + getitemname(.@itemid[.@select]) + "<INFO>" + .@itemid[.@select] + "</INFO></ITEM>]-";
+
+if(.@refine[.@select] > 0) mes "Refine: ^00FF00+" + .@refine[.@select] + "^000000";
+mes "Amount: ^00FF00" + .@amount[.@select] + "^000000";
+mes "Price: ^FF6600" + .@price_formatted$ + " Zeny^000000";
+mes "Seller: ^0055FF" + .@seller$[.@select] + "^000000";
+
+if(.@card0[.@select] > 0 || .@card1[.@select] > 0 || .@card2[.@select] > 0 || .@card3[.@select] > 0) {
+	mes "^00FFFFCards:^000000";
+	if(.@card0[.@select] > 0) mes "-[<ITEM>" + getitemname(.@card0[.@select]) + "<INFO>" + .@card0[.@select] + "</INFO></ITEM>]-";
+	if(.@card1[.@select] > 0) mes "-[<ITEM>" + getitemname(.@card1[.@select]) + "<INFO>" + .@card1[.@select] + "</INFO></ITEM>]-";
+	if(.@card2[.@select] > 0) mes "-[<ITEM>" + getitemname(.@card2[.@select]) + "<INFO>" + .@card2[.@select] + "</INFO></ITEM>]-";
+	if(.@card3[.@select] > 0) mes "-[<ITEM>" + getitemname(.@card3[.@select]) + "<INFO>" + .@card3[.@select] + "</INFO></ITEM>]-";
+}
+
+if(select("- Buy:- Cancel") == 2) goto Market_Browse;
+
+// [BUG FIX #1] Race condition check: re-query to confirm listing still exists before purchase
+query_sql "SELECT `id`, `char_id`, `char_name`, `item_id`, `amount`, `price`, `refine`, `card0`, `card1`, `card2`, `card3` FROM `cp_market` WHERE `id` = '"+.@id[.@select]+"' LIMIT 1", .@chk_id, .@chk_charid, .@chk_seller$, .@chk_itemid, .@chk_amount, .@chk_price, .@chk_refine, .@chk_card0, .@chk_card1, .@chk_card2, .@chk_card3;
+
+if(getarraysize(.@chk_id) == 0) {
+	mes .n$;
+	mes "^FF0000This item was already sold!^000000";
+	mes "Please browse the market again.";
+	close;
+}
+
+if(Zeny < .@chk_price[0]) {
+	mes .n$;
+	mes "^FF0000Not enough Zeny!^000000";
+	mes "You need: ^FF6600" + callfunc("FormatNumber", .@chk_price[0]) + "z^000000";
+	mes "You have: ^FF6600" + callfunc("FormatNumber", Zeny) + "z^000000";
+	close;
+}
+
+if(checkweight(.@chk_itemid[0], .@chk_amount[0]) == 0) {
+	mes .n$;
+	mes "^FF0000Inventory too heavy!^000000";
+	close;
+}
+
+// Block the seller from buying their own listing
+if(.@chk_charid[0] == getcharid(0)) {
+	mes .n$;
+	mes "^FF0000You cannot buy your own listing!^000000";
+	close;
+}
+
+set Zeny, Zeny - .@chk_price[0];
+getitem2 .@chk_itemid[0], .@chk_amount[0], 1, .@chk_refine[0], 0, .@chk_card0[0], .@chk_card1[0], .@chk_card2[0], .@chk_card3[0];
+
+set .@tax, .@chk_price[0] * .market_tax / 100;
+set .@profit, .@chk_price[0] - .@tax;
+
+set .@mail_msg$, "Your item has been sold!\r\n\r\nItem: " + getitemname(.@chk_itemid[0]) + "\r\nAmount: " + .@chk_amount[0] + "\r\nPrice: " + callfunc("FormatNumber", .@chk_price[0]) + "z\r\nTax (" + .market_tax + "%): " + callfunc("FormatNumber", .@tax) + "z\r\nYou received: " + callfunc("FormatNumber", .@profit) + "z";
+
+query_sql("INSERT INTO `mail` (`send_name`, `send_id`, `dest_name`, `dest_id`, `title`, `message`, `time`, `status`, `zeny`, `type`) VALUES " +
+    "('Market System', 0, '" + escape_sql(.@chk_seller$[0]) + "', " + .@chk_charid[0] + ", " +
+    "'Item Sold!', '" + escape_sql(.@mail_msg$) + "', " + gettimetick(2) + ", 0, " + .@profit + ", 0)");
+
+query_sql "DELETE FROM `cp_market` WHERE `id` = '"+.@chk_id[0]+"'";
+
+mes .n$;
+mes "^00FF00Purchase successful!^000000";
+mes "Seller will receive: ^FF6600" + callfunc("FormatNumber", .@profit) + "z^000000";
+mes "Tax paid: ^FF0000" + callfunc("FormatNumber", .@tax) + "z^000000";
+announce "[Market] " + strcharinfo(0) + " bought " + getitemname(.@chk_itemid[0]) + " x" + .@chk_amount[0] + " from " + .@chk_seller$[0] + " for " + callfunc("FormatNumber", .@chk_price[0]) + "z", bc_all, 0x00FF00;
+close;
+
+//========== SELL ITEMS ==========
+Market_Sell:
+mes .n$;
+mes "^FF6600=== Sell Items ===^000000";
+mes "List items from your inventory.";
+mes "Market Tax: ^FF0000" + .market_tax + "%^000000";
+mes "Listing Fee: ^FF0000" + .market_list_fee + " Zeny^000000";
+next;
+
+if(Zeny < .market_list_fee) {
+	mes .n$;
+	mes "^FF0000Not enough Zeny for listing fee!^000000";
+	close;
+}
+
+query_sql "SELECT COUNT(*) FROM `cp_market` WHERE `char_id` = '"+getcharid(0)+"'", .@my_listings;
+if(.@my_listings >= .max_market_listings) {
+	mes .n$;
+	mes "^FF0000You have reached the maximum of " + .max_market_listings + " listings!^000000";
+	mes "Remove some items first.";
+	close;
+}
+
+mes .n$;
+mes "^FF6600=== Enter Item ID ===^000000";
+mes "Enter the Item ID you want to sell:";
+mes "(Type 0 to cancel)";
+next;
+
+input .@sell_itemid;
+
+if(.@sell_itemid == 0) close;
+
+if(.@sell_itemid < 1) {
+	mes .n$;
+	mes "^FF0000Invalid Item ID!^000000";
+	close;
+}
+
+if(getitemname(.@sell_itemid) == "null" || getitemname(.@sell_itemid) == "") {
+	mes .n$;
+	mes "^FF0000Item ID " + .@sell_itemid + " does not exist!^000000";
+	close;
+}
+
+set .@have, countitem(.@sell_itemid);
+if(.@have == 0) {
+	mes .n$;
+	mes "^FF0000You don't have this item!^000000";
+	mes "Item: " + getitemname(.@sell_itemid);
+	close;
+}
+
+mes .n$;
+mes "^FF6600=== Sell Item ===^000000";
+mes "Item: ^00FF00" + getitemname(.@sell_itemid) + "^000000";
+mes "You have: ^00FF00" + .@have + "^000000";
+mes " ";
+mes "How many to sell?";
+mes "(1 - " + .@have + ", or 0 to cancel)";
+next;
+
+input .@sell_amount;
+
+if(.@sell_amount == 0) close;
+
+if(.@sell_amount < 1 || .@sell_amount > .@have) {
+	mes .n$;
+	mes "^FF0000Invalid amount!^000000";
+	mes "You entered: " + .@sell_amount;
+	mes "Valid range: 1 to " + .@have;
+	close;
+}
+
+// [LABEL] Re-enter price jumps back here
+Market_Sell_Price:
+mes .n$;
+mes "^FF6600=== Set Price ===^000000";
+mes "Item: ^00FF00" + getitemname(.@sell_itemid) + "^000000";
+mes "Amount: ^00FF00" + .@sell_amount + "^000000";
+mes " ";
+mes "^FF6600IMPORTANT: Enter price in MILLIONS^000000";
+mes "^00FFFFExample:^000000";
+mes "  - Enter ^00FF00100^000000 = 100,000,000 Zeny (100M)";
+mes "  - Enter ^00FF001000^000000 = 1,000,000,000 Zeny (1B)";
+mes "  - Enter ^00FF002000^000000 = 2,000,000,000 Zeny (2B)";
+mes " ";
+mes "^FFD700Maximum: 2000 (= 2 Billion Zeny)^000000";
+mes "(Enter 0 to cancel)";
+next;
+
+input .@price_millions;
+
+if(.@price_millions == 0) close;
+
+if(.@price_millions < 1 || .@price_millions > 2000) {
+	mes .n$;
+	mes "^FF0000Invalid price!^000000";
+	mes "You entered: ^FF0000" + .@price_millions + " million^000000";
+	mes "Valid range: ^00FF001 - 2000^000000 million";
+	close;
+}
+
+set .@sell_price, .@price_millions * 1000000;
+
+set .@tax, .@sell_price * .market_tax / 100;
+set .@profit, .@sell_price - .@tax;
+
+mes .n$;
+mes "^FF6600=== Listing Summary ===^000000";
+mes "Item: ^00FF00" + getitemname(.@sell_itemid) + "^000000";
+mes "Amount: ^00FF00" + .@sell_amount + "^000000";
+mes " ";
+mes "^00FFFFPrice Details:^000000";
+mes "You entered: ^00FF00" + .@price_millions + " million^000000";
+mes "Selling Price: ^FF6600" + callfunc("FormatNumber", .@sell_price) + " Zeny^000000";
+mes " ";
+mes "^FF0000Fees:^000000";
+mes "- Market Tax (" + .market_tax + "%): ^FF0000" + callfunc("FormatNumber", .@tax) + "z^000000";
+mes "- Listing Fee: ^FF0000" + callfunc("FormatNumber", .market_list_fee) + "z^000000";
+mes " ";
+mes "^00FF00Your Profit: " + callfunc("FormatNumber", .@profit) + "z^000000";
+mes " ";
+mes "Confirm listing?";
+next;
+
+// [BUG FIX #2] Original used @menu (wrong var). Use local .@confirm_select instead.
+set .@confirm_select, select("- Yes, List Item:- No, Re-enter Price:- Cancel");
+
+if(.@confirm_select == 3) {
+	mes .n$;
+	mes "Listing cancelled.";
+	close;
+}
+
+// [BUG FIX #2] Re-enter price now correctly jumps to price label (not full restart)
+if(.@confirm_select == 2) goto Market_Sell_Price;
+
+// Final safety checks before taking items
+if(Zeny < .market_list_fee) {
+	mes .n$;
+	mes "^FF0000Not enough Zeny for listing fee!^000000";
+	close;
+}
+
+if(countitem(.@sell_itemid) < .@sell_amount) {
+	mes .n$;
+	mes "^FF0000You don't have enough items!^000000";
+	close;
+}
+
+getinventorylist;
+set .@inv_index, -1;
+for(set .@i, 0; .@i < @inventorylist_count; set .@i, .@i + 1) {
+	if(@inventorylist_id[.@i] == .@sell_itemid) {
+		set .@inv_index, .@i;
+		break;
+	}
+}
+
+if(.@inv_index == -1) {
+	mes .n$;
+	mes "^FF0000Item not found in inventory!^000000";
+	close;
+}
+
+set .@refine, @inventorylist_refine[.@inv_index];
+set .@card0, @inventorylist_card1[.@inv_index];
+set .@card1, @inventorylist_card2[.@inv_index];
+set .@card2, @inventorylist_card3[.@inv_index];
+set .@card3, @inventorylist_card4[.@inv_index];
+
+delitem .@sell_itemid, .@sell_amount;
+set Zeny, Zeny - .market_list_fee;
+
+query_sql "INSERT INTO `cp_market` (`char_id`, `char_name`, `item_id`, `amount`, `price`, `refine`, `card0`, `card1`, `card2`, `card3`) VALUES ('"+getcharid(0)+"', '"+escape_sql(strcharinfo(0))+"', '"+.@sell_itemid+"', '"+.@sell_amount+"', '"+.@sell_price+"', '"+.@refine+"', '"+.@card0+"', '"+.@card1+"', '"+.@card2+"', '"+.@card3+"')";
+
+mes .n$;
+mes "^00FF00Item listed successfully!^000000";
+mes " ";
+mes "Price: ^FF6600" + callfunc("FormatNumber", .@sell_price) + " Zeny^000000";
+mes "Your item is now available in the market!";
+close;
+
+//========== MY LISTINGS ==========
+Market_MyListings:
+// [BUG FIX #3] Added refine, card0-card3 to SELECT so getitem2 can restore them correctly
+query_sql "SELECT `id`, `item_id`, `amount`, `price`, `refine`, `card0`, `card1`, `card2`, `card3`, `date_added` FROM `cp_market` WHERE `char_id` = '"+getcharid(0)+"' ORDER BY `date_added` DESC", .@id, .@itemid, .@amount, .@price, .@refine, .@card0, .@card1, .@card2, .@card3, .@date$;
+
+mes .n$;
+mes "^FF6600=== My Listings ===^000000";
+mes "Total: ^00FF00" + getarraysize(.@id) + "/" + .max_market_listings + "^000000";
+mes " ";
+
+if(getarraysize(.@id) == 0) {
+	mes "^FF0000No active listings!^000000";
+	close;
+}
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@id); set .@i, .@i + 1) {
+	set .@refine_txt$, (.@refine[.@i] > 0) ? "+" + .@refine[.@i] + " " : "";
+	set .@menu$, .@menu$ + "- " + .@refine_txt$ + getitemname(.@itemid[.@i]) + " x" + .@amount[.@i] + " [" + callfunc("FormatNumber", .@price[.@i]) + "z]:";
+}
+set .@menu$, .@menu$ + "- Back";
+
+set .@select, select(.@menu$) - 1;
+if(.@select == getarraysize(.@id)) close;
+
+mes .n$;
+mes "Item: ^00FF00" + getitemname(.@itemid[.@select]) + "^000000";
+if(.@refine[.@select] > 0) mes "Refine: ^00FF00+" + .@refine[.@select] + "^000000";
+if(.@card0[.@select] > 0) mes "Card 1: ^00FFFF" + getitemname(.@card0[.@select]) + "^000000";
+if(.@card1[.@select] > 0) mes "Card 2: ^00FFFF" + getitemname(.@card1[.@select]) + "^000000";
+if(.@card2[.@select] > 0) mes "Card 3: ^00FFFF" + getitemname(.@card2[.@select]) + "^000000";
+if(.@card3[.@select] > 0) mes "Card 4: ^00FFFF" + getitemname(.@card3[.@select]) + "^000000";
+mes "Amount: ^00FF00" + .@amount[.@select] + "^000000";
+mes "Price: ^FF6600" + callfunc("FormatNumber", .@price[.@select]) + "z^000000";
+mes "Listed: ^0055FF" + .@date$[.@select] + "^000000";
+mes " ";
+mes "Remove listing?";
+mes "(Item will be returned to inventory)";
+if(select("- Yes, Remove:- Cancel") == 2) goto Market_MyListings;
+
+// [BUG FIX #4] Check weight before returning item
+if(checkweight(.@itemid[.@select], .@amount[.@select]) == 0) {
+	mes .n$;
+	mes "^FF0000Cannot return item - inventory too heavy!^000000";
+	mes "Please free up some weight and try again.";
+	close;
+}
+
+// [BUG FIX #3] Use getitem2 to preserve refine + cards when returning item
+getitem2 .@itemid[.@select], .@amount[.@select], 1, .@refine[.@select], 0, .@card0[.@select], .@card1[.@select], .@card2[.@select], .@card3[.@select];
+
+query_sql "DELETE FROM `cp_market` WHERE `id` = '"+.@id[.@select]+"'";
+
+mes .n$;
+mes "^00FF00Listing removed!^000000";
+mes "Item returned to inventory with all refine and cards intact.";
+close;
+
+//============================================================
+OnInit:
+	set .n$, "^00AA55[NPC Market]^000000";
+	
+	// Market Settings
+	set .market_tax, 5;            // 5% tax on sales
+	set .market_list_fee, 10000;   // 10,000 Zeny listing fee
+	set .max_market_listings, 10;  // Max 10 listings per player
+}
+
+//============================================================
+//= NUMBER FORMATTING FUNCTION
+//============================================================
+function	script	FormatNumber	{
+	set .@num, getarg(0);
+	set .@num$, "" + .@num;
+	set .@len, getstrlen(.@num$);
+	set .@result$, "";
+	set .@count, 0;
+	
+	for(set .@i, .@len - 1; .@i >= 0; set .@i, .@i - 1) {
+		set .@char$, charat(.@num$, .@i);
+		
+		if(.@count > 0 && .@count % 3 == 0)
+			set .@result$, "," + .@result$;
+		
+		set .@result$, .@char$ + .@result$;
+		set .@count, .@count + 1;
+	}
+	
+	return .@result$;
+}
+//============================================================
+//= END OF SCRIPT
+//============================================================

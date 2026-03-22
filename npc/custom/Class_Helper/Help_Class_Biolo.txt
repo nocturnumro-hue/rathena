@@ -1,0 +1,102 @@
+//===== rAthena Script =======================================
+//= Hell Tree Buff NPC
+//===== Description: =========================================
+//= Grants BO_HELL_DUSTY buff to Biolo class for 1 hour
+//= Requires 10,000,000 Zeny
+//============================================================
+askald,104,68,5	script	Hell Tree Spirit	911,{
+
+	mes "^8B0000[ Hell Tree Spirit ]^000000";
+	mes "Hello, " + strcharinfo(0) + "!";
+	mes " ";
+
+	// Check if player is Biolo
+	if(Class != Job_Biolo) {
+		mes "This power is only for ^FF0000Biologist^000000.";
+		mes " ";
+		mes "Your current class: ^777777" + jobname(Class) + "^000000";
+		mes " ";
+		mes "Come back when you become a ^FF0000Biolo^000000!";
+		close;
+	}
+
+	// Check if already have all buffs
+	if(getstatus(SC_BO_HELL_DUSTY) && getstatus(SC_CP_WEAPON)) {
+		mes "^8B0000[ Hell Tree Spirit ]^000000";
+		mes "You already have ^FF4500ALL buffs^000000 active!";
+		mes " ";
+		mes "Come back when they expire.";
+		close;
+	}
+
+	mes "I sense the power of the ^FF4500Hell Tree^000000 within you!";
+	mes " ";
+	mes "I can grant you the following buffs for ^00AA001 Hour^000000:";
+	mes " ";
+	mes " ^FF4500> Hell Dusty^000000";
+	mes " ^4169E1> Coat Protection (Weapon)^000000";
+	mes " ^4169E1> Coat Protection (Helm)^000000";
+	mes " ^4169E1> Coat Protection (Armor)^000000";
+	mes " ^4169E1> Coat Protection (Shield)^000000";
+	mes " ";
+	mes "Cost: ^FF000010,000,000 Zeny^000000";
+	mes " ";
+	mes "Your Zeny: ^0055FF" + callfunc("F_InsertComma", Zeny) + "^000000";
+	next;
+
+	if(select(" - [1] Yes! Grant me the buffs!: - [2] No thanks.") == 2) {
+		mes "^8B0000[ Hell Tree Spirit ]^000000";
+		mes "Alright, come back anytime!";
+		close;
+	}
+
+	mes "^8B0000[ Hell Tree Spirit ]^000000";
+
+	// Check Zeny
+	if(Zeny < 10000000) {
+		mes "^FF0000You don't have enough Zeny!^000000";
+		mes " ";
+		mes "You need:  ^FF000010,000,000 Zeny^000000";
+		mes "You have: ^777777" + callfunc("F_InsertComma", Zeny) + " Zeny^000000";
+		close;
+	}
+
+	// Deduct Zeny
+	Zeny -= 10000000;
+
+	// Apply Hell Dusty buff for 1 hour
+	if(!getstatus(SC_BO_HELL_DUSTY))
+		sc_start SC_BO_HELL_DUSTY, 3600000, 1;
+
+	// Apply Coat Protection buffs for 1 hour
+	if(!getstatus(SC_CP_WEAPON)) {
+		sc_start SC_CP_WEAPON, 3600000, 5;
+		sc_start SC_CP_HELM, 3600000, 5;
+		sc_start SC_CP_ARMOR, 3600000, 5;
+		sc_start SC_CP_SHIELD, 3600000, 5;
+	}
+
+	// Visual effects
+	specialeffect2 EF_ABSORBSPIRITS;
+	specialeffect2 EF_SUMMONER1;
+	specialeffect2 EF_JOBLVUP;
+
+	next;
+	mes "^8B0000[ Hell Tree Spirit ]^000000";
+	mes "Buffs activated for ^00AA001 Hour^000000!";
+	mes " ";
+	mes " ^FF4500> Hell Dusty^000000 ✓";
+	mes " ^4169E1> Coat Protection (Weapon)^000000 ✓";
+	mes " ^4169E1> Coat Protection (Helm)^000000 ✓";
+	mes " ^4169E1> Coat Protection (Armor)^000000 ✓";
+	mes " ^4169E1> Coat Protection (Shield)^000000 ✓";
+	mes " ";
+	mes "^FF0000Zeny deducted: 10,000,000^000000";
+	mes "Remaining Zeny: ^0055FF" + callfunc("F_InsertComma", Zeny) + "^000000";
+	close;
+
+OnInit:
+	.npc_name$ = "[Hell Tree Spirit]";
+	waitingroom "Biolo Helper", 0;
+	end;
+}

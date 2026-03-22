@@ -1,0 +1,471 @@
+###########################################################################
+# Barter Database
+###########################################################################
+#
+# Barter Settings
+#
+###########################################################################
+#  - Name               NPC name.
+#    Map                Map name. (Default: not on a map)
+#    X                  Map x coordinate. (Default: 0)
+#    Y                  Map y coordinate. (Default: 0)
+#    Direction          Direction the NPC is looking. (Default: North)
+#    Sprite             Sprite name of the NPC. (Default: FakeNpc)
+#    Items:             List of sold items.
+#      - Index          Index of the item inside the shop. (0-...)
+#                       Maximum index depends on client.
+#        Item           Aegis name of the item.
+#        Stock          Amount of item in stock. 0 means unlimited. (Default: 0)
+#        Zeny           Cost of them item in Zeny. (Default: 0)
+#        Refine         Refine level of the item. (Default: 0)
+#        RequiredItems: List of required items (Optional)
+#          - Index      Index of the required item. (0-4)
+#            Item       Aegis name of required item.
+#            Amount     Amount of required item. (Default: 1)
+#            Refine     Refine level of required item. (Default: 0)
+###########################################################################
+
+Header:
+  Type: BARTER_DB
+  Version: 2
+
+Body:
+  - Name: Halloween_Coin
+    Items:
+      - Index: 0
+        Item: C_Halloween_Cat_Short
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 100
+      - Index: 1
+        Item: C_Halloween_Hat
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 100
+      - Index: 2
+        Item: C_Ghostring_Tall_Hat
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 100
+      - Index: 3
+        Item: C_Vampire_Familiar
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 50
+      - Index: 4
+        Item: C_Stall_Of_Bat
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 100
+      - Index: 5
+        Item: C_Niflheim_Bunny_Hat
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 50
+      - Index: 6
+        Item: C_Assassin_Skull_Mask 
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 50
+      - Index: 7
+        Item: C_Blue_Wizardry_Hat
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 50
+      - Index: 8
+        Item: C_Sky_Of_Memory
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 100
+      - Index: 9
+        Item: Poring_Egg
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 100
+      - Index: 10
+        Item: Angeling_Egg
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Coin
+            Amount: 300
+  - Name: Halloween_Ticket
+    Items:
+      - Index: 0
+        Item: Guarantee_Armor_5Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 10
+      - Index: 1
+        Item: Guarantee_Weapon_5Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 10
+      - Index: 2
+        Item: Guarantee_Armor_6Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 20
+      - Index: 3
+        Item: Guarantee_Weapon_6Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 20
+      - Index: 4
+        Item: Guarantee_Armor_7Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 40
+      - Index: 5
+        Item: Guarantee_Weapon_7Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 40
+      - Index: 6
+        Item: Guarantee_Armor_8Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 80
+      - Index: 7
+        Item: Guarantee_Weapon_8Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 80
+      - Index: 8
+        Item: Guarantee_Armor_9Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 150
+      - Index: 9
+        Item: Guarantee_Weapon_9Up
+        RequiredItems:
+          - Index: 0
+            Item: Halloween_Ticket
+            Amount: 150
+  - Name: HappyNewYear_Coin
+    Items:
+      - Index: 0
+        Item: Mojji
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 1
+      - Index: 1
+        Item: New_Year_Bun
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 5
+      - Index: 2
+        Item: New_Year_Gift_Box
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 100
+      - Index: 3
+        Item: New_Year_Hairpin
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 200
+      - Index: 4
+        Item: 2401_ev_Rice_Soup
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 250
+      - Index: 5
+        Item: New_Year_Shadow_Cube
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 300
+      - Index: 6
+        Item: 2018_New_Year_Scroll
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 500
+      - Index: 7
+        Item: C_Gerhard_Von_Devi
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 500
+      - Index: 8
+        Item: C_TW_3rd_Balloon
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 500
+      - Index: 9
+        Item: New_Year_Doll_Egg
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 1500
+      - Index: 10
+        Item: C_Glow_Of_New_Year
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 2500
+      - Index: 11
+        Item: New_Year_Scroll
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 2000
+      - Index: 12
+        Item: Enchant_Ticket
+        RequiredItems:
+          - Index: 0
+            Item: Evt_20th_Coin
+            Amount: 100
+  - Name: HappyNewYear_Text
+    Items:
+      - Index: 0
+        Item: HappyYear_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Happy_Event
+            Amount: 1
+          - Index: 1
+            Item: Awesome_Event
+            Amount: 1
+          - Index: 2
+            Item: Prosperity_Event
+            Amount: 2
+          - Index: 3
+            Item: Year_Event_Y
+            Amount: 1
+      - Index: 1
+        Item: New_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Peace_Event
+            Amount: 1
+          - Index: 1
+            Item: Year_Event_E
+            Amount: 1
+          - Index: 2
+            Item: Awesome_Event
+            Amount: 1
+          - Index: 3
+            Item: Prosperity_Event
+            Amount: 1
+          - Index: 4
+            Item: Excitement_Event
+            Amount: 1
+      - Index: 2
+        Item: Year_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Year_Event_Y
+            Amount: 1
+          - Index: 1
+            Item: Year_Event_E
+            Amount: 1
+          - Index: 2
+            Item: Year_Event_A
+            Amount: 1
+          - Index: 3
+            Item: Year_Event_R
+            Amount: 1
+      - Index: 3
+        Item: HappyNewYear_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Happy_Event
+            Amount: 1
+          - Index: 1
+            Item: New_Event
+            Amount: 1
+          - Index: 2
+            Item: Year_Event
+            Amount: 1
+          - Index: 3
+            Item: Peace_Event
+            Amount: 1
+          - Index: 4
+            Item: Year_Event_R
+            Amount: 1
+      - Index: 4
+        Item: HappyYear_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Prosperity_Event
+            Amount: 3
+          - Index: 1
+            Item: Happy_Event
+            Amount: 1
+          - Index: 2
+            Item: Peace_Event
+            Amount: 1
+          - Index: 3
+            Item: Year_Event_E
+            Amount: 1
+      - Index: 5
+        Item: New_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Awesome_Event
+            Amount: 2
+          - Index: 1
+            Item: Year_Event
+            Amount: 1
+          - Index: 2
+            Item: Year_Event_A
+            Amount: 1
+          - Index: 3
+            Item: Happy_Event
+            Amount: 1
+      - Index: 6
+        Item: Year_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Excitement_Event
+            Amount: 1
+          - Index: 1
+            Item: Year_Event_Y
+            Amount: 1
+          - Index: 2
+            Item: Year_Event_E
+            Amount: 1
+          - Index: 3
+            Item: Awesome_Event
+            Amount: 1
+          - Index: 4
+            Item: Prosperity_Event
+            Amount: 1
+      - Index: 7
+        Item: Year_Box
+        Stock: 0
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: New_Event
+            Amount: 1
+          - Index: 1
+            Item: Year_Event
+            Amount: 1
+          - Index: 2
+            Item: Year_Event_A
+            Amount: 1
+          - Index: 3
+            Item: Year_Event_R
+            Amount: 1
+  - Name: Daily_EnduringPower
+    Items:
+      - Index: 0
+        Item: HD_Bradium
+        Stock: 0
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 50
+      - Index: 1
+        Item: Etel_Bradium
+        Stock: 0
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 75 
+      - Index: 2
+        Item: HD_Etel_Bradium
+        Stock: 0
+        Zeny: 10000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 150 
+      - Index: 3
+        Item: HD_Carnium
+        Stock: 0
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 50
+      - Index: 4
+        Item: Etel_Carnium
+        Stock: 0
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 75
+      - Index: 5
+        Item: HD_Etel_Carnium
+        Stock: 0
+        Zeny: 10000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 150
+      - Index: 6
+        Item: Enchant_Ticket
+        Stock: 0
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 15
+      - Index: 7
+        Item: Cachua_Coupon
+        Stock: 0
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 45
+      - Index: 8
+        Item: Silvervine
+        Stock: 0
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 55
+      - Index: 9
+        Item: C_Giant_Fly_1Day_Box_
+        Stock: 0
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: farmhouse_coin
+            Amount: 500            

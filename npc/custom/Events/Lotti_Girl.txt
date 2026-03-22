@@ -1,0 +1,190 @@
+askald,150,95,1	script	[GAME] Lotti Girl	714,{
+	mes "[ ^FF7700Lotti Girl^000000 ]";
+	mes "Hello Sir! Are you out";
+	mes "shopping in the city?!";
+	next;
+	mes "[ ^FF7700Lotti Girl^000000 ]";
+	mes "I'm Lotti! I'll exchange cool";
+	mes "random prizes for every";
+	mes "^ff00001 Lottery Ticket^000000.";
+	next;
+	mes "[ ^FF7700Lotti Girl^000000 ]";
+	mes "^00FF00Grand Prize (Ultra Rare):^000000";
+	mes "^ff0000Ice Pick^000000";
+	mes "^ff0000Cyclops^000000";
+	mes "^ff0000High Wizard Card^000000";
+	mes "^ff0000Crothen Card^000000";
+	mes "^ff0000Lord Knight Card^000000";
+	next;
+	mes "[ ^FF7700Lotti Girl^000000 ]";
+	mes "^FFD700MVP Card & Headgear (Super Rare):^000000";
+	mes "^ff0000Kiel Card^000000";
+	mes "^ff0000Sword Master Crown^000000";
+	mes "^ff0000Jejecap^000000";
+	mes "^ff0000Bubble Gum 2x^000000";
+	mes "^ff0000TCG Card 10x^000000";
+	next;
+	mes "[ ^FF7700Lotti Girl^000000 ]";
+	mes "^808080Consolation prizes:^000000";
+	mes "^ff0000Various materials and items^000000";
+	next;
+	
+	// Check if player has tickets
+	if (countitem(7528) < 1) goto L_Sorry;
+	
+	// Main spin loop
+	while(1) {
+		// Check ticket count
+		set .@tickets, countitem(7528);
+		
+		mes "[ ^FF7700Lotti Girl^000000 ]";
+		mes "You have ^FF0000"+.@tickets+"^000000 Lottery Ticket(s).";
+		mes "What would you like to do?";
+		next;
+		
+		switch(select("Spin 1 ticket:Spin 5 tickets:Spin 10 tickets:Exit")) {
+			case 1: set .@spin_count, 1; break;
+			case 2: set .@spin_count, 5; break;
+			case 3: set .@spin_count, 10; break;
+			case 4: close;
+		}
+		
+		// Check if player has enough tickets
+		if (.@tickets < .@spin_count) {
+			mes "[ ^FF7700Lotti Girl^000000 ]";
+			mes "You don't have enough tickets!";
+			next;
+			continue;
+		}
+		
+		mes "[ ^FF7700Lotti Girl^000000 ]";
+		mes "Spinning ^FF0000"+.@spin_count+"^000000 ticket(s)...";
+		mes "Here we go!";
+		next;
+		
+		// Spin loop
+		for (set .@count, 0; .@count < .@spin_count; set .@count, .@count + 1) {
+			delitem 7528, 1;
+			set .@Total, 42;
+			
+			// ===== ULTRA RARE - ALL CARDS (Very Low %) =====
+			// Using rand(1,10000) base for decimal percentages
+			setarray .@P1[0],2,4365,1; // High Wizard Card - 0.02%
+			setarray .@P2[0],2,4451,1; // Crothen Card - 0.02%
+			setarray .@P3[0],2,4357,1; // Lord Knight Card - 0.02%
+			setarray .@P4[0],3,4403,1; // Kiel Card - 0.03%
+			setarray .@P5[0],3,1230,1; // Ice Pick - 0.03%
+			setarray .@P6[0],4,5135,1; // Cyclops - 0.04%
+			setarray .@P7[0],3,20036,1; // Sword Master Crown - 0.03%
+			setarray .@P8[0],4,18885,1; // Jejecap - 0.04%
+			
+			// ===== RARE (0.5% - 1%) =====
+			setarray .@P9[0],50,12210,2; // Bubble Gum 2x - 0.5%
+			setarray .@P10[0],100,7227,10; // TCG Card 10x - 1%
+			
+			// ===== UNCOMMON (3% - 8%) =====
+			setarray .@P11[0],500,7227,5; // TCG Card 5x - 5%
+			setarray .@P12[0],800,7227,2; // TCG Card 2x - 8%
+			setarray .@P13[0],300,607,3; // Yggdrasil Berry 3x - 3%
+			setarray .@P14[0],300,608,5; // Yggdrasil Seed 5x - 3%
+			
+			// ===== COMMON POTION ITEMS (15% - 20%) =====
+			setarray .@P15[0],2000,501,10; // Red Potion 10x - 20%
+			setarray .@P16[0],2000,502,10; // Orange Potion 10x - 20%
+			setarray .@P17[0],1500,503,5; // Yellow Potion 5x - 15%
+			setarray .@P18[0],1500,504,5; // White Potion 5x - 15%
+			
+			// ===== VARMEAL TICKET (20% - 40%) =====
+			setarray .@P19[0],4000,1000103,1; // Varmeal Ticket 1x - 40%
+			setarray .@P20[0],3500,1000103,5; // Varmeal Ticket 5x - 35%
+			setarray .@P21[0],3000,1000103,10; // Varmeal Ticket 10x - 30%
+			setarray .@P22[0],1000,1000103,3; // Varmeal Ticket 3x - 10%
+			
+			// ===== AMETHYST FRAGMENT (20% - 40%) =====
+			setarray .@P23[0],4000,1000405,1; // Amethyst Fragment 1x - 40%
+			setarray .@P24[0],3500,1000405,3; // Amethyst Fragment 3x - 35%
+			setarray .@P25[0],3000,1000405,5; // Amethyst Fragment 5x - 30%
+			setarray .@P26[0],1000,1000405,10; // Amethyst Fragment 10x - 10%
+			
+			// ===== COR CORE (20% - 40%) =====
+			setarray .@P27[0],4000,25723,1; // Cor Core 1x - 40%
+			setarray .@P28[0],3500,25723,3; // Cor Core 3x - 35%
+			setarray .@P29[0],3000,25723,5; // Cor Core 5x - 30%
+			setarray .@P30[0],1000,25723,10; // Cor Core 10x - 10%
+			
+			// ===== UNKNOWN PARTS (20% - 40%) =====
+			setarray .@P31[0],4000,25669,1; // Unknown Parts 1x - 40%
+			setarray .@P32[0],3500,25669,3; // Unknown Parts 3x - 35%
+			setarray .@P33[0],3000,25669,5; // Unknown Parts 5x - 30%
+			setarray .@P34[0],1000,25669,10; // Unknown Parts 10x - 10%
+			
+			// ===== ILLUSION STONE (20% - 40%) =====
+			setarray .@P35[0],4000,25271,1; // Illusion Stone 1x - 40%
+			setarray .@P36[0],3500,25271,3; // Illusion Stone 3x - 35%
+			setarray .@P37[0],3000,25271,5; // Illusion Stone 5x - 30%
+			setarray .@P38[0],1000,25271,10; // Illusion Stone 10x - 10%
+			
+			// ===== MIX ITEMS (20%) =====
+			setarray .@P39[0],2000,1000103,7; // Varmeal Ticket 7x - 20%
+			setarray .@P40[0],2000,1000405,7; // Amethyst Fragment 7x - 20%
+			setarray .@P41[0],2000,25723,7; // Cor Core 7x - 20%
+			setarray .@P42[0],2000,25669,7; // Unknown Parts 7x - 20%
+			
+			// Random selection using 1-10000 scale
+			do {
+				set .@i, rand(1,.@Total);
+			} while( rand(1,10000) > getd(".@P"+.@i+"[0]") );
+			
+			for(set .@j,1; .@j<getarraysize(getd(".@P"+.@i)); set .@j,.@j+2) {
+				getitem getd(".@P"+.@i+"["+.@j+"]"), getd(".@P"+.@i+"["+(.@j+1)+"]");
+				if (!.@k[0]) {
+					set .@gz,.@i;
+					setarray .@k[0], getd(".@P"+.@i+"["+.@j+"]"), getd(".@P"+.@i+"["+(.@j+1)+"]");
+					break;
+				}
+			}
+			
+			// Announce ONLY ultra rare prizes (cards and top items)
+			if( .@gz && .@gz <= 10 ) {
+				set .@itemid, .@k[0];
+				set .@message$, "JACKPOT! "+strcharinfo(0)+" just received "+getitemname(.@k[0])+" x "+.@k[1]+" from Lotti Girl";
+				
+				// Dark Orange announcement for MVP Cards
+				if (.@itemid == 4357 || .@itemid == 4451 || .@itemid == 4365 || .@itemid == 4403) {
+					announce .@message$, bc_all, 0xFF8C00;
+				}
+				// Green announcement for rare headgears and weapons
+				else if (.@itemid == 18885 || .@itemid == 20036 || .@itemid == 5135 || .@itemid == 1230) {
+					announce .@message$, bc_all, 0x008000;
+				}
+				// Normal announcement for other good prizes
+				else {
+					announce .@message$, 0;
+				}
+			}
+			
+			specialeffect2 248;
+			
+			// Clear arrays for next spin
+			deletearray .@k[0], getarraysize(.@k);
+			set .@gz, 0;
+		}
+		
+		mes "[ ^FF7700Lotti Girl^000000 ]";
+		mes "Finished spinning ^FF0000"+.@spin_count+"^000000 ticket(s)!";
+		next;
+		
+		// Check if player still has tickets
+		if (countitem(7528) < 1) {
+			mes "[ ^FF7700Lotti Girl^000000 ]";
+			mes "You don't have any more tickets!";
+			mes "Come back when you have more!";
+			close;
+		}
+	}
+	
+L_Sorry:
+	mes "[ ^FF7700Lotti Girl^000000 ]";
+	mes "You don't have enough Lotti Ticket, please get some";
+	end;
+}

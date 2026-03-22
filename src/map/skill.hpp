@@ -2922,4 +2922,9 @@ int32 skill_shimiru_check_cell( block_list* target, va_list ap );
 #define SKILL_CHK_ABR(skill_id)   ( (skill_id) >= ABR_SKILLBASE && (skill_id) < ABR_SKILLBASE+MAX_ABRSKILL )
 #define SKILL_CHK_GUILD(skill_id) ( (skill_id) >= GD_SKILLBASE && (skill_id) < GD_SKILLBASE+MAX_GUILDSKILL )
 
+TIMER_FUNC(skill_mcri_hit);  
+TIMER_FUNC(skill_mcri_kill_delay);
+TIMER_FUNC(skill_pcri_hit);  
+TIMER_FUNC(skill_pcri_kill_delay);
+
 #endif /* SKILL_HPP */

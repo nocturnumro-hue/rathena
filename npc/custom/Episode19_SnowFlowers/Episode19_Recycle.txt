@@ -1,0 +1,7 @@
+askald,71,105,1	script	Dim Glacier Extractor	10467,{
+	mes "There is a brazier where you can feel the heat.";
+	mes "If you have useless Dim Glacier weapons, put them in and melt them.";
+	close2;
+	laphine_synthesis("Dim Glacier Extractor");
+	end;
+}

@@ -1,0 +1,54 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC TRADER
+// ============================================
+askald,30,195,1	script	Costume Material	10375,{
+	mes "[Costume Material]";
+	mes "WellCome Costume Material!";
+	mes "Please select shop Type:";
+	next;
+	
+	switch(select("Top Stone:Middle Stone:Lower Stone:Garment Stone:Dual And Effect:Exit")) {
+		case 1:
+			mes "[Top Stone]";
+			mes "Open Top Stone Metarial...";
+			close2;
+			callshop "barter_stone_top";
+			end;
+
+		case 2:
+			mes "[Middle Stone]";
+			mes "Open Middle Stone Metarial...";
+			close2;
+			callshop "barter_stone_mid";
+			end;
+
+		case 3:
+			mes "[Lower Stone]";
+			mes "Open Lower Stone Metarial...";
+			close2;
+			callshop "barter_stone_low";
+			end;
+
+		case 4:
+			mes "[Garment Stone]";
+			mes "Open Garment Stone Metarial...";
+			close2;
+			callshop "barter_stone_garment";
+			end;
+
+		case 5:
+			mes "[Dual And Effect]";
+			mes "Open Dual And Effect Metarial...";
+			close2;
+			callshop "barter_stone_dual";
+			end;
+	
+		case 6:
+			mes "Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

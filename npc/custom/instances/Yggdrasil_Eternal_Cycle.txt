@@ -1,0 +1,574 @@
+//===== YGGDRASIL ETERNAL CYCLE Instance ====================================
+//= The Reincarnation Trial (1@ch1a -> 1@ch1b -> 1@dime)
+//= Story: A time rift at Yggdrasil's roots forces you to relive a warrior's
+//=        journey from Novice to Ragnarok's final battle
+//============================================================================
+
+askald,51,247,3	script	Norn - Keeper of Past	10574,{
+	if(checkweight(1201,1) == 0){
+		mes "[Norn]";
+		mes "^008800You carry too much. Lighten your burden first.^000000";
+		close;
+	}
+	
+	if(BaseLevel < 240){
+		mes "[Norn]";
+		mes "Only those who have reached level 240 can perceive the eternal cycle.";
+		mes "Your soul is not yet ready to witness the truth of reincarnation.";
+		close;
+	}
+	
+	// Check 12h cooldown
+	if(Yggdrasil_Cooldown > 0) {
+		.@current_time = gettimetick(2);
+		.@time_diff = Yggdrasil_Cooldown - .@current_time;
+		
+		if(.@time_diff <= 0) {
+			set Yggdrasil_Cooldown, 0;
+		} else {
+			.@hours = .@time_diff / 3600;
+			.@minutes = (.@time_diff % 3600) / 60;
+			.@seconds = .@time_diff % 60;
+			
+			mes "[Norn]";
+			mes "^ff0000Your soul still bears the weight of the previous cycle.^000000";
+			mes " ";
+			mes "The threads of fate are not yet ready to be woven again.";
+			mes " ";
+			mes "^00BFFFTime Until Soul Recovery:^000000";
+			mes "^ff0000" + .@hours + " hours " + .@minutes + " minutes " + .@seconds + " seconds^000000";
+			next;
+			
+			mes "[Norn]";
+			mes "However... there is a way to hasten the flow of time.";
+			mes " ";
+			mes "^FF0000The price to reset your soul's cycle:^000000";
+			mes "- 100,000,000 Zeny";
+			mes "- 200 TCG Cards";
+			mes " ";
+			mes "Will you pay this price to challenge fate once more?";
+			next;
+			
+			if(select("No, I will wait:Yes, reset my soul (100M + 200 TCG)") == 1) {
+				mes "[Norn]";
+				mes "Patience is a virtue. Return when the cycle is complete.";
+				close;
+			}
+			
+			if (Zeny < 100000000) {
+				mes "[Norn]";
+				mes "^FF0000You lack sufficient Zeny!^000000";
+				mes "Required: 100,000,000 | You have: " + Zeny;
+				close;
+			}
+			
+			if (countitem(7227) < 200) {
+				mes "[Norn]";
+				mes "^FF0000You lack sufficient TCG Cards!^000000";
+				mes "Required: 200 | You have: " + countitem(7227);
+				close;
+			}
+			
+			set Zeny, Zeny - 100000000;
+			delitem 7227, 200;
+			set Yggdrasil_Cooldown, 0;
+			
+			mes "[Norn]";
+			mes "^00FF00The threads of fate have been rewoven!^000000";
+			mes "Your soul is cleansed. You may enter the cycle once more.";
+			close;
+		}
+	}
+	
+	.@party_id = getcharid(1);
+	if(!.@party_id){
+		mes "[Norn]";
+		mes "The cycle cannot be faced alone.";
+		mes "Gather your companions before you step into the rift.";
+		close;
+	}
+	
+	// Check if player has entered but not completed
+	if(Yggdrasil_Entered > 0 && Yggdrasil_Cooldown == 0) {
+		mes "[Norn]";
+		mes "^FF0000You abandoned your previous trial!^000000";
+		mes " ";
+		mes "Those who flee from their fate must face the consequences.";
+		mes " ";
+		mes "^FF0000Penalty Cooldown: 12 hours^000000";
+		next;
+		mes "[Norn]";
+		mes "You may pay to cleanse this failure:";
+		mes "- 100,000,000 Zeny";
+		mes "- 200 TCG Cards";
+		next;
+		
+		if(select("Accept the penalty:Pay to cleanse (100M + 200 TCG)") == 1) {
+			set Yggdrasil_Cooldown, gettimetick(2) + 43200;
+			set Yggdrasil_Entered, 0;
+			mes "[Norn]";
+			mes "Return in 12 hours.";
+			close;
+		}
+		
+		if (Zeny < 100000000 || countitem(7227) < 200) {
+			mes "[Norn]";
+			mes "^FF0000Insufficient payment!^000000";
+			set Yggdrasil_Cooldown, gettimetick(2) + 43200;
+			set Yggdrasil_Entered, 0;
+			close;
+		}
+		
+		set Zeny, Zeny - 100000000;
+		delitem 7227, 200;
+		set Yggdrasil_Entered, 0;
+		mes "[Norn]";
+		mes "^00FF00Your failure has been cleansed.^000000";
+		next;
+	}
+	
+	cutin "ep21_nadoyo01.png",2;
+	mes "[Norn]";
+	mes "Traveler... you hold a blade and believe you're moving forward?";
+	next;
+	cutin "ep21_nadoyo02.png",2;
+	mes "[Norn]";
+	mes "No... each step you take only brings you back to the beginning.";
+	next;
+	cutin "ep21_nadoyo03.png",2;
+	mes "[Norn]";
+	mes "Beyond this threshold lies Yggdrasil's time rift.";
+	mes "You will relive the life of a Midgard warrior...";
+	next;
+	cutin "ep21_nadoyo04.png",2;
+	mes "[Norn]";
+	mes "From the first uncertain steps as a Novice...";
+	mes "Through glory and triumph...";
+	mes "To the final moments at Ragnarok's apocalypse.";
+	next;
+	cutin "ep21_nadoyo05.png",2;
+	mes "[Norn]";
+	mes "^FF0000Do you dare face the shadow of your own past lives?^000000";
+	mes "Only by confronting yourself across time can you break free from the eternal cycle.";
+	next;
+	
+	.@md_name$ = "Yggdrasil Eternal Cycle";
+	if(select("Enter the Cycle",(is_party_leader() ? "Create Instance" : "")) == 1){
+		if(instance_enter(.@md_name$) == IE_OK){
+			// Mark player as entered instance
+			set Yggdrasil_Entered, gettimetick(2);
+			
+			.@party_name$ = getpartyname(.@party_id);
+			mapannounce "askald", strcharinfo(0) + " of party "+ .@party_name$ +" has entered the Yggdrasil Eternal Cycle!", bc_map, "0x9370DB";
+			cutin "",255;
+		} else {
+			mes "[Norn]";
+			mes "The rift has not yet been opened.";
+			mes "Your party leader must create the instance first.";
+			cutin "",255;
+		}
+	} else {
+		if(instance_create(.@md_name$) == -3) {
+			mes "[Norn]";
+			mes "The threads of fate are tangled.";
+			mes "Another instance already exists for your party.";
+			close2;
+			cutin "",255;
+			end;
+		}
+		cutin "ep21_nadoyo06.png",2;
+		mes "[Norn]";
+		mes "The time rift has been opened.";
+		mes "Speak with me again to enter the cycle.";
+		cutin "",255;
+	}
+	close;
+}
+
+//============================================================================
+// Instance Controller
+//============================================================================
+1@ch1a,1,1,0	script	#yggdrasil_control	-1,{
+	end;
+	
+OnInstanceInit:
+	set_instance_var("map1$",instance_mapname("1@ch1a"));
+	set_instance_var("map2$",instance_mapname("1@ch1b"));
+	set_instance_var("map_final$",instance_mapname("1@dime"));
+	
+	// Set mapflags for all maps
+	.@map1$ = get_instance_var("map1$");
+	.@map2$ = get_instance_var("map2$");
+	.@map3$ = get_instance_var("map_final$");
+	
+	setmapflag .@map1$, mf_noteleport;
+	setmapflag .@map1$, mf_nosave;
+	setmapflag .@map1$, mf_nomemo;
+	setmapflag .@map1$, mf_nowarpto;
+	setmapflag .@map1$, mf_nowarp;
+	setmapflag .@map1$, mf_noreturn;
+	
+	setmapflag .@map2$, mf_noteleport;
+	setmapflag .@map2$, mf_nosave;
+	setmapflag .@map2$, mf_nomemo;
+	setmapflag .@map2$, mf_nowarpto;
+	setmapflag .@map2$, mf_nowarp;
+	setmapflag .@map2$, mf_noreturn;
+	
+	setmapflag .@map3$, mf_noteleport;
+	setmapflag .@map3$, mf_nosave;
+	setmapflag .@map3$, mf_nomemo;
+	setmapflag .@map3$, mf_nowarpto;
+	setmapflag .@map3$, mf_nowarp;
+	setmapflag .@map3$, mf_noreturn;
+	
+	// Disable all warps initially
+	instance_enable("#ygg_warp_boss1",false);
+	instance_enable("#ygg_warp_to_map2",false);
+	instance_enable("#ygg_warp_boss2",false);
+	instance_enable("#ygg_warp_to_final",false);
+	instance_enable("Norn#ygg_final",false);
+	instance_enable("#ygg_warp_exit",false);
+end;
+}
+
+//============================================================================
+// MAP 1 (1@ch1a) - THE NOVICE PATH - Start Trigger
+//============================================================================
+1@ch1a,270,294,0	script	#ygg_start_trigger	HIDDEN_WARP_NPC,3,3,{
+	end;
+	
+OnTouch:
+	if(!is_party_leader() || get_instance_var("stage")) end;
+	set_instance_var("stage",1);
+	disablenpc();
+	sleep 2000;
+	.@map$ = get_instance_var("map1$");
+	mapannounce .@map$,"[Norn] +++++ YOU AWAKEN AS A NOVICE... WEAK, UNCERTAIN, AFRAID +++++",bc_map,0x9370DB;
+	sleep 3000;
+	mapannounce .@map$,"[Memory Echo] These are the monsters that once terrorized your first steps...",bc_map,0x87CEEB;
+	sleep 3000;
+	mapannounce .@map$,"[System] Defeat the manifestations of your early trials!",bc_map,0x00FF99;
+	instance_event("#ygg_mob_map1","OnSummonAll",false);
+end;
+}
+
+//============================================================================
+// MAP 1 - Monster Spawner (Novice Path Memories)
+// UPDATED: Using new mob IDs (21616, 21639, 21442, 21443, 21446)
+//============================================================================
+1@ch1a,1,1,0	script	#ygg_mob_map1	-1,{
+	end;
+
+OnSummonAll:
+	.@map$ = get_instance_var("map1$");
+	setarray .@x, 258, 253, 259, 271, 280, 291, 299, 306, 309, 309, 305, 298, 288, 276, 263, 251, 241, 234, 228, 225, 224, 227, 235, 244, 253;
+	setarray .@y, 297, 309, 323, 329, 330, 327, 321, 312, 302, 290, 279, 270, 262, 258, 258, 261, 266, 274, 284, 296, 310, 322, 336, 344, 349;
+	setarray .@mob_ids[0], 21616, 21598, 21384, 21445, 21446;
+	
+	// Spawn 3 mobs at each spot with 1-2 cell offset
+	for(.@i = 0; .@i < getarraysize(.@x); .@i++){
+		for(.@j = 0; .@j < 3; .@j++){
+			.@sx = .@x[.@i] + rand(-2,2);
+			.@sy = .@y[.@i] + rand(-2,2);
+			.@mob_id = .@mob_ids[rand(0,4)];
+			monster .@map$, .@sx, .@sy, "Memory Fragment", .@mob_id, 1, instance_npcname(strnpcinfo(0)) + "::OnKillMob";
+		}
+	}
+end;
+
+OnKillMob:
+	.@map$ = get_instance_var("map1$");
+	.@remaining = mobcount(.@map$, instance_npcname(strnpcinfo(0)) + "::OnKillMob");
+	
+	if(.@remaining <= 0 && !get_instance_var("map1_clear")){
+		set_instance_var("map1_clear",1);
+		mapannounce .@map$,"[Memory Echo] The weak Novice grows stronger... faces their first true test.",bc_map,0x87CEEB;
+		sleep 2000;
+		mapannounce .@map$,"[System] Portal to the First Trial has opened!",bc_map,0x00FFFF;
+		instance_enable("#ygg_warp_boss1",true);
+	}
+end;
+}
+
+//============================================================================
+// MAP 1 - Warp to Boss Area
+//============================================================================
+1@ch1a,259,352,0	script	#ygg_warp_boss1	WARPNPC,2,2,{
+	end;
+OnTouch:
+	warp get_instance_var("map1$"),86,143;
+	if(!get_instance_var("boss1_announced")){
+		set_instance_var("boss1_announced",1);
+		sleep 2000;
+		.@map$ = get_instance_var("map1$");
+		mapannounce .@map$,"[Memory Echo] ===== HERE YOU FACED YOUR FIRST IMPOSSIBLE FOE =====",bc_map,0x9370DB;
+		sleep 2000;
+		mapannounce .@map$,"[Memory Echo] ===== THE GUARDIAN THAT FORCED YOU TO TRANSCEND YOUR LIMITS! =====",bc_map,0xFF6347;
+		sleep 2000;
+		monster .@map$,86,156,"Shadow of Your Past Self",21855,1,instance_npcname("#ygg_boss")+"::OnBoss1Dead";
+	}
+end;
+}
+
+//============================================================================
+// Boss Handler
+//============================================================================
+1@ch1a,1,1,0	script	#ygg_boss	-1,{
+	end;
+	
+OnBoss1Dead:
+	.@map$ = get_instance_var("map1$");
+	mapannounce .@map$,"[Memory Echo] You have conquered your novice self!",bc_map,0x00FF99;
+	sleep 2000;
+	mapannounce .@map$,"[Norn] +++++ THE CYCLE TURNS... YOU GROW IN POWER AND GLORY! +++++",bc_map,0x9370DB;
+	sleep 2000;
+	instance_enable("#ygg_warp_to_map2",true);
+end;
+
+OnBoss2Dead:
+	.@map$ = get_instance_var("map2$");
+	mapannounce .@map$,"[Memory Echo] Even at your peak, you could not escape fate...",bc_map,0xFF6347;
+	sleep 2000;
+	mapannounce .@map$,"[Norn] +++++ NOW WITNESS THE END... AND THE BEGINNING +++++",bc_map,0x9370DB;
+	sleep 2000;
+	instance_enable("#ygg_warp_to_final",true);
+end;
+
+OnDoubleBossDead:
+	set_instance_var("double_count",get_instance_var("double_count") + 1);
+	.@map$ = get_instance_var("map_final$");
+	if(get_instance_var("double_count") >= 2){
+		mapannounce .@map$,"[Norn] ===== YOU HAVE DEFEATED BOTH ECHOES OF RAGNAROK! =====",bc_map,0x9370DB;
+		sleep 3000;
+		mapannounce .@map$,"[WARNING] !!!!! BUT THE TRUE CYCLE HAS YET TO BE BROKEN !!!!!",bc_map,0xFF0000;
+		sleep 2000;
+		mapannounce .@map$,"[Norn] ===== FACE YOURSELF... ACROSS ALL LIFETIMES! =====",bc_map,0x9370DB;
+		sleep 1000;
+		instance_enable("Norn#ygg_final",true);
+	} else {
+		mapannounce .@map$,"[System] One manifestation remains!",bc_map,0xFFFF00;
+	}
+end;
+
+OnFinalBossDead:
+	.@map$ = get_instance_var("map_final$");
+	mapannounce .@map$,"[Norn] +++++ THE CYCLE... IS BROKEN! +++++",bc_map,0x00FF00;
+	sleep 3000;
+	mapannounce .@map$,"[Norn] ===== YOU ARE FREE FROM THE ETERNAL LOOP! =====",bc_map,0x87CEEB;
+	sleep 2000;
+	instance_enable("#ygg_warp_exit",true);
+end;
+}
+
+//============================================================================
+// MAP 1 - Warp to MAP 2 (Golden Age)
+//============================================================================
+1@ch1a,86,143,0	script	#ygg_warp_to_map2	WARPNPC,2,2,{
+	end;
+OnTouch:
+	warp get_instance_var("map2$"),270,294;
+end;
+}
+
+//============================================================================
+// MAP 2 (1@ch1b) - THE GOLDEN AGE - Start Trigger
+//============================================================================
+1@ch1b,270,294,0	script	#ygg_start_trigger2	HIDDEN_WARP_NPC,3,3,{
+	end;
+	
+OnTouch:
+	if(!is_party_leader() || get_instance_var("stage2")) end;
+	set_instance_var("stage2",1);
+	disablenpc();
+	sleep 2000;
+	.@map$ = get_instance_var("map2$");
+	mapannounce .@map$,"[Norn] +++++ YOU HAVE GROWN POWERFUL... A LEGEND AMONG LEGENDS! +++++",bc_map,0x9370DB;
+	sleep 2000;
+	mapannounce .@map$,"[Memory Echo] ===== THIS IS YOUR GOLDEN AGE... WHEN YOU STOOD AT THE PINNACLE! =====",bc_map,0xFFD700;
+	sleep 3000;
+	mapannounce .@map$,"[System] But even legends face endless trials!",bc_map,0x00FF99;
+	instance_event("#ygg_mob_map2","OnSummonAll",false);
+end;
+}
+
+//============================================================================
+// MAP 2 - Monster Spawner (Golden Age Memories)
+// UPDATED: Using new mob IDs (21616, 21598, 21384, 21445, 21446)
+//============================================================================
+1@ch1b,1,1,0	script	#ygg_mob_map2	-1,{
+	end;
+
+OnSummonAll:
+	.@map$ = get_instance_var("map2$");
+	setarray .@x, 258, 253, 259, 271, 280, 291, 299, 306, 309, 309, 305, 298, 288, 276, 263, 251, 241, 234, 228, 225, 224, 227, 235, 244, 253;
+	setarray .@y, 297, 309, 323, 329, 330, 327, 321, 312, 302, 290, 279, 270, 262, 258, 258, 261, 266, 274, 284, 296, 310, 322, 336, 344, 349;
+	setarray .@mob_ids[0], 21616, 21598, 21384, 21445, 21446;
+	
+	// Spawn 5 mobs exactly at each spot (no offset)
+	for(.@i = 0; .@i < getarraysize(.@x); .@i++){
+		for(.@j = 0; .@j < 5; .@j++){
+			.@mob_id = .@mob_ids[rand(0,4)];
+			monster .@map$, .@x[.@i], .@y[.@i], "Echo of Glory", .@mob_id, 1, instance_npcname(strnpcinfo(0)) + "::OnKillMob";
+		}
+	}
+end;
+
+OnKillMob:
+	.@map$ = get_instance_var("map2$");
+	.@remaining = mobcount(.@map$, instance_npcname(strnpcinfo(0)) + "::OnKillMob");
+	
+	if(.@remaining <= 0 && !get_instance_var("map2_clear")){
+		set_instance_var("map2_clear",1);
+		mapannounce .@map$,"[Memory Echo] At your peak, you faced the impossible...",bc_map,0x87CEEB;
+		sleep 2000;
+		mapannounce .@map$,"[System] Portal to the Trial of Glory has opened!",bc_map,0x00FFFF;
+		instance_enable("#ygg_warp_boss2",true);
+	}
+end;
+}
+
+//============================================================================
+// MAP 2 - Warp to Boss Area
+//============================================================================
+1@ch1b,259,352,0	script	#ygg_warp_boss2	WARPNPC,2,2,{
+	end;
+OnTouch:
+	warp get_instance_var("map2$"),86,143;
+	if(!get_instance_var("boss2_announced")){
+		set_instance_var("boss2_announced",1);
+		sleep 2000;
+		.@map$ = get_instance_var("map2$");
+		mapannounce .@map$,"[Memory Echo] ===== EVEN AT YOUR STRONGEST... YOU COULD NOT DEFEAT THIS FOE =====",bc_map,0xFF6347;
+		sleep 2000;
+		mapannounce .@map$,"[Norn] ===== THIS IS THE ENEMY THAT SENT YOU TO THE FINAL BATTLE =====",bc_map,0x9370DB;
+		sleep 2000;
+		monster .@map$,86,156,"Shadow of Your Peak Self",21856,1,instance_npcname("#ygg_boss")+"::OnBoss2Dead";
+	}
+end;
+}
+
+//============================================================================
+// MAP 2 - Warp to Final Map (Ragnarok's End)
+//============================================================================
+1@ch1b,86,143,0	script	#ygg_warp_to_final	WARPNPC,2,2,{
+	end;
+OnTouch:
+	warp get_instance_var("map_final$"),79,85;
+end;
+}
+
+//============================================================================
+// Final Area (1@dime) - RAGNAROK'S END - Double Boss Trigger
+//============================================================================
+1@dime,79,80,0	script	#ygg_double_trigger	HIDDEN_WARP_NPC,5,5,{
+	end;
+	
+OnTouch:
+	if(!is_party_leader()) end;
+	if(get_instance_var("double_spawned")) end;
+	set_instance_var("double_spawned",1);
+	disablenpc();
+	.@map$ = get_instance_var("map_final$");
+	mapannounce .@map$,"[Norn] ===== THIS IS WHERE IT ALL ENDED =====",bc_map,0x9370DB;
+	sleep 3000;
+	mapannounce .@map$,"[Memory Echo] +++++ THE FINAL BATTLEFIELD... WHERE YOU FELL AT RAGNAROK! +++++",bc_map,0xFF0000;
+	sleep 2000;
+	mapannounce .@map$,"[WARNING] !!!!! THE APOCALYPSE HAS TWO FACES !!!!!",bc_map,0xFF6347;
+	sleep 2000;
+	monster .@map$,75,76,"Harbinger of Destruction",21856,1,instance_npcname("#ygg_boss")+"::OnDoubleBossDead";
+	monster .@map$,83,76,"Herald of Oblivion",21857,1,instance_npcname("#ygg_boss")+"::OnDoubleBossDead";
+end;
+}
+
+//============================================================================
+// Final Challenge NPC
+//============================================================================
+1@dime,79,76,1	script	Norn#ygg_final	10574,{
+	cutin "ep21_nadoyo01.png",2;
+	mes "[Norn]";
+	mes "You stand at the precipice of eternity...";
+	next;
+	cutin "ep21_nadoyo02.png",2;
+	mes "[Norn]";
+	mes "Ahead lies the culmination of all your past lives.";
+	mes "The shadow that has chased you through countless cycles.";
+	next;
+	cutin "ep21_nadoyo03.png",2;
+	mes "[Norn]";
+	mes "To break free from the eternal loop...";
+	mes "^FF0000You must face the sum of all your incarnations!^000000";
+	next;
+	cutin "ep21_nadoyo04.png",2;
+	mes "[Norn]";
+	mes "Are you ready to confront your eternal self?";
+	next;
+	if(select("Yes, I will break this cycle!:Not yet...") == 2){
+		cutin "ep21_nadoyo05.png",2;
+		mes "[Norn]";
+		mes "The wheel of fate waits for no one.";
+		mes "But I will grant you this moment of hesitation.";
+		close2;
+		cutin "",255;
+		end;
+	}
+	cutin "ep21_nadoyo06.png",2;
+	mes "[Norn]";
+	mes "Then witness the truth of your existence!";
+	close2;
+	cutin "",255;
+	instance_enable("Norn#ygg_final",false);
+	.@map$ = get_instance_var("map_final$");
+	mapannounce .@map$,"[Norn] !!!!! BEHOLD! YOUR ETERNAL SHADOW AWAKENS !!!!!",bc_map,0xFF0000;
+	sleep 2000;
+	mapannounce .@map$,"[WARNING] ===== THE SUM OF ALL YOUR LIVES MANIFESTS! =====",bc_map,0x9370DB;
+	sleep 2000;
+	monster .@map$,79,76,"YOUR ETERNAL SHADOW",21858,1,instance_npcname("#ygg_boss")+"::OnFinalBossDead";
+	end;
+}
+
+//============================================================================
+// Exit Portal
+//============================================================================
+1@dime,79,70,0	script	#ygg_warp_exit	WARPNPC,2,2,{
+	end;
+OnTouch:
+	cutin "ep21_nadoyo07.png",2;
+	mes "[Norn]";
+	mes "The cycle is broken.";
+	next;
+	cutin "ep21_nadoyo08.png",2;
+	mes "[Norn]";
+	mes "Look... the old seed has died, and a new sprout emerges.";
+	next;
+	cutin "ep21_nadoyo09.png",2;
+	mes "[Norn]";
+	mes "^00FF00This is not an ending... it is a brilliant new beginning.^000000";
+	next;
+	cutin "ep21_nadoyo10.png",2;
+	mes "[Norn]";
+	mes "You have proven yourself worthy.";
+	mes "Take these rewards and walk forward into your new fate.";
+	next;
+	
+	// Add rewards here
+	// getitem XXXX, X;
+	
+	mes "[System]";
+	mes "^00FF00Rewards granted!^000000";
+	mes " ";
+	mes "^00FF00Instance completed successfully!^000000";
+	mes "^FF0000Cooldown: 12 hours activated.^000000";
+	mes " ";
+	mes "You will be returned to the entrance.";
+	next;
+	
+	// Clear entered flag and set normal cooldown (12 hours)
+	set Yggdrasil_Entered, 0;
+	set Yggdrasil_Cooldown, gettimetick(2) + 43200;
+	
+	cutin "",255;
+	warp "askald",67,230;
+	close;
+end;
+}

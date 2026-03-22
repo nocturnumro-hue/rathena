@@ -1,0 +1,422 @@
+// ============================================================
+// Material Exchange NPC
+// @reloadnpcfile npc/custom/donate_event/NPC_Material_Exchange.txt
+// ============================================================
+askald,159,130,4	script	Material Exchange	21616,{
+
+	cutin "war_y1.bmp", 2;
+	mes "[Material Exchange]";
+	mes "Greetings, " + strcharinfo(0) + "!";
+	mes "I can exchange your Episode Material Tickets";
+	mes "for crafting materials.";
+	mes " ";
+	mes "^0055FFSelect a ticket to exchange:^000000";
+	next;
+
+	set .@has1, (countitem(1230039) > 0);
+	set .@has2, (countitem(1230040) > 0);
+	set .@has3, (countitem(1230041) > 0);
+	set .@has4, (countitem(1230042) > 0);
+	set .@has5, (countitem(1230043) > 0);
+
+	if (.@has1) set .@m1$, "[1] Material Exchange Ticket";
+	else        set .@m1$, "[1] ^FF0000Material Exchange Ticket  (not in bag)^000000";
+
+	if (.@has2) set .@m2$, "[2] Episode 16/17 Exchange Ticket";
+	else        set .@m2$, "[2] ^FF0000Episode 16/17 Exchange Ticket  (not in bag)^000000";
+
+	if (.@has3) set .@m3$, "[3] Episode 18 Exchange Ticket";
+	else        set .@m3$, "[3] ^FF0000Episode 18 Exchange Ticket  (not in bag)^000000";
+
+	if (.@has4) set .@m4$, "[4] Episode 19 Exchange Ticket";
+	else        set .@m4$, "[4] ^FF0000Episode 19 Exchange Ticket  (not in bag)^000000";
+
+	if (.@has5) set .@m5$, "[5] Episode 20 Exchange Ticket";
+	else        set .@m5$, "[5] ^FF0000Episode 20 Exchange Ticket  (not in bag)^000000";
+
+	switch(select(.@m1$ + ":" + .@m2$ + ":" + .@m3$ + ":" + .@m4$ + ":" + .@m5$ + ":^FF0000[X] Cancel^000000")) {
+
+	// ============================================================
+	// CASE 1 - Material Exchange Ticket (1230039)
+	// ============================================================
+	case 1:
+		if (!.@has1) {
+			mes "[Material Exchange]";
+			mes "^FF0000You do not have a Material Exchange Ticket.^000000";
+			cutin "", 255; close;
+		}
+		cutin "war_y2.bmp", 2;
+		mes "[Material Exchange]";
+		mes "^0055FF[ Material Exchange Ticket ]^000000";
+		mes "^FF8800----------------------------------------^000000";
+		mes "Choose what you want to receive:";
+		mes " ";
+		mes "^0055FF[A]^000000 5,000x ^008800Shadowdecon^000000";
+		mes "^0055FF[B]^000000 5,000x ^008800Zelunium^000000";
+		mes "^0055FF[C]^000000 2,500x ^008800Shadowdecon^000000 + 2,500x ^008800Zelunium^000000";
+		next;
+		switch(select("^0055FF[A]^000000 5,000x Shadowdecon:^0055FF[B]^000000 5,000x Zelunium:^0055FF[C]^000000 2,500x Shadowdecon + 2,500x Zelunium:^FF0000[X] Cancel^000000")) {
+
+		case 1:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFMaterial Exchange Ticket^000000";
+			mes "  ->  5,000x ^008800Shadowdecon^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(25729, 5000)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230039, 1;
+			getitem 25729, 5000;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 5,000x ^0055FFShadowdecon^000000.";
+			cutin "", 255; close;
+
+		case 2:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFMaterial Exchange Ticket^000000";
+			mes "  ->  5,000x ^008800Zelunium^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(25731, 5000)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230039, 1;
+			getitem 25731, 5000;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 5,000x ^0055FFZelunium^000000.";
+			cutin "", 255; close;
+
+		case 3:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFMaterial Exchange Ticket^000000";
+			mes "  ->  2,500x ^008800Shadowdecon^000000";
+			mes "  ->  2,500x ^008800Zelunium^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(25729, 2500) || !checkweight(25731, 2500)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230039, 1;
+			getitem 25729, 2500;
+			getitem 25731, 2500;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 2,500x ^0055FFShadowdecon^000000";
+			mes "and 2,500x ^0055FFZelunium^000000.";
+			cutin "", 255; close;
+
+		case 4:
+			mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+		}
+
+	// ============================================================
+	// CASE 2 - Episode 16/17 Exchange Ticket (1230040)
+	// ============================================================
+	case 2:
+		if (!.@has2) {
+			mes "[Material Exchange]";
+			mes "^FF0000You do not have an Episode 16/17 Exchange Ticket.^000000";
+			cutin "", 255; close;
+		}
+		cutin "war_y3.bmp", 2;
+		mes "[Material Exchange]";
+		mes "^0055FF[ Episode 16/17 Exchange Ticket ]^000000";
+		mes "^FF8800----------------------------------------^000000";
+		mes "Choose a material set:";
+		mes " ";
+		mes "^0055FF[A]^000000 ^FF8800Ep 16.1^000000  1,000x ^008800Token of Honor^000000";
+		mes "^0055FF[B]^000000 ^FF8800Ep 16.2^000000  1,000x ^008800Schwarzwald Token of Honor^000000";
+		mes "^0055FF[C]^000000 ^FF8800Ep 17.1^000000  1,000x ^008800Cor Core^000000";
+		mes "^0055FF[D]^000000 ^FF8800Ep 17.1^000000  1,000x ^008800Unknown Parts^000000";
+		mes "^0055FF[E]^000000 ^FF8800Ep 17.1^000000  500x ^008800Cor Core^000000 + 500x ^008800Unknown Parts^000000";
+		mes "^0055FF[F]^000000 ^FF8800Ep 17.2^000000  800x ^008800Varmeal Ticket^000000";
+		next;
+		switch(select("^0055FF[A]^000000 Ep 16.1 - 1,000x Token of Honor:^0055FF[B]^000000 Ep 16.2 - 1,000x Schwarzwald Token of Honor:^0055FF[C]^000000 Ep 17.1 - 1,000x Cor Core:^0055FF[D]^000000 Ep 17.1 - 1,000x Unknown Parts:^0055FF[E]^000000 Ep 17.1 - 500x Cor Core + 500x Unknown Parts:^0055FF[F]^000000 Ep 17.2 - 800x Varmeal Ticket:^FF0000[X] Cancel^000000")) {
+
+		case 1:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFEpisode 16/17 Exchange Ticket^000000";
+			mes "  ->  1,000x ^008800Token of Honor^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(6919, 1000)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230040, 1;
+			getitem 6919, 1000;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 1,000x ^0055FFToken of Honor^000000.";
+			cutin "", 255; close;
+
+		case 2:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFEpisode 16/17 Exchange Ticket^000000";
+			mes "  ->  1,000x ^008800Schwarzwald Token of Honor^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(25155, 1000)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230040, 1;
+			getitem 25155, 1000;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 1,000x ^0055FFSchwarzwald Token of Honor^000000.";
+			cutin "", 255; close;
+
+		case 3:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFEpisode 16/17 Exchange Ticket^000000";
+			mes "  ->  1,000x ^008800Cor Core^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(25723, 1000)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230040, 1;
+			getitem 25723, 1000;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 1,000x ^0055FFCor Core^000000.";
+			cutin "", 255; close;
+
+		case 4:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFEpisode 16/17 Exchange Ticket^000000";
+			mes "  ->  1,000x ^008800Unknown Parts^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(25669, 1000)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230040, 1;
+			getitem 25669, 1000;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 1,000x ^0055FFUnknown Parts^000000.";
+			cutin "", 255; close;
+
+		case 5:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFEpisode 16/17 Exchange Ticket^000000";
+			mes "  ->  500x ^008800Cor Core^000000";
+			mes "  ->  500x ^008800Unknown Parts^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(25723, 500) || !checkweight(25669, 500)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230040, 1;
+			getitem 25723, 500;
+			getitem 25669, 500;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 500x ^0055FFCor Core^000000";
+			mes "and 500x ^0055FFUnknown Parts^000000.";
+			cutin "", 255; close;
+
+		case 6:
+			mes "[Material Exchange]";
+			mes "^FF8800Confirm Exchange:^000000";
+			mes "1x ^0055FFEpisode 16/17 Exchange Ticket^000000";
+			mes "  ->  800x ^008800Varmeal Ticket^000000";
+			next;
+			if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+				mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+			}
+			if (!checkweight(1000103, 800)) {
+				mes "[Material Exchange]";
+				mes "^FF0000You are carrying too much weight!^000000";
+				mes "Please free up space and try again.";
+				cutin "", 255; close;
+			}
+			delitem 1230040, 1;
+			getitem 1000103, 800;
+			mes "[Material Exchange]";
+			mes "^008800Exchange successful!^000000";
+			mes "You received 800x ^0055FFVarmeal Ticket^000000.";
+			cutin "", 255; close;
+
+		case 7:
+			mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+		}
+
+	// ============================================================
+	// CASE 3 - Episode 18 Exchange Ticket (1230041)
+	// ============================================================
+	case 3:
+		if (!.@has3) {
+			mes "[Material Exchange]";
+			mes "^FF0000You do not have an Episode 18 Exchange Ticket.^000000";
+			cutin "", 255; close;
+		}
+		cutin "war_y4.bmp", 2;
+		mes "[Material Exchange]";
+		mes "^0055FF[ Episode 18 Exchange Ticket ]^000000";
+		mes "^FF8800----------------------------------------^000000";
+		mes "You will receive:";
+		mes " ";
+		mes "^0055FF[A]^000000 ^FF8800Ep 18^000000  500x ^008800Amethyst Fragment^000000";
+		next;
+		mes "[Material Exchange]";
+		mes "^FF8800Confirm Exchange:^000000";
+		mes "1x ^0055FFEpisode 18 Exchange Ticket^000000";
+		mes "  ->  500x ^008800Amethyst Fragment^000000";
+		next;
+		if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+			mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+		}
+		if (!checkweight(1000405, 500)) {
+			mes "[Material Exchange]";
+			mes "^FF0000You are carrying too much weight!^000000";
+			mes "Please free up space and try again.";
+			cutin "", 255; close;
+		}
+		delitem 1230041, 1;
+		getitem 1000405, 500;
+		mes "[Material Exchange]";
+		mes "^008800Exchange successful!^000000";
+		mes "You received 500x ^0055FFAmethyst Fragment^000000.";
+		cutin "", 255; close;
+
+	// ============================================================
+	// CASE 4 - Episode 19 Exchange Ticket (1230042)
+	// ============================================================
+	case 4:
+		if (!.@has4) {
+			mes "[Material Exchange]";
+			mes "^FF0000You do not have an Episode 19 Exchange Ticket.^000000";
+			cutin "", 255; close;
+		}
+		cutin "war_y4.bmp", 2;
+		mes "[Material Exchange]";
+		mes "^0055FF[ Episode 19 Exchange Ticket ]^000000";
+		mes "^FF8800----------------------------------------^000000";
+		mes "You will receive:";
+		mes " ";
+		mes "^0055FF[A]^000000 ^FF8800Ep 19^000000  200x ^008800Flower Petals^000000";
+		next;
+		mes "[Material Exchange]";
+		mes "^FF8800Confirm Exchange:^000000";
+		mes "1x ^0055FFEpisode 19 Exchange Ticket^000000";
+		mes "  ->  200x ^008800Flower Petals^000000";
+		next;
+		if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+			mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+		}
+		if (!checkweight(1000608, 200)) {
+			mes "[Material Exchange]";
+			mes "^FF0000You are carrying too much weight!^000000";
+			mes "Please free up space and try again.";
+			cutin "", 255; close;
+		}
+		delitem 1230042, 1;
+		getitem 1000608, 200;
+		mes "[Material Exchange]";
+		mes "^008800Exchange successful!^000000";
+		mes "You received 200x ^0055FFFlower Petals^000000.";
+		cutin "", 255; close;
+
+	// ============================================================
+	// CASE 5 - Episode 20 Exchange Ticket (1230043)
+	// ============================================================
+	case 5:
+		if (!.@has5) {
+			mes "[Material Exchange]";
+			mes "^FF0000You do not have an Episode 20 Exchange Ticket.^000000";
+			cutin "", 255; close;
+		}
+		cutin "war_y4.bmp", 2;
+		mes "[Material Exchange]";
+		mes "^0055FF[ Episode 20 Exchange Ticket ]^000000";
+		mes "^FF8800----------------------------------------^000000";
+		mes "You will receive:";
+		mes " ";
+		mes "^0055FF[A]^000000 ^FF8800Ep 20^000000  200x ^008800Sacred Cat Whiskers^000000";
+		next;
+		mes "[Material Exchange]";
+		mes "^FF8800Confirm Exchange:^000000";
+		mes "1x ^0055FFEpisode 20 Exchange Ticket^000000";
+		mes "  ->  200x ^008800Sacred Cat Whiskers^000000";
+		next;
+		if (select("^008800[OK] Confirm^000000:^FF0000[X] Cancel^000000") == 2) {
+			mes "[Material Exchange]"; mes "Cancelled."; cutin "", 255; close;
+		}
+		if (!checkweight(1001217, 200)) {
+			mes "[Material Exchange]";
+			mes "^FF0000You are carrying too much weight!^000000";
+			mes "Please free up space and try again.";
+			cutin "", 255; close;
+		}
+		delitem 1230043, 1;
+		getitem 1001217, 200;
+		mes "[Material Exchange]";
+		mes "^008800Exchange successful!^000000";
+		mes "You received 200x ^0055FFSacred Cat Whiskers^000000.";
+		cutin "", 255; close;
+
+	// ============================================================
+	// CASE 6 - Cancel
+	// ============================================================
+	case 6:
+		cutin "ch1_chez04", 2;
+		mes "[Material Exchange]";
+		mes "Come back anytime, " + strcharinfo(0) + "!";
+		cutin "", 255; close;
+	}
+
+	cutin "", 255;
+	close;
+}

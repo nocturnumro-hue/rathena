@@ -1,0 +1,21 @@
+//==================================================
+// ch1_gfn03 - Encroached Geffenia - East (Extreme Difficulty)
+// Level 273-277 Boss Zone - High Density (200+ mobs)
+//==================================================
+
+ch1_gfn03	monster	Infectious Agent	22476,25
+ch1_gfn03	monster	Elite Infectious Agent	22477,15
+ch1_gfn03	monster	Lunarina	22478,22
+ch1_gfn03	monster	Elite Lunarina	22479,13
+ch1_gfn03	monster	Bloody Slasher	22480,24
+ch1_gfn03	monster	Elite Bloody Slasher	22481,14
+ch1_gfn03	monster	Shadist	22482,26
+ch1_gfn03	monster	Elite Shadist	22483,16
+ch1_gfn03	monster	High Succubus	22484,20
+ch1_gfn03	monster	Elite High Succubus	22485,12
+ch1_gfn03	monster	High Inccubus	22486,18
+ch1_gfn03	monster	Elite High Inccubus	22487,10
+ch1_gfn03	monster	Abyss Knight Commander	22488,3
+ch1_gfn03	monster	Elite Abyss Knight	22489,2
+
+// Total: 220 monsters

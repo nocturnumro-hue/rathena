@@ -1,0 +1,1136 @@
+//===== rAthena script ===========================================
+//= Constellation Tower - Modified Version  
+//===== By: ======================================================
+//= Modified: Boss every floor + 20-30 mobs + 12h cooldown
+//===== Current Version: =========================================
+//= 2.2 - Single NPC entry with 12h cooldown
+//================================================================
+askald,67,234,1	script	Constellation Tower Entry	22421,{
+	if(checkweight(1201,1) == 0){
+		mes "[ Awakened Yortus Executor ]";
+		mes "^008800You're carrying too much stuff. Put some away first.^000000";
+		close;
+	}
+	
+	if(BaseLevel < 240){
+		mes "[ Awakened Yortus Executor ]";
+		mes "Sorry adventurer, only those level 240 and above can enter.";
+		close;
+	}
+	
+	// Check 12h cooldown
+	if(CTower_Cooldown > 0) {
+		.@current_time = gettimetick(2);
+		.@time_diff = CTower_Cooldown - .@current_time;
+		
+		if(.@time_diff <= 0) {
+			set CTower_Cooldown, 0;
+		} else {
+			.@hours = .@time_diff / 3600;
+			.@minutes = (.@time_diff % 3600) / 60;
+			.@seconds = .@time_diff % 60;
+			
+			cutin "ep21_yortus_b.png",2;
+			mes "[ Awakened Yortus Executor ]";
+			mes "^ff0000You need to rest!^000000";
+			mes " ";
+			mes "^00BFFFTime Remaining:^000000";
+			mes "^ff0000" + .@hours + "h " + .@minutes + "m " + .@seconds + "s^000000";
+			next;
+			
+			mes "[ Awakened Yortus Executor ]";
+			mes "Reset cooldown?";
+			mes " ";
+			mes "^FF0000Cost:^000000";
+			mes "- 100,000,000 Zeny";
+			mes "- 200 TCG";
+			next;
+			
+			if(select("Cancel:Reset (100M + 200 TCG)") == 1) {
+				cutin "",255;
+				close;
+			}
+			
+			if (Zeny < 100000000) {
+				mes "[ Awakened Yortus Executor ]";
+				mes "^FF0000Not enough Zeny!^000000";
+				mes "Need: 100M | Have: " + Zeny;
+				close3;
+			}
+			
+			if (countitem(7227) < 200) {
+				mes "[ Awakened Yortus Executor ]";
+				mes "^FF0000Not enough TCG!^000000";
+				mes "Need: 200 | Have: " + countitem(7227);
+				close3;
+			}
+			
+			set Zeny, Zeny - 100000000;
+			delitem 7227, 200;
+			set CTower_Cooldown, 0;
+			
+			mes "[ Awakened Yortus Executor ]";
+			mes "^00FF00Cooldown reset!^000000";
+			close3;
+		}
+	}
+	
+	.@party_id = getcharid(1);
+	if(!.@party_id){
+		cutin "ep21_yortus_b.png",2;
+		mes "[ Awakened Yortus Executor ]";
+		mes "You need a party first.";
+		close3;
+	}
+	
+	cutin "ep21_yortus_b.png",0;
+	mes "[ Awakened Yortus Executor ]";
+	mes "Ready to enter Constellation Tower?";
+	next;
+	
+	.@md_name$ = "Constellation Tower";
+	if(select("Enter.",(is_party_leader() ? "Create." : "")) == 1){
+		if(instance_enter(.@md_name$) == IE_OK){
+			// Vào thẳng instance
+		} else {
+			mes "^0000FFInstance not created yet.^000000";
+		}
+	} else {
+		if(instance_create(.@md_name$) == -3)
+			instance_warning(2,.@md_name$);
+	}
+	cutin "",255;
+	end;
+}
+
+1@ch_t,1,1,0	script	#ctower_control	-1,{
+	end;
+
+OnInstanceInit:
+	instance_enable("#oscar_start",true);
+	instance_enable("#ctower_fountain",false);
+	
+	// Easy Boss NPCs
+	instance_enable("#ctower_leticia2",true);
+	instance_enable("#ctower_naght",true);
+	instance_enable("#ctower_ev_2",true);
+	
+	for(.@i = 0; .@i < 10; .@i++)
+		instance_enable("#ctower_trap_" + .@i,false);
+	for(.@i = 1; .@i <= 12; .@i++)
+		instance_enable("#ctower_treasure_" + .@i,false);
+	instance_event(strnpcinfo(0),"OnCreateFloors",false);
+end;
+
+OnCreateFloors:
+	freeloop(true);
+	for(.@i = 1; .@i <= 20; .@i++){
+		.@type = rand(5,8); // Increased mob types
+		.@amount = rand(20,30); // 20-30 mobs per floor
+		deletearray .@mob_list[0];
+		deletearray .@floor$[0];
+		for(.@x = 0; .@x < .@type; .@x++){
+			.@mob_id = rand(20998,21046);
+			while(inarray(.@mob_list,.@mob_id) != -1)
+				.@mob_id = rand(20998,21046);
+			.@mob_list[.@x] = .@mob_id;
+		}
+		for(.@x = 0; .@x < .@amount; .@x++){
+			if(.@x <= (.@type - 1))
+				.@floor$[.@x] = .@mob_list[.@x];
+			else
+				.@floor$[.@x] = .@mob_list[rand(getarraysize(.@mob_list))];
+		}
+		.@mvp_id = rand(21325,21358);
+		set_instance_var("floor_" + .@i + "_mvp", .@mvp_id);
+		set_instance_var("floor_" + .@i + "$", implode(.@floor$,":"));
+	}
+	freeloop(false);
+end;
+}
+
+1@ch_t,1,1,0	script	#ctower_mob	HIDDEN_WARP_NPC,{
+	end;
+
+OnSummon:
+	.@map$ = get_instance_var("map$");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+	.@event2$ = instance_npcname(strnpcinfo(0)) + "::OnBossKill";
+	.@floor = get_instance_var("floor");
+	killmonster .@map$,.@event$;
+	killmonster .@map$,.@event2$;
+	explode(.@mobs$, get_instance_var("floor_" + .@floor + "$"), ":");
+	set_instance_var("unlocked_" + get_instance_var("area"), 0);
+	switch(get_instance_var("area")){
+		case 1: .@x1 = 7; .@y1 = 177; .@x2 = 18; .@y2 = 217; break;
+		case 2: .@x1 = 92; .@y1 = 177; .@x2 = 100; .@y2 = 217; break;
+		case 3: .@x1 = 180; .@y1 = 177; .@x2 = 188; .@y2 = 217; break;
+		case 4: .@x1 = 266; .@y1 = 177; .@x2 = 275; .@y2 = 217; break;
+	}
+	// Spawn 20-30 normal mobs
+	for(.@i = 0; .@i < getarraysize(.@mobs$); .@i++){
+		areamonster .@map$, .@x1, .@y1, .@x2, .@y2, "--ja--", atoi(.@mobs$[.@i]), 1, .@event$;
+		unitskilluseid $@mobid[0], "NPC_RELIEVE_ON", 9;
+	}
+	// Spawn boss in SAME area as mobs (FIXED: boss follows mob coordinates)
+	.@boss_x = (.@x1 + .@x2) / 2;
+	.@boss_y = (.@y1 + .@y2) / 2;
+	areamonster .@map$, .@x1, .@y1, .@x2, .@y2, "Floor " + .@floor + " Boss", get_instance_var("floor_" + .@floor + "_mvp"), 1, .@event2$;
+	unitskilluseid $@mobid[0], "NPC_RELIEVE_ON", 9;
+	set_instance_var("boss_gid", $@mobid[0]);
+	mapannounce .@map$, "Floor " + .@floor + "/20 - Defeat all monsters and the boss!", bc_map, 0x00FF99;
+end;
+
+OnMobKill:
+	.@map$ = get_instance_var("map$");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+	.@event2$ = instance_npcname(strnpcinfo(0)) + "::OnBossKill";
+	if(!mobcount(.@map$, .@event$) && !mobcount(.@map$, .@event2$))
+		set_instance_var("unlocked_" + get_instance_var("area"), 1);
+end;
+
+OnBossKill:
+	.@map$ = get_instance_var("map$");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+	.@event2$ = instance_npcname(strnpcinfo(0)) + "::OnBossKill";
+	if(!mobcount(.@map$, .@event$) && !mobcount(.@map$, .@event2$))
+		set_instance_var("unlocked_" + get_instance_var("area"), 1);
+end;
+}
+
+1@ch_t,46,188,6	script	#oscar_start	4_ED_OSCAR,{
+	cutin "OSCAR01",2;
+	mes "[ Oscar ]";
+	if(!is_party_leader()){
+		mes "Where's your party leader?";
+		close3;
+	}
+	mes "Ready to start climbing the tower?";
+	next;
+	if(select("Wait a minute:Start now") == 1){
+		mes "[ Oscar ]";
+		mes "Don't take too long.";
+		close3;
+	}
+	close2;
+	cutin "",255;
+	disablenpc instance_npcname(strnpcinfo(0));
+	set_instance_var("map$", instance_mapname("1@ch_t"));
+	set_instance_var("area", 1);
+	set_instance_var("floor", 1);
+	instance_event("#ctower_mob","OnSummon",false);
+	mapannounce get_instance_var("map$"), "Oscar : Be careful as you climb. I'll lift the seals blocking each floor.", bc_map, 0xCCFF99;
+end;
+}
+
+1@ch_t,13,221,1	script	#ctower_warp_1	PORTAL,{
+	if(!is_party_leader()) end;
+	if(!get_instance_var("unlocked_" + get_instance_var("area"))) end;
+	.@id = atoi(replacestr(strnpcinfo(2), "ctower_warp_", ""));
+	switch(.@id){
+		case 1: .@x = 132; .@y = 183; break;
+		case 2: .@x = 220; .@y = 183; break;
+		case 3: .@x = 306; .@y = 183; break;
+		case 4: .@x = 48; .@y = 183; break;
+	}
+	.@floor = get_instance_var("floor") + 1;
+	if(.@floor > 20){
+		mes "You've completed all 20 floors!";
+		.@map$ = get_instance_var("map$");
+		mapannounce .@map$, "Congratulations! All 20 Floors Completed!", bc_map, 0xFFD700;
+		announce strcharinfo(0) + " has completed all 20 floors of Constellation Tower!", bc_all, 0xFFD700;
+		next;
+		if(select("Continue to Easy Boss:Leave") == 2){
+			warp "askald", 67, 230;
+			end;
+		}
+		instance_warpall instance_mapname("2@ch_t"), 91, 95, instance_id();
+		end;
+	}
+	if(get_instance_var("area") == 4)
+		set_instance_var("area", 1);
+	else
+		set_instance_var("area", get_instance_var("area") + 1);
+	set_instance_var("floor", .@floor);
+	instance_warpall get_instance_var("map$"), .@x, .@y, instance_id();
+	
+	// Center screen announcement and chat announcement
+	.@map$ = get_instance_var("map$");
+	mapannounce .@map$, "Stage: " + .@floor, bc_map, 0xFFD700;
+	announce strcharinfo(0) + " has reached Floor " + .@floor + " in Constellation Tower!", bc_all, 0xFFD700;
+	
+	instance_event("#ctower_mob","OnSummon",false);
+	end;
+}
+
+1@ch_t,97,221,1	duplicate(#ctower_warp_1)	#ctower_warp_2	PORTAL
+1@ch_t,185,221,1	duplicate(#ctower_warp_1)	#ctower_warp_3	PORTAL
+1@ch_t,271,221,1	duplicate(#ctower_warp_1)	#ctower_warp_4	PORTAL
+
+//========== EASY BOSS (Map 2@ch_t) ==========
+2@ch_t,91,95,7	script	#ctower_leticia2	4_4JOB_LETICIA,{
+	.@var = get_instance_var("easy_boss");
+	if(!.@var){
+		cutin "4job_leticia_03.png",2;
+		mes "[ Leticia ]";
+		mes "It's strange that he alone could have messed this tower by himself.";
+		mes "It's ridiculous for me to deal with such trifle myself, so I'll have you take care of it.";
+		if(!is_party_leader()) close3;
+		next;
+		if(select("I can't handle it with my skills.:Let's do this!") == 1){
+			cutin "4job_leticia_02.png",2;
+			mes "[ Leticia ]";
+			mes "Huh? After what all Oscar said, I had a little bit of expectations from you.";
+			close3;
+		}
+		mes "[ Leticia ]";
+		mes "Ho~ You got lot of guts. I like it.";
+		npctalk "Ho~ You got lot of guts. I like it.";
+		cutin "",255;
+		close2;
+		set_instance_var("easy_boss",1);
+		mapannounce instance_mapname("2@ch_t"),"Black... constellation... The constellation... red lizard... you... constellation. this... bad things... my land... my lost wife... how pathetic... it's you.",bc_map,0xFFCCCC;
+		sleep 2000;
+		npctalk "Lizard? You can't even see properly because you're holding that very huge sword.";
+		sleep 2000;
+		mapannounce instance_mapname("2@ch_t"),"You... I.. I will.. make you pay... for my comrades.",bc_map,0xFFCCCC;
+		instance_event("#ctower_naght","OnWalk",false);
+		end;
+	}
+	if(.@var == 2){
+		// Check if already received reward
+		if(get_instance_var("easy_boss_rewarded")){
+			cutin "4job_leticia_02.png",2;
+			mes "[ Leticia ]";
+			mes "You already received your reward. Ready to proceed?";
+			next;
+			if(select("Go to Preparation Area:Not yet") == 2){
+				mes "[ Leticia ]";
+				mes "Take your time.";
+				close3;
+			}
+			instance_warpall instance_mapname("3@ch_t"), 32, 81, instance_id();
+			end;
+		}
+		
+		cutin "4job_leticia_05.png",2;
+		mes "[ Leticia ]";
+		mes "Excellent work! Here's your reward for defeating the Corrupted Guardian.";
+		next;
+		
+		// Easy Boss Rewards
+		mes "[ Leticia ]";
+		mes "^00FF00Rewards:^000000";
+		mes "- 5x Naght Sieger Soul";
+		mes "- 35x Meteorite Dust";
+		mes "- 15x Meteorite Fragment";
+		next;
+		
+		getitem 1000396, 5;  // Naght Sieger Soul
+		getitem 1000372, 35; // Meteorite Dust
+		getitem 1000373, 15; // Meteorite Fragment
+		
+		if(isbegin_quest(12518) == 1){
+			erasequest 12518;
+		}
+		
+		set_instance_var("easy_boss_rewarded", 1);
+		
+		cutin "4job_leticia_02.png",2;
+		mes "[ Leticia ]";
+		mes "Oscar is waiting for you at the preparation area. Are you ready for the final challenge?";
+		next;
+		if(select("Go to Preparation Area:Not yet") == 2){
+			mes "[ Leticia ]";
+			mes "Take your time to prepare.";
+			close3;
+		}
+		instance_warpall instance_mapname("3@ch_t"), 32, 81, instance_id();
+		end;
+	}
+	end;
+}
+
+
+2@ch_t,71,74,0	script	#ctower_ev_2	HIDDEN_WARP_NPC,2,2,{
+	end;
+
+OnTouch:
+	if(isbegin_quest(12518) == 0)
+		setquest 12518;
+end;
+}
+
+2@ch_t,103,107,3	script	#ctower_naght	20996,{
+	end;
+
+OnWalk:
+	npcspeed 200;
+	unitwalk getnpcid(0,instance_npcname(strnpcinfo(0))),93,97,instance_npcname("#ctower_boss_easy") + "::OnSummon";
+end;
+}
+
+2@ch_t,1,1,0	script	#ctower_boss_easy	HIDDEN_WARP_NPC,{
+	end;
+
+OnSummon:
+	instance_enable("#ctower_ev_2",false);
+	instance_hide("#ctower_naght",true);
+	instance_enable("#ctower_leticia2",false);
+	instance_enable("#ctower_naght",false);
+	monster instance_mapname("2@ch_t"),93,97,"Corrupted Guardian",20996,1,instance_npcname(strnpcinfo(0)) + "::OnBossKill";
+	set_instance_var("boss_id",$@mobid[0]);
+	unitskilluseid $@mobid[0],"NPC_RELIEVE_ON",10;
+	
+	// Check HP loop với kiểm tra unitexists
+	freeloop(true);
+	while(true){
+		sleep 1000;
+		.@gid = get_instance_var("boss_id");
+		if(!unitexists(.@gid)) break; // Boss chết thì thoát
+		
+		getunitdata .@gid,.@data;
+		if(.@data[UMOB_HP] <=  (.@data[UMOB_MAXHP]/10) * 9){
+			instance_event(strnpcinfo(0),"OnBossSkill",false);
+			break;
+		}
+	}
+	freeloop(false);
+end;
+
+OnBossSkill:
+	.@map$ = instance_mapname("2@ch_t");
+	.@gid = get_instance_var("boss_id");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnSlaveDead";
+	getunitdata get_instance_var("boss_id"),.@data;
+	.@x = .@data[UMOB_X];
+	.@y = .@data[UMOB_Y];
+	if(!unitexists(.@gid)){
+		stopnpctimer;
+		end;
+	}
+	monster .@map$,.@x,.@y + 3,"Guardian's Shadow",20997,1,.@event$;
+	monster .@map$,.@x,.@y - 3,"Guardian's Shadow",20997,1,.@event$;
+	monster .@map$,.@x + 3,.@y,"Guardian's Shadow",20997,1,.@event$;
+	monster .@map$,.@x - 3,.@y,"Guardian's Shadow",20997,1,.@event$;
+	initnpctimer;
+OnSlaveDead:
+end;
+
+OnTimer15000:
+	stopnpctimer;
+	.@map$ = instance_mapname("2@ch_t");
+	killmonster .@map$,instance_npcname(strnpcinfo(0)) + "::OnSlaveDead";
+	if(unitexists(get_instance_var("boss_id")))
+		instance_event(strnpcinfo(0),"OnBossSkill",false);
+end;
+
+OnBossKill:
+	.@map$ = instance_mapname("2@ch_t");
+	killmonster .@map$,instance_npcname(strnpcinfo(0)) + "::OnSlaveDead";
+	set_instance_var("easy_boss",2);
+	instance_enable("#ctower_leticia2",true);
+	mapannounce .@map$, "Easy Boss defeated! Speak with Leticia to continue to the Final Boss!", bc_map, 0x00FF00;
+end;
+}
+//========== END EASY BOSS ==========
+
+3@ch_t,32,81,0	script	#ctower_ev_1	HIDDEN_WARP_NPC,2,2,{
+	end;
+
+OnTouch:
+	if(!is_party_leader()) end;
+	if(!get_instance_var("fountain_active")){
+		set_instance_var("fountain_active",1);
+		instance_enable("#ctower_fountain",true);
+		disablenpc instance_npcname(strnpcinfo(0));
+		sleep 100;
+		specialeffect EF_NC_ANAL,AREA,instance_npcname("#ctower_fountain");
+		npctalk "This is the altar of goddess, I'll check if it works.",instance_npcname("#oscar_boss");
+	}
+end;
+}
+
+3@ch_t,27,92,6	script	#oscar_boss	4_ED_OSCAR,{
+	if(!is_party_leader()){
+		cutin "OSCAR01",2;
+		mes "[ Oscar ]";
+		mes "Where is your leader?";
+		close3;
+	}
+	if(!get_instance_var("talk")){
+		cutin "OSCAR02",2;
+		mes "[ Oscar ]";
+		mes "The altar of goddess is intact. You can offer tributes to unseal Betelgeuse's power.";
+		next;
+		mes "[ Oscar ]";
+		mes "The stronger you make him, the better rewards you'll get!";
+		set_instance_var("talk",1);
+		close3;
+	}
+	if(!get_instance_var("boss_ready")){
+		cutin "OSCAR02",2;
+		mes "[ Oscar ]";
+		mes "Are you ready to face Betelgeuse?";
+		next;
+		if(select("Yes.:Not yet.") == 2){
+			cutin "OSCAR01",2;
+			mes "[ Oscar ]";
+			mes "Take your time to prepare.";
+			close3;
+		}
+		mes "[ Oscar ]";
+		mes "I've opened the entrance. Good luck!";
+		set_instance_var("boss_ready",1);
+		close3;
+	}
+	cutin "OSCAR02",2;
+	mes "[ Oscar ]";
+	mes "The entrance is ready. Use it when you're prepared.";
+	close3;
+}
+
+3@ch_t,36,91,1	script	#ctower_fountain	628,{
+	.@HP = get_instance_var("HP");
+	.@ATK = get_instance_var("ATK");
+	.@RECO = get_instance_var("RECO");
+	.@RES = get_instance_var("RES");
+	.@TRAP = get_instance_var("TRAP");
+	.@star0$ = "Sealed";
+	.@star1$ = "Rank 1";
+	.@star2$ = "Rank 2";
+	.@star3$ = "Rank 3";
+	switch(.@HP){
+		case 1: .@TOTAL += 15; break;
+		case 2: .@TOTAL += 30; break;
+		case 3: .@TOTAL += 45; break;
+	}
+	switch(.@ATK){
+		case 1: .@TOTAL += 20; break;
+		case 2: .@TOTAL += 40; break;
+		case 3: .@TOTAL += 60; break;
+	}
+	switch(.@RECO){
+		case 1: .@TOTAL += 30; break;
+		case 2: .@TOTAL += 60; break;
+		case 3: .@TOTAL += 90; break;
+	}
+	switch(.@RES){
+		case 1: .@TOTAL += 50; break;
+		case 2: .@TOTAL += 100; break;
+		case 3: .@TOTAL += 150; break;
+	}
+	switch(.@TRAP){
+		case 1: .@TOTAL += 85; break;
+		case 2: .@TOTAL += 170; break;
+		case 3: .@TOTAL += 255; break;
+	}
+	mes "[ Current Boss Abilities ]";
+	mes "HP - ^0000CD" + getd(".@star" + .@HP + "$") + "^000000";
+	mes "ATK - ^0000CD" + getd(".@star" + .@ATK + "$") + "^000000";
+	mes "RECOVERY - ^0000CD" + getd(".@star" + .@RECO + "$") + "^000000";
+	mes "RESISTANCE - ^0000CD" + getd(".@star" + .@RES + "$") + "^000000";
+	mes "TRAP - ^0000CD" + getd(".@star" + .@TRAP + "$") + "^000000";
+	next;
+	if(!.@TOTAL)
+		mes "Boss abilities are completely sealed.";
+	else {
+		mes "Boss power increased by ^FF0000" + .@TOTAL + "%^000000";
+	}
+	mes "----------------------";
+	if(.@TOTAL < 300)
+		mes "^FF0000No bonus costume chance.^000000";
+	if(.@TOTAL >= 300)
+		mes "Bonus: +300% Drop Rate";
+	if(.@TOTAL >= 400)
+		mes "Bonus: +400% Drop Rate + Costume 1";
+	if(.@TOTAL >= 600)
+		mes "Bonus: +600% Drop Rate + Costume 2 + 3";
+	if(!is_party_leader()) end;
+	next;
+	switch(select("Quit:Randomize (1 Star Coin):Maximize (20 Star Coins)")){
+		case 1: break;
+		case 2:
+			mes "Cost: ^0000CD1 " + getitemname(1000372) + "^000000";
+			mes "^FF0000Current abilities will be lost.^000000";
+			next;
+			if(select("Cancel:Proceed") == 1) end;
+			if(countitem(1000372) < 1){
+				mes "^FF0000Not enough " + getitemname(1000372) + ".^000000";
+				end;
+			}
+			delitem 1000372,1;
+			set_instance_var("HP",rand(0,3));
+			set_instance_var("ATK",rand(0,3));
+			set_instance_var("RECO",rand(0,3));
+			set_instance_var("RES",rand(0,3));
+			set_instance_var("TRAP",rand(0,3));
+			mes "Boss abilities randomized!";
+			break;
+		case 3:
+			mes "Cost: ^0000CD20 " + getitemname(1000372) + "^000000";
+			next;
+			if(select("Cancel:Proceed") == 1) end;
+			if(countitem(1000372) < 20){
+				mes "^FF0000Not enough " + getitemname(1000372) + ".^000000";
+				end;
+			}
+			delitem 1000372,20;
+			set_instance_var("HP",3);
+			set_instance_var("ATK",3);
+			set_instance_var("RECO",3);
+			set_instance_var("RES",3);
+			set_instance_var("TRAP",3);
+			mes "Boss abilities maximized!";
+			break;
+	}
+	.@TOTAL = 0;
+	.@HP = get_instance_var("HP");
+	.@ATK = get_instance_var("ATK");
+	.@RECO = get_instance_var("RECO");
+	.@RES = get_instance_var("RES");
+	.@TRAP = get_instance_var("TRAP");
+	switch(.@HP){
+		case 1: .@TOTAL += 15; break;
+		case 2: .@TOTAL += 30; break;
+		case 3: .@TOTAL += 45; break;
+	}
+	switch(.@ATK){
+		case 1: .@TOTAL += 20; break;
+		case 2: .@TOTAL += 40; break;
+		case 3: .@TOTAL += 60; break;
+	}
+	switch(.@RECO){
+		case 1: .@TOTAL += 30; break;
+		case 2: .@TOTAL += 60; break;
+		case 3: .@TOTAL += 90; break;
+	}
+	switch(.@RES){
+		case 1: .@TOTAL += 50; break;
+		case 2: .@TOTAL += 100; break;
+		case 3: .@TOTAL += 150; break;
+	}
+	switch(.@TRAP){
+		case 1: .@TOTAL += 85; break;
+		case 2: .@TOTAL += 170; break;
+		case 3: .@TOTAL += 255; break;
+	}
+	set_instance_var("TOTAL",.@TOTAL);
+	end;
+}
+
+function	script	ctower_calc_stats	{
+	.@gid = getarg(0);
+	getunitdata .@gid,.@data;
+	if(unitexists(.@gid)){
+		.@HP = get_instance_var("HP");
+		.@ATK = get_instance_var("ATK");
+		.@RES = get_instance_var("RES");
+		if(.@HP){
+			.@MOB_HP = .@data[UMOB_MAXHP] + (300000000 * .@HP);
+			setunitdata .@gid,UMOB_MAXHP,.@MOB_HP;
+			setunitdata .@gid,UMOB_HP,.@MOB_HP;
+			set_instance_var("BOSS_HP",.@MOB_HP);
+		}
+		if(.@ATK){
+			.@MOB_ATK = .@data[UMOB_ATKMIN] + (5000 * .@ATK);
+			.@MOB_ATK2 = .@data[UMOB_ATKMAX] + (7000 * .@ATK);
+			.@STR = .@data[UMOB_STR] + (100 * .@ATK);
+			.@INT = .@data[UMOB_INT] + (100 * .@ATK);
+			setunitdata .@gid,UMOB_ATKMIN,.@MOB_ATK;
+			setunitdata .@gid,UMOB_ATKMAX,.@MOB_ATK2;
+			setunitdata .@gid,UMOB_STR,.@STR;
+			setunitdata .@gid,UMOB_INT,.@INT;
+			set_instance_var("BOSS_ATK",.@MOB_ATK);
+			set_instance_var("BOSS_ATK2",.@MOB_ATK2);
+			set_instance_var("BOSS_STR",.@STR);
+			set_instance_var("BOSS_INT",.@INT);
+		}
+		if(.@RES){
+			.@RES = .@data[UMOB_RES] + (100 * .@RES);
+			.@MRES = .@data[UMOB_MRES] + (100 * .@RES);
+			setunitdata .@gid,UMOB_RES,.@RES;
+			setunitdata .@gid,UMOB_MRES,.@MRES;
+			set_instance_var("BOSS_RES",.@RES);
+			set_instance_var("BOSS_MRES",.@MRES);
+		}
+	}
+	return;
+}
+
+function	script	ctower_revert_stats	{
+	.@gid = getarg(0);
+	if(unitexists(.@gid)){
+		setunitdata .@gid,UMOB_ATKMIN,get_instance_var("BOSS_ATK");
+		setunitdata .@gid,UMOB_ATKMAX,get_instance_var("BOSS_ATK2");
+		setunitdata .@gid,UMOB_STR,get_instance_var("BOSS_STR");
+		setunitdata .@gid,UMOB_INT,get_instance_var("BOSS_INT");
+	}
+	return;
+}
+
+function	script	ctower_recalc_stats	{
+	.@gid = getarg(0);
+	.@value = getarg(1);
+	ctower_revert_stats(.@gid);
+	if(unitexists(.@gid)){
+		.@MOB_ATK = get_instance_var("BOSS_ATK") + (5000 * .@value);
+		.@MOB_ATK2 = get_instance_var("BOSS_ATK2") + (7000 * .@value);
+		.@STR = get_instance_var("BOSS_STR") + (100 * .@value);
+		.@INT = get_instance_var("BOSS_INT") + (100 * .@value);
+		setunitdata .@gid,UMOB_ATKMIN,.@MOB_ATK;
+		setunitdata .@gid,UMOB_ATKMAX,.@MOB_ATK2;
+		setunitdata .@gid,UMOB_STR,.@STR;
+		setunitdata .@gid,UMOB_INT,.@INT;
+	}
+	return;
+}
+
+3@ch_t,156,86,5	script	#ctower_betel	20994,{
+	if(!is_party_leader()){
+		cutin "betelgeuse04.png",2;
+		mes "[ Betelgeuse ]";
+		mes "Where is your leader?";
+		close3;
+	}
+	.@phase = get_instance_var("phase");
+	if(!.@phase){
+		cutin "betelgeuse03.png",2;
+		mes "[ Betelgeuse ]";
+		mes "So you've come to challenge me? Let's see if you're worthy!";
+		npctalk "So you've come to challenge me? Let's see if you're worthy!";
+		next;
+		if(select("Run away:Fight!") == 1){
+			mes "[ Betelgeuse ]";
+			mes "Wise choice, weakling.";
+			close3;
+		}
+		close2;
+		cutin "",255;
+		set_instance_var("phase",1);
+		npctalk "Most of my power is sealed... but it should be enough to crush you!";
+		sleep 3000;
+		specialeffect EF_MAGIC_FLOOR;
+		sleep 2000;
+		hideonnpc instance_npcname(strnpcinfo(0));
+		disablenpc instance_npcname(strnpcinfo(0));
+		instance_event("#ctower_boss_fight","OnPhase1",false);
+		end;
+	}
+	// DELETE THE OLD CODE HERE (from first "if(.@phase == 4){" to its closing "}")
+	// KEEP ONLY THIS NEW VERSION:
+	if(.@phase == 4){
+		if(get_instance_var("rewarded")){
+			cutin "betelgeuse02.png",2;
+			mes "[ Betelgeuse ]";
+			mes "You already claimed your reward. Time to leave!";
+			next;
+			if(select("Leave:Stay") == 1)
+				warp "askald", 67, 230;
+			close3;
+		}
+		
+		cutin "betelgeuse02.png",2;
+		mes "[ Betelgeuse ]";
+		mes "Impressive... You've proven your worth!";
+		next;
+		
+		// Set cooldown + rewarded flag
+		set CTower_Cooldown, gettimetick(2) + 43200;
+		set_instance_var("rewarded", 1);
+		
+		.@TOTAL = get_instance_var("TOTAL");
+		
+		// Base Rewards (always received)
+		mes "[ Betelgeuse ]";
+		mes "^00FF00Base Rewards:^000000";
+		mes "- 5x Betelgeuse Soul";
+		mes "- 20x Meteorite Fragment";
+		mes "- 50x Meteorite Dust";
+		
+		getitem 1000397, 5;  // Betelgeuse Soul (5 fixed)
+		getitem 1000373, 20; // Meteorite Fragment (20 fixed)
+		getitem 1000372, 50; // Meteorite Dust (50 fixed)
+		
+		// Bonus rewards based on TOTAL power
+		.@bonus_betel = .@TOTAL / 100; // Extra Betelgeuse Soul
+		.@bonus_frag = .@TOTAL / 50;   // Extra Meteorite Fragment
+		.@bonus_dust = 2 * (.@TOTAL / 50); // Extra Meteorite Dust
+		
+		if(.@bonus_betel > 0 || .@bonus_frag > 0 || .@bonus_dust > 0){
+			next;
+			mes "[ Betelgeuse ]";
+			mes "^FFD700Bonus Rewards (Power: " + .@TOTAL + "%):^000000";
+			if(.@bonus_betel > 0){
+				mes "- +" + .@bonus_betel + "x Betelgeuse Soul";
+				getitem 1000397, .@bonus_betel;
+			}
+			if(.@bonus_frag > 0){
+				mes "- +" + .@bonus_frag + "x Meteorite Fragment";
+				getitem 1000373, .@bonus_frag;
+			}
+			if(.@bonus_dust > 0){
+				mes "- +" + .@bonus_dust + "x Meteorite Dust";
+				getitem 1000372, .@bonus_dust;
+			}
+		}
+		
+		// Costume rewards (keep original logic)
+		if(.@TOTAL >= 400){
+			if(rand(1,100) <= 5){
+				next;
+				mes "[ Betelgeuse ]";
+				mes "^FF00FFBonus: Costume 1!^000000";
+				getitem 400147, 1;
+			}
+		}
+		if(.@TOTAL >= 600){
+			if(rand(1,100) <= 3){
+				next;
+				mes "[ Betelgeuse ]";
+				mes "^FF00FFBonus: Costume 2!^000000";
+				getitem 400148, 1;
+			}
+			if(rand(1,100) <= 2){
+				next;
+				mes "[ Betelgeuse ]";
+				mes "^FF00FFBonus: Costume 3!^000000";
+				getitem 400149, 1;
+			}
+		}
+		
+		next;
+		mes "[ Betelgeuse ]";
+		mes "Ready to leave?";
+		next;
+		if(select("Leave:Stay") == 1)
+			warp "askald", 67, 230;
+		close3;
+	}
+	end;
+}
+
+3@ch_t,1,1,0	script	#ctower_boss_fight	HIDDEN_WARP_NPC,{
+	end;
+
+OnPhase1:
+	.@map$ = instance_mapname("3@ch_t");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnBossKill";
+	monster .@map$, 156, 85, "Betelgeuse", 20994, 1, .@event$;
+	set_instance_var("gid", $@mobid[0]);
+	unitskilluseid $@mobid[0], "NPC_RELIEVE_ON", 10;
+	ctower_calc_stats($@mobid[0]);
+	instance_event("#ctower_boss_skills","OnStart",false);
+	instance_event("#ctower_skill_heal","OnStart",false);
+	instance_event(strnpcinfo(0),"OnCheckPhase1",false);
+end;
+
+OnCheckPhase1:
+	.@gid = get_instance_var("gid");
+	freeloop(true);
+	while(unitexists(.@gid)){
+		getunitdata .@gid,.@data;
+		if(.@data[UMOB_HP] <= (.@data[UMOB_MAXHP]/10) * 7){
+			instance_event(strnpcinfo(0),"OnPhase2",false);
+			break;
+		}
+		sleep 1000;
+	}
+	freeloop(false);
+end;
+
+OnPhase2:
+	.@map$ = instance_mapname("3@ch_t");
+	set_instance_var("phase",2);
+	unitkill get_instance_var("gid");
+	instance_warpall .@map$, 156, 79, instance_id();
+	sleep 2000;
+	npctalk "Let me add some excitement to this battle!","#ctower_betel";
+	sleep 2000;
+	specialeffect EF_MAGIC_FLOOR;
+	if(get_instance_var("TRAP")){
+		for(.@i = 0; .@i < 10; .@i++)
+			instance_enable("#ctower_trap_" + .@i, true);
+		for(.@i = 0; .@i < 10; .@i++)
+			instance_event("#ctower_trap_" + .@i, "OnMove", false);
+		set_instance_var("trap_active", true);
+	}
+	sleep 2000;
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnBossKill";
+	monster .@map$, 156, 80, "Betelgeuse", 20994, 1, .@event$;
+	set_instance_var("gid", $@mobid[0]);
+	unitskilluseid $@mobid[0], "NPC_RELIEVE_ON", 10;
+	ctower_calc_stats($@mobid[0]);
+	ctower_recalc_stats($@mobid[0], 1);
+	instance_event(strnpcinfo(0),"OnCheckPhase2",false);
+end;
+
+OnCheckPhase2:
+	.@gid = get_instance_var("gid");
+	freeloop(true);
+	while(unitexists(.@gid)){
+		getunitdata .@gid,.@data;
+		if(.@data[UMOB_HP] <= (.@data[UMOB_MAXHP]/10) * 4){
+			instance_event(strnpcinfo(0),"OnPhase3",false);
+			break;
+		}
+		sleep 1000;
+	}
+	freeloop(false);
+end;
+
+OnPhase3:
+	.@map$ = instance_mapname("3@ch_t");
+	set_instance_var("phase",3);
+	set_instance_var("trap_active", false);
+	unitkill get_instance_var("gid");
+	instance_warpall .@map$, 156, 79, instance_id();
+	sleep 2000;
+	npctalk "Time to get serious!","#ctower_betel";
+	sleep 2000;
+	if(get_instance_var("TRAP")){
+		for(.@i = 0; .@i < 10; .@i++)
+			setnpcdisplay instance_npcname("#ctower_trap_" + .@i), 20351;
+		set_instance_var("trap_active", true);
+	}
+	sleep 2000;
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnBossKill";
+	monster .@map$, 156, 80, "Betelgeuse", 20994, 1, .@event$;
+	set_instance_var("gid", $@mobid[0]);
+	unitskilluseid $@mobid[0], "NPC_RELIEVE_ON", 10;
+	ctower_calc_stats($@mobid[0]);
+	ctower_recalc_stats($@mobid[0], 2);
+end;
+
+OnBossKill:
+	.@map$ = instance_mapname("3@ch_t");
+	stopnpctimer instance_npcname("#ctower_boss_skills");
+	stopnpctimer instance_npcname("#ctower_skill_heal");
+	for(.@i = 0; .@i < 10; .@i++)
+		instance_enable("#ctower_trap_" + .@i, false);
+	set_instance_var("phase", 4);
+	instance_warpall .@map$, 156, 79, instance_id();
+	instance_enable("#ctower_betel", true);
+	.@TOTAL = get_instance_var("TOTAL");
+	.@boxes = .@TOTAL / 50;
+	if(.@boxes > 0){
+		if(.@boxes >= 5){
+			for(.@i = 1; .@i <= 5; .@i++)
+				instance_enable("#ctower_treasure_" + .@i, true);
+		} else {
+			for(.@i = 1; .@i <= .@boxes; .@i++)
+				instance_enable("#ctower_treasure_" + .@i, true);
+		}
+		.@boxes -= 5;
+		if(.@boxes > 0){
+			if(.@boxes >= 5){
+				for(.@i = 6; .@i <= 10; .@i++)
+					instance_enable("#ctower_treasure_" + .@i, true);
+			} else {
+				for(.@i = 6; .@i < 6 + .@boxes; .@i++)
+					instance_enable("#ctower_treasure_" + .@i, true);
+			}
+		}
+		if(.@TOTAL >= 400)
+			instance_enable("#ctower_treasure_11", true);
+		if(.@TOTAL >= 600)
+			instance_enable("#ctower_treasure_12", true);
+	}
+	mapannounce .@map$, "Betelgeuse has been defeated! Claim your rewards!", bc_map, 0x00FF00;
+end;
+}
+
+3@ch_t,1,1,0	script	#ctower_boss_skills	HIDDEN_WARP_NPC,{
+	end;
+
+OnStart:
+	initnpctimer;
+end;
+
+OnTimer10000:
+	if(get_instance_var("phase") < 2){
+		initnpctimer;
+		end;
+	}
+	stopnpctimer;
+	.@gid = get_instance_var("gid");
+	if(!unitexists(.@gid)){
+		initnpctimer;
+		end;
+	}
+	.@map$ = instance_mapname("3@ch_t");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnSkillDead";
+	getunitdata .@gid, .@data;
+	.@x = .@data[UMOB_X];
+	.@y = .@data[UMOB_Y];
+	setarray .@offx[1], -10, 0, 10, -10, 0, 10, -10, 0, 10;
+	setarray .@offy[1], 10, 10, 10, 0, 0, 0, -10, -10, -10;
+	for(.@i = 1; .@i < getarraysize(.@offx); .@i++){
+		monster .@map$, .@x + .@offx[.@i], .@y + .@offy[.@i], "", 20562, 1, .@event$;
+		setunitdata $@mobid[0], UMOB_DMGIMMUNE, true;
+		unitskillusepos $@mobid[0], "WZ_METEOR", 10, .@x + .@offx[.@i], .@y + .@offy[.@i], -10000;
+		sleep 1000;
+	}
+	sleep 3000;
+	killmonster .@map$, .@event$;
+	initnpctimer;
+end;
+
+OnSkillDead:
+end;
+}
+
+3@ch_t,1,1,0	script	#ctower_skill_heal	HIDDEN_WARP_NPC,{
+	end;
+
+OnStart:
+	initnpctimer;
+end;
+
+OnTimer5000:
+	.@gid = get_instance_var("gid");
+	if(!unitexists(.@gid)){
+		initnpctimer;
+		end;
+	}
+	.@RECO = get_instance_var("RECO");
+	if(.@RECO){
+		getunitdata .@gid, .@data;
+		.@heal = (.@data[UMOB_MAXHP] / 100) * .@RECO;
+		setunitdata .@gid, UMOB_HP, .@data[UMOB_HP] + .@heal;
+	}
+	initnpctimer;
+end;
+}
+
+3@ch_t,142,85,3	script	#ctower_trap_0	20112,1,1,{
+	end;
+
+OnTouch:
+	if(!get_instance_var("trap_active")) end;
+	if(get_instance_var("phase") == 2){
+		.@damage = (MaxHp / 10) * (1 + get_instance_var("TRAP"));
+		specialeffect2 EF_HYOUSYOURAKU;
+	} else {
+		.@damage = (MaxHp / 10) * (2 + get_instance_var("TRAP"));
+		specialeffect2 EF_FIREHIT;
+		pushpc rand(1,7), rand(1,2);
+	}
+	if(.@damage >= Hp && get_instance_var("phase") > 2)
+		unitkill getcharid(3);
+	else
+		Hp -= .@damage;
+end;
+
+OnMove:
+	.@id = atoi(replacestr(strnpcinfo(2), "ctower_trap_", ""));
+	getunitdata getnpcid(0, instance_npcname(strnpcinfo(0))), .@data;
+	set_instance_var("x_" + strnpcinfo(2), .@data[UNPC_X]);
+	switch(.@id){
+		case 0: npcspeed 161; break;
+		case 1: npcspeed 159; break;
+		case 2: npcspeed 179; break;
+		case 3: npcspeed 170; break;
+		case 4: npcspeed 166; break;
+		case 5: npcspeed 172; break;
+		case 6: npcspeed 160; break;
+		case 7: npcspeed 164; break;
+		case 8: npcspeed 154; break;
+		case 9: npcspeed 156; break;
+	}
+	if(.@id % 2 == 0)
+		instance_event(strnpcinfo(0), "OnWalk1", false);
+	else
+		instance_event(strnpcinfo(0), "OnWalk5", false);
+end;
+
+OnWalk1:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 110, instance_npcname(strnpcinfo(0)) + "::OnWalk2";
+end;
+
+OnWalk2:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 85, instance_npcname(strnpcinfo(0)) + "::OnWalk3";
+end;
+
+OnWalk3:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 64, instance_npcname(strnpcinfo(0)) + "::OnWalk4";
+end;
+
+OnWalk4:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 85, instance_npcname(strnpcinfo(0)) + "::OnWalk1";
+end;
+
+OnWalk5:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 64, instance_npcname(strnpcinfo(0)) + "::OnWalk6";
+end;
+
+OnWalk6:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 85, instance_npcname(strnpcinfo(0)) + "::OnWalk7";
+end;
+
+OnWalk7:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 110, instance_npcname(strnpcinfo(0)) + "::OnWalk8";
+end;
+
+OnWalk8:
+	unitwalk getnpcid(0, instance_npcname(strnpcinfo(0))), get_instance_var("x_" + strnpcinfo(2)), 85, instance_npcname(strnpcinfo(0)) + "::OnWalk5";
+end;
+}
+
+3@ch_t,145,85,3	duplicate(#ctower_trap_0)	#ctower_trap_1	20112,1,1
+3@ch_t,148,85,3	duplicate(#ctower_trap_0)	#ctower_trap_2	20112,1,1
+3@ch_t,151,85,3	duplicate(#ctower_trap_0)	#ctower_trap_3	20112,1,1
+3@ch_t,154,85,3	duplicate(#ctower_trap_0)	#ctower_trap_4	20112,1,1
+3@ch_t,157,85,3	duplicate(#ctower_trap_0)	#ctower_trap_5	20112,1,1
+3@ch_t,160,85,3	duplicate(#ctower_trap_0)	#ctower_trap_6	20112,1,1
+3@ch_t,163,85,3	duplicate(#ctower_trap_0)	#ctower_trap_7	20112,1,1
+3@ch_t,166,85,3	duplicate(#ctower_trap_0)	#ctower_trap_8	20112,1,1
+3@ch_t,169,85,3	duplicate(#ctower_trap_0)	#ctower_trap_9	20112,1,1
+
+3@ch_t,147,76,3	script	#ctower_treasure_1	4_STAR_BOX_POW1,{
+	.@id = atoi(replacestr(strnpcinfo(2), "ctower_treasure_", ""));
+	switch(.@id){
+		case 1: .@item = 1000398; .@amt = rand(5,9); break;
+		case 2: .@item = 1000399; .@amt = rand(5,9); break;
+		case 3: .@item = 1000402; .@amt = rand(5,9); break;
+		case 4: .@item = 1000400; .@amt = rand(5,9); break;
+		case 5: .@item = 1000403; .@amt = rand(5,9); break;
+		case 6: .@item = 1000442; .@amt = rand(2,5); break;
+		case 7: .@item = 1000443; .@amt = rand(2,5); break;
+		case 8: .@item = 1000446; .@amt = rand(2,5); break;
+		case 9: .@item = 1000444; .@amt = rand(2,5); break;
+		case 10: .@item = 1000447; .@amt = rand(2,5); break;
+		case 11: .@item = 1000401; .@amt = rand(5,9); break;
+		case 12: .@item = 1000445; .@amt = rand(2,5); break;
+	}
+	hideonnpc instance_npcname(strnpcinfo(0));
+	disablenpc instance_npcname(strnpcinfo(0));
+	getmapxy(.@map$, .@x, .@y, BL_NPC);
+	for(.@i = 0; .@i < .@amt; .@i++)
+		makeitem .@item, 1, .@map$, .@x + rand(-1,1), .@y + rand(-1,1);
+	end;
+}
+
+3@ch_t,151,76,3	duplicate(#ctower_treasure_1)	#ctower_treasure_2	4_STAR_BOX_STA1
+3@ch_t,155,76,3	duplicate(#ctower_treasure_1)	#ctower_treasure_3	4_STAR_BOX_SPL1
+3@ch_t,159,76,3	duplicate(#ctower_treasure_1)	#ctower_treasure_4	4_STAR_BOX_CON1
+3@ch_t,163,76,3	duplicate(#ctower_treasure_1)	#ctower_treasure_5	4_STAR_BOX_WIS1
+3@ch_t,147,72,3	duplicate(#ctower_treasure_1)	#ctower_treasure_6	4_STAR_BOX_POW2
+3@ch_t,151,72,3	duplicate(#ctower_treasure_1)	#ctower_treasure_7	4_STAR_BOX_STA2
+3@ch_t,155,72,3	duplicate(#ctower_treasure_1)	#ctower_treasure_8	4_STAR_BOX_SPL2
+3@ch_t,159,72,3	duplicate(#ctower_treasure_1)	#ctower_treasure_9	4_STAR_BOX_CON2
+3@ch_t,163,72,3	duplicate(#ctower_treasure_1)	#ctower_treasure_10	4_STAR_BOX_WIS2
+3@ch_t,159,80,3	duplicate(#ctower_treasure_1)	#ctower_treasure_11	4_STAR_BOX_CRT1
+3@ch_t,155,80,3	duplicate(#ctower_treasure_1)	#ctower_treasure_12	4_STAR_BOX_CRT2
+
+// Warp Up 3@ch_t Down 2@ch_t
+3@ch_t,31,11,0	warp2	warp_down_to_2	1,1,2@ch_t,97,74
+
+// Warp Down 2@ch_t UP 3@ch_t
+2@ch_t,101,72,0	warp2	warp_up_to_3	1,1,3@ch_t,31,14
+
+// Warp from preparation area UP to boss room
+3@ch_t,31,99,0	warp2	warp_prep_to_boss	1,1,3@ch_t,155,69
+
+// Warp from boss room DOWN to preparation area
+3@ch_t,155,64,0	warp2	warp_boss_to_prep	1,1,3@ch_t,31,95

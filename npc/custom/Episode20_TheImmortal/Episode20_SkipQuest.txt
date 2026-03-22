@@ -1,0 +1,112 @@
+//============================================================
+// Episode 20 Skip Quest NPC
+// Skips Episode 20 Main Quest using Episode 20 Clear Ticket
+//============================================================
+askald,71,155,1	script	Skip Quest Ep20#SkipEP20	10456,{
+
+	// --- Configuration ---
+	.@ticket_20 = 1001214;  // Episode 20 Clear Ticket
+	.@EP20_FINAL_QUEST = 17660;  // Episode 20 final quest ID
+	.@EP20_MAIN_VAL = 100;  // Final step value (ep20_main)
+	
+	mes "[Elena - EP20]";
+	mes "Hello adventurer!";
+	mes "I can help you complete ^0000FFEpisode 20^000000 instantly.";
+	mes "^FF0000This will skip all Episode 20 main quests.^000000";
+	next;
+
+	// Check if EP19 is completed (optional requirement)
+	if (ep19_main < 100) {
+		mes "[Elena - EP20]";
+		mes "You must finish ^FFAA00Episode 19^000000 before skipping Episode 20.";
+		mes "Please complete that episode first.";
+		close;
+	}
+
+	// Check if already completed
+	if (ep20_main >= .@EP20_MAIN_VAL) {
+		mes "[Elena - EP20]";
+		mes "You have already completed Episode 20!";
+		mes "There's nothing more for me to help you with.";
+		close;
+	}
+
+	// Check Ticket
+	if (countitem(.@ticket_20) < 1) {
+		mes "[Elena - EP20]";
+		mes "You need an ^0000FFEpisode 20 Clear Ticket^000000 to use this service.";
+		mes "Item ID: ^FF0000" + .@ticket_20 + "^000000";
+		mes "Come back when you have one.";
+		close;
+	}
+
+	mes "[Elena - EP20]";
+	mes "I see you have an ^0000FFEpisode 20 Clear Ticket^000000.";
+	mes "This will:";
+	mes "^00FF00=> Set your Episode 20 progress to 100 (Complete)^000000";
+	mes "^00FF00=> Unlock all Episode 20 content^000000";
+	mes "^00FF00=> Grant Episode 20 reputation points^000000";
+	next;
+
+	mes "[Elena - EP20]";
+	mes "Shall I consume the ticket and complete Episode 20 for you?";
+	next;
+
+	if (select("Yes, complete Episode 20:No, not now") == 2) {
+		mes "[Elena - EP20]";
+		mes "Come back anytime you're ready!";
+		close;
+	}
+
+	// Consume Ticket
+	delitem .@ticket_20, 1;
+	specialeffect EF_POTION_BERSERK;
+	
+	mes "[Elena - EP20]";
+	mes "Ticket verified!";
+	mes "Completing Episode 20...";
+	mes "Please wait...";
+	next;
+
+	// Set progress variable directly (no quest completion needed)
+	ep20_main = .@EP20_MAIN_VAL;
+	
+	// Optional: Unlock reputation points
+	// Uncomment if your server uses reputation system
+	// add_reputation_points(5, 1000);
+
+	// Refresh quest info
+	questinfo_refresh();
+
+	dispbottom "[System] Episode 20 has been completed.";
+	dispbottom "[System] All Episode 20 content unlocked.";
+	dispbottom "[System] You can now access Episode 20 features.";
+	
+	specialeffect2 EF_LEVELUP;
+
+	next;
+	mes "[Elena - EP20]";
+	mes "^00FF00Everything is complete!^000000";
+	mes " ";
+	mes "You can now:";
+	mes "^00FF00=> Access all Episode 20 areas^000000";
+	mes "^00FF00=> Use Episode 20 shops^000000";
+	mes "^00FF00=> Start Episode 20 daily quests^000000";
+	next;
+
+	mes "[Elena - EP20]";
+	mes "Would you like me to send you to ^0000FFIce Castle^000000 now?";
+	next;
+
+	if (select("Yes, take me there!:No, I'll stay here.") == 1) {
+		mes "[Elena - EP20]";
+		mes "Safe journey, adventurer!";
+		close2;
+		warp "icecastle", 51, 164;
+		end;
+	}
+
+	mes "[Elena - EP20]";
+	mes "Good luck on your adventures!";
+	close;
+}

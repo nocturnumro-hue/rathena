@@ -1,0 +1,487 @@
+//===== rAthena Script =======================================
+// Universal Equipment Enchanter
+// Payment: POD (ID 7179)
+//============================================================
+
+askald,50,195,1	script	Universal Enchanter	10387,{
+
+	set .PAYMENT_ITEM, 7179;
+	set .ENCHANT_COST, 3;
+
+	mes "^0000FF[Universal Enchanter]^000000";
+	mes "Hello! I can ^FF0000Enchant^000000 any equipment you are wearing.";
+	mes " ";
+	mes "^008000Price:^000000 ^FF0000" + .ENCHANT_COST + " POD^000000 per enchant";
+	mes "^008000Current POD:^000000 ^0000FF" + countitem(.PAYMENT_ITEM) + "^000000";
+	next;
+
+	mes "^0000FF[Universal Enchanter]^000000";
+	mes "Select equipment slot to enchant:";
+	set .@menu$, "^FF0000Weapon^000000:^0000FFHeadgear Top^000000:^0000FFHeadgear Mid^000000:^0000FFHeadgear Low^000000:^0000FFArmor^000000:^008000Shield^000000:^008000Garment^000000:^008000Footgear^000000:^008000Accessory 1^000000:^008000Accessory 2^000000:^FF0000Cancel^000000";
+	set .@slot, select(.@menu$) - 1;
+
+	if (.@slot == 10) {
+		mes "Come back anytime!";
+		close;
+	}
+
+	switch(.@slot) {
+		case 0: set .@equip_slot, EQI_HAND_R; set .@slot_name$, "Weapon"; set .@slot_type, 1; break;
+		case 1: set .@equip_slot, EQI_HEAD_TOP; set .@slot_name$, "Headgear Top"; set .@slot_type, 2; break;
+		case 2: set .@equip_slot, EQI_HEAD_MID; set .@slot_name$, "Headgear Mid"; set .@slot_type, 2; break;
+		case 3: set .@equip_slot, EQI_HEAD_LOW; set .@slot_name$, "Headgear Low"; set .@slot_type, 2; break;
+		case 4: set .@equip_slot, EQI_ARMOR; set .@slot_name$, "Armor"; set .@slot_type, 2; break;
+		case 5: set .@equip_slot, EQI_HAND_L; set .@slot_name$, "Shield"; set .@slot_type, 2; break;
+		case 6: set .@equip_slot, EQI_GARMENT; set .@slot_name$, "Garment"; set .@slot_type, 2; break;
+		case 7: set .@equip_slot, EQI_SHOES; set .@slot_name$, "Footgear"; set .@slot_type, 2; break;
+		case 8: set .@equip_slot, EQI_ACC_L; set .@slot_name$, "Accessory 1"; set .@slot_type, 2; break;
+		case 9: set .@equip_slot, EQI_ACC_R; set .@slot_name$, "Accessory 2"; set .@slot_type, 2; break;
+	}
+
+	if (!getequipid(.@equip_slot)) {
+		mes "^0000FF[Universal Enchanter]^000000";
+		mes "You don't have anything equipped in ^FF0000" + .@slot_name$ + "^000000 slot!";
+		close;
+	}
+
+L_MainMenu:
+	mes "^0000FF[Universal Enchanter]^000000";
+	mes "Equipment: ^008000" + .@slot_name$ + "^000000";
+	mes "^0000FFPOD:^000000 " + countitem(.PAYMENT_ITEM);
+	mes " ";
+	mes "Current Random Options:";
+	
+	deletearray .@current_groups[0], 3;
+	set .@has_opt, 0;
+	set .@empty_slots, 0;
+	
+	for (set .@i, 0; .@i < 3; set .@i, .@i + 1) {
+		set .@opt_id, getequiprandomoption(.@equip_slot, .@i, ROA_ID);
+		set .@opt_val, getequiprandomoption(.@equip_slot, .@i, ROA_VALUE);
+		set .@current_groups[.@i], callfunc("F_GetOptGroup", .@opt_id, .@slot_type);
+		
+		if (.@opt_id) {
+			set .@group_display$, callfunc("F_GetGroupName", .@current_groups[.@i], .@slot_type);
+			mes "^FF0000[Slot " + (.@i + 1) + "]^000000 " + callfunc("F_GetOptName", .@opt_id) + " ^0000FF+" + .@opt_val + "^000000";
+			mes "  ^008000(" + .@group_display$ + ")^000000";
+			set .@has_opt, 1;
+		} else {
+			mes "^008000[Slot " + (.@i + 1) + "]^000000 Empty";
+			set .@empty_slots, .@empty_slots + 1;
+			set .@current_groups[.@i], 0;
+		}
+	}
+	
+	if (!.@has_opt) {
+		mes " ";
+		mes "^FF0000No enchantments yet!^000000";
+	}
+	
+	if (.@empty_slots == 0) {
+		mes " ";
+		mes "^FF0000All slots are full!^000000";
+	}
+	next;
+
+	mes "^0000FF[Universal Enchanter]^000000";
+	mes "Select option slot to enchant:";
+	set .@opt_slot, select("^FF0000Option Slot 1^000000:^0000FFOption Slot 2^000000:^008000Option Slot 3^000000:^FF0000Back^000000") - 1;
+
+	if (.@opt_slot == 3) {
+		close;
+	}
+
+	mes "^0000FF[Universal Enchanter]^000000";
+	mes "Select enchant group for ^008000" + .@slot_name$ + "^000000:";
+	mes " ";
+	
+	set .@menu_str$, "";
+	deletearray .@group_map[0], 20;
+	set .@menu_count, 0;
+	
+	if (.@slot_type == 1) {
+		for (set .@g, 1; .@g <= 6; set .@g, .@g + 1) {
+			set .@is_used, 0;
+			for (set .@j, 0; .@j < 3; set .@j, .@j + 1) {
+				if (.@j != .@opt_slot && .@current_groups[.@j] == .@g) {
+					set .@is_used, 1;
+					break;
+				}
+			}
+			if (!.@is_used) {
+				if (.@menu_count > 0) set .@menu_str$, .@menu_str$ + ":";
+				switch(.@g) {
+					case 1: set .@menu_str$, .@menu_str$ + "^FF0000[W1] Primary Stats^000000 (STR/AGI/VIT/INT/DEX/LUK)"; break;
+					case 2: set .@menu_str$, .@menu_str$ + "^0000FF[W2] Attack Stats^000000 (ATK/MATK Flat)"; break;
+					case 3: set .@menu_str$, .@menu_str$ + "^008000[W3] Attack Rate^000000 (ATK%/MATK%/ASPD%)"; break;
+					case 4: set .@menu_str$, .@menu_str$ + "^FF6600[W4] Physical Element DMG^000000"; break;
+					case 5: set .@menu_str$, .@menu_str$ + "^9933FF[W5] Magic Element DMG^000000"; break;
+					case 6: set .@menu_str$, .@menu_str$ + "^FF0099[W6] Range Type DMG^000000 (Long/Melee)"; break;
+				}
+				set .@group_map[.@menu_count], .@g;
+				set .@menu_count, .@menu_count + 1;
+			}
+		}
+	} else {
+		for (set .@g, 1; .@g <= 12; set .@g, .@g + 1) {
+			set .@is_used, 0;
+			for (set .@j, 0; .@j < 3; set .@j, .@j + 1) {
+				if (.@j != .@opt_slot && .@current_groups[.@j] == .@g) {
+					set .@is_used, 1;
+					break;
+				}
+			}
+			if (!.@is_used) {
+				if (.@menu_count > 0) set .@menu_str$, .@menu_str$ + ":";
+				switch(.@g) {
+					case 1: set .@menu_str$, .@menu_str$ + "^FF0000[A1] HP/SP Flat^000000 (MaxHP/MaxSP Amount)"; break;
+					case 2: set .@menu_str$, .@menu_str$ + "^0000FF[A2] HP/SP Rate^000000 (HP%/SP%)"; break;
+					case 3: set .@menu_str$, .@menu_str$ + "^008000[A3] Cast & Delay^000000 (Cast/Delay/SP Cost)"; break;
+					case 4: set .@menu_str$, .@menu_str$ + "^FF6600[A4] Physical Element^000000 (Phys Ele DMG)"; break;
+					case 5: set .@menu_str$, .@menu_str$ + "^9933FF[A5] Magic Element^000000 (Magic Ele DMG)"; break;
+					case 6: set .@menu_str$, .@menu_str$ + "^FF0099[A6] Physical Race^000000 (Phys Race DMG)"; break;
+					case 7: set .@menu_str$, .@menu_str$ + "^CC6699[A7] Magic Race^000000 (Magic Race DMG)"; break;
+					case 8: set .@menu_str$, .@menu_str$ + "^66CCFF[A8] Physical Size^000000 (Phys Size DMG)"; break;
+					case 9: set .@menu_str$, .@menu_str$ + "^FFCC00[A9] Magic Size^000000 (Magic Size DMG)"; break;
+					case 10: set .@menu_str$, .@menu_str$ + "^99FF66[A10] Physical Class^000000 (Normal/Boss)"; break;
+					case 11: set .@menu_str$, .@menu_str$ + "^FF99CC[A11] Magic Class^000000 (Normal/Boss)"; break;
+					case 12: set .@menu_str$, .@menu_str$ + "^00FFCC[A12] Ignore DEF/MDEF^000000 (Race)"; break;
+				}
+				set .@group_map[.@menu_count], .@g;
+				set .@menu_count, .@menu_count + 1;
+			}
+		}
+	}
+	
+	if (.@menu_count == 0) {
+		mes "^FF0000No available groups!^000000";
+		mes "All groups have been used in other slots.";
+		close;
+	}
+	
+	set .@menu_str$, .@menu_str$ + ":^FF0000Back^000000";
+	set .@group_choice, select(.@menu_str$);
+	
+	if (.@group_choice > .@menu_count) {
+		goto L_MainMenu;
+	}
+	
+	set .@group, .@group_map[.@group_choice - 1];
+
+	if (countitem(.PAYMENT_ITEM) < .ENCHANT_COST) {
+		mes "^0000FF[Universal Enchanter]^000000";
+		mes "You need ^FF0000" + .ENCHANT_COST + " POD^000000 to enchant.";
+		close;
+	}
+
+	deletearray .@OptList[0], 128;
+//===== FIX ENCHANT VALUES =====
+// === WEAPON GROUPS ===
+if (.@slot_type == 1) {
+    switch(.@group) {
+        case 1: // W1 - Primary Stats (STR/AGI/VIT/INT/DEX/LUK)
+            setarray .@OptList[0], 3, 4, 5, 6, 7, 8;
+            set .@min, 20;   // ← SỬA: 1500 → 20
+            set .@max, 30;   // ← SỬA: 3000 → 30
+            set .@group_name$, "Primary Stats";
+            break;
+            
+        case 2: // W2 - Attack Stats (ATK/MATK Flat)
+            setarray .@OptList[0], 17, 19;
+            set .@min, 10;
+            set .@max, 30;
+            set .@group_name$, "Attack Stats";
+            break;
+            
+        case 3: // W3 - Attack Rate (ATK%/MATK%/ASPD%)
+            setarray .@OptList[0], 13, 14, 16;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Attack Rate";
+            break;
+            
+        case 4: // W4 - Physical Element DMG
+            setarray .@OptList[0], 37, 39, 41, 43, 45, 47, 49, 51, 53, 55;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Physical Element DMG";
+            break;
+            
+        case 5: // W5 - Magic Element DMG
+            setarray .@OptList[0], 57, 59, 61, 63, 65, 67, 69, 71, 73, 75;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Magic Element DMG";
+            break;
+            
+        case 6: // W6 - Range Type DMG
+            setarray .@OptList[0], 166, 219;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Range Type DMG";
+            break;
+    }
+    
+// === ARMOR GROUPS ===
+} else {
+    switch(.@group) {
+        case 1: // A1 - HP/SP Flat (GIỮ NGUYÊN 1500-3000)
+            setarray .@OptList[0], 1, 2;
+            set .@min, 1500;  // ← GIỮ NGUYÊN cho HP/SP
+            set .@max, 3000;  // ← GIỮ NGUYÊN cho HP/SP
+            set .@group_name$, "HP/SP Flat";
+            break;
+            
+        case 2: // A2 - HP/SP Rate
+            setarray .@OptList[0], 9, 10;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "HP/SP Rate";
+            break;
+            
+        case 3: // A3 - Cast & Delay
+            setarray .@OptList[0], 170, 171, 172;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Cast & Delay";
+            break;
+            
+        case 4: // A4 - Physical Element
+            setarray .@OptList[0], 37, 39, 41, 43, 45, 47, 49, 51, 53, 55;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Physical Element";
+            break;
+            
+        case 5: // A5 - Magic Element
+            setarray .@OptList[0], 57, 59, 61, 63, 65, 67, 69, 71, 73, 75;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Magic Element";
+            break;
+            
+        case 6: // A6 - Physical Race
+            setarray .@OptList[0], 97, 98, 99, 100, 101, 102, 103, 104, 105, 106;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Physical Race";
+            break;
+            
+        case 7: // A7 - Magic Race
+            setarray .@OptList[0], 107, 108, 109, 110, 111, 112, 113, 114, 115, 116;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Magic Race";
+            break;
+            
+        case 8: // A8 - Physical Size
+            setarray .@OptList[0], 157, 158, 159;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Physical Size";
+            break;
+            
+        case 9: // A9 - Magic Size
+            setarray .@OptList[0], 187, 188, 189;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Magic Size";
+            break;
+            
+        case 10: // A10 - Physical Class
+            setarray .@OptList[0], 147, 148;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Physical Class";
+            break;
+            
+        case 11: // A11 - Magic Class
+            setarray .@OptList[0], 151, 152;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Magic Class";
+            break;
+            
+        case 12: // A12 - Ignore DEF/MDEF
+            setarray .@OptList[0], 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146;
+            set .@min, 5;
+            set .@max, 20;
+            set .@group_name$, "Ignore DEF/MDEF";
+            break;
+    }
+}
+
+	delitem .PAYMENT_ITEM, .ENCHANT_COST;
+	
+	set .@list_size, getarraysize(.@OptList);
+	set .@random_opt_id, .@OptList[rand(.@list_size)];
+	set .@random_opt_val, rand(.@min, .@max);
+	setrandomoption(.@equip_slot, .@opt_slot, .@random_opt_id, .@random_opt_val, 0);
+
+	mes "^0000FF[Universal Enchanter]^000000";
+	mes "Enchanted ^008000Slot " + (.@opt_slot + 1) + "^000000 successfully!";
+	mes "^FF0000Group:^000000 " + .@group_name$;
+	mes "^0000FFOption:^000000 " + callfunc("F_GetOptName", .@random_opt_id);
+	mes "^008000Value:^000000 +" + .@random_opt_val;
+	next;
+	
+	goto L_MainMenu;
+
+}
+
+function	script	F_GetOptGroup	{
+	set .@opt_id, getarg(0);
+	set .@slot_type, getarg(1);
+	
+	if (.@slot_type == 1) {
+		if (.@opt_id >= 3 && .@opt_id <= 8) return 1;
+		if (.@opt_id == 17 || .@opt_id == 19) return 2;
+		if (.@opt_id == 13 || .@opt_id == 14 || .@opt_id == 16) return 3;
+		if (.@opt_id >= 37 && .@opt_id <= 55 && .@opt_id % 2 == 1) return 4;
+		if (.@opt_id >= 57 && .@opt_id <= 75 && .@opt_id % 2 == 1) return 5;
+		if (.@opt_id == 166 || .@opt_id == 219) return 6;
+	} else {
+		if (.@opt_id == 1 || .@opt_id == 2) return 1;
+		if (.@opt_id == 9 || .@opt_id == 10) return 2;
+		if (.@opt_id == 170 || .@opt_id == 171 || .@opt_id == 172) return 3;
+		if (.@opt_id >= 37 && .@opt_id <= 55 && .@opt_id % 2 == 1) return 4;
+		if (.@opt_id >= 57 && .@opt_id <= 75 && .@opt_id % 2 == 1) return 5;
+		if (.@opt_id >= 97 && .@opt_id <= 106) return 6;
+		if (.@opt_id >= 107 && .@opt_id <= 116) return 7;
+		if (.@opt_id >= 157 && .@opt_id <= 159) return 8;
+		if (.@opt_id >= 187 && .@opt_id <= 189) return 9;
+		if (.@opt_id == 147 || .@opt_id == 148) return 10;
+		if (.@opt_id == 151 || .@opt_id == 152) return 11;
+		if (.@opt_id >= 127 && .@opt_id <= 146) return 12;
+	}
+	return 0;
+}
+
+function	script	F_GetGroupName	{
+	set .@group, getarg(0);
+	set .@slot_type, getarg(1);
+	
+	if (.@slot_type == 1) {
+		switch(.@group) {
+			case 1: return "W1-Stats";
+			case 2: return "W2-Attack";
+			case 3: return "W3-Rate";
+			case 4: return "W4-PhysEle";
+			case 5: return "W5-MagicEle";
+			case 6: return "W6-Range";
+		}
+	} else {
+		switch(.@group) {
+			case 1: return "A1-HP/SP Flat";
+			case 2: return "A2-HP/SP%";
+			case 3: return "A3-Cast";
+			case 4: return "A4-PhysEle";
+			case 5: return "A5-MagicEle";
+			case 6: return "A6-PhysRace";
+			case 7: return "A7-MagicRace";
+			case 8: return "A8-PhysSize";
+			case 9: return "A9-MagicSize";
+			case 10: return "A10-PhysClass";
+			case 11: return "A11-MagicClass";
+			case 12: return "A12-Ignore";
+		}
+	}
+	return "Unknown";
+}
+
+function	script	F_GetOptName	{
+	set .@opt_id, getarg(0);
+	switch(.@opt_id) {
+		case 1: return "Max HP";
+		case 2: return "Max SP";
+		case 3: return "STR";
+		case 4: return "AGI";
+		case 5: return "VIT";
+		case 6: return "INT";
+		case 7: return "DEX";
+		case 8: return "LUK";
+		case 9: return "Max HP %";
+		case 10: return "Max SP %";
+		case 13: return "ATK %";
+		case 14: return "MATK %";
+		case 16: return "ASPD %";
+		case 17: return "ATK";
+		case 19: return "MATK";
+		case 37: return "Physical DMG Neutral";
+		case 39: return "Physical DMG Water";
+		case 41: return "Physical DMG Earth";
+		case 43: return "Physical DMG Fire";
+		case 45: return "Physical DMG Wind";
+		case 47: return "Physical DMG Poison";
+		case 49: return "Physical DMG Holy";
+		case 51: return "Physical DMG Dark";
+		case 53: return "Physical DMG Ghost";
+		case 55: return "Physical DMG Undead";
+		case 57: return "Magic DMG Neutral";
+		case 59: return "Magic DMG Water";
+		case 61: return "Magic DMG Earth";
+		case 63: return "Magic DMG Fire";
+		case 65: return "Magic DMG Wind";
+		case 67: return "Magic DMG Poison";
+		case 69: return "Magic DMG Holy";
+		case 71: return "Magic DMG Dark";
+		case 73: return "Magic DMG Ghost";
+		case 75: return "Magic DMG Undead";
+		case 97: return "Race DMG Formless";
+		case 98: return "Race DMG Undead";
+		case 99: return "Race DMG Brute";
+		case 100: return "Race DMG Plant";
+		case 101: return "Race DMG Insect";
+		case 102: return "Race DMG Fish";
+		case 103: return "Race DMG Demon";
+		case 104: return "Race DMG DemiHuman";
+		case 105: return "Race DMG Angel";
+		case 106: return "Race DMG Dragon";
+		case 107: return "Magic Race DMG Formless";
+		case 108: return "Magic Race DMG Undead";
+		case 109: return "Magic Race DMG Brute";
+		case 110: return "Magic Race DMG Plant";
+		case 111: return "Magic Race DMG Insect";
+		case 112: return "Magic Race DMG Fish";
+		case 113: return "Magic Race DMG Demon";
+		case 114: return "Magic Race DMG DemiHuman";
+		case 115: return "Magic Race DMG Angel";
+		case 116: return "Magic Race DMG Dragon";
+		case 127: return "Ignore DEF Formless";
+		case 128: return "Ignore DEF Undead";
+		case 129: return "Ignore DEF Brute";
+		case 130: return "Ignore DEF Plant";
+		case 131: return "Ignore DEF Insect";
+		case 132: return "Ignore DEF Fish";
+		case 133: return "Ignore DEF Demon";
+		case 134: return "Ignore DEF DemiHuman";
+		case 135: return "Ignore DEF Angel";
+		case 136: return "Ignore DEF Dragon";
+		case 137: return "Ignore MDEF Formless";
+		case 138: return "Ignore MDEF Undead";
+		case 139: return "Ignore MDEF Brute";
+		case 140: return "Ignore MDEF Plant";
+		case 141: return "Ignore MDEF Insect";
+		case 142: return "Ignore MDEF Fish";
+		case 143: return "Ignore MDEF Demon";
+		case 144: return "Ignore MDEF DemiHuman";
+		case 145: return "Ignore MDEF Angel";
+		case 146: return "Ignore MDEF Dragon";
+		case 147: return "Physical DMG vs Normal";
+		case 148: return "Physical DMG vs Boss";
+		case 151: return "Magic DMG vs Normal";
+		case 152: return "Magic DMG vs Boss";
+		case 157: return "Physical DMG vs Small";
+		case 158: return "Physical DMG vs Medium";
+		case 159: return "Physical DMG vs Large";
+		case 166: return "Long Range ATK Rate";
+		case 170: return "Variable Cast Reduce";
+		case 171: return "Skill Delay Reduce";
+		case 172: return "SP Cost Reduce";
+		case 187: return "Magic DMG vs Small";
+		case 188: return "Magic DMG vs Medium";
+		case 189: return "Magic DMG vs Large";
+		case 219: return "Melee ATK Rate";
+		default: return "Unknown Option";
+	}
+}

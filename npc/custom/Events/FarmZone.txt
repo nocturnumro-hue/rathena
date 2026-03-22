@@ -1,0 +1,276 @@
+askald,153,98,1	script	Farm Zone	848,{
+function	RandomizeItem;
+while( 1 ){
+	mes "How can i help you ?";
+	switch( select( "Information:Farm Items" )){
+	Case 1:
+		mes "This is a Farm Zone.";
+		mes "You are able to Hunt Monster inside this Room.";
+		mes "Every Monster will award you random items with different drop rates.";
+		next;
+		mes "^00FF00Drop Rate Groups:^000000";
+		mes "- Common Items: ^00FF0025% chance^000000";
+		mes "- Rare Items: ^FFD7005% chance^000000";
+		mes "- Super Rare Items: ^FF00001% chance^000000";
+		next;
+		mes "^FF0000WARNING: PVP is enabled!^000000";
+		mes "If you die, you will be kicked out immediately!";
+		next;
+		mes "But there is some Condition..";
+		
+		// Check if Admin
+		if( getgmlevel() >= .AdminLevel ){
+			mes "^00FF00[ADMIN] No delay, no item limit!^000000";
+			mes "You can farm unlimited items!";
+		}
+		// Check if VIP
+		else if( getgmlevel() >= .VipLevel || #VIP_STATUS ){
+			mes "^FFD700[VIP] You can stay "+(.RoomCleanMin*2)+" minutes!^000000";
+			mes "^FF0000Delay applies to your entire account!^000000";
+			mes "You can only go in ^FF0000once every "+(.DelayMin/60)+" hours per account.^000000";
+		}
+		else{
+			mes "^FF0000Delay applies to your entire account!^000000";
+			mes "You can only go in ^FF0000once every "+(.DelayMin/60)+" hours per account.^000000";
+		}
+		
+		mes "Maximum of ^FF0000"+.MaxPlayers+" Players per "+.RoomCleanMin+" Minutes.^000000";
+		mes "Maximum Hunting Limit ^FF0000"+.MaxItemLimit+"^000000";
+		next;
+		mes "There will be a ^FF0000Room Cleaning^000000 from time to time...";
+		mes "All players will be kicked out, it is your bad luck if you meet this.";
+		mes "Delay will still apply even though you just go in for 1 Seconds..";
+		next;
+		break;
+	Case 2:
+		// Admin bypass all restrictions
+		if( getgmlevel() >= .AdminLevel ){
+			mes "^00FF00[ADMIN ACCESS] Entering Farm Zone...^000000";
+			warp .Map$,0,0;
+			set .Hunter[getarraysize( .Hunter )],strcharinfo(0);
+			set #FarmHunt,0;
+			set #FarmZoneVIP,0;
+			set #FarmZoneEnterTime,gettimetick(2);
+			end;
+		}
+		
+		// Use ## for account-wide variable (applies to all characters)
+		if( ##HuntRoomDelay > gettimetick(2) ){
+			set .last, ##HuntRoomDelay - gettimetick(2);
+			set .@hours, .last / 3600;
+			set .@mins, (.last % 3600) / 60;
+			mes "^FF0000[ACCOUNT DELAY]^000000";
+			mes "Your account must wait ^FF0000"+.@hours+" Hours "+.@mins+" Minutes^000000.";
+			mes " ";
+			mes "This delay applies to ALL characters in your account!";
+			close;
+		}else if( getarraysize( .Hunter ) >= .MaxPlayers ){
+			mes "Currently the Room is Full. Please try again later.";
+			close;
+		}else{
+			// Check VIP status
+			if( getgmlevel() >= .VipLevel || #VIP_STATUS ){
+				set #FarmZoneVIP,1;
+				mes "^FFD700[VIP] You have double time inside!^000000";
+				next;
+			}else{
+				set #FarmZoneVIP,0;
+			}
+			
+			warp .Map$,0,0;
+			set .Hunter[getarraysize( .Hunter )],strcharinfo(0);
+			// Set account-wide delay using ##
+			set ##HuntRoomDelay,gettimetick(2) + ( .DelayMin * 60 );
+			set #FarmHunt,0;
+			set #FarmZoneEnterTime,gettimetick(2);
+			end;
+		}
+	}
+}
+
+OnInit:
+// GM Level for Admin (bypass delay AND item limit)
+set .AdminLevel,99;
+// GM Level for VIP or use #VIP_STATUS variable
+set .VipLevel,10;
+// Maximum Player can join per X Minutes.
+set .MaxPlayers,10;
+// Adding X Minutes of Delay before can go in again (8 hours = 480 minutes)
+// This delay is ACCOUNT-WIDE (applies to all characters)
+set .DelayMin,480;
+// Maximum Hunt Limit per round inside the Zone.
+set .MaxItemLimit,100;
+// Map that will be used in this Zone.
+set .Map$,"ordeal_1-1";
+// Clear Map Every X Minutes (30 minutes)
+set .RoomCleanMin,30;
+
+// ===== DROP RATE GROUPS =====
+// Common Items - 25% drop rate
+setarray .CommonItems[0],25723,25669,25271,1000103;
+// Rare Items - 5% drop rate  
+setarray .RareItems[0],14544,14535,14542,969,1000405;
+// Super Rare Items - 1% drop rate
+setarray .SuperRareItems[0],7444,12208,7227,7528;
+
+// Announce when these items drop (Super Rare only)
+setarray .AnnounceItems[0],7444,12208,7227,7528;
+
+// Mapflag Initialization
+setmapflag .Map$,mf_nogo;
+setmapflag .Map$,mf_nomobloot;
+setmapflag .Map$,mf_nomvploot;
+setmapflag .Map$,mf_nowarpto;
+setmapflag .Map$,mf_nochat;
+setmapflag .Map$,mf_novending;
+setmapflag .Map$,mf_nocommand,60;
+setmapflag .Map$,mf_nojobexp;
+setmapflag .Map$,mf_nobaseexp;
+// Enable PVP
+setmapflag .Map$,mf_pvp;
+setmapflag .Map$,mf_pvp_noparty;
+setmapflag .Map$,mf_pvp_noguild;
+
+while( 1 ){
+	killmonster .Map$,"All";
+	mapwarp .Map$,"prontera",155,181;
+	monster .Map$,0,0,"[ Farm Zone ] Resident",-1,1000,strnpcinfo(0)+"::OnNormalKill";
+	// Only 1 Boss - respawn immediately when killed
+	monster .Map$,0,0,"[ Farm Zone ] Guardian",-3,1,strnpcinfo(0)+"::OnBossKill";
+	deletearray .Hunter,getarraysize( .Hunter );
+	announce "[ Farm Zone ] : Farming Zone has been Cleaned up, another "+.MaxPlayers+" Players may go in now.",bc_blue;
+	sleep ( .RoomCleanMin * 60000 );
+	mapannounce .Map$,"[ Farm Zone ] : Room Clean Up now...All Users will be warped Out.",0;
+	killmonster .Map$,"All";
+	sleep 3000;
+}
+end;
+
+// Kick player when they die
+OnPCDieEvent:
+	if( strcharinfo(3) != .Map$ ) end;
+	
+	message strcharinfo(0),"You have been killed! Kicked from Farm Zone.";
+	sleep2 2000;
+	warp "prontera",155,181;
+end;
+
+// Check if player should be kicked (VIP gets double time)
+OnPCLoadMapEvent:
+	if( strcharinfo(3) != .Map$ ) end;
+	
+	// Admin never kicked by time
+	if( getgmlevel() >= .AdminLevel ) end;
+	
+	// Calculate time limit based on VIP status
+	if( #FarmZoneVIP ){
+		set .@timeLimit, .RoomCleanMin * 2 * 60;
+	}else{
+		set .@timeLimit, .RoomCleanMin * 60;
+	}
+	
+	// Check if time exceeded
+	if( gettimetick(2) - #FarmZoneEnterTime >= .@timeLimit ){
+		message strcharinfo(0),"Your time in Farm Zone has expired.";
+		sleep2 2000;
+		warp "prontera",155,181;
+	}
+end;
+
+OnNormalKill:
+	RandomizeItem( 0 );
+	monster .Map$,0,0,"[ Farm Zone ] Resident",-1,1,strnpcinfo(0)+"::OnNormalKill";
+end;
+
+OnBossKill:
+	RandomizeItem( 1 );
+	// Immediately respawn boss when killed
+	monster .Map$,0,0,"[ Farm Zone ] Guardian",-3,1,strnpcinfo(0)+"::OnBossKill";
+end;
+
+// Function that used to Generate Random Items with Drop Rate Groups
+function	RandomizeItem	{
+	set .@type, getarg(0); // 0 = Normal Monster, 1 = Boss
+	set .@dropped, 0;
+	
+	// Boss has higher drop rates
+	if( .@type == 1 ){
+		// 5% chance for Super Rare (Boss)
+		if( rand(1,100) <= 5 ){
+			set .@itemID, .SuperRareItems[ rand( getarraysize( .SuperRareItems ) ) ];
+			getitem .@itemID, 1;
+			set .@dropped, 1;
+			
+			// Check if need to announce
+			for( set .@i, 0; .@i < getarraysize( .AnnounceItems ); set .@i, .@i + 1 ){
+				if( .@itemID == .AnnounceItems[.@i] ){
+					announce "[ Farm Zone ] : Player '"+strcharinfo(0)+"' has obtained rare item ["+getitemname(.@itemID)+"] from Guardian!",bc_all;
+					break;
+				}
+			}
+		}
+		// 15% chance for Rare (Boss)
+		else if( rand(1,100) <= 15 ){
+			set .@itemID, .RareItems[ rand( getarraysize( .RareItems ) ) ];
+			getitem .@itemID, 1;
+			set .@dropped, 1;
+		}
+		// 30% chance for Common (Boss - higher than normal)
+		else if( rand(1,100) <= 30 ){
+			set .@itemID, .CommonItems[ rand( getarraysize( .CommonItems ) ) ];
+			getitem .@itemID, 1;
+			set .@dropped, 1;
+		}
+	}
+	// Normal Monster
+	else{
+		// 1% chance for Super Rare
+		if( rand(1,100) <= 1 ){
+			set .@itemID, .SuperRareItems[ rand( getarraysize( .SuperRareItems ) ) ];
+			getitem .@itemID, 1;
+			set .@dropped, 1;
+			
+			// Announce super rare from normal monster too
+			for( set .@i, 0; .@i < getarraysize( .AnnounceItems ); set .@i, .@i + 1 ){
+				if( .@itemID == .AnnounceItems[.@i] ){
+					announce "[ Farm Zone ] : Player '"+strcharinfo(0)+"' has obtained rare item ["+getitemname(.@itemID)+"] from Resident!",bc_all;
+					break;
+				}
+			}
+		}
+		// 5% chance for Rare
+		else if( rand(1,100) <= 5 ){
+			set .@itemID, .RareItems[ rand( getarraysize( .RareItems ) ) ];
+			getitem .@itemID, 1;
+			set .@dropped, 1;
+		}
+		// 25% chance for Common
+		else if( rand(1,100) <= 25 ){
+			set .@itemID, .CommonItems[ rand( getarraysize( .CommonItems ) ) ];
+			getitem .@itemID, 1;
+			set .@dropped, 1;
+		}
+	}
+	
+	// Only count if item dropped
+	if( .@dropped ){
+		set #FarmHunt, #FarmHunt + 1;
+		
+		// Admin has unlimited farming
+		if( getgmlevel() >= .AdminLevel ){
+			dispbottom "[ Farm Zone ] : Farmed "+#FarmHunt+" Items (Admin - No Limit)";
+		}else{
+			dispbottom "[ Farm Zone ] : Farmed "+#FarmHunt+" / "+.MaxItemLimit+" Items";
+			
+			// Kick non-admin players when reach limit
+			if( #FarmHunt >= .MaxItemLimit ){
+				message strcharinfo(0),"Limit Reach, you may join again later.";
+				sleep2 2000;
+				warp "prontera",155,181;
+			}
+		}
+	}
+	
+	return;
+}
+}

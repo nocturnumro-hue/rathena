@@ -1,0 +1,1316 @@
+###########################################################################
+# Barter Database
+###########################################################################
+#
+# Barter Settings
+#
+###########################################################################
+#  - Name               NPC name.
+#    Map                Map name. (Default: not on a map)
+#    X                  Map x coordinate. (Default: 0)
+#    Y                  Map y coordinate. (Default: 0)
+#    Direction          Direction the NPC is looking. (Default: North)
+#    Sprite             Sprite name of the NPC. (Default: FakeNpc)
+#    Items:             List of sold items.
+#      - Index          Index of the item inside the shop. (0-...)
+#                       Maximum index depends on client.
+#        Item           Aegis name of the item.
+#        Stock          Amount of item in stock. 0 means unlimited. (Default: 0)
+#        Zeny           Cost of them item in Zeny. (Default: 0)
+#        Refine         Refine level of the item. (Default: 0)
+#        RequiredItems: List of required items (Optional)
+#          - Index      Index of the required item. (0-4)
+#            Item       Aegis name of required item.
+#            Amount     Amount of required item. (Default: 1)
+#            Refine     Refine level of required item. (Default: 0)
+###########################################################################
+
+Header:
+  Type: BARTER_DB
+  Version: 2
+
+Body:
+  - Name: Depth_Shop_1
+    Items:
+      - Index: 0
+        Item: Flame_E_R_Armor
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_Fl_Essence
+            Amount: 150
+          - Index: 1
+            Item: Bar_D_Fl_Rune
+            Amount: 300
+          - Index: 2
+            Item: Bar_D_Fl_Crystal
+            Amount: 500
+          - Index: 3
+            Item: Bar_D_Fl_Energy
+            Amount: 1000
+          - Index: 4
+            Item: Bar_D_Ea_Rune
+            Amount: 300
+          - Index: 5
+            Item: Bar_D_Ea_Essence
+            Amount: 150
+      - Index: 1
+        Item: Ice_S_R_Suits
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_Ic_Essence
+            Amount: 150
+          - Index: 1
+            Item: Bar_D_Ic_Rune
+            Amount: 300
+          - Index: 2
+            Item: Bar_D_Ic_Crystal
+            Amount: 500
+          - Index: 3
+            Item: Bar_D_Ic_Energy
+            Amount: 1000
+          - Index: 4
+            Item: Bar_D_St_Rune
+            Amount: 300
+          - Index: 5
+            Item: Bar_D_St_Essence
+            Amount: 150
+      - Index: 2
+        Item: Soul_P_R_Robe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_So_Essence
+            Amount: 150
+          - Index: 1
+            Item: Bar_D_So_Rune
+            Amount: 300
+          - Index: 2
+            Item: Bar_D_So_Crystal
+            Amount: 500
+          - Index: 3
+            Item: Bar_D_So_Energy
+            Amount: 1000
+          - Index: 4
+            Item: Bar_D_Pu_Rune
+            Amount: 300
+          - Index: 5
+            Item: Bar_D_Pu_Essence
+            Amount: 150
+      - Index: 3
+        Item: Corrupt_P_R_Cloth
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_Co_Essence
+            Amount: 150
+          - Index: 1
+            Item: Bar_D_Co_Rune
+            Amount: 300
+          - Index: 2
+            Item: Bar_D_Co_Crystal
+            Amount: 500
+          - Index: 3
+            Item: Bar_D_Co_Energy
+            Amount: 1000
+          - Index: 4
+            Item: Bar_D_Po_Rune
+            Amount: 300
+          - Index: 5
+            Item: Bar_D_Po_Essence
+            Amount: 150
+  - Name: Depth_Shop_VIP
+    Items:
+      - Index: 0
+        Item: Flame_E_R_Armor2
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_Fl_Essence
+            Amount: 1500
+          - Index: 1
+            Item: Bar_D_Fl_Rune
+            Amount: 3000
+          - Index: 2
+            Item: Bar_D_Fl_Crystal
+            Amount: 5000
+          - Index: 3
+            Item: Bar_D_Fl_Energy
+            Amount: 10000
+          - Index: 4
+            Item: Armor_Stone_2
+            Amount: 300
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 150
+      - Index: 1
+        Item: Ice_S_R_Suits2
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_Ic_Essence
+            Amount: 1500
+          - Index: 1
+            Item: Bar_D_Ic_Rune
+            Amount: 3000
+          - Index: 2
+            Item: Bar_D_Ic_Crystal
+            Amount: 5000
+          - Index: 3
+            Item: Bar_D_Ic_Energy
+            Amount: 10000
+          - Index: 4
+            Item: Armor_Stone_2
+            Amount: 300
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 150
+      - Index: 2
+        Item: Soul_P_R_Robe2
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_So_Essence
+            Amount: 1500
+          - Index: 1
+            Item: Bar_D_So_Rune
+            Amount: 3000
+          - Index: 2
+            Item: Bar_D_So_Crystal
+            Amount: 5000
+          - Index: 3
+            Item: Bar_D_So_Energy
+            Amount: 10000
+          - Index: 4
+            Item: Armor_Stone_2
+            Amount: 300
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 150
+      - Index: 3
+        Item: Corrupt_P_R_Cloth2
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bar_D_Co_Essence
+            Amount: 1500
+          - Index: 1
+            Item: Bar_D_Co_Rune
+            Amount: 3000
+          - Index: 2
+            Item: Bar_D_Co_Crystal
+            Amount: 5000
+          - Index: 3
+            Item: Bar_D_Co_Energy
+            Amount: 10000
+          - Index: 4
+            Item: Armor_Stone_2
+            Amount: 300
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 150
+  - Name: Depth2_Shop_1
+    Items:
+      - Index: 0
+        Item: Time_DM_R_Crown_DK
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 1
+        Item: Time_DM_R_Crown_IG
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 2
+        Item: Time_DM_R_Crown_MT
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 3
+        Item: Time_DM_R_Crown_BO
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 4
+        Item: Time_DM_R_Crown_SHC
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 5
+        Item: Time_DM_R_Crown_ABC
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 6
+        Item: Time_DM_R_Crown_AG
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 7
+        Item: Time_DM_R_Crown_EM
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 8
+        Item: Time_DM_R_Crown_CD
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 9
+        Item: Time_DM_R_Crown_IQ
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 10
+        Item: Time_DM_R_Crown_WH
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 11
+        Item: Time_DM_R_Crown_TR
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 12
+        Item: Time_DM_R_Crown_SS
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 13
+        Item: Time_DM_R_Crown_NW
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 14
+        Item: Time_DM_R_Crown_SKE
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 15
+        Item: Time_DM_R_Crown_SOA
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 16
+        Item: Time_DM_R_Crown_HN
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+      - Index: 17
+        Item: Time_DM_R_Crown_SH
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 500
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 500
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 750
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 100
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 100
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 100
+  - Name: Depth2_Shop_VIP
+    Items:
+      - Index: 0
+        Item: Dimen_DK_T_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 1
+        Item: Dimen_SHC_Katar
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 2
+        Item: Dimen_SHC_Cakram
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 3
+        Item: Dimen_MT_Axe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 4
+        Item: Dimen_DK_Lance
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 5
+        Item: Dimen_AG_Staff
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 6
+        Item: Dimen_AG_Rod
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 7
+        Item: Dimen_SS_Humma
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 8
+        Item: Dimen_SS_Wheel
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 9
+        Item: Dimen_ABC_Bow
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 10
+        Item: Dimen_WH_C_Bow
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 11
+        Item: Dimen_WH_Bow
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 12
+        Item: Dimen_NW_Rifle
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 13
+        Item: Dimen_NW_Launcher
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 14
+        Item: Dimen_IG_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 15
+        Item: Dimen_BO_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 16
+        Item: Dimen_HN_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 17
+        Item: Dimen_ABC_Knife
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 18
+        Item: Dimen_CD_Rod
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 19
+        Item: Dimen_SOA_Stick
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 20
+        Item: Dimen_SOA_Rod
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 21
+        Item: Dimen_HN_Rod
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 22
+        Item: Dimen_SH_Foxtail
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 23
+        Item: Dimen_SH_F_Model
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 24
+        Item: Dimen_IQ_Knuckle
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 25
+        Item: Dimen_IQ_Claw
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 26
+        Item: Dimen_TR_Vilolin
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 27
+        Item: Dimen_TR_Ribbon
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 28
+        Item: Dimen_MT_Mace
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 29
+        Item: Dimen_BO_Hall
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 30
+        Item: Dimen_TR_Harp
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200
+      - Index: 31
+        Item: Dimen_TR_Rope
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Abyss_Magic_Jewel
+            Amount: 1000
+          - Index: 1
+            Item: Time_Dimension_Jewel
+            Amount: 1000
+          - Index: 2
+            Item: Jewel_Of_Time_Ore
+            Amount: 1500
+          - Index: 3
+            Item: Abyss_Rune_Ore
+            Amount: 200
+          - Index: 4
+            Item: Abyss_Rune
+            Amount: 200
+          - Index: 5
+            Item: Time_D_Ma_Rune
+            Amount: 200            

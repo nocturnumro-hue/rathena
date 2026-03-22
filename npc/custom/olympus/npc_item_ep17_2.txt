@@ -1,0 +1,15 @@
+//===== rAthena Script =======================================
+//= NPC: Automatic Equipment Shop (EP 17.2)
+//= Author: rAthena AI Assistant
+//= Location: moscovia (218, 203) - Vị trí ví dụ
+//= Description: Direct shop selling Automatic Equipment using Varmeal Tickets.
+//============================================================
+// NPC 2 for ITEM payment
+askald,96,107,5	script	Equipment 17.2	10345,{
+	
+	callshop "SIMPLE_SHOP3",0;
+	end;
+
+}
+
+-	itemshop	SIMPLE_SHOP3	-,1000103,450127:900,450128:900,470022:900,470023:900,480020:900,480021:900,490024:900,490025:1500,490026:1500,490027:1500,100251:1000,100252:2000,100160:1000,100161:2000;

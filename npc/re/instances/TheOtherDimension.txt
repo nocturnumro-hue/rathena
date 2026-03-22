@@ -1,0 +1,1006 @@
+//===== rAthena Script =======================================
+//= The Other Dimension from Tree Of Savior! (Complete Fixed)
+//===== Current Version: =====================================
+//= 1.5.0 - Full Bug Fix by Claude
+//============================================================
+
+askald,159,141,2	script	The Other Dimension	10307,{
+	// Admin Panel Access
+	if(getgmlevel() >= 99){
+		if(select("Player Menu:Admin Panel") == 2)
+			goto AdminPanel;
+	}
+	
+	switch(select("Enter The Other Dimension:Claim Milestone Rewards:Claim Weekly Rewards:Rank:Information")){
+		case 1: // Enter Dungeon
+			if(.AllowedClasses != -1){
+				if(inarray(.AllowedClasses,Class) == -1){
+					mes "Sorry, Your Class is not Allowed in the Other Dimension";
+					end;
+				}
+			}
+			if(getcharid(1)){
+				mes "You Have To Leave Your Party!";
+				end;
+			}
+			if(instance_id(IM_CHAR))
+				instance_destroy instance_id(IM_CHAR);
+			if (instance_create(.in_name$,IM_CHAR,getcharid(0)) < 0) {
+				mes "^0000ff" + .in_name$ + " ^000000- Reservation Failed!";
+				close;
+			}
+			.@id = instance_id(IM_CHAR);
+			switch(instance_enter(.in_name$,-1,-1,getcharid(0),.@id)) {
+			case IE_OTHER:
+				mes "An unknown error has occurred.";
+				close;
+			case IE_NOINSTANCE:
+				mes "The memorial dungeon " + .in_name$ + " does not exist.";
+				close;
+			case IE_OK:
+				showdigit 1230,2;
+				InOtherDimensionDigit = true;
+				mapannounce strnpcinfo(4), strcharinfo(0) +" is entering the dungeon, " + .in_name$ + ".",bc_map,"0x00ff99",FW_NORMAL,12;
+			}
+			end;
+			
+		case 2: // Milestone Rewards
+			mes "[ Milestone Rewards ]";
+			mes "Claim rewards based on your highest stage!";
+			mes "^FF0000Each reward can only be claimed ONCE per account!^000000";
+			next;
+			
+			// Get highest stage
+			query_sql("SELECT `max_round` FROM `" + .sql_t$ + "` WHERE `char_id` = '" + getcharid(0) + "'",.@max_round);
+			
+			if(!.@max_round){
+				mes "You haven't completed any stages yet!";
+				mes "Enter The Other Dimension first.";
+				close;
+			}
+			
+			mes "Your Highest Stage: ^00FF00" + .@max_round + "^000000";
+			mes " ";
+			mes "Available Milestone Rewards:";
+			mes " ";
+			
+			// Display all milestones with claim status
+			for(.@i = 0; .@i < getarraysize(.milestone_stage); .@i++){
+				.@stage = .milestone_stage[.@i];
+				.@part = .milestone_part[.@i];
+				.@var_name$ = "OD_Milestone_" + .@stage + "_" + .@part;
+				
+				// DUAL CHECK: SQL + Permanent Variable
+				// FIX: dùng nháy đơn cho giá trị, không dùng backtick
+				query_sql("SELECT COUNT(*) FROM `" + .sql_milestone$ + "` WHERE `account_id` = '" + getcharid(3) + "' AND `milestone_stage` = '" + .@stage + "' AND `milestone_part` = '" + .@part + "'",.@sql_claimed);
+				.@var_claimed = getd(.@var_name$);
+				
+				// Calculate item count for display
+				.@start_idx = .milestone_start[.@i];
+				.@end_idx = ((.@i + 1 < getarraysize(.milestone_stage)) ? .milestone_start[.@i + 1] : getarraysize(.milestone_item));
+				.@item_count = .@end_idx - .@start_idx;
+				
+				// Status display
+				if(.@sql_claimed > 0 || .@var_claimed > 0){
+					mes "^999999[CLAIMED]^000000 Stage " + .@stage + " Part " + .@part + " (" + .@item_count + " items)";
+				} else if(.@max_round >= .@stage){
+					mes "^00FF00[AVAILABLE]^000000 Stage " + .@stage + " Part " + .@part + " (" + .@item_count + " items)";
+				} else {
+					mes "^FF0000[LOCKED]^000000 Stage " + .@stage + " Part " + .@part + " (" + .@item_count + " items)";
+				}
+			}
+			next;
+			
+			// Build claimable menu
+			mes "[ Claim Rewards ]";
+			mes "Select a milestone to claim:";
+			mes " ";
+			
+			.@menu$ = "";
+			.@valid_count = 0;
+			deletearray .@valid_index;
+			
+			for(.@i = 0; .@i < getarraysize(.milestone_stage); .@i++){
+				.@stage = .milestone_stage[.@i];
+				.@part = .milestone_part[.@i];
+				.@var_name$ = "OD_Milestone_" + .@stage + "_" + .@part;
+				
+				// DUAL CHECK before showing in menu
+				query_sql("SELECT COUNT(*) FROM `" + .sql_milestone$ + "` WHERE `account_id` = '" + getcharid(3) + "' AND `milestone_stage` = '" + .@stage + "' AND `milestone_part` = '" + .@part + "'",.@sql_claimed);
+				.@var_claimed = getd(.@var_name$);
+				
+				// Only show if NOT claimed in EITHER system AND reached the stage
+				if(.@sql_claimed == 0 && .@var_claimed == 0 && .@max_round >= .@stage){
+					.@start_idx = .milestone_start[.@i];
+					.@end_idx = ((.@i + 1 < getarraysize(.milestone_stage)) ? .milestone_start[.@i + 1] : getarraysize(.milestone_item));
+					.@item_count = .@end_idx - .@start_idx;
+					
+					.@menu$ += "Stage " + .@stage + " Part " + .@part + " (" + .@item_count + " items):";
+					.@valid_index[.@valid_count] = .@i;
+					.@valid_count++;
+				}
+			}
+			
+			if(.@valid_count == 0){
+				mes "^FF0000No rewards available to claim!^000000";
+				mes " ";
+				mes "Either you haven't reached any milestones,";
+				mes "or you've already claimed all available rewards.";
+				close;
+			}
+			
+			.@menu$ += "Cancel";
+			.@select = select(.@menu$) - 1;
+			
+			if(.@select == .@valid_count){
+				mes "Cancelled.";
+				close;
+			}
+			
+			.@milestone_index = .@valid_index[.@select];
+			.@stage = .milestone_stage[.@milestone_index];
+			.@part = .milestone_part[.@milestone_index];
+			
+			// Get items for this milestone
+			.@start_idx = .milestone_start[.@milestone_index];
+			.@end_idx = ((.@milestone_index + 1 < getarraysize(.milestone_stage)) ? .milestone_start[.@milestone_index + 1] : getarraysize(.milestone_item));
+			
+			// Show confirmation with item details
+			mes "[ Confirm Claim ]";
+			mes "Stage " + .@stage + " Part " + .@part + " rewards:";
+			mes " ";
+			for(.@j = .@start_idx; .@j < .@end_idx; .@j++){
+				if(.milestone_count[.@j] > 0)
+					mes "^00FF00" + .milestone_count[.@j] + "x " + getitemname(.milestone_item[.@j]) + "^000000";
+			}
+			mes " ";
+			mes "^FF0000This can only be claimed ONCE per account!^000000";
+			next;
+			
+			if(select("Cancel:Confirm Claim") == 1){
+				mes "Cancelled.";
+				close;
+			}
+			
+			// Check inventory weight
+			.@need_weight = 0;
+			for(.@j = .@start_idx; .@j < .@end_idx; .@j++){
+				if(.milestone_count[.@j] == 0) continue;
+				.@item_weight = getiteminfo(.milestone_item[.@j], ITEMINFO_WEIGHT);
+				.@need_weight += .@item_weight * .milestone_count[.@j];
+			}
+			
+			if((Weight + .@need_weight) > MaxWeight){
+				mes "^FF0000Your inventory is too heavy!^000000";
+				mes "Current: " + (Weight/10) + "/" + (MaxWeight/10);
+				mes "Need: " + (.@need_weight/10) + " more capacity";
+				close;
+			}
+			
+			// FINAL CHECK before giving rewards
+			// FIX: sửa backtick thành nháy đơn cho giá trị account_id
+			.@var_name$ = "OD_Milestone_" + .@stage + "_" + .@part;
+			query_sql("SELECT COUNT(*) FROM `" + .sql_milestone$ + "` WHERE `account_id` = '" + getcharid(3) + "' AND `milestone_stage` = '" + .@stage + "' AND `milestone_part` = '" + .@part + "'",.@sql_claimed);
+			.@var_claimed = getd(.@var_name$);
+			
+			if(.@sql_claimed > 0 || .@var_claimed > 0){
+				mes "^FF0000Error: This reward has already been claimed!^000000";
+				mes " ";
+				mes "This could happen if you claimed it recently.";
+				mes "Please check your inventory.";
+				close;
+			}
+			
+			// Give all rewards
+			.@reward_log$ = "";
+			for(.@j = .@start_idx; .@j < .@end_idx; .@j++){
+				if(.milestone_count[.@j] == 0) continue;
+				
+				getitem .milestone_item[.@j], .milestone_count[.@j];
+				if(.@reward_log$ != "") .@reward_log$ += ",";
+				.@reward_log$ += .milestone_item[.@j] + ":" + .milestone_count[.@j];
+			}
+			
+			// FIX: INSERT đúng số column (thêm reward_log vào danh sách column)
+			query_sql("INSERT INTO `" + .sql_milestone$ + "` (`account_id`, `char_id`, `name`, `milestone_stage`, `milestone_part`, `reward_log`, `claim_time`) VALUES ('" + getcharid(3) + "', '" + getcharid(0) + "', '" + escape_sql(strcharinfo(0)) + "', '" + .@stage + "', '" + .@part + "', '" + escape_sql(.@reward_log$) + "', NOW())");
+			setd(.@var_name$, 1);
+			
+			mes "[ ^00FF00Success!^000000 ]";
+			mes "You have received:";
+			mes " ";
+			for(.@j = .@start_idx; .@j < .@end_idx; .@j++){
+				if(.milestone_count[.@j] > 0)
+					mes "^00FF00" + .milestone_count[.@j] + "x " + getitemname(.milestone_item[.@j]) + "^000000";
+			}
+			
+			announce strcharinfo(0) + " claimed Stage " + .@stage + " Part " + .@part + " Milestone Reward!", bc_all, 0x00FF00;
+			close;
+			
+		case 3: // Weekly Rewards
+			mes "[ ^0000CDWeekly Rewards - Claim^000000 ]";
+			mes " ";
+			
+			// Check if there are any pending rewards
+			query_sql("SELECT `ranking`,`max_round`,`reward_item1`,`reward_count1`,`reward_item2`,`reward_count2`,`expire_time` FROM `" + .sql_weekly$ + "` WHERE `char_id` = '" + getcharid(0) + "' AND `claimed` = 0 ORDER BY `reward_time` DESC LIMIT 1", .@rank, .@stage, .@item1, .@count1, .@item2, .@count2, .@expire_time$);
+			
+			// FIX: xóa đoạn loop explode thừa không dùng đến, dùng trực tiếp .@item1/.@item2
+			setarray .@item_ids[0], .@item1, .@item2;
+			setarray .@item_counts[0], .@count1, .@count2;
+
+			if(!.@rank){
+				mes "^FF0000No weekly rewards available!^000000";
+				mes " ";
+				mes "Weekly rewards are calculated every";
+				mes "^00FF00Friday at 00:01^000000 for players who";
+				mes "reached ^00FF00Stage 40+^000000 in the previous week.";
+				next;
+				mes "[ Your Current Progress ]";
+				query_sql("SELECT `max_round` FROM `" + .sql_t$ + "` WHERE `char_id` = '" + getcharid(0) + "'",.@my_round);
+				if(.@my_round){
+					mes "Your Best Stage: ^00CC00" + .@my_round + "^000000";
+					if(.@my_round >= 40){
+						mes "^00FF00You qualify for weekly rewards!^000000";
+						mes "Keep your rank until Friday 00:01!";
+					} else {
+						mes "^FF0000Reach Stage 40+ to qualify!^000000";
+					}
+				} else {
+					mes "You haven't entered yet!";
+				}
+				close;
+			}
+			
+			// Calculate time remaining
+			// FIX: expire_time trong DB là UNIX timestamp (INT), cast đúng kiểu
+			.@now = gettimetick(2);
+			.@expire = atoi(.@expire_time$);
+			.@time_left = .@expire - .@now;
+			.@days_left = .@time_left / 86400;
+			.@hours_left = (.@time_left % 86400) / 3600;
+			
+			// Display reward info
+			if(.@rank == 1)
+				.@color$ = "^CC0000TOP 1^000000";
+			else if(.@rank == 2)
+				.@color$ = "^FF6600TOP 2^000000";
+			else if(.@rank == 3)
+				.@color$ = "^0066FFTOP 3^000000";
+			else
+				.@color$ = "^008000TOP " + .@rank + "^000000";
+			
+			mes "^00FF00Congratulations!^000000";
+			mes "You have pending weekly rewards!";
+			mes " ";
+			mes "Your Ranking: " + .@color$;
+			mes "Stage Reached: ^00CC00" + .@stage + "^000000";
+			mes " ";
+			mes "^FFD700Rewards Available:^000000";
+			for(.@i = 0; .@i < getarraysize(.@item_ids); .@i++){
+				if(.@item_counts[.@i] > 0)
+					mes "^00FF00" + .@item_counts[.@i] + "x " + getitemname(.@item_ids[.@i]) + "^000000";
+			}
+			mes " ";
+			
+			if(.@time_left > 0){
+				mes "^FF0000Expires in: " + .@days_left + " day(s) " + .@hours_left + " hour(s)^000000";
+			} else {
+				mes "^FF0000WARNING: Reward has expired!^000000";
+			}
+			next;
+			
+			if(.@time_left <= 0){
+				mes "[ ^FF0000Expired Reward^000000 ]";
+				mes " ";
+				mes "Unfortunately, this reward has expired.";
+				mes "You had 3 days to claim it.";
+				mes "The reward will be removed.";
+				
+				query_sql("UPDATE `" + .sql_weekly$ + "` SET `claimed` = 2 WHERE `char_id` = '" + getcharid(0) + "' AND `claimed` = 0");
+				close;
+			}
+			
+			mes "[ Confirm Claim ]";
+			mes " ";
+			mes "Do you want to claim these rewards now?";
+			mes "^FF0000This action cannot be undone!^000000";
+			
+			if(select("Cancel:Claim Rewards") == 1){
+				mes "Cancelled.";
+				mes "You can come back later to claim.";
+				close;
+			}
+			
+			// Check inventory weight
+			.@need_weight = 0;
+			for(.@i = 0; .@i < getarraysize(.@item_ids); .@i++){
+				.@item_weight = getiteminfo(.@item_ids[.@i], ITEMINFO_WEIGHT);
+				.@need_weight += .@item_weight * .@item_counts[.@i];
+			}
+			
+			if((Weight + .@need_weight) > MaxWeight){
+				mes "^FF0000Your inventory is too heavy!^000000";
+				mes "Current: " + (Weight/10) + "/" + (MaxWeight/10);
+				mes "Need: " + (.@need_weight/10) + " more capacity";
+				close;
+			}
+			
+			// Give rewards
+			for(.@i = 0; .@i < getarraysize(.@item_ids); .@i++){
+				if(.@item_counts[.@i] > 0)
+					getitem .@item_ids[.@i], .@item_counts[.@i];
+			}
+			
+			// Mark as claimed
+			query_sql("UPDATE `" + .sql_weekly$ + "` SET `claimed` = 1, `claim_time` = NOW() WHERE `char_id` = '" + getcharid(0) + "' AND `claimed` = 0");
+			
+			mes "[ ^00FF00Success!^000000 ]";
+			mes " ";
+			mes "You have received your weekly rewards!";
+			mes " ";
+			for(.@i = 0; .@i < getarraysize(.@item_ids); .@i++){
+				if(.@item_counts[.@i] > 0)
+					mes "^00FF00" + .@item_counts[.@i] + "x " + getitemname(.@item_ids[.@i]) + "^000000";
+			}
+			
+			announce strcharinfo(0) + " claimed Weekly Rank #" + .@rank + " rewards!", bc_all, 0xFFD700;
+			close;
+			
+		case 4: // Rankings
+			mes "[ ^0000CDThe Other Dimension - Rankings^000000 ]";
+			mes " ";
+			
+			query_sql("SELECT `name`,`max_round`,`class` FROM `" + .sql_t$ + "` WHERE `max_round` > '0' ORDER BY `max_round` DESC, `char_id` ASC LIMIT 100", .@name$, .@max_round, .@class);
+			
+			if(!getarraysize(.@name$)){
+				mes "^FF0000No one has entered yet!^000000";
+				end;
+			}
+			
+			mes "^00FF00Total Players: " + getarraysize(.@name$) + "^000000";
+			mes " ";
+			mes "^008000=== TOP 10 RANKINGS ===^000000";
+			next;
+			
+			.@display_limit = min(10, getarraysize(.@name$));
+			
+			for(.@i = 0; .@i < .@display_limit; .@i++){
+				if(.@i == 0)
+					.@color$ = "^CC0000";
+				else if(.@i == 1)
+					.@color$ = "^FF6600";
+				else if(.@i == 2)
+					.@color$ = "^0066FF";
+				else
+					.@color$ = "^008000";
+				
+				mes .@color$ + "Rank #" + (.@i + 1) + " - " + .@name$[.@i] + "^000000";
+				mes "^00CC00Stage: " + .@max_round[.@i] + " ^000000| ^CC66FFClass: " + jobname(.@class[.@i]) + "^000000";
+				
+				if(.@i < .@display_limit - 1)
+					mes " ";
+			}
+			
+			next;
+			
+			if(getarraysize(.@name$) > 10){
+				mes "[ View More Rankings ]";
+				mes " ";
+				mes "Do you want to view rankings 11-20?";
+				
+				if(select("No:Yes") == 2){
+					mes "^008000=== RANKINGS 11-20 ===^000000";
+					mes " ";
+					
+					.@start = 10;
+					.@end = min(20, getarraysize(.@name$));
+					
+					for(.@i = .@start; .@i < .@end; .@i++){
+						mes "^008000Rank #" + (.@i + 1) + " - " + .@name$[.@i] + "^000000";
+						mes "^00CC00Stage: " + .@max_round[.@i] + " ^000000| ^CC66FFClass: " + jobname(.@class[.@i]) + "^000000";
+						
+						if(.@i < .@end - 1)
+							mes " ";
+					}
+				}
+			}
+			
+			next;
+			mes "[ Your Ranking ]";
+			query_sql("SELECT `max_round` FROM `" + .sql_t$ + "` WHERE `char_id` = '" + getcharid(0) + "'", .@my_round);
+			
+			if(!.@my_round){
+				mes "^FF0000You haven't completed any stages yet!^000000";
+			}
+			else{
+				query_sql("SELECT COUNT(*) FROM `" + .sql_t$ + "` WHERE `max_round` > '" + .@my_round + "'", .@better_players);
+				.@my_rank = .@better_players + 1;
+				
+				mes "^00CC00Your Best: Stage " + .@my_round + "^000000";
+				mes "^008000Your Rank: #" + .@my_rank + "^000000";
+				
+				if(.@my_rank > 1){
+					.@gap = .@max_round[0] - .@my_round;
+					mes "^CC0000Gap to #1: " + .@gap + " stages^000000";
+				}
+				else{
+					mes "^CC0000Congratulations! You are #1!^000000";
+				}
+			}
+			end;
+			
+		case 5: // Information
+			mes "[ ^0000CDThe Other Dimension^000000 ]";
+			mes " ";
+			mes "You can join The Other Dimension as much as you want";
+			mes "The goal is to reach the highest stage as possible";
+			mes "You have 20min or until you die";
+			next;
+			mes "^0000CDNEW: Milestone Rewards!^000000";
+			mes "Reach certain stages to unlock one-time rewards!";
+			mes "^FF0000Each milestone can only be claimed ONCE per account!^000000";
+			mes "Some stages have multiple parts to claim!";
+			next;
+			mes "^0000CDWeekly Rewards (Every Friday 00:01):^000000";
+			mes "^FF0000Minimum Requirement: Stage 40+^000000";
+			mes " ";
+			mes "^CC0000TOP 1:^000000 50 PODs + 50 MVP Vouchers";
+			mes "^FF8C00TOP 2:^000000 20 PODs + 20 MVP Vouchers";
+			mes "^228B22TOP 3:^000000 10 PODs + 10 MVP Vouchers";
+			mes "^4169E1OTHER:^000000 5 PODs + 5 MVP Vouchers";
+			next;
+			mes "^00FF00NEW STAGES 45 & 50!^000000";
+			mes "Stage 45: 100x Black VIP Coin + 100x MVP Voucher";
+			mes "          + 1000x Blacksmith Blessing + 1x +17 Armor";
+			mes "Stage 50: 200x Black VIP Coin + 200x MVP Voucher";
+			mes "          + 2000x Blacksmith Blessing + 3x +17 Armor";
+			next;
+			mes "^00FF00Claim at NPC!^000000";
+			mes "- Rewards stored for ^FF00003 days^000000";
+			mes "- Claim directly at this NPC";
+			mes "- Unclaimed rewards expire after 3 days";
+			mes "- Ranking resets after calculation";
+			next;
+			mes "^FF0000Important Rules:^000000";
+			mes "- Taming monsters breaks your run!";
+			mes "- No drops and no exp from monsters";
+			mes "^FFFF00- Monsters are AGGRESSIVE!^000000";
+			end;
+	}
+
+// ==================== ADMIN PANEL ====================
+AdminPanel:
+	mes "[ ^FF0000ADMIN PANEL^000000 ]";
+	mes "The Other Dimension Management";
+	next;
+	
+	switch(select("Set Player Stage:Run Weekly Calculation:View Statistics:Check Next Reset:Cancel")){
+		case 1: // Set Player Stage
+			mes "[ Set Player Stage ]";
+			mes "Modify a player's max stage progress";
+			next;
+			
+			mes "Enter character name:";
+			input .@target$;
+			
+			query_sql("SELECT `char_id`, `max_round` FROM `" + .sql_t$ + "` WHERE `name` = '" + escape_sql(.@target$) + "'",.@cid, .@current_stage);
+			
+			if(!.@cid){
+				mes "Player not found or hasn't entered yet!";
+				mes " ";
+				mes "Create new entry for this player?";
+				if(select("No:Yes") == 1) close;
+				
+				query_sql("SELECT `char_id`, `class` FROM `char` WHERE `name` = '" + escape_sql(.@target$) + "'",.@cid, .@class);
+				
+				if(!.@cid){
+					mes "^FF0000Character does not exist!^000000";
+					close;
+				}
+				.@current_stage = 0;
+			}
+			
+			mes "Current Stage: ^00FF00" + .@current_stage + "^000000";
+			mes " ";
+			mes "Enter new stage (0-50):";
+			input .@new_stage;
+			
+			if(.@new_stage < 0 || .@new_stage > 50){
+				mes "Invalid stage! Must be 0-50";
+				close;
+			}
+			
+			if(.@current_stage > 0){
+				query_sql("UPDATE `" + .sql_t$ + "` SET `max_round` = '" + .@new_stage + "' WHERE `char_id` = '" + .@cid + "'");
+			} else {
+				query_sql("INSERT INTO `" + .sql_t$ + "` (`char_id`, `name`, `class`, `max_round`) VALUES ('" + .@cid + "', '" + escape_sql(.@target$) + "', '" + .@class + "', '" + .@new_stage + "')");
+			}
+			
+			mes "^00FF00Success!^000000";
+			mes .@target$ + "'s stage updated:";
+			mes .@current_stage + " -> " + .@new_stage;
+			
+			announce "[ADMIN] " + .@target$ + "'s stage set to " + .@new_stage, bc_all, 0xFFD700;
+			close;
+			
+		case 2: // Run Weekly Calculation
+			mes "[ Run Weekly Calculation ]";
+			mes "^FF0000This will:^000000";
+			mes "1. Calculate rewards for Stage 40+ players";
+			mes "2. Store rewards (3 day expiry)";
+			mes "3. Clear all rankings";
+			next;
+			
+			mes "^FFFF00Are you sure?^000000";
+			if(select("Cancel:Confirm") == 1){
+				mes "Cancelled";
+				close;
+			}
+			
+			mes "Processing...";
+			donpcevent strnpcinfo(3) + "::OnWeeklyReset";
+			mes "^00FF00Done! Check announcements.^000000";
+			close;
+			
+		case 3: // View Statistics
+			mes "[ Database Statistics ]";
+			next;
+			
+			query_sql("SELECT COUNT(*) FROM `" + .sql_t$ + "`", .@total_players);
+			mes "^00FF00Total Players:^000000 " + .@total_players;
+			
+			query_sql("SELECT COUNT(*) FROM `" + .sql_t$ + "` WHERE `max_round` >= 40", .@stage40);
+			query_sql("SELECT COUNT(*) FROM `" + .sql_t$ + "` WHERE `max_round` >= 30", .@stage30);
+			query_sql("SELECT COUNT(*) FROM `" + .sql_t$ + "` WHERE `max_round` >= 20", .@stage20);
+			query_sql("SELECT COUNT(*) FROM `" + .sql_t$ + "` WHERE `max_round` >= 10", .@stage10);
+			mes "Stage 40+: ^FFD700" + .@stage40 + "^000000";
+			mes "Stage 30+: " + .@stage30;
+			mes "Stage 20+: " + .@stage20;
+			mes "Stage 10+: " + .@stage10;
+			next;
+			
+			query_sql("SELECT COUNT(DISTINCT `account_id`) FROM `" + .sql_milestone$ + "`", .@unique_claimers);
+			query_sql("SELECT COUNT(*) FROM `" + .sql_milestone$ + "`", .@total_claims);
+			mes "^00FF00Milestone System:^000000";
+			mes "Unique Accounts: " + .@unique_claimers;
+			mes "Total Claims: " + .@total_claims;
+			next;
+			
+			query_sql("SELECT COUNT(*) FROM `" + .sql_weekly$ + "` WHERE `claimed` = 0", .@pending);
+			query_sql("SELECT COUNT(*) FROM `" + .sql_weekly$ + "` WHERE `claimed` = 1", .@claimed);
+			query_sql("SELECT COUNT(*) FROM `" + .sql_weekly$ + "` WHERE `claimed` = 2", .@expired);
+			mes "^00FF00Weekly Rewards:^000000";
+			mes "Pending: ^00FF00" + .@pending + "^000000";
+			mes "Claimed: ^999999" + .@claimed + "^000000";
+			mes "Expired: ^FF0000" + .@expired + "^000000";
+			close;
+			
+		case 4: // Check Next Reset
+			mes "[ Next Weekly Reset ]";
+			mes " ";
+			
+			.@today = gettime(DT_DAYOFWEEK);
+			.@days_to_friday = (5 - .@today + 7) % 7;
+			if(.@days_to_friday == 0 && gettime(DT_HOUR) >= 1) .@days_to_friday = 7;
+			
+			// FIX: .@day_names$ ở đây là local var, cần dùng NPC var .day_names$
+			mes "Current Day: ^00FF00" + .day_names$[.@today] + "^000000";
+			mes "Days until Friday: ^FFD700" + .@days_to_friday + "^000000";
+			mes " ";
+			mes "Last Reset: ^999999" + (($@OD_last_reset$ != "") ? $@OD_last_reset$ : "Never") + "^000000";
+			mes " ";
+			mes "^00FF00Auto Reset Status:^000000";
+			mes "Primary: OnDay50001 (Active)";
+			mes "Backup: OnClock0001 (Active)";
+			close;
+			
+		case 5:
+			mes "Exiting Admin Panel";
+			close;
+	}
+
+// ==================== WEEKLY RESET HANDLER ====================
+OnWeeklyReset:
+	query_sql("DELETE FROM `" + .sql_weekly$ + "` WHERE `claimed` = 0 AND UNIX_TIMESTAMP() > `expire_time`");
+	
+	// Get all participants who reached stage 40+
+	query_sql("SELECT `char_id`,`max_round`,`name` FROM `" + .sql_t$ + "` WHERE `max_round` >= '40' ORDER BY `max_round` DESC, `char_id` ASC", .@cid, .@max_round, .@names$);
+	
+	if(!getarraysize(.@cid)){
+		announce "No players reached Stage 40+ this week in The Other Dimension!", bc_all, 0xFFD700, FW_NORMAL, 14;
+		query_sql("TRUNCATE `" + .sql_t$ + "`");
+		end;
+	}
+	
+	// Announce weekly ranking results
+	announce "======= The Other Dimension - Weekly Ranking =======", bc_all, 0xFFD700, FW_BOLD, 18;
+	sleep 1000;
+	
+	// Get account IDs
+	for(.@i = 0; .@i < getarraysize(.@cid); .@i++){
+		query_sql("SELECT `account_id` FROM `char` WHERE `char_id` = '" + .@cid[.@i] + "'",.@aid[.@i]);
+	}
+	
+	// Store rewards in database
+	.@now = gettimetick(2);
+	.@expire = .@now + (3 * 86400); // 3 days
+	
+	for(.@i = 0; .@i < getarraysize(.@cid); .@i++){
+		deletearray .@item_ids;
+		deletearray .@item_counts;
+		
+		if(.@i == 0){
+			setarray .@item_ids[0], .reward_pod_id, .reward_mvp_id;
+			setarray .@item_counts[0], 50, 50;
+			.@rank_text$ = "TOP 1";
+		}
+		else if(.@i == 1){
+			setarray .@item_ids[0], .reward_pod_id, .reward_mvp_id;
+			setarray .@item_counts[0], 20, 20;
+			.@rank_text$ = "TOP 2";
+		}
+		else if(.@i == 2){
+			setarray .@item_ids[0], .reward_pod_id, .reward_mvp_id;
+			setarray .@item_counts[0], 10, 10;
+			.@rank_text$ = "TOP 3";
+		}
+		else{
+			setarray .@item_ids[0], .reward_pod_id, .reward_mvp_id;
+			setarray .@item_counts[0], 5, 5;
+			.@rank_text$ = "TOP " + (.@i + 1);
+		}
+		
+		.@item1 = .@item_ids[0];
+		.@count1 = .@item_counts[0];
+		.@item2 = .@item_ids[1];
+		.@count2 = .@item_counts[1];
+		
+		query_sql("INSERT INTO `" + .sql_weekly$ + "` (`account_id`, `char_id`, `name`, `ranking`, `max_round`, `reward_item1`, `reward_count1`, `reward_item2`, `reward_count2`, `reward_time`, `expire_time`, `claimed`) VALUES ('" + .@aid[.@i] + "', '" + .@cid[.@i] + "', '" + escape_sql(.@names$[.@i]) + "', '" + (.@i + 1) + "', '" + .@max_round[.@i] + "', '" + .@item1 + "', '" + .@count1 + "', '" + .@item2 + "', '" + .@count2 + "', NOW(), '" + .@expire + "', 0)");
+		
+		if(.@i < 3){
+			announce .@rank_text$ + ": " + .@names$[.@i] + " (Stage " + .@max_round[.@i] + ") - Rewards Available for 3 days!", bc_all, 0xFFD700, FW_BOLD, 18;
+			sleep 500;
+		}
+	}
+	
+	announce "Total " + getarraysize(.@cid) + " players qualified! Claim rewards at The Other Dimension NPC within 3 days!", bc_all, 0x00FF00, FW_NORMAL, 14;
+	
+	// Reset rankings
+	query_sql("TRUNCATE `" + .sql_t$ + "`");
+	announce "Rankings have been reset! Start climbing again!", bc_all, 0xFFD700, FW_NORMAL, 14;
+	end;
+
+// ==================== EVENT HANDLERS ====================
+OnPCLoginEvent:
+	if(InOtherDimensionDigit){
+		InOtherDimensionDigit = false;
+		showdigit 0,3;
+	}
+	
+	// Check for pending weekly rewards
+	query_sql("SELECT COUNT(*) FROM `" + .sql_weekly$ + "` WHERE `char_id` = '" + getcharid(0) + "' AND `claimed` = 0 AND UNIX_TIMESTAMP() <= `expire_time`", .@pending);
+	
+	if(.@pending > 0){
+		dispbottom "===========================================";
+		dispbottom "You have WEEKLY REWARDS waiting at The Other Dimension NPC!";
+		dispbottom "Visit the NPC in Askald (159,141) to claim within 3 days!";
+		dispbottom "===========================================";
+	}
+	end;
+
+OnClock0001:
+	if(gettime(DT_DAYOFWEEK) == 5){
+		.@today$ = gettime(DT_YEAR) + "-" + sprintf("%02d", gettime(DT_MONTH)) + "-" + sprintf("%02d", gettime(DT_DAYOFMONTH));
+		if($@OD_last_reset$ != .@today$){
+			$@OD_last_reset$ = .@today$;
+			debugmes "[Other Dimension] Weekly Reset triggered via OnClock0001 at " + .@today$;
+			announce "[ System ] The Other Dimension Weekly Reset (00:01)", bc_all, 0xFFD700;
+			sleep 2000;
+			donpcevent strnpcinfo(0) + "::OnWeeklyReset";
+		}
+	}
+	end;
+	
+// ==================== INITIALIZATION ====================
+OnInit:
+	// Allowed Classes (-1 = all)
+	setarray .AllowedClasses,-1;
+	
+	// FIX: Đổi từ .@ (local) sang . (NPC var) để dùng được ở AdminPanel
+	setarray .day_names$[0], "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday";
+	
+	//=== SQL TABLE NAMES ===
+	.in_name$ = "The Other Dimension";
+	.sql_t$ = "other_dimension_instance";
+	.sql_weekly$ = "other_dimension_weekly";
+	// FIX: Thêm .sql_milestone$ bị thiếu hoàn toàn trong code gốc
+	.sql_milestone$ = "other_dimension_milestone";
+	
+	//=== MILESTONE REWARDS CONFIGURATION ===
+	setarray .milestone_stage[0], 5, 10, 15, 15, 20, 20, 25, 30, 35, 40, 45, 50;
+	setarray .milestone_part[0],  1,  1,  1,  2,  1,  2,  1,  1,  1,  1,  1,  1;
+	setarray .milestone_start[0], 0, 3, 6, 10, 14, 19, 24, 30, 36, 40, 48, 56;
+	
+	// Stage 5 Part 1
+	setarray .milestone_item[0], 6820, 22687, 23016;
+	setarray .milestone_count[0], 500, 500, 500;
+	
+	// Stage 10 Part 1
+	setarray .milestone_item[3], 6820, 22687, 23016;
+	setarray .milestone_count[3], 1000, 5000, 5000;
+	
+	// Stage 15 Part 1
+	setarray .milestone_item[6], 25786, 25787, 23806, 22171;
+	setarray .milestone_count[6], 2500, 2500, 2, 1;
+	
+	// Stage 15 Part 2
+	setarray .milestone_item[10], 25786, 25787, 23806, 22171;
+	setarray .milestone_count[10], 2500, 2500, 1, 0;
+	
+	// Stage 20 Part 1
+	setarray .milestone_item[14], 25865, 25866, 25867, 6585, 6584;
+	setarray .milestone_count[14], 2500, 2500, 2500, 2, 1;
+	
+	// Stage 20 Part 2
+	setarray .milestone_item[19], 25865, 25866, 25867, 6585, 6584;
+	setarray .milestone_count[19], 2500, 2500, 2500, 1, 0;
+	
+	// Stage 25 Part 1
+	setarray .milestone_item[24], 1000257, 1000263, 7020, 7925, 6876, 6870;
+	setarray .milestone_count[24], 1000, 1000, 10, 20, 1, 1;
+	
+	// Stage 30 Part 1
+	setarray .milestone_item[30], 1000257, 1000263, 7020, 7925, 6877, 6871;
+	setarray .milestone_count[30], 2000, 2000, 20, 50, 1, 1;
+	
+	// Stage 35 Part 1
+	setarray .milestone_item[36], 1000430, 1000431, 6878, 6872;
+	setarray .milestone_count[36], 100, 100, 1, 1;
+	
+	// Stage 40 Part 1
+	setarray .milestone_item[40], 1000433, 1000432, 6879, 6873;
+	setarray .milestone_count[40], 100, 100, 1, 1;
+	
+	// Stage 45 Part 1
+	setarray .milestone_item[48], 1001258, 7615, 6635, 6880, 6874, 7020, 7925, 7000;
+	setarray .milestone_count[48], 100, 100, 1000, 1, 1, 50, 100, 5;
+	
+	// Stage 50 Part 1
+	setarray .milestone_item[56], 1001258, 7615, 6635, 6880, 6874, 7020, 7925, 7000;
+	setarray .milestone_count[56], 200, 200, 2000, 3, 1, 100, 200, 10;
+	
+	//=== WEEKLY REWARDS CONFIGURATION ===
+	.reward_pod_id = 7179;
+	.reward_mvp_id = 7615;
+	
+	// Initialize tracking variable
+	$@OD_last_reset$ = "";
+	
+	// Bind admin commands
+	bindatcmd "ForceSndOD",strnpcinfo(3) + "::OnWeeklyReset",99,99;
+	bindatcmd "ForceClearOD",strnpcinfo(3) + "::OnForceClearOD",99,99;
+	
+	debugmes "[Other Dimension] System initialized - Auto weekly scheduler active";
+	end;
+
+// ==================== AUTO WEEKLY RESET SCHEDULERS ====================
+OnForceClearOD:
+	query_sql("TRUNCATE `" + .sql_t$ + "`");
+	announce "[ ADMIN ] Rankings cleared without rewards!", bc_all, 0xFF0000;
+	end;
+}
+
+// ==================== MAP FLAGS ====================
+2@ods	mapflag	noteleport
+2@ods	mapflag	nomemo
+2@ods	mapflag	notrade
+2@ods	mapflag	nodrop
+2@ods	mapflag	noloot
+2@ods	mapflag	noexp
+2@ods	mapflag	nopenalty
+2@ods	mapflag	nochat
+2@ods	mapflag	novending
+2@ods	mapflag	nobranch
+2@ods	mapflag	hidemobhpbar
+
+// ==================== INSTANCE CONTROLLER ====================
+2@ods,0,0,0	script	::OtherDimensionSolo	-1,{
+OnInit:
+	function Add;
+	freeloop(1);
+	
+	// Monster configuration - All aggressive
+	Add(-1,1,3760,10,3761,10,3762,10,3763,10,3759,10,3765,10,3764,10);
+	Add(-1,2,3758,1);
+	Add(-1,3,3792,10,3793,10,3794,10,2722,10,1439,10,1473,10);
+	Add(-1,4,3796,1);
+	Add(-1,5,20255,10,20256,10,20257,10,20258,10,20259,10,20261,10,20263,10);
+	Add(-1,6,20260,1);
+	Add(-1,7,3752,10,3751,10,3753,10,3750,10,3754,10,3755,10,3756,10);
+	Add(-1,8,3757,1);
+	Add(-1,9,3799,10,3800,10,3801,10,3802,10,3803,10);
+	Add(-1,10,3804,1);
+	Add(-1,11,20270,15,20271,15,20272,15,20274,15,20275,15,20276,15);
+	Add(-1,12,20273,1);
+	Add(-1,13,20270,15,20271,15,20272,15,20274,15,20275,15,20276,15);
+	Add(-1,14,20277,1);
+	Add(-1,15,21386,10,21387,10,21388,10,21389,10,21390,10,21391,10,21392,10,21393,10,21394,10);
+	Add(-1,16,21395,1);
+	Add(-1,17,20525,10,20526,10,20527,10,20528,10,20529,10,20530,10,20531,10);
+	Add(-1,18,20520,1);
+	Add(-1,19,20806,15,20807,15,20808,15,20809,15,20810,15);
+	Add(-1,20,20843,1,20811,1,30001,2,30002,2);
+	Add(-1,21,20372,20,20373,20,20374,20,20375,20,20376,20,20377,20,20378,20);
+	Add(-1,22,20419,1,30001,5,30002,5);
+	Add(-1,23,20592,10,20593,10,20594,10,20595,10,20596,10,20597,10,20602,10,20603,10,20598,10);
+	Add(-1,24,20601,1,30001,5,30002,5);
+	Add(-1,25,20612,10,20613,10,20614,10,20615,10,20616,10,20617,10);
+	Add(-1,26,20618,1,30001,5,30002,5);
+	Add(-1,27,20604,20,20605,20,20606,20,20607,20,20608,20,20609,20);
+	Add(-1,28,20610,1,20611,1,30001,5,30002,5);
+	Add(-1,29,21297,20,21298,20,21299,20,21300,20);
+	Add(-1,30,21301,1,30000,1,30001,5,30002,5);
+	Add(-1,31,20929,30,20933,30,20930,30,20932,30,20931,30);
+	Add(-1,32,20934,1,1768,1,1832,1,30003,5,30004,5,30005,5);
+	Add(-1,33,20938,30,20939,30,20937,30,20935,30);
+	Add(-1,34,20943,1,1768,1,1832,1,30006,5,30007,5);
+	Add(-1,35,20941,30,20936,30,20940,30,20942,30);
+	Add(-1,36,20943,1,1917,1,3074,1,30008,5,30009,5,30010,5);
+	Add(-1,37,20924,30,20925,30,20926,30,20927,30);
+	Add(-1,38,20928,1,1917,1,3074,1,30011,1,30012,1,30013,5);
+	Add(-1,39,20920,30,20921,30,20922,30,20923,30);
+	Add(-1,40,20928,1,20421,1,20422,1,20892,1,20893,1,30022,1,30012,1,30011,1);
+	Add(-1,41,30001,20,30002,20,30003,20,30004,20,30005,20);
+	Add(-1,42,30023,1,30024,1,30025,1,20892,1,20893,1);
+	Add(-1,43,30006,20,30007,20,30008,20,30009,20,30010,20);
+	Add(-1,44,30026,1,30027,1,30028,1,20892,1,20893,1);
+	Add(-1,45,30013,20,30014,20,30015,20,30016,20,30017,20);
+	Add(-1,46,30022,1,30023,1,30024,1,30025,1,30026,1);
+	Add(-1,47,30018,20,30019,20,30020,20,30021,20,30022,1);
+	Add(-1,48,30023,1,30024,1,30025,1,30026,1,30027,1,30028,1);
+	Add(-1,49,30001,30,30011,1,30012,1,20892,1,20893,1,30022,1);
+	Add(-1,50,30023,1,30024,1,30025,1,30026,1,30027,1,30028,1,30022,1,30000,1,30028,1,30011,1,30012,1);
+	
+	freeloop(0);
+	
+	// Milestone stages for announcements
+	setarray .milestone_stages[0], 5, 10, 15, 20, 25, 30, 35, 40, 45, 50;
+	
+	.sql_t$ = "other_dimension_instance";
+	query_sql("CREATE TABLE IF NOT EXISTS `" + .sql_t$ + "` (`char_id` INT NOT NULL,`name` VARCHAR(32) NOT NULL,`class` INT NOT NULL,`max_round` INT NOT NULL DEFAULT '0', UNIQUE (char_id)) ENGINE=MyISAM");
+	
+	debugmes "[Other Dimension] Instance controller initialized";
+	end;
+
+OnInstanceInit:
+	initnpctimer;
+	startnpctimer;
+	'i_id = instance_id();
+	'map$ = instance_mapname(strnpcinfo(4),'i_id);
+	'npc$ = instance_npcname(strnpcinfo(3),'i_id);
+	'owner = instance_live_info(ILI_OWNER,'i_id);
+	'owner_name$ = convertpcinfo('owner,CPC_NAME);
+	'sd = convertpcinfo('owner,CPC_ACCOUNT);
+	'class = readparam(Class,'owner);
+	if(getd(".max_round" + 'class)){
+		'max_round = getd(".max_round" + 'class);
+		'custom_mob_class = true;
+	}else{
+		'max_round = .max_round;
+	}
+	end;
+	
+OnInstanceDestroy:
+	callsub OnSqlUpdate;
+	if(attachrid('sd)){
+		showdigit 0,3;
+		InOtherDimensionDigit = false;
+	}
+	end;
+
+OnTimer15000:
+	instance_announce 'i_id,"\r\nMonsters Will appear After 15 Seconds.",1,0xFFBF5C,FW_BOLD,42;
+	end;
+
+OnTimer30000:
+	stopnpctimer;
+	'round = 1;
+	callsub OnSpawn;
+	end;
+
+OnMobDead:
+	'max_count--;
+	if(!'max_count){
+		'round++;
+		callsub OnSpawn;
+	}
+	end;
+
+OnSpawn:
+	if('round > 'max_round){
+		instance_announce 'i_id,"\r\n\r\nThis Was The Final Stage",1,0xFFBF5C,FW_BOLD,42;
+		sleep 1000;
+		instance_announce 'i_id,"\r\nCongratulations! You have completed all 50 stages!",1,0x00FF00,FW_BOLD,38;
+		sleep 2000;
+		
+		announce 'owner_name$ + " has completed all 50 stages in The Other Dimension!", bc_all, 0xFFD700, FW_BOLD, 24;
+		
+		warp "SavePoint",0,0,'owner;
+		end;
+	}
+	
+	// Check milestone
+	.@is_milestone = 0;
+	for(.@i = 0; .@i < 10; .@i++){
+		if(.milestone_stages[.@i] == 'round){
+			.@is_milestone = 1;
+			break;
+		}
+	}
+	
+	if(.@is_milestone){
+		instance_announce 'i_id,"\r\nMilestone Reached: Stage " + 'round + "!",1,0xFFD700,FW_BOLD,36;
+		sleep 500;
+		instance_announce 'i_id,"Milestone Reward Available!",1,0x00FF00,FW_BOLD,32;
+		sleep 1000;
+		
+		announce 'owner_name$ + " has reached Stage " + 'round + " in The Other Dimension!", bc_all, 0xFFD700, FW_BOLD, 20;
+	}
+	
+	instance_announce 'i_id,"\r\n\r\nStage : " + 'round,1,0xFFBF5C,FW_BOLD,42;
+	
+	// FIX: Sửa điều kiện check custom mob class (-1 thay vì true/false)
+	if('custom_mob_class != 0){
+		copyarray .@m,getd(".m_" + 'round + "_" + 'class),getarraysize(getd(".m_" + 'round + "_" + 'class));
+		copyarray .@c,getd(".c_" + 'round + "_" + 'class),getarraysize(getd(".c_" + 'round + "_" + 'class));
+	}else{
+		copyarray .@m,getd(".m_" + 'round),getarraysize(getd(".m_" + 'round));
+		copyarray .@c,getd(".c_" + 'round),getarraysize(getd(".c_" + 'round));
+	}
+	
+	for(.@i=0;.@i<getarraysize(.@m);.@i++){
+		if(.@m[.@i] && .@c[.@i]){
+			monster 'map$,0,0,"--en--",.@m[.@i],.@c[.@i],strnpcinfo(3) + "::OnMobDead";
+			'max_count += .@c[.@i];
+		}
+	}
+	return;
+
+OnSqlUpdate:
+	query_sql("SELECT `max_round`,`name` FROM `" + .sql_t$ + "` WHERE `char_id` = '" + 'owner + "'",.@max,.@name$);
+	'round -= 1;
+	if(.@name$ != ""){
+		if(!.@max){
+			query_sql("DELETE FROM `" + .sql_t$ + "` WHERE `char_id` = '" + 'owner + "'");
+		}
+		if('round > .@max){
+			query_sql("UPDATE `" + .sql_t$ + "` SET max_round= '" + 'round +"',class='" + 'class + "',name='" + 'owner_name$ + "' WHERE char_id ='" + 'owner + "'");
+		}
+	}else if('round){
+		query_sql("INSERT INTO `" + .sql_t$ + "` (`name`,`char_id`,`class`,`max_round`) VALUES ('" + 'owner_name$ + "','" + 'owner + "','" + 'class + "','" + 'round + "')");
+	}
+	return;
+
+	function Add {
+		.@s = 0;
+		if(getarg(0) == -1){
+			.max_round = max(getarg(1),.max_round);
+			for(.@i=2;.@i<getargcount();.@i+=2){
+				setd ".m_" + getarg(1) + "[" + .@s + "]",getarg(.@i);
+				setd ".c_" + getarg(1) + "[" + .@s + "]",getarg(.@i+1);
+				.@s++;
+			}
+		} else {
+			setd ".max_round" + getarg(0), max(getarg(1), getd(".max_round" + getarg(0)));
+			for(.@i=2;.@i<getargcount();.@i+=2){
+				setd ".m_" + getarg(1) + "_" + getarg(0) + "[" + .@s + "]",getarg(.@i);
+				setd ".c_" + getarg(1) + "_" + getarg(0) + "[" + .@s + "]",getarg(.@i+1);
+				.@s++;
+			}
+		}
+		return;
+	}
+}
+
+//=============================================================================
+// END OF SCRIPT
+//=============================================================================

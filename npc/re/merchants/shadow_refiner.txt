@@ -165,4 +165,37 @@
 
 //moc_paraup,45,185,5	duplicate(ShadowBlacksmith)	Shadow Blacksmith#eden1	4_F_JOB_BLACKSMITH // Commented out until it's added to the map index
 //prt_in,61,54,3	duplicate(ShadowBlacksmith)	Shadow Blacksmith#itemmall	4_F_JOB_BLACKSMITH
-itemmall,31,76,3	duplicate(ShadowBlacksmith)	Shadow Blacksmith#itemmall	4_F_JOB_BLACKSMITH
+//itemmall,31,76,3	duplicate(ShadowBlacksmith)	Shadow Blacksmith#itemmall	4_F_JOB_BLACKSMITH
+
+itemmall,31,76,3	script	Shadow Blacksmith#exchange	4_F_JOB_BLACKSMITH,{
+	mes "[Shadow Blacksmith]";
+	mes "I can exchange your Shadow Exchange Ticket";
+	mes "for a Shadow Changer.";
+	next;
+
+	if (countitem(1000854) < 1) {
+		mes "[Shadow Blacksmith]";
+		mes "You do not have any Shadow Exchange Ticket.";
+		close;
+	}
+
+	mes "[Shadow Blacksmith]";
+	mes "Do you want to exchange:";
+	mes "^0000FF1 Shadow Exchange Ticket^000000";
+	mes "for ^00AA001 Shadow Changer^000000?";
+	next;
+
+	if (select("Exchange","Cancel") == 2) {
+		mes "[Shadow Blacksmith]";
+		mes "Come back if you change your mind.";
+		close;
+	}
+
+	delitem 1000854,1;
+	getitem 101243,1;
+
+	mes "[Shadow Blacksmith]";
+	mes "Exchange completed successfully.";
+	mes "Use the Shadow Changer wisely.";
+	close;
+}

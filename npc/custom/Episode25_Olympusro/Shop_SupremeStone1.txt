@@ -1,0 +1,131 @@
+// NPC Stone Downgrade
+askald,20,155,5	script	High Exchange Low	23145,{
+	mes "[Stone Master]";
+	mes "I can downgrade your stones!";
+	mes "Exchange high tier stones for lower tier ones.";
+	next;
+	
+	switch(select("Weapon Stone", "Armor Stone", "Accessory Stone", "Cancel")) {
+	case 1: // Weapon Stone
+		mes "[Stone Master]";
+		mes "Select the exchange you want:";
+		next;
+		switch(select("Lv4 to Lv3 (x40)", "Lv3 to Lv2 (x25)", "Lv2 to Lv1 (x2)", "Back")) {
+		case 1:
+			if(countitem(1000433) < 1) {
+				mes "You need 1 Weapon Stone 4!";
+				close;
+			}
+			delitem 1000433, 1;
+			getitem 1000432, 40;
+			mes "Successfully exchanged!";
+			mes "1 Weapon Stone 4 to 40 Weapon Stone 3";
+			close;
+		case 2:
+			if(countitem(1000432) < 1) {
+				mes "You need 1 Weapon Stone 3!";
+				close;
+			}
+			delitem 1000432, 1;
+			getitem 1000431, 25;
+			mes "Successfully exchanged!";
+			mes "1 Weapon Stone 3 to 25 Weapon Stone 2";
+			close;
+		case 3:
+			if(countitem(1000431) < 1) {
+				mes "You need 1 Weapon Stone 2!";
+				close;
+			}
+			delitem 1000431, 1;
+			getitem 1000430, 2;
+			mes "Successfully exchanged!";
+			mes "1 Weapon Stone 2 to 2 Weapon Stone 1";
+			close;
+		case 4:
+			close;
+		}
+		
+	case 2: // Armor Stone
+		mes "[Stone Master]";
+		mes "Select the exchange you want:";
+		next;
+		switch(select("Lv4 to Lv3 (x40)", "Lv3 to Lv2 (x25)", "Lv2 to Lv1 (x2)", "Back")) {
+		case 1:
+			if(countitem(1000437) < 1) {
+				mes "You need 1 Armor Stone 4!";
+				close;
+			}
+			delitem 1000437, 1;
+			getitem 1000436, 40;
+			mes "Successfully exchanged!";
+			mes "1 Armor Stone 4 to 40 Armor Stone 3";
+			close;
+		case 2:
+			if(countitem(1000436) < 1) {
+				mes "You need 1 Armor Stone 3!";
+				close;
+			}
+			delitem 1000436, 1;
+			getitem 1000435, 25;
+			mes "Successfully exchanged!";
+			mes "1 Armor Stone 3 to 25 Armor Stone 2";
+			close;
+		case 3:
+			if(countitem(1000435) < 1) {
+				mes "You need 1 Armor Stone 2!";
+				close;
+			}
+			delitem 1000435, 1;
+			getitem 1000434, 2;
+			mes "Successfully exchanged!";
+			mes "1 Armor Stone 2 to 2 Armor Stone 1";
+			close;
+		case 4:
+			close;
+		}
+		
+	case 3: // Accessory Stone
+		mes "[Stone Master]";
+		mes "Select the exchange you want:";
+		next;
+		switch(select("Lv4 to Lv3 (x40)", "Lv3 to Lv2 (x25)", "Lv2 to Lv1 (x2)", "Back")) {
+		case 1:
+			if(countitem(1000441) < 1) {
+				mes "You need 1 Accessory Stone 4!";
+				close;
+			}
+			delitem 1000441, 1;
+			getitem 1000440, 40;
+			mes "Successfully exchanged!";
+			mes "1 Accessory Stone 4 to 40 Accessory Stone 3";
+			close;
+		case 2:
+			if(countitem(1000440) < 1) {
+				mes "You need 1 Accessory Stone 3!";
+				close;
+			}
+			delitem 1000440, 1;
+			getitem 1000439, 25;
+			mes "Successfully exchanged!";
+			mes "1 Accessory Stone 3 to 25 Accessory Stone 2";
+			close;
+		case 3:
+			if(countitem(1000439) < 1) {
+				mes "You need 1 Accessory Stone 2!";
+				close;
+			}
+			delitem 1000439, 1;
+			getitem 1000438, 2;
+			mes "Successfully exchanged!";
+			mes "1 Accessory Stone 2 to 2 Accessory Stone 1";
+			close;
+		case 4:
+			close;
+		}
+		
+	case 4: // Cancel
+		mes "[Stone Master]";
+		mes "Come back anytime!";
+		close;
+	}
+}

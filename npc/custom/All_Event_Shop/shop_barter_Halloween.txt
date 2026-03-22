@@ -1,0 +1,33 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC Halloween Event
+// ============================================
+askald,24,53,1	script	Halloween Event	22177,{
+	mes "[Halloween Event]";
+	mes "WellCome Halloween Shop!";
+	mes "Please select Shop Type:";
+	next;
+	
+	switch(select("Halloween Coin:Halloween Ticket:Exit")) {
+		case 1:
+			mes "[Halloween Coin]";
+			mes "Open Halloween Coin Trade...";
+			close2;
+			callshop "Halloween_Coin";
+			end;
+
+		case 2:
+			mes "[Halloween Ticket]";
+			mes "Open Halloween Ticket Trade...";
+			close2;
+			callshop "Halloween_Ticket";
+			end;
+
+		case 3:
+			mes "Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

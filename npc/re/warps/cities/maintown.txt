@@ -1,0 +1,12 @@
+//===== rAthena Script =======================================
+//= Maintown (Askald) <=> Prontera
+//===== By: ==================================================
+//= OlympusRo Asia
+//============================================================
+//=Maintown (Askald) <=> Uknown Maps
+askald,128,118,0	warp2	askald_to_prontera	1,1,prontera,156,191
+
+//=Uknown Maps <=> Maintown
+silk_lair,246,53,0	warp2	prontera_to_askald	1,1,askald,128,112
+
+silk_lair,373,135,0	warp	1,1,silk_lair,199,188

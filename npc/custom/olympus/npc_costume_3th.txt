@@ -1,0 +1,419 @@
+//= @reloadnpcfile npc/custom/olympus/npc_costume_3th.txt
+// Extended Class Costume Enchant NPC - 90% success rate
+askald,40,195,1	script	Costume Enchant Third#ext_ask	4_F_OPERATION,{
+	disable_items;
+	
+	// Welcome message
+	mes "[Extended Class Enchanter]";
+	mes "Extended Class Enchant Service";
+	mes "^00FF00Success Rate: 90%^000000";
+	next;
+	
+	// Scan equipped costumes
+	.@eq_top = getequipid(EQI_COSTUME_HEAD_TOP);
+	.@eq_mid = getequipid(EQI_COSTUME_HEAD_MID);
+	.@eq_low = getequipid(EQI_COSTUME_HEAD_LOW);
+	.@eq_garment = getequipid(EQI_COSTUME_GARMENT);
+	
+	// Display equipped costumes
+	mes "[Extended Class Enchanter]";
+	mes "^0000FF=== Equipped Costumes ===^000000";
+	
+	.@has_costume = 0;
+	
+	if (.@eq_top > -1) {
+		mes "^0000FF[Upper] " + getitemname(.@eq_top) + "^000000";
+		.@has_costume = 1;
+	}
+	
+	if (.@eq_mid > -1) {
+		mes "^0000FF[Middle] " + getitemname(.@eq_mid) + "^000000";
+		.@has_costume = 1;
+	}
+	
+	if (.@eq_low > -1) {
+		mes "^0000FF[Lower] " + getitemname(.@eq_low) + "^000000";
+		.@has_costume = 1;
+	}
+	
+	if (.@eq_garment > -1) {
+		mes "^0000FF[Garment] " + getitemname(.@eq_garment) + "^000000";
+		.@has_costume = 1;
+	}
+	
+	// Check if player has any costume equipped
+	if (!.@has_costume) {
+		mes "^FF0000No costume equipped!^000000";
+		close;
+	}
+	
+	next;
+	
+	// Main menu
+	if (select("Start Enchant", "Cancel") == 2)
+		close;
+	
+	// Weight check
+	if (checkweight(1119,3) == 0) {
+		mes "[Extended Class Enchanter]";
+		mes "^FF0000Your inventory is too full!^000000";
+		mes "Please make some space first.";
+		close;
+	}
+	
+	// Double check costumes still equipped
+	if (.@eq_top == -1 && .@eq_mid == -1 && .@eq_low == -1 && .@eq_garment == -1) {
+		mes "[Extended Class Enchanter]";
+		mes "^FF0000Please equip the costume you want to enchant!^000000";
+		close;
+	}
+	
+	// Build costume selection menu
+	.@menu$ = "";
+	if (.@eq_top > -1)
+		.@menu$ += "^0000FF[Upper] " + getitemname(.@eq_top) + "^000000:";
+	if (.@eq_mid > -1)
+		.@menu$ += "^0000FF[Middle] " + getitemname(.@eq_mid) + "^000000:";
+	if (.@eq_low > -1)
+		.@menu$ += "^0000FF[Lower] " + getitemname(.@eq_low) + "^000000:";
+	if (.@eq_garment > -1)
+		.@menu$ += "^0000FF[Garment] " + getitemname(.@eq_garment) + "^000000:";
+	.@menu$ += "Cancel";
+	
+	.@select = select(.@menu$);
+	
+	// Determine which costume was selected
+	if (.@eq_top > -1) {
+		if (.@select == 1) {
+			.@part = EQI_COSTUME_HEAD_TOP;
+			.@equip_id = .@eq_top;
+			.@is_garment = 0;
+		}
+		.@select--;
+	}
+	if (.@select > 0 && .@eq_mid > -1) {
+		if (.@select == 1) {
+			.@part = EQI_COSTUME_HEAD_MID;
+			.@equip_id = .@eq_mid;
+			.@is_garment = 0;
+		}
+		.@select--;
+	}
+	if (.@select > 0 && .@eq_low > -1) {
+		if (.@select == 1) {
+			.@part = EQI_COSTUME_HEAD_LOW;
+			.@equip_id = .@eq_low;
+			.@is_garment = 0;
+		}
+		.@select--;
+	}
+	if (.@select > 0 && .@eq_garment > -1) {
+		if (.@select == 1) {
+			.@part = EQI_COSTUME_GARMENT;
+			.@equip_id = .@eq_garment;
+			.@is_garment = 1;
+		}
+		.@select--;
+	}
+	
+	// Cancel was selected
+	if (.@select > 0)
+		close;
+	
+	// Get current equipment data
+	.@location = getiteminfo(.@equip_id, ITEMINFO_LOCATIONS);
+	.@equip_refine = getequiprefinerycnt(.@part);
+	setarray .@card[0], getequipcardid(.@part, 0), getequipcardid(.@part, 1), getequipcardid(.@part, 2), getequipcardid(.@part, 3);
+	
+	// GARMENT ENCHANT PROCESS
+	if (.@is_garment) {
+		mes "[Extended Class Enchanter]";
+		mes "^0000FF" + getitemname(.@equip_id) + "^000000";
+		mes "Select enchant type:";
+		next;
+		
+		.@enchant_type = select("Single Enchant (Slot 1)", "Dual Enchant (Slot 1+2)", "Cancel");
+		
+		if (.@enchant_type == 3)
+			close;
+		
+		// Dual enchant requires existing enchant in slot 1
+		if (.@enchant_type == 2) {
+			if (.@card[0] == 0) {
+				mes "[Extended Class Enchanter]";
+				mes "^FF0000Slot 1 must have an enchant first!^000000";
+				close;
+			}
+			.@is_dual = 1;
+			.@slot = 1; // Dual enchant targets slot 2
+		} else {
+			.@is_dual = 0;
+			.@slot = 0; // Single enchant targets slot 1
+		}
+		
+		// Extended Class Garment Stones
+		setarray .@stone_id[0],
+			25448, 29463,		// Rune Knight Stone I (Garment)
+			1000296, 310257,	// Rune Knight Stone II (Garment)
+			25713, 29520,		// Royal Guard Stone I (Garment)
+			1000217, 310184,	// Royal Guard Stone II (Garment)
+			25456, 29471,		// Warlock Stone I (Garment)
+			1000213, 310180,	// Warlock Stone II (Garment)
+			25420, 29435,		// Sorcerer Stone I (Garment)
+			25801, 29614,		// Sorcerer Stone II (Garment)
+			25497, 29484,		// Mechanic Stone I (Garment)
+			1000015, 310007,	// Mechanic Stone II (Garment)
+			25449, 29467,		// Geneticist Stone I (Garment)
+			1000300, 310261,	// Geneticist Stone II (Garment)
+			25709, 29516,		// Arch Bishop Stone I (Garment)
+			1000019, 310011,	// Arch Bishop Stone II (Garment)
+			25412, 29426,		// Sura Stone I (Garment)
+			25797, 29427,		// Sura Stone II (Garment)
+			25717, 29524,		// Guillotine Cross Stone I (Garment)
+			1000221, 310188,	// Guillotine Cross Stone II (Garment)
+			25493, 29480,		// Shadow Chaser Stone I (Garment)
+			25805, 29618,		// Shadow Chaser Stone II (Garment)
+			25416, 29431,		// Ranger Stone I (Garment)
+			1000011, 310003,	// Ranger Stone II (Garment)
+			25501, 29488,		// Wanderer Minstrel Stone I (Garment)
+			1000304, 310265,	// Wanderer Minstrel Stone II (Garment)
+			25849, 29658,		// Star Emperor (Garment)
+			25842, 29654,		// Soul Reaper (Garment)
+			25854, 29663,		// Oboro (Garment)
+			25853, 29662,		// Kagerou (Garment)
+			25858, 29667,		// Rebel (Garment)
+			1001326, 312402,	// Expanded Super Novice (Garment)
+			25862, 29671;		// Doram Stone (Garment)
+//			// ===== NEW Stone II (Garment) =====
+//			1002276, 314184,	// Cardinal Stone II (Garment)
+//			1002280, 314188,	// Abyss Chaser Stone II (Garment)
+//			1002284, 314192,	// Hyper Novice Stone II (Garment)
+//			1002417, 314679;	// Star Emperor Stone II (Garment)
+	}
+	// HEADGEAR ENCHANT PROCESS
+	else {
+		mes "[Extended Class Enchanter]";
+		mes "^0000FF" + getitemname(.@equip_id) + "^000000";
+		mes "Select slot to enchant:";
+		next;
+		
+		.@is_dual = 0;
+		
+		// Slot is determined directly by costume type - no need to ask
+		if (.@part == EQI_COSTUME_HEAD_TOP)
+			.@slot = 0;
+		else if (.@part == EQI_COSTUME_HEAD_MID)
+			.@slot = 1;
+		else if (.@part == EQI_COSTUME_HEAD_LOW)
+			.@slot = 2;
+		
+		// Build stone array based on selected slot
+		switch(.@slot) {
+		case 0: // UPPER SLOT
+			setarray .@stone_id[0],
+				1000610, 310881,	// Rune Knight Stone I (Upper)
+				1001939, 313726,	// Rune Knight Stone II (Upper)
+				1000616, 310887,	// Royal Guard Stone (Upper)
+				1000613, 310884,	// Warlock Stone I (Upper)
+				1002408, 314670,	// Warlock Stone II (Upper)
+				1000672, 311011,	// Sorcerer (Upper)
+				1000971, 311430,	// Mechanic (Upper)
+				1000669, 311008,	// Geneticist Stone I (Upper)
+				1002411, 314673,	// Genetic Stone II (Upper)
+				1000857, 311356,	// Arch Bishop Stone I (Upper)
+				1002273, 314181,	// Archbishop Stone II (Upper)
+				1000968, 311427,	// Sura Stone I (Upper)
+				1002100, 314025,	// Sura Stone II (Upper)
+				1000974, 311433,	// Guillotine Cross (Upper)
+				1002096, 314021,	// Guillotine Cross Stone II (Upper)
+				1000863, 311362,	// Shadow Chaser Stone I (Upper)
+				1002277, 314185,	// Shadow Chaser Stone II (Upper)
+				1000860, 311359,	// Ranger (Upper)
+				1000666, 311005,	// Wanderer Minstrel Stone I (Upper)
+				1001942, 313729,	// Wanderer Minstrel Stone II (Upper)
+				1001044, 311460,	// Star Emperor Stone I (Upper)
+				1002414, 314676,	// Star Emperor Stone II (Upper)
+				1001050, 311466,	// Soul Reaper Stone I (Upper)
+				1002104, 314029,	// Soul Reaper Stone II (Upper)
+				1001162, 311915,	// Oboro (Upper)
+				1001159, 311912,	// Kagerou (Upper)
+				1001047, 311463,	// Rebel (Upper)
+				1001327, 312403,	// Expanded Super Novice Stone I (Upper)
+				1002281, 314189,	// Super Novice Stone II (Upper)
+				1001165, 311918,	// Summoner I (Upper)
+				1001945, 313732;	// Summoner II (Upper)
+			break;
+		case 1: // MIDDLE SLOT
+			setarray .@stone_id[0],
+				1000611, 310882,	// Rune Knight Stone I (Middle)
+				1001940, 313727,	// Rune Knight Stone II (Middle)
+				1000617, 310888,	// Royal Guard Stone (Middle)
+				1000614, 310885,	// Warlock Stone I (Middle)
+				1002409, 314671,	// Warlock Stone II (Middle)
+				1000673, 311012,	// Sorcerer (Middle)
+				1000972, 311431,	// Mechanic (Middle)
+				1000670, 311009,	// Geneticist Stone I (Middle)
+				1002412, 314674,	// Genetic Stone II (Middle)
+				1000858, 311357,	// Arch Bishop Stone I (Middle)
+				1002274, 314182,	// Archbishop Stone II (Middle)
+				1000969, 311428,	// Sura Stone I (Middle)
+				1002101, 314026,	// Sura Stone II (Middle)
+				1000975, 311434,	// Guillotine Cross (Middle)
+				1002097, 314022,	// Guillotine Cross Stone II (Middle)
+				1000864, 311363,	// Shadow Chaser Stone I (Middle)
+				1002278, 314186,	// Shadow Chaser Stone II (Middle)
+				1000861, 311360,	// Ranger (Middle)
+				1000667, 311006,	// Wanderer Minstrel Stone I (Middle)
+				1001943, 313730,	// Wanderer Minstrel Stone II (Middle)
+				1001045, 311461,	// Star Emperor Stone I (Middle)
+				1002415, 314677,	// Star Emperor Stone II (Middle)
+				1001051, 311467,	// Soul Reaper Stone I (Middle)
+				1002105, 314030,	// Soul Reaper Stone II (Middle)
+				1001163, 311916,	// Oboro (Middle)
+				1001160, 311913,	// Kagerou (Middle)
+				1001048, 311464,	// Rebel (Middle)
+				1001328, 312404,	// Expanded Super Novice Stone I (Middle)
+				1002282, 314190,	// Super Novice Stone II (Middle)
+				1001166, 311919,	// Summoner I (Middle)
+				1001946, 313733;	// Summoner II (Middle)
+			break;
+		case 2: // LOWER SLOT
+			setarray .@stone_id[0],
+				1000612, 310883,	// Rune Knight Stone I (Lower)
+				1001941, 313728,	// Rune Knight Stone II (Lower)
+				1000618, 310889,	// Royal Guard Stone (Lower)
+				1000615, 310886,	// Warlock Stone I (Lower)
+				1002410, 314672,	// Warlock Stone II (Lower)
+				1000674, 311013,	// Sorcerer (Lower)
+				1000973, 311432,	// Mechanic (Lower)
+				1000671, 311010,	// Geneticist Stone I (Lower)
+				1002413, 314675,	// Genetic Stone II (Lower)
+				1000859, 311358,	// Arch Bishop Stone I (Lower)
+				1002275, 314183,	// Archbishop Stone II (Lower)
+				1000970, 311429,	// Sura Stone I (Lower)
+				1002102, 314027,	// Sura Stone II (Lower)
+				1000976, 311435,	// Guillotine Cross (Lower)
+				1002098, 314023,	// Guillotine Cross Stone II (Lower)
+				1000865, 311364,	// Shadow Chaser Stone I (Lower)
+				1002279, 314187,	// Shadow Chaser Stone II (Lower)
+				1000862, 311361,	// Ranger (Lower)
+				1000668, 311007,	// Wanderer Minstrel Stone I (Lower)
+				1001944, 313731,	// Wanderer Minstrel Stone II (Lower)
+				1001046, 311462,	// Star Emperor Stone I (Lower)
+				1002416, 314678,	// Star Emperor Stone II (Lower)
+				1001052, 311468,	// Soul Reaper Stone I (Lower)
+				1002106, 314031,	// Soul Reaper Stone II (Lower)
+				1001164, 311917,	// Oboro (Lower)
+				1001161, 311914,	// Kagerou (Lower)
+				1001049, 311465,	// Rebel (Lower)
+				1001329, 312405,	// Expanded Super Novice Stone I (Lower)
+				1002283, 314191,	// Super Novice Stone II (Lower)
+				1001167, 311920,	// Summoner I (Lower)
+				1001947, 313734;	// Summoner II (Lower)
+			break;
+		default:
+			close;
+		}
+	}
+	
+	.@size = getarraysize(.@stone_id);
+	
+	// Build stone selection menu with pagination support
+	.@max_menu_size = 2047;
+	.@i = 0;
+	
+	do {
+		.@menu$ = "";
+		.@offset += .@i;
+	
+		for (.@i = .@offset; .@i < .@size; .@i += 2) {
+			.@str$ = sprintf("%s [%d]:", getitemname(.@stone_id[.@i]), countitem(.@stone_id[.@i]));
+			// Check if adding this item would exceed menu size limit
+			if ((getstrlen(.@menu$ + .@str$) + 4) >= .@max_menu_size) {
+				.@menu$ += "^0000FFNext Page^000000:";
+				break;
+			}
+			.@menu$ += .@str$;
+		}
+		if (.@i >= .@size)
+			.@menu$ += "Cancel";
+			
+		.@s = (select(.@menu$) - 1) * 2;
+	}
+	while(.@i < .@size && .@i == .@s);
+	.@s += .@offset;
+
+	// Cancel was selected
+	if (.@s >= .@size)
+		close;
+	
+	.@stone = .@stone_id[.@s];		// Stone item ID
+	.@enchant = .@stone_id[.@s+1];	// Enchant card ID to add
+	
+	// Verify costume is still equipped
+	if (getequipid(.@part) < 0) {
+		mes "[Extended Class Enchanter]";
+		mes "^FF0000ERROR: Costume no longer equipped!^000000";
+		close;
+	}
+	
+	// Verify player has the stone
+	if (countitem(.@stone) < 1) {
+		mes "[Extended Class Enchanter]";
+		mes "^FF0000You don't have this stone!^000000";
+		mes "Need: ^0000FF" + getitemname(.@stone) + "^000000";
+		mes "You have: ^FF0000" + countitem(.@stone) + "^000000";
+		close;
+	}
+	
+	// Final confirmation
+	mes "[Extended Class Enchanter]";
+	mes "^FF0000=== CAUTION ===^000000";
+	mes "^00FF00Success Rate: 90%^000000";
+	if (.@is_garment && .@is_dual) {
+		mes "^FF0000Dual Enchant: Both slots reset on failure!^000000";
+		mes "Current Slot 1: " + getitemname(.@card[0]);
+	} else {
+		mes "^FF0000Existing enchant will be replaced!^000000";
+	}
+	mes " ";
+	mes "Proceed with enchant?";
+	next;
+	
+	if (select("Yes", "No") == 2)
+		close;
+	
+	// Consume stone
+	delitem .@stone, 1;
+	
+	// Anti-hack verification
+	if (callfunc("F_IsEquipIDHack", .@part, .@equip_id) || 
+		callfunc("F_IsEquipCardHack", .@part, .@card[0], .@card[1], .@card[2], .@card[3]) || 
+		callfunc("F_IsEquipRefineHack", .@part, .@equip_refine))
+		close;
+	
+	// Remove equipped costume
+	delequip .@part;
+	
+	// Calculate success (90% rate)
+	if (rand(1,100) <= 90) {
+		// SUCCESS
+		mes "[Extended Class Enchanter]";
+		mes "^00FF00SUCCESS!^000000";
+		mes "Enchant applied successfully!";
+		.@card[.@slot] = .@enchant;
+	} else {
+		// FAILURE
+		mes "[Extended Class Enchanter]";
+		mes "^FF0000FAILED!^000000";
+		mes "Enchant was lost...";
+		.@card[.@slot] = 0;
+		// For dual enchant failure, also remove first enchant
+		if (.@is_dual)
+			.@card[0] = 0;
+	}
+	
+	// Return costume with new enchant status
+	getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+	close;
+}

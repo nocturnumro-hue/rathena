@@ -1,0 +1,17 @@
+//==================================================
+// Ancient Temple Akhet
+//==================================================
+nif_fild03,0,0	monster	VIOLEN	22383,45,5000
+nif_fild03,0,0	monster	CP VIOLEN	22384,35,5000
+nif_fild03,0,0	monster	SPIDING	22385,45,5000
+nif_fild03,0,0	monster	CP SPIDING	22386,35,5000
+nif_fild03,0,0	monster	GARLING	22387,45,5000
+nif_fild03,0,0	monster	CP GARLING	22388,35,5000
+nif_fild03,0,0	monster	JACKONETTE	22389,45,5000
+nif_fild03,0,0	monster	CP JACKONETTE	22390,35,5000
+nif_fild03,0,0	monster	LIAMETTE	22391,45,5000
+nif_fild03,0,0	monster	CP LIAMETTE	22392,35,5000
+nif_fild03,0,0	monster	G LIAMETTE	22393,35,5000
+
+nif_fild03,208,191	boss_monster	Nightmare Piamette	22394,1,10800000,600000,0
+

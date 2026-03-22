@@ -1,0 +1,323 @@
+###########################################################################
+# Barter Database
+###########################################################################
+#
+# Barter Settings
+#
+###########################################################################
+#  - Name               NPC name.
+#    Map                Map name. (Default: not on a map)
+#    X                  Map x coordinate. (Default: 0)
+#    Y                  Map y coordinate. (Default: 0)
+#    Direction          Direction the NPC is looking. (Default: North)
+#    Sprite             Sprite name of the NPC. (Default: FakeNpc)
+#    Items:             List of sold items.
+#      - Index          Index of the item inside the shop. (0-...)
+#                       Maximum index depends on client.
+#        Item           Aegis name of the item.
+#        Stock          Amount of item in stock. 0 means unlimited. (Default: 0)
+#        Zeny           Cost of them item in Zeny. (Default: 0)
+#        Refine         Refine level of the item. (Default: 0)
+#        RequiredItems: List of required items (Optional)
+#          - Index      Index of the required item. (0-4)
+#            Item       Aegis name of required item.
+#            Amount     Amount of required item. (Default: 1)
+#            Refine     Refine level of required item. (Default: 0)
+###########################################################################
+
+Header:
+  Type: BARTER_DB
+  Version: 2
+
+Body:
+  - Name: Episode19_ETC
+    Items:
+      - Index: 0
+        Item: Snow_F_Refine
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 200
+      - Index: 1
+        Item: Glacier_W_Refine
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 500
+      - Index: 2
+        Item: C_Filir_Bag
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 2000
+      - Index: 3
+        Item: C_Astra_Blessing
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 2000
+      - Index: 4
+        Item: C_Wings_Of_Raphael
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 2000
+      - Index: 5
+        Item: Snowflower_Armor
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 250
+      - Index: 6
+        Item: Snowflower_Robe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 250
+      - Index: 7
+        Item: Snowflower_Manteau
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 200
+      - Index: 8
+        Item: Snowflower_Muffler
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 200
+      - Index: 9
+        Item: Snowflower_Boots
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 200
+      - Index: 10
+        Item: Snowflower_Shoes
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 200
+      - Index: 11
+        Item: Snowflower_Pendant
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 350
+      - Index: 12
+        Item: Snowflower_Ring
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 350
+      - Index: 13
+        Item: Snowflower_Necklace
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 350
+      - Index: 14
+        Item: Snowflower_Earring
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 350
+  - Name: Episode19_Weapon
+    Items:
+      - Index: 0
+        Item: D_Glacier_T_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 1
+        Item: D_Glacier_Lance
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 2
+        Item: D_Glacier_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 3
+        Item: D_Glacier_B_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 4
+        Item: D_Glacier_Spear
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 5
+        Item: D_Glacier_T_Axe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 6
+        Item: D_Glacier_Axe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 7
+        Item: D_Glacier_Mace
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 8
+        Item: D_Glacier_M_Mace
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 9
+        Item: D_Glacier_R_Knife
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 10
+        Item: D_Glacier_B_Knife
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 11
+        Item: D_Glacier_Bow
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 12
+        Item: D_Glacier_Knuckle
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 13
+        Item: D_Glacier_Book
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 14
+        Item: D_Glacier_Katar
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 15
+        Item: D_Glacier_Wand
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 16
+        Item: D_Glacier_Staff
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 17
+        Item: D_Glacier_Foxtail
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 18
+        Item: D_Glacier_Violin
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 19
+        Item: D_Glacier_Whip
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 20
+        Item: D_Glacier_Humma
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 21
+        Item: D_Glacier_Revolver
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 22
+        Item: D_Glacier_Rifle
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 23
+        Item: D_Glacier_Shotgun
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 24
+        Item: D_Glacier_Gatling
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500
+      - Index: 25
+        Item: D_Glacier_Launcher
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Ep19_Snow_Flower
+            Amount: 1500

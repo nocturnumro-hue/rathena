@@ -1,0 +1,242 @@
+// ============================================================
+//  ███╗   ███╗ ██████╗ ███╗   ██╗███████╗████████╗███████╗██████╗ 
+//  ████╗ ████║██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██╔════╝██╔══██╗
+//  ██╔████╔██║██║   ██║██╔██╗ ██║███████╗   ██║   █████╗  ██████╔╝
+//  ██║╚██╔╝██║██║   ██║██║╚██╗██║╚════██║   ██║   ██╔══╝  ██╔══██╗
+//  ██║ ╚═╝ ██║╚██████╔╝██║ ╚████║███████║   ██║   ███████╗██║  ██║
+//  ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+//           ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
+//           ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
+//           ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
+//           ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
+//           ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
+//           ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
+// ============================================================
+//  MONSTER SYSTEM  |  Version 2.1
+//  File    : npc/custom/Fake_Player_Monster_Town/monster_system_askald.txt
+//  Reload  : @reloadnpcfile npc/custom/Fake_Player_Monster_Town/monster_system_askald.txt
+// ------------------------------------------------------------
+//  Changes v2.1:
+//    - Moving monsters giờ spawn xung quanh ĐÚNG các cluster
+//      tọa độ (± 5 tiles), không còn random toàn map nữa
+//    - AFK monsters vẫn dùng cluster ± 3 tiles như cũ
+//    - Mỗi slot moving lấy 1 cluster ngẫu nhiên làm tâm
+//    - OnHourlyMove cũng warp về cluster thay vì random map
+//    - Đổi tên script thành MonsterSystem_Askald để tránh trùng
+// ============================================================
+
+-	script	MonsterSystem_Askald	FAKE_EVENT,{
+	end;
+
+// ============================================================
+OnInit:
+// ============================================================
+
+	// ----------------------------------------------------------
+	//  GLOBAL CONFIGURATION
+	// ----------------------------------------------------------
+	.spawn_map$ = "askald";
+
+	// ----------------------------------------------------------
+	//  MOVING MONSTER IDs  (IDs 30101–30120)
+	// ----------------------------------------------------------
+	setarray .moving_mobs[0],
+		30101, 30102, 30103, 30104, 30105,
+		30106, 30107, 30108, 30109, 30110,
+		30111, 30112, 30113, 30114, 30115,
+		30116, 30117, 30118, 30119, 30120;
+
+	// ----------------------------------------------------------
+	//  AFK MONSTER IDs  (IDs 30121–30170)
+	// ----------------------------------------------------------
+	setarray .afk_mobs[0],
+		30121, 30122, 30123, 30124, 30125, 30126, 30127, 30128, 30129, 30130,
+		30131, 30132, 30133, 30134, 30135, 30136, 30137, 30138, 30139, 30140,
+		30141, 30142, 30143, 30144, 30145, 30146, 30147, 30148, 30149, 30150,
+		30151, 30152, 30153, 30154, 30155, 30156, 30157, 30158, 30159, 30160,
+		30161, 30162, 30163, 30164, 30165, 30166, 30167, 30168, 30169, 30170;
+
+	// ----------------------------------------------------------
+	//  FIRST NAME POOL  (100 names)
+	// ----------------------------------------------------------
+	setarray .first_names$[0],
+		"James",     "John",      "Robert",    "Michael",   "William",
+		"David",     "Richard",   "Joseph",    "Thomas",    "Charles",
+		"Christopher","Daniel",   "Matthew",   "Anthony",   "Donald",
+		"Mark",      "Paul",      "Steven",    "Andrew",    "Kenneth",
+		"Joshua",    "Kevin",     "Brian",     "George",    "Edward",
+		"Ronald",    "Timothy",   "Jason",     "Jeffrey",   "Ryan",
+		"Jacob",     "Gary",      "Nicholas",  "Eric",      "Stephen",
+		"Jonathan",  "Larry",     "Justin",    "Scott",     "Brandon",
+		"Benjamin",  "Samuel",    "Frank",     "Gregory",   "Raymond",
+		"Alexander", "Patrick",   "Jack",      "Dennis",    "Jerry",
+		"Tyler",     "Aaron",     "Henry",     "Douglas",   "Peter",
+		"Adam",      "Nathan",    "Zachary",   "Kyle",      "Walter",
+		"Ethan",     "Noah",      "Liam",      "Mason",     "Logan",
+		"Lucas",     "Oliver",    "Elijah",    "Aiden",     "James",
+		"Sebastian", "Owen",      "Carter",    "Wyatt",     "Dylan",
+		"Hunter",    "Evan",      "Caleb",     "Isaiah",    "Adrian",
+		"Nolan",     "Easton",    "Colton",    "Cameron",   "Landon",
+		"Maxwell",   "Lincoln",   "Jaxon",     "Cooper",    "Brayden",
+		"Grayson",   "Eli",       "Josiah",    "Mateo",     "Sawyer",
+		"Dominic",   "Maverick",  "Roman",     "Silas",     "Declan";
+
+	// ----------------------------------------------------------
+	//  LAST NAME POOL  (100 names)
+	// ----------------------------------------------------------
+	setarray .last_names$[0],
+		"Smith",     "Johnson",   "Williams",  "Brown",     "Jones",
+		"Garcia",    "Miller",    "Davis",     "Rodriguez", "Martinez",
+		"Hernandez", "Lopez",     "Gonzalez",  "Wilson",    "Anderson",
+		"Thomas",    "Taylor",    "Moore",     "Jackson",   "Martin",
+		"Lee",       "Perez",     "Thompson",  "White",     "Harris",
+		"Sanchez",   "Clark",     "Ramirez",   "Lewis",     "Robinson",
+		"Walker",    "Young",     "Allen",     "King",      "Wright",
+		"Scott",     "Torres",    "Nguyen",    "Hill",      "Flores",
+		"Green",     "Adams",     "Nelson",    "Baker",     "Hall",
+		"Rivera",    "Campbell",  "Mitchell",  "Carter",    "Roberts",
+		"Phillips",  "Evans",     "Turner",    "Parker",    "Collins",
+		"Edwards",   "Stewart",   "Morris",    "Murphy",    "Cook",
+		"Rogers",    "Morgan",    "Peterson",  "Cooper",    "Reed",
+		"Bailey",    "Bell",      "Gomez",     "Kelly",     "Howard",
+		"Ward",      "Cox",       "Diaz",      "Richardson","Wood",
+		"Watson",    "Brooks",    "Bennett",   "Gray",      "James",
+		"Reyes",     "Cruz",      "Hughes",    "Price",     "Myers",
+		"Long",      "Foster",    "Sanders",   "Ross",      "Morales",
+		"Powell",    "Sullivan",  "Russell",   "Ortiz",     "Jenkins",
+		"Gutierrez", "Perry",     "Butler",    "Barnes",    "Fisher";
+
+	// ----------------------------------------------------------
+	//  AFK PREFIX POOL  (~30% chance AFK tag xuất hiện)
+	// ----------------------------------------------------------
+	setarray .afk_prefix$[0],
+		"", "", "", "", "", "", "",
+		"[AFK] ", "[Sleep] ", "[Away] ";
+
+	// ----------------------------------------------------------
+	//  CLUSTER POSITIONS  (askald map)
+	//  - AFK spawn xung quanh đây ± 3 tiles
+	//  - Moving spawn xung quanh đây ± 5 tiles
+	// ----------------------------------------------------------
+	setarray .cluster_x[0], 120, 101, 100, 113, 136, 147, 150, 151, 57, 27, 23, 39, 19, 52, 59;
+	setarray .cluster_y[0], 103, 109, 145, 155, 156, 141, 109,  62, 146, 138, 97, 206, 220, 232, 218;
+
+	// --- Compute sizes (auto, do not edit) ---
+	.first_size       = getarraysize(.first_names$);
+	.last_size        = getarraysize(.last_names$);
+	.afk_prefix_size  = getarraysize(.afk_prefix$);
+	.total_clusters   = getarraysize(.cluster_x);
+	.afk_total        = 20;
+	.moving_pool_size = getarraysize(.moving_mobs);
+
+// ============================================================
+//  SPAWN: MOVING MONSTERS
+//  Mỗi slot chọn 1 cluster ngẫu nhiên làm tâm,
+//  spawn 1–3 mob xung quanh đó trong bán kính ± 5 tiles.
+// ============================================================
+
+	.@mob_idx    = 0;
+	.moving_count = 0;
+
+	for (.@slot = 0; .@slot < 20 && .@mob_idx < .moving_pool_size; .@slot++) {
+		.@num = rand(1, 3);
+
+		// Chọn cluster ngẫu nhiên làm tâm spawn cho slot này
+		.@cluster = rand(.total_clusters);
+		.@sx = .cluster_x[.@cluster];
+		.@sy = .cluster_y[.@cluster];
+
+		for (.@k = 0; .@k < .@num && .@mob_idx < .moving_pool_size; .@k++) {
+			.@class = .moving_mobs[.@mob_idx];
+			.@name$ = .first_names$[rand(.first_size)] + " " + .last_names$[rand(.last_size)];
+
+			// Spawn trong bán kính ± 5 tiles quanh cluster
+			.@tx = .@sx + rand(-5, 5);
+			.@ty = .@sy + rand(-5, 5);
+
+			.@gid = monster(.spawn_map$, .@tx, .@ty, .@name$, .@class, 1);
+			if (.@gid > 0) {
+				.moving_gid[.moving_count]     = .@gid;
+				.moving_cluster[.moving_count] = .@cluster;
+				setunitdata(.@gid, UMOB_LOOKDIR, rand(0, 7));
+				.moving_count++;
+			}
+			.@mob_idx++;
+		}
+	}
+
+// ============================================================
+//  SPAWN: AFK MONSTERS
+//  Spawn xung quanh cluster ± 3 tiles, mode 0x80 (không di chuyển).
+// ============================================================
+
+	for (.@i = 0; .@i < .afk_total; .@i++) {
+		.@class   = .afk_mobs[.@i];
+		.@prefix$ = .afk_prefix$[rand(.afk_prefix_size)];
+		.@name$   = .@prefix$ + .first_names$[rand(.first_size)] + " " + .last_names$[rand(.last_size)];
+
+		.@cluster = rand(.total_clusters);
+		.@cx = .cluster_x[.@cluster] + rand(-3, 3);
+		.@cy = .cluster_y[.@cluster] + rand(-3, 3);
+
+		.@gid = monster(.spawn_map$, .@cx, .@cy, .@name$, .@class, 1);
+		if (.@gid > 0) {
+			.afk_gid[.@i]     = .@gid;
+			.afk_cluster[.@i] = .@cluster;
+			setunitdata(.@gid, UMOB_MODE,    0x80);
+			setunitdata(.@gid, UMOB_LOOKDIR, rand(0, 7));
+		}
+	}
+
+	donpcevent(strnpcinfo(3) + "::OnHourlyMove");
+	end;
+
+// ============================================================
+OnHourlyMove:
+//  Chạy mỗi 1 giờ. Warp tất cả monster về cluster mới.
+// ============================================================
+
+	sleep(3600000);
+
+	// --- Relocate Moving Monsters (về cluster ngẫu nhiên ± 5 tiles) ---
+	for (.@i = 0; .@i < .moving_count; .@i++) {
+		if (unitexists(.moving_gid[.@i])) {
+			.@cluster = rand(.total_clusters);
+			.@tx = .cluster_x[.@cluster] + rand(-5, 5);
+			.@ty = .cluster_y[.@cluster] + rand(-5, 5);
+			unitwarp(.moving_gid[.@i], .spawn_map$, .@tx, .@ty);
+			setunitdata(.moving_gid[.@i], UMOB_LOOKDIR, rand(0, 7));
+		}
+	}
+
+	// --- Relocate AFK Monsters (về cluster ngẫu nhiên ± 3 tiles) ---
+	for (.@i = 0; .@i < .afk_total; .@i++) {
+		if (unitexists(.afk_gid[.@i])) {
+			.@cluster = rand(.total_clusters);
+			.@cx = .cluster_x[.@cluster] + rand(-3, 3);
+			.@cy = .cluster_y[.@cluster] + rand(-3, 3);
+			unitwarp(.afk_gid[.@i], .spawn_map$, .@cx, .@cy);
+			setunitdata(.afk_gid[.@i], UMOB_LOOKDIR, rand(0, 7));
+		}
+	}
+
+	donpcevent(strnpcinfo(3) + "::OnHourlyMove");
+	end;
+
+// ============================================================
+OnClear:
+//  Xóa toàn bộ monster và clear mảng GID.
+//  Trigger: donpcevent "MonsterSystem_Askald::OnClear";
+// ============================================================
+
+	killmonster(.spawn_map$, "All");
+	deletearray(.moving_gid[0],      getarraysize(.moving_gid));
+	deletearray(.moving_cluster[0],  getarraysize(.moving_cluster));
+	deletearray(.afk_gid[0],         getarraysize(.afk_gid));
+	deletearray(.afk_cluster[0],     getarraysize(.afk_cluster));
+	.moving_count = 0;
+	end;
+}
+// ============================================================
+//  END OF FILE  |  monster_system_askald.txt  |  Version 2.1
+// ============================================================

@@ -1,0 +1,625 @@
+//===== Rebirth System for 4th Class Renewal ============================================
+//= Rebirth System with Ranking & Announcements
+//===== Description: =====================================================================
+//= Rebirth system for 4th class characters
+//= Requirements: Base Level 275 / Job Level 60
+//= Features: Ranking Board, Color-coded messages, Announcements
+//= Modified: Main 4th Classes -> High Novice | Expanded 4th Classes -> Novice
+//========================================================================================
+
+-	script	Rebirth_System	-1,{
+OnInit:
+    // Initialize ranking array
+    setarray $RebirthRanking$[0], "", "", "", "", "", "", "", "", "", "";
+    setarray $RebirthRankingCount[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+    
+    // Load ranking from SQL on server start
+    callfunc "LoadRebirthRanking";
+    end;
+
+OnInterIfInitOnce:
+    // Create SQL table if not exists
+    query_sql("CREATE TABLE IF NOT EXISTS `rebirth_ranking` ("
+        + "`rank` INT(11) NOT NULL,"
+        + "`char_name` VARCHAR(30) NOT NULL,"
+        + "`rebirth_count` INT(11) NOT NULL DEFAULT '0',"
+        + "`last_update` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
+        + "PRIMARY KEY (`rank`),"
+        + "KEY `rebirth_count` (`rebirth_count`)"
+        + ") ENGINE=MyISAM;");
+    end;
+}
+
+prontera,188,198,1	script	Rebirth Master	10365,{
+
+    // ===== REBIRTH SETTINGS =====
+    set .@cost_zeny, 1000000000;
+    set .@required_blvl, 275;
+    set .@required_jlvl, 60;
+    set .@max_rebirth, 10;
+    
+    // ===== STAT POINTS REWARD PER REBIRTH =====
+    setarray .@stat_rewards[0], 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400;
+    
+    // ===== TRAIT STATUS POINTS REWARD FOR REBIRTH 8, 9, 10 =====
+    setarray .@trait_rewards[0], 0, 0, 0, 0, 0, 0, 0, 30, 60, 100;
+    
+    // ===== ITEM REWARDS PER REBIRTH =====
+    // Rebirth 1: 1001258 x100, 7179 x50
+    setarray .@rebirth1_items[0], 1001258, 100, 7179, 50;
+    // Rebirth 2: 1001258 x200, 7179 x100
+    setarray .@rebirth2_items[0], 1001258, 200, 7179, 100;
+    // Rebirth 3: 1001258 x300, 7179 x150
+    setarray .@rebirth3_items[0], 1001258, 300, 7179, 150;
+    // Rebirth 4: 1001258 x400, 7179 x200
+    setarray .@rebirth4_items[0], 1001258, 400, 7179, 200;
+    // Rebirth 5: 1001258 x500, 7179 x250
+    setarray .@rebirth5_items[0], 1001258, 500, 7179, 250;
+    // Rebirth 6: 1001258 x600, 7179 x300
+    setarray .@rebirth6_items[0], 1001258, 600, 7179, 300;
+    // Rebirth 7: 1001258 x700, 7179 x350
+    setarray .@rebirth7_items[0], 1001258, 700, 7179, 350;
+    // Rebirth 8: 1001258 x800, 7179 x400
+    setarray .@rebirth8_items[0], 1001258, 800, 7179, 400;
+    // Rebirth 9: 1001258 x900, 7179 x450
+    setarray .@rebirth9_items[0], 1001258, 900, 7179, 450;
+    // Rebirth 10: 1001258 x1000, 7179 x500
+    setarray .@rebirth10_items[0], 1001258, 1000, 7179, 500;
+    
+    // ===== REQUIRED ITEMS FOR REBIRTH (BASE AMOUNT) =====
+    // Rebirth 1: 7615 x100, 7227 x200, 6635 x100, 25729 x500, 25731 x500
+    setarray .@base_required_items_id[0], 7615, 7227, 6635, 25729, 25731;
+    setarray .@base_required_items_qty[0], 100, 200, 100, 500, 500;
+    
+    // ===== ALLOWED CLASSES =====
+    // 4th Classes (Main Classes) - Will become High Novice
+    setarray .@allowed_classes[0], 4252, 4253, 4254, 4255, 4256, 4257, 4258, 4259, 4260, 4261, 4262, 4263, 4264, 4265, 4266, 4267, 4268, 4269, 4270, 4271, 4272, 4273, 4274, 4275;
+    // Expanded 4th Classes - Will become Novice
+    // Night Watch, Sky Emperor, Soul Ascetic, Hyper Novice, Shinkiro/Shiranui (male/female), Spirit Handler
+    setarray .@allowed_classes2[0], 4306, 4302, 4303, 4307, 4304, 4305, 4308;
+    
+    // ==================== MAIN MENU ====================
+    
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "Greetings, ^008000" + strcharinfo(0) + "^000000.";
+    mes "I am the ^0080FFRebirth Master^000000.";
+    mes " ";
+    mes "^008000Current Rebirth: ^FF0000" + Rebirth + "^000000 / ^0080FF" + .@max_rebirth + "^000000";
+    mes "^008000Base Level: ^0080FF" + BaseLevel + "^000000 / ^FF0000" + .@required_blvl + "^000000";
+    mes "^008000Job Level: ^0080FF" + JobLevel + "^000000 / ^FF0000" + .@required_jlvl + "^000000";
+    next;
+    
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "What would you like to do?";
+    set .@menu, select("^008000Rebirth^000000:^0080FFCheck Requirements^000000:^FF0000Ranking Board^000000:^000000Cancel^000000");
+    
+    switch(.@menu) {
+        case 1:
+            goto L_Rebirth;
+        case 2:
+            goto L_Requirements;
+        case 3:
+            goto L_Ranking;
+        case 4:
+            mes "^0080FF[Rebirth Master]^000000";
+            mes "Come back when you need my services.";
+            close;
+    }
+    end;
+    
+// ==================== CHECK REQUIREMENTS ====================
+L_Requirements:
+    // Check class type for display
+    set .@is_main_class, 0;
+    for (set .@i, 0; .@i < getarraysize(.@allowed_classes); set .@i, .@i + 1) {
+        if (Class == .@allowed_classes[.@i]) {
+            set .@is_main_class, 1;
+            break;
+        }
+    }
+    
+    // Calculate required items based on current rebirth
+    set .@multiplier, Rebirth + 1;
+    
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^008000=== REBIRTH REQUIREMENTS ===^000000";
+    mes " ";
+    mes "^FF0000Base Level:^000000 " + .@required_blvl;
+    if (BaseLevel >= .@required_blvl) {
+        mes "^008000Status: OK^000000";
+    } else {
+        mes "^FF0000Status: NEED " + (.@required_blvl - BaseLevel) + " MORE LEVELS^000000";
+    }
+    mes " ";
+    mes "^FF0000Job Level:^000000 " + .@required_jlvl;
+    if (JobLevel >= .@required_jlvl) {
+        mes "^008000Status: OK^000000";
+    } else {
+        mes "^FF0000Status: NEED " + (.@required_jlvl - JobLevel) + " MORE LEVELS^000000";
+    }
+    next;
+    
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^008000=== ZENY REQUIREMENT ===^000000";
+    mes "^FF0000Required Zeny:^000000 " + .@cost_zeny + "z";
+    if (Zeny >= .@cost_zeny) {
+        mes "^008000Status: OK^000000";
+    } else {
+        mes "^FF0000Status: NEED " + (.@cost_zeny - Zeny) + "z MORE^000000";
+    }
+    next;
+    
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^008000=== REQUIRED ITEMS ===^000000";
+    mes "^0080FFFor Rebirth " + (Rebirth + 1) + ":^000000";
+    
+    // Standard items (increase 100% each rebirth)
+    for (set .@i, 0; .@i < getarraysize(.@base_required_items_id); set .@i, .@i + 1) {
+        set .@needed, .@base_required_items_qty[.@i] * .@multiplier;
+        set .@have, countitem(.@base_required_items_id[.@i]);
+        mes "^0080FF" + getitemname(.@base_required_items_id[.@i]) + ":^000000 " + .@needed + "x";
+        if (.@have >= .@needed) {
+            mes "^008000You have: " + .@have + " (OK)^000000";
+        } else {
+            mes "^FF0000You have: " + .@have + " (NEED " + (.@needed - .@have) + " MORE)^000000";
+        }
+    }
+    
+    // Additional item 7179 for rebirth 8, 9, 10
+    if (Rebirth >= 7) {
+        if (Rebirth == 7) {
+            set .@needed_7179, 50;
+        } else if (Rebirth == 8) {
+            set .@needed_7179, 100;
+        } else if (Rebirth == 9) {
+            set .@needed_7179, 200;
+        }
+        set .@have_7179, countitem(7179);
+        mes "^FF00FF" + getitemname(7179) + ":^000000 " + .@needed_7179 + "x ^FF0000(BONUS)^000000";
+        if (.@have_7179 >= .@needed_7179) {
+            mes "^008000You have: " + .@have_7179 + " (OK)^000000";
+        } else {
+            mes "^FF0000You have: " + .@have_7179 + " (NEED " + (.@needed_7179 - .@have_7179) + " MORE)^000000";
+        }
+    }
+    next;
+    
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^008000=== REBIRTH REWARDS ===^000000";
+    mes "^0080FFNext Rebirth (" + (Rebirth + 1) + ") Rewards:^000000";
+    mes "^FF0000Status Points:^000000 +" + .@stat_rewards[Rebirth];
+    if (Rebirth >= 7) {  // Rebirth 8, 9, 10
+        mes "^FF0000Trait Status Points:^000000 +" + .@trait_rewards[Rebirth];
+    }
+    
+    // Show item rewards
+    set .@reward_multiplier, Rebirth + 1;
+    mes "^FF0000Item Rewards:^000000";
+    mes "^0080FF" + getitemname(1001258) + " x" + (100 * .@reward_multiplier) + "^000000";
+    mes "^0080FF" + getitemname(7179) + " x" + (50 * .@reward_multiplier) + "^000000";
+    
+    mes " ";
+    mes "^008000After rebirth:^000000";
+    if (.@is_main_class) {
+        mes "You will become ^0080FFHigh Novice Level 1/1^000000";
+    } else {
+        mes "You will become ^0080FFNovice Level 1/1^000000";
+    }
+    close;
+    
+// ==================== RANKING BOARD ====================
+L_Ranking:
+    mes "^FF0000[Rebirth Ranking Board]^000000";
+    mes "^008000=== TOP 10 REBIRTHS ===^000000";
+    mes " ";
+    
+    set .@found, 0;
+    for (set .@i, 0; .@i < 10; set .@i, .@i + 1) {
+        if ($RebirthRanking$[.@i] != "") {
+            set .@found, 1;
+            if (.@i == 0) {
+                mes "^FF0000[" + (.@i + 1) + "] " + $RebirthRanking$[.@i] + " - " + $RebirthRankingCount[.@i] + " Rebirths^000000";
+            } else if (.@i == 1) {
+                mes "^0080FF[" + (.@i + 1) + "] " + $RebirthRanking$[.@i] + " - " + $RebirthRankingCount[.@i] + " Rebirths^000000";
+            } else if (.@i == 2) {
+                mes "^008000[" + (.@i + 1) + "] " + $RebirthRanking$[.@i] + " - " + $RebirthRankingCount[.@i] + " Rebirths^000000";
+            } else {
+                mes "^000000[" + (.@i + 1) + "] " + $RebirthRanking$[.@i] + " - " + $RebirthRankingCount[.@i] + " Rebirths^000000";
+            }
+        }
+    }
+    
+    if (!.@found) {
+        mes "^FF0000No one has rebirthed yet!^000000";
+        mes "^008000Be the first!^000000";
+    }
+    close;
+    
+// ==================== REBIRTH PROCESS ====================
+L_Rebirth:
+    mes "^0080FF[Rebirth Master]^000000";
+    
+    // Check maximum rebirth limit
+    if (Rebirth >= .@max_rebirth) {
+        mes "^FF0000You have reached the maximum rebirth limit!^000000";
+        mes "Maximum rebirths: ^0080FF" + .@max_rebirth + "^000000";
+        close;
+    }
+    
+    // Check if class is allowed and determine class type
+    set .@class_allowed, 0;
+    set .@is_main_class, 0;
+    for (set .@i, 0; .@i < getarraysize(.@allowed_classes); set .@i, .@i + 1) {
+        if (Class == .@allowed_classes[.@i]) {
+            set .@class_allowed, 1;
+            set .@is_main_class, 1;
+            break;
+        }
+    }
+    if (!.@class_allowed) {
+        for (set .@i, 0; .@i < getarraysize(.@allowed_classes2); set .@i, .@i + 1) {
+            if (Class == .@allowed_classes2[.@i]) {
+                set .@class_allowed, 1;
+                set .@is_main_class, 0;
+                break;
+            }
+        }
+    }
+    
+    if (!.@class_allowed) {
+        mes "^FF0000Only 4th class and Expanded 4th class can rebirth!^000000";
+        mes " ";
+        mes "^008000Allowed classes:^000000";
+        mes "^0080FF- All 4th Classes^000000";
+        mes "^0080FF- All Expanded 4th Classes^000000";
+        close;
+    }
+    
+    mes "This will be your ^FF0000Rebirth No." + (Rebirth + 1) + "^000000";
+    next;
+    
+    // Calculate required items based on current rebirth
+    set .@multiplier, Rebirth + 1;
+    
+    // Check all requirements and show what's missing
+    set .@can_rebirth, 1;
+    cleararray .@missing$[0], "", 20;
+    set .@missing_count, 0;
+    
+    // Check Base Level
+    if (BaseLevel < .@required_blvl) {
+        set .@can_rebirth, 0;
+        set .@missing$[.@missing_count], "^FF0000Base Level " + .@required_blvl + "^000000 (Current: ^0080FF" + BaseLevel + "^000000)";
+        set .@missing_count, .@missing_count + 1;
+    }
+    
+    // Check Job Level
+    if (JobLevel < .@required_jlvl) {
+        set .@can_rebirth, 0;
+        set .@missing$[.@missing_count], "^FF0000Job Level " + .@required_jlvl + "^000000 (Current: ^0080FF" + JobLevel + "^000000)";
+        set .@missing_count, .@missing_count + 1;
+    }
+    
+    // Check Zeny
+    if (Zeny < .@cost_zeny) {
+        set .@can_rebirth, 0;
+        set .@missing$[.@missing_count], "^FF0000" + .@cost_zeny + " Zeny^000000 (Current: ^0080FF" + Zeny + "z^000000)";
+        set .@missing_count, .@missing_count + 1;
+    }
+    
+    // Check standard required items
+    for (set .@i, 0; .@i < getarraysize(.@base_required_items_id); set .@i, .@i + 1) {
+        set .@needed, .@base_required_items_qty[.@i] * .@multiplier;
+        set .@have, countitem(.@base_required_items_id[.@i]);
+        if (.@have < .@needed) {
+            set .@can_rebirth, 0;
+            set .@missing$[.@missing_count], "^FF0000" + .@needed + "x " + getitemname(.@base_required_items_id[.@i]) + "^000000 (Have: ^0080FF" + .@have + "^000000)";
+            set .@missing_count, .@missing_count + 1;
+        }
+    }
+    
+    // Check additional item 7179 for rebirth 8, 9, 10
+    if (Rebirth >= 7) {
+        if (Rebirth == 7) {
+            set .@needed_7179, 50;
+        } else if (Rebirth == 8) {
+            set .@needed_7179, 100;
+        } else if (Rebirth == 9) {
+            set .@needed_7179, 200;
+        }
+        set .@have_7179, countitem(7179);
+        if (.@have_7179 < .@needed_7179) {
+            set .@can_rebirth, 0;
+            set .@missing$[.@missing_count], "^FF0000" + .@needed_7179 + "x " + getitemname(7179) + "^000000 (Have: ^0080FF" + .@have_7179 + "^000000) ^FF00FF[BONUS]^000000";
+            set .@missing_count, .@missing_count + 1;
+        }
+    }
+    
+    // Show what's missing
+    if (!.@can_rebirth) {
+        mes "^0080FF[Rebirth Master]^000000";
+        mes "^FF0000You are missing the following requirements:^000000";
+        mes " ";
+        for (set .@i, 0; .@i < .@missing_count; set .@i, .@i + 1) {
+            mes .@missing$[.@i];
+        }
+        mes " ";
+        mes "^008000Please come back when you have everything!^000000";
+        close;
+    }
+    
+    // Show confirmation with rewards
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^008000You meet all requirements!^000000";
+    mes " ";
+    mes "^FF0000Rebirth Rewards:^000000";
+    mes "^0080FF+" + .@stat_rewards[Rebirth] + " Status Points^000000";
+    if (Rebirth >= 7) {  // Rebirth 8, 9, 10
+        mes "^0080FF+" + .@trait_rewards[Rebirth] + " Trait Status Points^000000";
+    }
+    
+    // Show item rewards
+    set .@reward_multiplier, Rebirth + 1;
+    mes "^FF0000Item Rewards:^000000";
+    mes "^0080FF" + getitemname(1001258) + " x" + (100 * .@reward_multiplier) + "^000000";
+    mes "^0080FF" + getitemname(7179) + " x" + (50 * .@reward_multiplier) + "^000000";
+    
+    mes " ";
+    mes "^FF0000After rebirth:^000000";
+    if (.@is_main_class) {
+        mes "^0080FFHigh Novice Level 1/1^000000";
+    } else {
+        mes "^0080FFNovice Level 1/1^000000";
+    }
+    next;
+    
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^FF0000Are you ready to rebirth now?^000000";
+    if (select("^008000Yes, I am ready!^000000:^FF0000No, not yet^000000") == 2) {
+        mes "^0080FF[Rebirth Master]^000000";
+        mes "Come back when you are ready.";
+        close;
+    }
+    
+    // Final confirmation
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^FF0000FINAL CONFIRMATION!^000000";
+    mes " ";
+    mes "This will reset your character to:";
+    if (.@is_main_class) {
+        mes "^0080FFHigh Novice Level 1/1^000000";
+    } else {
+        mes "^0080FFNovice Level 1/1^000000";
+    }
+    mes " ";
+    mes "^008000Are you absolutely sure?^000000";
+    if (select("^FF0000YES, DO IT!^000000:^000000Cancel^000000") == 2) {
+        mes "^0080FF[Rebirth Master]^000000";
+        mes "Rebirth cancelled.";
+        close;
+    }
+    
+    // Perform rebirth
+    set .@current_rebirth, Rebirth;
+    set .@player_name$, strcharinfo(0);
+    
+    // Deduct costs
+    set Zeny, Zeny - .@cost_zeny;
+    
+    // Deduct standard required items
+    for (set .@i, 0; .@i < getarraysize(.@base_required_items_id); set .@i, .@i + 1) {
+        set .@needed, .@base_required_items_qty[.@i] * .@multiplier;
+        delitem .@base_required_items_id[.@i], .@needed;
+    }
+    
+    // Deduct additional item 7179 for rebirth 8, 9, 10
+    if (.@current_rebirth >= 7) {
+        if (.@current_rebirth == 7) {
+            delitem 7179, 50;
+        } else if (.@current_rebirth == 8) {
+            delitem 7179, 100;
+        } else if (.@current_rebirth == 9) {
+            delitem 7179, 200;
+        }
+    }
+    
+    // Reset based on class type
+    if (.@is_main_class) {
+        // Main 4th Classes -> High Novice
+        jobchange 4001;
+    } else {
+        // Expanded 4th Classes -> Novice
+        jobchange 0;
+    }
+    resetlvl 1;
+    
+    // Give stat points (reset StatusPoint to 0 first, then add rewards)
+    set StatusPoint, 0;
+    set StatusPoint, StatusPoint + .@stat_rewards[.@current_rebirth];
+    
+    // Bonus Trait Status Points for rebirth 8, 9, 10
+    if (.@current_rebirth >= 7) {  // Rebirth 8, 9, 10 (array index 7, 8, 9)
+        set TraitPoint, TraitPoint + .@trait_rewards[.@current_rebirth];
+    }
+    
+    // Give item rewards
+    switch(.@current_rebirth) {
+        case 0:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth1_items); set .@i, .@i + 2) {
+                getitem .@rebirth1_items[.@i], .@rebirth1_items[.@i + 1];
+            }
+            break;
+        case 1:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth2_items); set .@i, .@i + 2) {
+                getitem .@rebirth2_items[.@i], .@rebirth2_items[.@i + 1];
+            }
+            break;
+        case 2:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth3_items); set .@i, .@i + 2) {
+                getitem .@rebirth3_items[.@i], .@rebirth3_items[.@i + 1];
+            }
+            break;
+        case 3:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth4_items); set .@i, .@i + 2) {
+                getitem .@rebirth4_items[.@i], .@rebirth4_items[.@i + 1];
+            }
+            break;
+        case 4:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth5_items); set .@i, .@i + 2) {
+                getitem .@rebirth5_items[.@i], .@rebirth5_items[.@i + 1];
+            }
+            break;
+        case 5:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth6_items); set .@i, .@i + 2) {
+                getitem .@rebirth6_items[.@i], .@rebirth6_items[.@i + 1];
+            }
+            break;
+        case 6:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth7_items); set .@i, .@i + 2) {
+                getitem .@rebirth7_items[.@i], .@rebirth7_items[.@i + 1];
+            }
+            break;
+        case 7:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth8_items); set .@i, .@i + 2) {
+                getitem .@rebirth8_items[.@i], .@rebirth8_items[.@i + 1];
+            }
+            break;
+        case 8:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth9_items); set .@i, .@i + 2) {
+                getitem .@rebirth9_items[.@i], .@rebirth9_items[.@i + 1];
+            }
+            break;
+        case 9:
+            for (set .@i, 0; .@i < getarraysize(.@rebirth10_items); set .@i, .@i + 2) {
+                getitem .@rebirth10_items[.@i], .@rebirth10_items[.@i + 1];
+            }
+            break;
+    }
+    
+    // Increase rebirth counter
+    set Rebirth, Rebirth + 1;
+    
+    // Update ranking
+    callfunc "UpdateRebirthRanking", .@player_name$, Rebirth;
+    
+    // Server announcement
+    announce "[ REBIRTH SYSTEM ] " + .@player_name$ + " has completed Rebirth No." + Rebirth + "! Congratulations!", bc_all, 0x00FF00;
+    
+    // Success message
+    mes "^0080FF[Rebirth Master]^000000";
+    mes "^FF0000===================^000000";
+    mes "^008000CONGRATULATIONS!^000000";
+    mes "^FF0000===================^000000";
+    mes " ";
+    mes "You have successfully completed";
+    mes "^FF0000Rebirth No." + Rebirth + "^000000!";
+    mes " ";
+    mes "^008000Rewards Received:^000000";
+    mes "^0080FF+" + .@stat_rewards[.@current_rebirth] + " Status Points^000000";
+    if (.@current_rebirth >= 7) {  // Rebirth 8, 9, 10
+        mes "^0080FF+" + .@trait_rewards[.@current_rebirth] + " Trait Status Points^000000";
+    }
+    mes "^0080FFItem Rewards:^000000";
+    mes "^008000" + getitemname(1001258) + " x" + (100 * (.@current_rebirth + 1)) + "^000000";
+    mes "^008000" + getitemname(7179) + " x" + (50 * (.@current_rebirth + 1)) + "^000000";
+    close;
+}
+
+// ==================== RANKING UPDATE FUNCTION ====================
+function	script	UpdateRebirthRanking	{
+    set .@name$, getarg(0);
+    set .@count, getarg(1);
+    set .@inserted, 0;
+    
+    // Check if player already in ranking
+    for (set .@i, 0; .@i < 10; set .@i, .@i + 1) {
+        if ($RebirthRanking$[.@i] == .@name$) {
+            set $RebirthRankingCount[.@i], .@count;
+            set .@inserted, 1;
+            break;
+        }
+    }
+    
+    // Sort ranking
+    for (set .@i, 0; .@i < 10; set .@i, .@i + 1) {
+        for (set .@j, .@i + 1; .@j < 10; set .@j, .@j + 1) {
+            if ($RebirthRankingCount[.@i] < $RebirthRankingCount[.@j]) {
+                set .@tempCount, $RebirthRankingCount[.@i];
+                set .@tempName$, $RebirthRanking$[.@i];
+                
+                set $RebirthRankingCount[.@i], $RebirthRankingCount[.@j];
+                set $RebirthRanking$[.@i], $RebirthRanking$[.@j];
+                
+                set $RebirthRankingCount[.@j], .@tempCount;
+                set $RebirthRanking$[.@j], .@tempName$;
+            }
+        }
+    }
+    
+    // If not inserted yet, add to last position if qualified
+    if (!.@inserted) {
+        if (.@count > $RebirthRankingCount[9]) {
+            set $RebirthRanking$[9], .@name$;
+            set $RebirthRankingCount[9], .@count;
+            
+            // Sort again
+            for (set .@i, 0; .@i < 10; set .@i, .@i + 1) {
+                for (set .@j, .@i + 1; .@j < 10; set .@j, .@j + 1) {
+                    if ($RebirthRankingCount[.@i] < $RebirthRankingCount[.@j]) {
+                        set .@tempCount, $RebirthRankingCount[.@i];
+                        set .@tempName$, $RebirthRanking$[.@i];
+                        
+                        set $RebirthRankingCount[.@i], $RebirthRankingCount[.@j];
+                        set $RebirthRanking$[.@i], $RebirthRanking$[.@j];
+                        
+                        set $RebirthRankingCount[.@j], .@tempCount;
+                        set $RebirthRanking$[.@j], .@tempName$;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Save ranking to SQL database
+    callfunc "SaveRebirthRanking";
+    
+    return;
+}
+
+// ==================== SAVE RANKING TO SQL ====================
+function	script	SaveRebirthRanking	{
+    // Clear old data
+    query_sql("TRUNCATE TABLE `rebirth_ranking`");
+    
+    // Save top 10 to database
+    for (set .@i, 0; .@i < 10; set .@i, .@i + 1) {
+        if ($RebirthRanking$[.@i] != "") {
+            query_sql("INSERT INTO `rebirth_ranking` (`rank`, `char_name`, `rebirth_count`) VALUES ("
+                + (.@i + 1) + ", '"
+                + escape_sql($RebirthRanking$[.@i]) + "', "
+                + $RebirthRankingCount[.@i] + ")");
+        }
+    }
+    return;
+}
+
+// ==================== LOAD RANKING FROM SQL ====================
+function	script	LoadRebirthRanking	{
+    // Clear arrays first
+    cleararray $RebirthRanking$[0], "", 10;
+    cleararray $RebirthRankingCount[0], 0, 10;
+    
+    // Load from database
+    set .@nb, query_sql("SELECT `char_name`, `rebirth_count` FROM `rebirth_ranking` ORDER BY `rank` ASC LIMIT 10", .@name$, .@count);
+    
+    for (set .@i, 0; .@i < .@nb; set .@i, .@i + 1) {
+        set $RebirthRanking$[.@i], .@name$[.@i];
+        set $RebirthRankingCount[.@i], .@count[.@i];
+    }
+    
+    if (.@nb > 0) {
+        announce "[ REBIRTH SYSTEM ] Ranking data loaded successfully! Top player: " + $RebirthRanking$[0] + " with " + $RebirthRankingCount[0] + " rebirths!", bc_all, 0x00FF00;
+    }
+    
+    return;
+}

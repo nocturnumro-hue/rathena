@@ -1,0 +1,95 @@
+//===============================
+// Rental Services NPC (With Dragon Support)
+//===============================
+prontera,124,197,6	script	Rental Services	10374,{
+	function F_MesName;
+	function F_MesChar;
+	
+	function F_MesName {
+		mes "[^FF0000Rental Services^000000]";
+		return;
+	}
+	
+	function F_MesChar {
+		return "^0000FF" + strcharinfo(0) + "^000000";
+	}
+	
+	F_MesName();
+	if (Class == Job_Novice) {
+		mes "Oi, " + F_MesChar() + "! Go away, I can't help you.";
+		close;
+	}
+	
+	mes "Hey there, " + F_MesChar() + ". Need a mount?";
+	next;
+	
+	switch(select("Yeah, I need one.:I'm Sorry, No.")) {
+	case 1:
+		F_MesName();
+		mes "Okay, give me a second: I'll try to get your mount here!";
+		next;
+		
+		// Dragon check for Rune Knight
+		if ((eaclass()&EAJ_THIRDMASK)==EAJ_RUNE_KNIGHT) {
+			if (!getskilllv("KN_RIDING")) {
+				F_MesName();
+				mes "Sorry, you need to learn ^FF0000Dragon Training^000000 or ^FF0000Riding^000000 skill first.";
+				close;
+			}
+			if (checkdragon()) {
+				F_MesName();
+				mes "You already have a Dragon with you!";
+				close;
+			}
+			if (ismounting()) {
+				F_MesName();
+				mes "Please remove your cash mount first before getting a Dragon.";
+				close;
+			}
+			setdragon;
+			F_MesName();
+			mes "Here you go, " + F_MesChar() + ": your mighty Dragon is ready! Have a great adventure!";
+			close;
+		}
+		
+		// Falcon check
+		if (!checkfalcon() && getskilllv("HT_FALCON")) {
+			setfalcon;
+			F_MesName();
+			mes "Here you go, " + F_MesChar() + ": take this falcon. Have a great day!";
+			close;
+		}
+		
+		// Cart check
+		if (!checkcart() && getskilllv("MC_PUSHCART")) {
+			setcart;
+			F_MesName();
+			mes "Here you go, " + F_MesChar() + ": good luck with your sales!";
+			close;
+		}
+		
+		// Riding check
+		if (!checkriding() && getskilllv("KN_RIDING")) {
+			setriding;
+			F_MesName();
+			mes "Here, take this mount: I think it suits your job the best, " + F_MesChar() + "!";
+			close;
+		}
+		
+		// If none of the above applies (ex: Genetic, Mechanic, etc.)
+		atcommand "@newmount";
+		F_MesName();
+		mes "Here you go, " + F_MesChar() + "! Have a nice day.";
+		close;
+		
+	case 2:
+		F_MesName();
+		mes "Alright, maybe next time!";
+		close;
+	}
+	end;
+	
+OnInit:
+	waitingroom "Rental VIP", 0;
+	end;
+}

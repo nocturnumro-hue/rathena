@@ -1,0 +1,51 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC Olympusro SHOPS
+// ============================================
+askald,20,120,5	script	Olympusro Shop	22178,{
+	mes "^FF6B00[Ascendant Upgrade Arsenal]^000000";
+	mes "^0080FFWelcome to the Aurelian Domain Upgrade Shop!^000000";
+	mes " ";
+	mes "I can help you upgrade your equipment";
+	mes "to reach its full potential.";
+	mes " ";
+	mes "^00FF00Please select the upgrade category:^000000";
+	next;
+	
+	switch(select("^9932CCMagic Equipment^000000:^FF4500Physical Equipment^000000:^1E90FFWeapon Forging^000000:^808080Exit^000000")) {
+		case 1:
+			mes "^FF6B00[Ascendant Upgrade Arsenal]^000000";
+			mes "^9932CCYou have selected Magic equipment.^000000";
+			mes " ";
+			mes "Here you can Upgrade Equipment";
+			mes "focused on magical power and MATK.";
+			close2;
+			callshop "Upgrade_SET_MATK";
+			end;
+		case 2:
+			mes "^FF6B00[Ascendant Upgrade Arsenal]^000000";
+			mes "^FF4500You have selected Physical equipment.^000000";
+			mes " ";
+			mes "Here you can Upgrade Equipment";
+			mes "focused on physical power and ATK.";
+			close2;
+			callshop "Upgrade_SET_ATK";
+			end;
+		case 3:
+			mes "^FF6B00[Ascendant Upgrade Arsenal]^000000";
+			mes "^1E90FFYou have selected Weapon Forging.^000000";
+			mes " ";
+			mes "Here you can forge and upgrade";
+			mes "powerful weapons for all classes.";
+			close2;
+			callshop "Upgrade_Weapon";
+			end;
+		case 4:
+			mes "^FF6B00[Ascendant Upgrade Arsenal]^000000";
+			mes "^0080FFThank you for visiting!^000000";
+			mes "May the power of Aurelian guide you.";
+			close;
+	}
+	end;
+}

@@ -74,6 +74,7 @@ prontera,282,194,1	duplicate(idRO_rental)	Rental Shop#prt-1	874
 prontera,29,209,5	duplicate(idRO_kafra)	Kafra Shop#prt-2	721
 prontera,29,210,5	duplicate(idRO_kafra2)	Kafra Shop 2#prt-2	80
 prontera,32,212,5	duplicate(idRO_rental)	Rental Shop#prt-2	874
+prontera,144,200,6	duplicate(idRO_rental)	Rental Shop#prt-2	874
 
 // South
 prontera,146,91,5	duplicate(idRO_kafra)	Kafra Shop#prt-3	721

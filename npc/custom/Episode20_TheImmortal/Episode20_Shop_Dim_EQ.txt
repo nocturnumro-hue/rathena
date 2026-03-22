@@ -1,0 +1,93 @@
+// ============================================
+// BARTER SHOPS - Episode 20
+// ============================================
+askald,71,150,1	script	Episode20 Dim Glacier	21979,{
+	.@points_episode20 = get_reputation_points(5); // Episode 20
+	
+	disable_items;
+	cutin "ep20_lasgand_god01.png", 2;
+	mes "[Episode 20 Trader]";
+	mes "Welcome to the ^0000FFEpisode 20 Material Exchange^000000!";
+	mes "^0000FFCurrent Reputation Points:^000000";
+	mes "^9900FFDim Glacier Material:^000000 " + (.@points_episode20 >= 1000 ? "^00FF00" + .@points_episode20 + "/1000^000000" : "^FF0000" + .@points_episode20 + "/1000^000000");
+	mes "^9900FFDim Glacier Equipment:^000000 " + (.@points_episode20 >= 3000 ? "^00FF00" + .@points_episode20 + "/3000^000000" : "^FF0000" + .@points_episode20 + "/3000^000000");
+	mes " ";
+	
+	// Check if player has minimum reputation
+	if (.@points_episode20 < 1000) {
+		cutin "ep20_lasgand_god02.png", 2;
+		mes "You don't have enough reputation points!";
+		mes " ";
+		mes "^FF0000Required reputation:^000000";
+		mes "- Dim Glacier Material: 1000 points";
+		mes "- Dim Glacier Equipment: 3000 points";
+		cutin "", 255;
+		close;
+	}
+	
+	// Build menu based on reputation
+	.@menu$ = "";
+	
+	if (.@points_episode20 >= 1000) {
+		.@menu$ = "Dim Glacier Material:";
+	}
+	if (.@points_episode20 >= 3000) {
+		.@menu$ = .@menu$ + "Dim Glacier Equipment:";
+	}
+	.@menu$ = .@menu$ + "Exit";
+	
+	mes "Please select your shop:";
+	next;
+	
+	.@choice = select(.@menu$);
+	
+	switch(.@choice) {
+		// Dim Glacier Material (1000 reputation)
+		case 1:
+			cutin "ep20_lasgand_god01.png", 2;
+			mes "[Episode 20 Shop]";
+			mes "Opening ^00FF00Dim Glacier Material^000000...";
+			next;
+			cutin "", 255;
+			callshop "Episode20_Dim_Glacier_Material";
+			end;
+		
+		// Dim Glacier Equipment (3000 reputation)
+		case 2:
+			if (.@points_episode20 >= 3000) {
+				cutin "ep20_lasgand_god01.png", 2;
+				mes "[Episode 20 Ultimate Shop]";
+				mes "Opening ^FF00FFDim Glacier Equipment^000000...";
+				next;
+				cutin "", 255;
+				callshop "Episode20_Dim_Glacier_EQ";
+				end;
+			} else {
+				// This is Exit option if reputation < 3000
+				cutin "ep20_lasgand_god02.png", 2;
+				mes "[Episode 20 Trader]";
+				mes "Have a good day!";
+				mes "Good Bye!";
+				cutin "", 255;
+				close;
+			}
+		
+		// Exit (case 3 if reputation >= 3000, case 2 if < 3000)
+		case 3:
+			cutin "ep20_lasgand_god02.png", 2;
+			mes "[Episode 20 Trader]";
+			mes "Have a good day!";
+			mes "Good Bye!";
+			cutin "", 255;
+			close;
+		
+		// Default Exit
+		default:
+			cutin "ep20_lasgand_god02.png", 2;
+			mes "[Episode 20 Trader]";
+			mes "Have a good day!";
+			mes "Good Bye!";
+			cutin "", 255;
+			close;
+	}
+}

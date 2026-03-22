@@ -1,0 +1,385 @@
+//===== rAthena Script =======================================
+//= Holiday Event Quests (ONE TIME ONLY)
+//===== Description: =========================================
+//= Holiday hunting quests for special event dungeons
+//= ONE TIME PER ACCOUNT - No cooldown, no repeat
+//= Quests: Happy Holidays, Fun Boss Holidays, Old Memories Holidays
+//= Rewards: Cat Whiskers + Flower Petals + Weapon Boxes + EXP
+//= Features: Cancel quest with progress reset
+//============================================================
+
+askald,141,163,5	script	Holiday Event Quest	640,{
+	
+	cutin "vr_rain01.png", 2;
+	
+	// Check Level Requirement
+	if (BaseLevel < 200) {
+		mes "[Holiday Event Manager]";
+		mes "Sorry, you need to be at least Level 200 to participate in the Holiday Events.";
+		mes " ";
+		mes "^FF0000Current Level: " + BaseLevel + "/200^000000";
+		cutin "", 255;
+		close;
+	}
+	
+	// ============================================================
+	// CHECK IF QUEST COMPLETED - GIVE REWARDS (ONE TIME ONLY)
+	// ============================================================
+	
+	// Happy Holidays - Quest 70286
+	if (checkquest(70286, HUNTING) == 2) {
+		// Check if already claimed
+		if (checkquest(70289) >= 0) {
+			mes "[Holiday Event Manager]";
+			mes "You've already claimed this reward.";
+			mes "^FF0000Each quest can only be completed ONCE per account.^000000";
+			erasequest 70286;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Holiday Event Manager]";
+		mes "Excellent work! You've completed Happy Holidays quest!";
+		mes "Here is your reward!";
+		cutin "vr_rain02.png", 2;
+		next;
+		
+		getitem 1001217, 50; // Cat Whiskers x50
+		getitem 1000608, 200; // Flower Petals x200
+		getitem 41247, 1; // Glacier Weapon Box x1
+		getitem 41246, 1; // Dim Glacier Weapon Box x1
+		getexp 50000000000, 10000000000; // Base: 50B, Job: 10B
+		
+		erasequest 70286;
+		setquest 70289; // Mark as completed permanently
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Holiday Event Manager]";
+		mes "Rewards received!";
+		mes "^FF0000This quest has been completed and cannot be repeated.^000000";
+		cutin "", 255;
+		close;
+	}
+	
+	// Fun Boss Holidays - Quest 70287
+	if (checkquest(70287, HUNTING) == 2) {
+		// Check if already claimed
+		if (checkquest(70290) >= 0) {
+			mes "[Holiday Event Manager]";
+			mes "You've already claimed this reward.";
+			mes "^FF0000Each quest can only be completed ONCE per account.^000000";
+			erasequest 70287;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Holiday Event Manager]";
+		mes "Amazing! You've defeated the Abyss Boss!";
+		mes "Here is your reward!";
+		cutin "vr_rain03.png", 2;
+		next;
+		
+		getitem 1001217, 50; // Cat Whiskers x50
+		getitem 1000608, 200; // Flower Petals x200
+		getitem 41247, 1; // Glacier Weapon Box x1
+		getitem 41246, 1; // Dim Glacier Weapon Box x1
+		getexp 50000000000, 10000000000; // Base: 50B, Job: 10B
+		
+		erasequest 70287;
+		setquest 70290; // Mark as completed permanently
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Holiday Event Manager]";
+		mes "Rewards received!";
+		mes "^FF0000This quest has been completed and cannot be repeated.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Old Memories Holidays - Quest 70288
+	if (checkquest(70288, HUNTING) == 2) {
+		// Check if already claimed
+		if (checkquest(70291) >= 0) {
+			mes "[Holiday Event Manager]";
+			mes "You've already claimed this reward.";
+			mes "^FF0000Each quest can only be completed ONCE per account.^000000";
+			erasequest 70288;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Holiday Event Manager]";
+		mes "Outstanding! You've completed Old Memories Holidays!";
+		mes "The Chaos Devil Dragon has been defeated!";
+		cutin "vr_rain03.png", 2;
+		next;
+		
+		getitem 1001217, 50; // Cat Whiskers x50
+		getitem 1000608, 200; // Flower Petals x200
+		getitem 41247, 1; // Glacier Weapon Box x1
+		getitem 41246, 1; // Dim Glacier Weapon Box x1
+		getexp 50000000000, 10000000000; // Base: 50B, Job: 10B
+		
+		erasequest 70288;
+		setquest 70291; // Mark as completed permanently
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Holiday Event Manager]";
+		mes "Rewards received!";
+		mes "^FF0000This quest has been completed and cannot be repeated.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+	
+	.@activeQuest = 0;
+	
+	if (checkquest(70286, HUNTING) == 1) .@activeQuest = 1; // Happy Holidays
+	if (checkquest(70287, HUNTING) == 1) .@activeQuest = 2; // Fun Boss Holidays
+	if (checkquest(70288, HUNTING) == 1) .@activeQuest = 3; // Old Memories Holidays
+	
+	if (.@activeQuest > 0) {
+		mes "[Holiday Event Manager]";
+		mes "You already have an active quest:";
+		switch(.@activeQuest) {
+			case 1: 
+				mes "^0000FFHappy Holidays^000000";
+				.@questId = 70286;
+				.@questName$ = "Happy Holidays";
+				break;
+			case 2: 
+				mes "^FF0000Fun Boss Holidays^000000";
+				.@questId = 70287;
+				.@questName$ = "Fun Boss Holidays";
+				break;
+			case 3: 
+				mes "^FF6600Old Memories Holidays^000000";
+				.@questId = 70288;
+				.@questName$ = "Old Memories Holidays";
+				break;
+		}
+		mes " ";
+		mes "Complete it to claim your rewards!";
+		next;
+		
+		// Cancel Quest option
+		mes "[Holiday Event Manager]";
+		mes "Do you want to cancel this quest?";
+		mes " ";
+		mes "^FF0000WARNING:^000000";
+		mes "Canceling will reset all your progress!";
+		next;
+		
+		if (select("Continue Quest:^FF0000Cancel Quest^000000") == 2) {
+			mes "[Holiday Event Manager]";
+			mes "Are you sure you want to cancel?";
+			mes " ";
+			mes "Quest: ^FF6600" + .@questName$ + "^000000";
+			mes "^FF0000All progress will be lost!^000000";
+			next;
+			
+			if (select("No, keep the quest:^FF0000Yes, cancel it^000000") == 2) {
+				erasequest .@questId;
+				specialeffect2 EF_CHAINCOMBO;
+				
+				mes "[Holiday Event Manager]";
+				mes "Quest canceled. Your progress has been reset.";
+				cutin "", 255;
+				close;
+			}
+		}
+		
+		mes "[Holiday Event Manager]";
+		mes "Good luck with your hunt!";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CHECK COMPLETED QUESTS (ONE TIME ONLY)
+	// ============================================================
+	
+	.@happyCompleted = (checkquest(70289) >= 0);
+	.@bossCompleted = (checkquest(70290) >= 0);
+	.@memoriesCompleted = (checkquest(70291) >= 0);
+	
+	// Count available quests
+	.@available = 0;
+	if (!.@happyCompleted) .@available++;
+	if (!.@bossCompleted) .@available++;
+	if (!.@memoriesCompleted) .@available++;
+
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+
+	mes "[Holiday Event Manager]";
+	mes "Happy Holidays, adventurer!";
+	mes "I have special holiday hunting quests for you.";
+	mes " ";
+	mes "^FF0000IMPORTANT: Each quest can only be completed ONCE per account!^000000";
+	mes " ";
+	mes "^00FF00Available Quests: " + .@available + "/3^000000";
+	next;
+	
+	if (.@available == 0) {
+		mes "[Holiday Event Manager]";
+		mes "You have completed all Holiday Event quests!";
+		mes " ";
+		mes "^00FF00Thank you for participating!^000000";
+		mes "^FF0000All quests are ONE TIME ONLY and cannot be repeated.^000000";
+		cutin "", 255;
+		close;
+	}
+	
+	switch(select("View Available Quests:Quest Information:Cancel")) {
+		case 1:
+			break;
+			
+		case 2:
+			mes "[Holiday Event Manager]";
+			mes "^FFFFFFQuest Details:^000000";
+			mes " ";
+			mes "^0000FF[Happy Holidays]^000000";
+			mes "Hunt: 500 monsters";
+			mes "Map: Twisted Land of Darkness (ygg_roots)";
+			mes "Targets: Igling, Iparing";
+			mes " ";
+			mes "^FF0000[Fun Boss Holidays]^000000";
+			mes "Hunt: 1 Boss";
+			mes "Map: Twisted Land of Darkness (ygg_roots)";
+			mes "Target: Abyss Boss";
+			next;
+			mes "[Holiday Event Manager]";
+			mes "^FF6600[Old Memories Holidays]^000000";
+			mes "Hunt: 500 monsters + 1 Boss";
+			mes "Map: Halloween (Hallow01)";
+			mes "Monsters: Alma Osce, Nightmare Golem,";
+			mes "          Raver Skeleton, Tantalus";
+			mes "Boss: Chaos Devil Dragon";
+			next;
+			mes "[Holiday Event Manager]";
+			mes "^00FF00ALL QUESTS REWARD:^000000";
+			mes "- 50 Cat Whiskers";
+			mes "- 200 Flower Petals";
+			mes "- 1 Glacier Weapon Box";
+			mes "- 1 Dim Glacier Weapon Box";
+			mes "- 50B Base EXP + 10B Job EXP";
+			mes " ";
+			mes "^FF0000ONE TIME ONLY - Cannot be repeated!^000000";
+			cutin "", 255;
+			close;
+			
+		case 3:
+			mes "[Holiday Event Manager]";
+			mes "Happy Holidays! Come back anytime!";
+			cutin "", 255;
+			close;
+	}
+	
+	// ============================================================
+	// QUEST SELECTION
+	// ============================================================
+	
+	mes "[Holiday Event Manager]";
+	mes "Which quest would you like to take?";
+	mes " ";
+	mes "^00FF00Green = Available^000000";
+	mes "^808080Gray = Completed^000000";
+	mes " ";
+	mes "^FF0000Remember: Each quest is ONE TIME ONLY!^000000";
+	next;
+	
+	// Build dynamic menu
+	setarray .@questIds[0], 70286, 70287, 70288;
+	setarray .@questNames$[0], 
+		"Happy Holidays", 
+		"Fun Boss Holidays", 
+		"Old Memories Holidays";
+	setarray .@questColors$[0], "^0000FF", "^FF0000", "^FF6600";
+	setarray .@questMaps$[0], "Twisted Land of Darkness", "Twisted Land of Darkness", "Halloween";
+	setarray .@completed[0], 
+		.@happyCompleted, 
+		.@bossCompleted, 
+		.@memoriesCompleted;
+	
+	.@menu$ = "";
+	for (.@i = 0; .@i < 3; .@i++) {
+		if (.@completed[.@i]) {
+			.@menu$ += "^808080" + .@questNames$[.@i] + " (Completed)^000000:";
+		} else {
+			.@menu$ += .@questColors$[.@i] + .@questNames$[.@i] + " ^00FF00(Available)^000000:";
+		}
+	}
+	.@menu$ += "Cancel";
+	
+	.@choice = select(.@menu$) - 1;
+	
+	if (.@choice == 3) {
+		mes "[Holiday Event Manager]";
+		mes "Happy Holidays! Come back anytime!";
+		cutin "", 255;
+		close;
+	}
+	
+	// Check if selected quest is already completed
+	if (.@completed[.@choice]) {
+		mes "[Holiday Event Manager]";
+		mes "You have already completed this quest.";
+		mes "^FF0000Each quest can only be completed ONCE per account.^000000";
+		cutin "", 255;
+		close;
+	}
+	
+	// Accept quest
+	mes "[Holiday Event Manager]";
+	mes "You have selected:";
+	mes .@questColors$[.@choice] + .@questNames$[.@choice] + "^000000";
+	mes " ";
+	mes "Map: ^00FF00" + .@questMaps$[.@choice] + "^000000";
+	
+	// Show specific details
+	switch(.@choice) {
+		case 0:
+			mes "Hunt: ^FF6600500 monsters^000000";
+			mes "Targets: Igling, Iparing";
+			break;
+		case 1:
+			mes "Hunt: ^FF00001 Boss^000000";
+			mes "Target: Abyss Boss";
+			break;
+		case 2:
+			mes "Hunt: ^FF6600500 monsters + 1 Boss^000000";
+			mes "Monsters: Alma Osce, Nightmare Golem,";
+			mes "          Raver Skeleton, Tantalus";
+			mes "Boss: Chaos Devil Dragon";
+			break;
+	}
+	mes " ";
+	mes "^FF0000WARNING: This quest can only be completed ONCE!^000000";
+	next;
+	
+	if (select("Accept Quest:Cancel") == 2) {
+		mes "[Holiday Event Manager]";
+		mes "Come back when you're ready!";
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Holiday Event Manager]";
+	mes "Good luck, adventurer!";
+	mes "Return when you've completed the hunt.";
+	mes " ";
+	mes "^0000FFTip: You can cancel the quest anytime.^000000";
+	mes "^FF0000Warning: Canceling resets your progress!^000000";
+	mes "^FF0000This quest is ONE TIME ONLY per account!^000000";
+	setquest .@questIds[.@choice];
+	
+	specialeffect2 EF_STEAL;
+	
+	cutin "", 255;
+	close;
+}

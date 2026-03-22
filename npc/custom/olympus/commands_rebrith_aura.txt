@@ -1,0 +1,181 @@
+//===================================================
+//= Rebirth Regen Handler
+//= Author   : Custom
+//= Version  : 1.0
+//===================================================
+//= Description:
+//=   Heals HP/SP every 5 seconds for players who have
+//=   the SC_REBIRTH_REGEN status effect active.
+//=
+//=   Heal Amount : Rebirth * 10% of Max HP/SP (capped at 100%)
+//=   Effect Type : One-shot burst only — no looping, no stacking
+//===================================================
+//= Heal & Effect Table:
+//=
+//=   Rebirth 1  ( 10% HP/SP) -> EF 182 + EF 717
+//=                              HAT_EF_firstfaithpower_C + HAT_EF_powerfulfaith
+//=
+//=   Rebirth 2  ( 20% HP/SP) -> EF 266 + EF 267
+//=                              HAT_EF_competentia_A + HAT_EF_competentia_B
+//=
+//=   Rebirth 3  ( 30% HP/SP) -> EF 208 + EF 273
+//=                              HAT_EF_vigor + HAT_EF_sincerefaith
+//=
+//=   Rebirth 4  ( 40% HP/SP) -> EF 82
+//=                              (vanilla one-shot effect)
+//=
+//=   Rebirth 5  ( 50% HP/SP) -> EF 98
+//=                              (vanilla one-shot effect)
+//=
+//=   Rebirth 6  ( 60% HP/SP) -> EF 104
+//=                              (vanilla one-shot effect)
+//=
+//=   Rebirth 7  ( 70% HP/SP) -> EF 100 + EF 102 + EF 103
+//=                              (vanilla one-shot combo)
+//=
+//=   Rebirth 8  ( 80% HP/SP) -> EF 262 + EF 263
+//=                              HAT_EF_new_dilectioheal_A + HAT_EF_new_dilectioheal_B
+//=
+//=   Rebirth 9  ( 90% HP/SP) -> EF 707 + EF 708 + EF 709
+//=                              HAT_EF_new_soulexpansion_A/B/C
+//=
+//=   Rebirth 10 (100% HP/SP) -> EF 720 + EF 721 + EF 722
+//=                              HAT_EF_roseblossom_A/B/C
+//===================================================
+
+-	script	Rebirth_Regen_Handler	-1,{
+
+OnInit:
+	initnpctimer;
+	end;
+
+// =========================================================
+//  Main Timer — triggers every 5 seconds
+// =========================================================
+
+OnTimer5000:
+	// Collect all online players into array
+	.@online = getunits(BL_PC, .@players);
+
+	for (.@i = 0; .@i < .@online; .@i++) {
+		if (attachrid(.@players[.@i])) {
+
+			// Only process players with SC_REBIRTH_REGEN active
+			if (getstatus(SC_REBIRTH_REGEN)) {
+
+				// Skip players with no valid Rebirth count
+				if (Rebirth < 1) {
+					detachrid;
+					continue;
+				}
+
+				// --- Heal Calculation ---
+				// Heal % = Rebirth * 10, maximum 100%
+				.@pct = Rebirth * 10;
+				if (.@pct > 100) .@pct = 100;
+
+				.@hp_heal = MaxHP * .@pct / 100;
+				.@sp_heal = MaxSP * .@pct / 100;
+
+				// Only heal if not already at full HP/SP
+				if (Hp < MaxHP || Sp < MaxSP) {
+					heal .@hp_heal, .@sp_heal;
+
+					// Play one-shot visual effect for current Rebirth level
+					callsub S_PlayEffect, Rebirth;
+				}
+			}
+
+			detachrid;
+		}
+	}
+
+	// Restart timer for next cycle
+	initnpctimer;
+	end;
+
+// =========================================================
+//  Subroutine: Play heal effect based on Rebirth level
+//  All effects are one-shot burst — self-terminating,
+//  safe to call every tick with no stacking risk.
+//
+//  Usage: callsub S_PlayEffect, <rebirth_level>;
+// =========================================================
+
+S_PlayEffect:
+	.@r = getarg(0);
+
+	// Cap at Rebirth 10 — use max effect for anything above
+	if (.@r > 10) .@r = 10;
+
+	switch (.@r) {
+
+		case 1:
+			// 10% HP/SP | First faith power awakens
+			// HAT_EF_firstfaithpower_C + HAT_EF_powerfulfaith
+			specialeffect2 182;
+			specialeffect2 717;
+			break;
+
+		case 2:
+			// 20% HP/SP | Divine competence rises
+			// HAT_EF_competentia_A + HAT_EF_competentia_B
+			specialeffect2 266;
+			specialeffect2 267;
+			break;
+
+		case 3:
+			// 30% HP/SP | Vitality surges through the body
+			// HAT_EF_vigor + HAT_EF_sincerefaith
+			specialeffect2 208;
+			specialeffect2 273;
+			break;
+
+		case 4:
+			// 40% HP/SP | Radiant burst
+			specialeffect2 82;
+			break;
+
+		case 5:
+			// 50% HP/SP | Golden pulse
+			specialeffect2 98;
+			break;
+
+		case 6:
+			// 60% HP/SP | Holy flash
+			specialeffect2 104;
+			break;
+
+		case 7:
+			// 70% HP/SP | Triple divine burst
+			specialeffect2 100;
+			specialeffect2 102;
+			specialeffect2 103;
+			break;
+
+		case 8:
+			// 80% HP/SP | Sacred heal light
+			// HAT_EF_new_dilectioheal_A + HAT_EF_new_dilectioheal_B
+			specialeffect2 262;
+			specialeffect2 263;
+			break;
+
+		case 9:
+			// 90% HP/SP | Soul expansion unleashed
+			// HAT_EF_new_soulexpansion_A + B + C
+			specialeffect2 707;
+			specialeffect2 708;
+			specialeffect2 709;
+			break;
+
+		default:
+			// 100% HP/SP | Full rebirth — rose blooms in glory
+			// HAT_EF_roseblossom_A + B + C
+			specialeffect2 720;
+			specialeffect2 721;
+			specialeffect2 722;
+			break;
+	}
+
+	return;
+}

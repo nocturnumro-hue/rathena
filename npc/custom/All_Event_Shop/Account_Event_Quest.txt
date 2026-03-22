@@ -1,0 +1,330 @@
+//===== rAthena Script =======================================
+//= One-Time Item Event NPC
+//===== Description: =========================================
+//= Give reward ONCE per account + ONCE per IP - Never resets
+//= Rewards: Items + EXP
+//= Quest 70301: Hunt 500 monsters in Twisted Land of Darkness
+//= Quest 70302: Hunt 5000 monsters in Ice Lake Quite
+//= Location: askald 107 97
+//============================================================
+
+askald,107,98,1	script	[Account] Quest	10900,{
+
+	cutin "jp_dux_thia01.bmp", 2;
+
+	// ============================================================
+	// VARIABLES:
+	// #OT_EVENT_ACC   = 1  → account đã nhận (per account)
+	// ##OT_EVENT_IP   = 1  → IP đã nhận (shared across all accounts on same IP)
+	// ============================================================
+
+	// Check account
+	if (#OT_EVENT_ACC == 1) {
+		mes "[Event Manager]";
+		mes "You have already claimed this reward on this account!";
+		mes " ";
+		mes "^FF0000This is a ONE TIME reward per account.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Check IP
+	if (##OT_EVENT_IP == 1) {
+		mes "[Event Manager]";
+		mes "This IP address has already claimed this reward!";
+		mes " ";
+		mes "^FF0000This reward can only be claimed ONCE per IP.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CHECK QUEST COMPLETED - GIVE REWARDS
+	// ============================================================
+
+	// Quest 70301 - [Account] Quest - happy and joyful
+	if (checkquest(70301, HUNTING) == 2) {
+		if (checkquest(70303) >= 0) {
+			mes "[Event Manager]";
+			mes "You've already claimed this reward.";
+			mes "^FF0000Each quest can only be completed ONCE per account.^000000";
+			erasequest 70301;
+			cutin "", 255;
+			close;
+		}
+
+		cutin "jp_dux_thia03.bmp", 2;
+		mes "[Event Manager]";
+		mes "Excellent! You've completed:";
+		mes "^0000FF[Account] Quest - happy and joyful^000000";
+		mes " ";
+		mes "Here are your rewards!";
+		next;
+
+		getitem 1001217, 50;            // Cat Whiskers x50
+		getitem 1000608, 200;           // Flower Petals x200
+		getitem 41247, 1;               // Glacier Weapon Box x1
+		getitem 41246, 1;               // Dim Glacier Weapon Box x1
+		getexp 50000000000, 10000000000;
+
+		erasequest 70301;
+		setquest 70303;                 // Mark as completed permanently
+		specialeffect2 EF_LEVELUP;
+
+		mes "[Event Manager]";
+		mes "^00AA00Rewards received!^000000";
+		mes "^FF0000This quest cannot be repeated.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Quest 70302 - [Account] Quest II - happy and joyful
+	if (checkquest(70302, HUNTING) == 2) {
+		if (checkquest(70304) >= 0) {
+			mes "[Event Manager]";
+			mes "You've already claimed this reward.";
+			mes "^FF0000Each quest can only be completed ONCE per account.^000000";
+			erasequest 70302;
+			cutin "", 255;
+			close;
+		}
+
+		cutin "jp_dux_thia04.bmp", 2;
+		mes "[Event Manager]";
+		mes "Amazing! You've completed:";
+		mes "^FF6600[Account] Quest II - happy and joyful^000000";
+		mes " ";
+		mes "Here are your rewards!";
+		next;
+
+		getitem 1001217, 50;            // Cat Whiskers x50
+		getitem 1000608, 200;           // Flower Petals x200
+		getitem 41247, 1;               // Glacier Weapon Box x1
+		getitem 41246, 1;               // Dim Glacier Weapon Box x1
+		getexp 50000000000, 10000000000;
+
+		erasequest 70302;
+		setquest 70304;                 // Mark as completed permanently
+		specialeffect2 EF_LEVELUP;
+
+		mes "[Event Manager]";
+		mes "^00AA00Rewards received!^000000";
+		mes "^FF0000This quest cannot be repeated.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+
+	.@activeQuest = 0;
+	if (checkquest(70301, HUNTING) == 1) .@activeQuest = 1;
+	if (checkquest(70302, HUNTING) == 1) .@activeQuest = 2;
+
+	if (.@activeQuest > 0) {
+		cutin "jp_dux_thia02.bmp", 2;
+		mes "[Event Manager]";
+		mes "You have an active quest:";
+		mes " ";
+		switch(.@activeQuest) {
+			case 1:
+				mes "^0000FF[Account] Quest - happy and joyful^000000";
+				mes "Hunt 500 monsters in ^0000FFTwisted Land of Darkness^000000";
+				.@questId = 70301;
+				.@questName$ = "[Account] Quest - happy and joyful";
+				break;
+			case 2:
+				mes "^FF6600[Account] Quest II - happy and joyful^000000";
+				mes "Hunt 5000 monsters in ^FF6600Ice Lake Quite^000000";
+				.@questId = 70302;
+				.@questName$ = "[Account] Quest II - happy and joyful";
+				break;
+		}
+		mes " ";
+		mes "Complete it to claim your rewards!";
+		next;
+
+		mes "[Event Manager]";
+		mes "Do you want to cancel this quest?";
+		mes "^FF0000WARNING: Canceling will reset all progress!^000000";
+		next;
+
+		if (select("Continue Quest:^FF0000Cancel Quest^000000") == 2) {
+			mes "[Event Manager]";
+			mes "Are you sure you want to cancel?";
+			mes "Quest: ^FF6600" + .@questName$ + "^000000";
+			mes "^FF0000All progress will be lost!^000000";
+			next;
+
+			if (select("No, keep the quest:^FF0000Yes, cancel it^000000") == 2) {
+				erasequest .@questId;
+				specialeffect2 EF_CHAINCOMBO;
+				mes "[Event Manager]";
+				mes "Quest canceled. Your progress has been reset.";
+				cutin "", 255;
+				close;
+			}
+		}
+
+		mes "[Event Manager]";
+		mes "Good luck with your hunt!";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CHECK COMPLETED QUESTS
+	// ============================================================
+
+	.@q1done = (checkquest(70303) >= 0);
+	.@q2done = (checkquest(70304) >= 0);
+	.@available = 0;
+	if (!.@q1done) .@available++;
+	if (!.@q2done) .@available++;
+
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+
+	cutin "jp_dux_thia01.bmp", 2;
+	mes "[Event Manager]";
+	mes "Welcome, ^0055FF" + strcharinfo(0) + "^000000!";
+	mes " ";
+	mes "I have special holiday quests for you!";
+	mes " ";
+	mes "^00FF00Available Quests: " + .@available + "/2^000000";
+	mes "^FF0000ONE TIME ONLY per account & IP!^000000";
+	next;
+
+	if (.@available == 0) {
+		mes "[Event Manager]";
+		mes "You have completed all Holiday Event quests!";
+		mes " ";
+		mes "^00FF00Thank you for participating!^000000";
+		cutin "", 255;
+		close;
+	}
+
+	switch(select("View Available Quests:Quest Information:Cancel")) {
+		case 1:
+			break;
+
+		case 2:
+			cutin "jp_dux_thia02.bmp", 2;
+			mes "[Event Manager]";
+			mes "^0000FF[Account] Quest - happy and joyful^000000";
+			mes "Hunt: 500 monsters";
+			mes "Map: Twisted Land of Darkness (ygg_roots)";
+			mes "Targets: Igling, Iparing";
+			mes " ";
+			mes "^FF6600[Account] Quest II - happy and joyful^000000";
+			mes "Hunt: 5000 monsters";
+			mes "Map: Ice Lake Quite";
+			mes "Targets: Supreme Knight, Supreme Girls,";
+			mes "         Supreme Boys, Angel Prince,";
+			mes "         Angel Queen, Supreme Smith";
+			next;
+			mes "[Event Manager]";
+			mes "^00FF00Both Quests Reward:^000000";
+			mes "- 50 Cat Whiskers";
+			mes "- 200 Flower Petals";
+			mes "- 1 Glacier Weapon Box";
+			mes "- 1 Dim Glacier Weapon Box";
+			mes "- 50B Base EXP + 10B Job EXP";
+			mes " ";
+			mes "^FF0000ONE TIME ONLY - Cannot be repeated!^000000";
+			cutin "", 255;
+			close;
+
+		case 3:
+			mes "[Event Manager]";
+			mes "Happy Holidays! Come back anytime!";
+			cutin "", 255;
+			close;
+	}
+
+	// ============================================================
+	// QUEST SELECTION
+	// ============================================================
+
+	cutin "jp_dux_thia02.bmp", 2;
+	mes "[Event Manager]";
+	mes "Which quest would you like to take?";
+	mes " ";
+	mes "^00FF00Green = Available^000000  ^808080Gray = Completed^000000";
+	next;
+
+	.@menu$ = "";
+	if (!.@q1done) .@menu$ += "^0000FF[Account] Quest - happy and joyful ^00FF00(Available)^000000:";
+	else           .@menu$ += "^808080[Account] Quest - happy and joyful (Completed)^000000:";
+	if (!.@q2done) .@menu$ += "^FF6600[Account] Quest II - happy and joyful ^00FF00(Available)^000000:";
+	else           .@menu$ += "^808080[Account] Quest II - happy and joyful (Completed)^000000:";
+	.@menu$ += "Cancel";
+
+	.@choice = select(.@menu$);
+
+	if (.@choice == 3) {
+		mes "[Event Manager]";
+		mes "Happy Holidays! Come back anytime!";
+		cutin "", 255;
+		close;
+	}
+
+	// Check already completed
+	if (.@choice == 1 && .@q1done) {
+		mes "[Event Manager]";
+		mes "You have already completed this quest.";
+		cutin "", 255;
+		close;
+	}
+	if (.@choice == 2 && .@q2done) {
+		mes "[Event Manager]";
+		mes "You have already completed this quest.";
+		cutin "", 255;
+		close;
+	}
+
+	// Accept Quest
+	cutin "jp_dux_thia02.bmp", 2;
+	mes "[Event Manager]";
+	if (.@choice == 1) {
+		mes "^0000FF[Account] Quest - happy and joyful^000000";
+		mes " ";
+		mes "Map: ^0000FFTwisted Land of Darkness^000000";
+		mes "Hunt: ^FF6600500 monsters^000000";
+		mes "Targets: Igling, Iparing";
+	} else {
+		mes "^FF6600[Account] Quest II - happy and joyful^000000";
+		mes " ";
+		mes "Map: ^FF6600Ice Lake Quite^000000";
+		mes "Hunt: ^FF66005000 monsters^000000";
+		mes "Targets: Supreme Knight, Supreme Girls,";
+		mes "         Supreme Boys, Angel Prince,";
+		mes "         Angel Queen, Supreme Smith";
+	}
+	mes " ";
+	mes "^FF0000WARNING: ONE TIME ONLY per account!^000000";
+	next;
+
+	if (select("Accept Quest:Cancel") == 2) {
+		mes "[Event Manager]";
+		mes "Come back when you're ready!";
+		cutin "", 255;
+		close;
+	}
+
+	if (.@choice == 1) setquest 70301;
+	else               setquest 70302;
+
+	specialeffect2 EF_STEAL;
+
+	mes "[Event Manager]";
+	mes "Good luck, adventurer!";
+	mes "Return when you've completed the hunt.";
+	mes " ";
+	mes "^0000FFTip: You can cancel the quest anytime.^000000";
+	mes "^FF0000Warning: Canceling resets your progress!^000000";
+	cutin "", 255;
+	close;
+}

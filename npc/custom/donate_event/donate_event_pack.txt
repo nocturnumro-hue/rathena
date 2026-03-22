@@ -1,0 +1,440 @@
+/*
+// = @reloadnpcfile npc/custom/donate_event/donate_event_pack.txt
+*/
+prontera,190,208,3	script	Event Donation Pack	10365,{
+
+	cutin "4job_maggi_01.png", 2;
+	mes "[Enduring Power - Event NPC]";
+	mes "Welcome, ^FF6600" + strcharinfo(0) + "^000000!";
+	mes "What event reward would you like to claim?";
+	next;
+	cutin "", 255;
+
+	switch(select("Alpha Test Code:Rate My Server:Open Beta Top Rank:Normal Code:Leave")) {
+
+	//======================================================
+	case 1: // ALPHA TEST - REDEEM CODE
+	//======================================================
+		cutin "4job_maggi_02.png", 2;
+		mes "[Alpha Test Event]";
+		mes "Enter your 9-character Alpha Test Code (A-Z, 0-9).";
+		next;
+		cutin "", 255;
+		input .@code$;
+
+		set .@code$, strtoupper(.@code$);
+
+		if (getstrlen(.@code$) != 9) {
+			mes "[Alpha Test Event]";
+			mes "^FF0000Invalid code. Must be 9 characters.^000000";
+			close;
+		}
+
+		set .@aid, getcharid(3);
+
+		query_sql("SELECT amount, used FROM alphatest_vouchers WHERE code = '" + escape_sql(.@code$) + "'", .@amount, .@used);
+
+		if (!.@amount) {
+			mes "[Alpha Test Event]";
+			mes "^FF0000Invalid or nonexistent code.^000000";
+			close;
+		}
+
+		if (.@used) {
+			mes "[Alpha Test Event]";
+			mes "^FF0000This code has already been used.^000000";
+			close;
+		}
+
+		// $30 SPECIAL PACKAGE
+		if (.@amount >= 30) {
+
+			if (!checkweight(1001258,200) || !checkweight(102399,1) || !checkweight(6870,1)) {
+				mes "[Alpha Test Event]";
+				mes "^FF0000Too heavy! Please free up inventory space.^000000";
+				close;
+			}
+
+			cutin "4job_maggi_03.png", 2;
+			mes "[Alpha Test Event]";
+			mes "^00AAFFAlpha Test - Special Package ($30)^000000";
+			mes "Thank you for your amazing support!";
+			next;
+			cutin "", 255;
+
+			set #CASHPOINTS, #CASHPOINTS + 350000;
+			getitem 1001258, 200;
+			getitem 102399,  1;
+			getitem 6870,    1;
+			getitem 6876,    3;
+			getitem 1230020, 1;
+			set .@days, 7;
+
+			mes "[Alpha Test Event]";
+			mes "^00AAFFSpecial Package Contents:^000000";
+			mes "[1] ^00FF00350,000^000000 Cash Points";
+			mes "[2] ^00FF00200x^000000 Black VIP Coin";
+			mes "[3] ^00FF001x^000000 Costume Egg";
+			mes "[4] ^00FF001x^000000 Refine Ticket +13 Weapon";
+			mes "[5] ^00FF003x^000000 Refine Ticket +13 Armor";
+			mes "[6] ^00FF001x^000000 Alpha Tester Badge (Special)";
+			mes "[7] ^00FF007 Days^000000 VIP";
+			next;
+			specialeffect2 332;
+
+		// $10 BASIC PACKAGE
+		} else if (.@amount >= 10) {
+
+			if (!checkweight(1001258,50) || !checkweight(102399,1) || !checkweight(6238,1)) {
+				mes "[Alpha Test Event]";
+				mes "^FF0000Too heavy! Please free up inventory space.^000000";
+				close;
+			}
+
+			cutin "4job_maggi_02.png", 2;
+			mes "[Alpha Test Event]";
+			mes "^00FF00Alpha Test - Basic Package ($10)^000000";
+			mes "Thank you for joining the Alpha Test!";
+			next;
+			cutin "", 255;
+
+			set #CASHPOINTS, #CASHPOINTS + 100000;
+			getitem 1001258, 50;
+			getitem 102399,  1;
+			getitem 6238,    1;
+			getitem 6239,    3;
+			getitem 1230019, 1;
+			set .@days, 3;
+
+			mes "[Alpha Test Event]";
+			mes "^00FF00Basic Package Contents:^000000";
+			mes "[1] ^00FF00100,000^000000 Cash Points";
+			mes "[2] ^00FF0050x^000000 Black VIP Coin";
+			mes "[3] ^00FF001x^000000 Costume Egg";
+			mes "[4] ^00FF001x^000000 Refine Ticket +11 Weapon";
+			mes "[5] ^00FF003x^000000 Refine Ticket +11 Armor";
+			mes "[6] ^00FF001x^000000 Alpha Tester Badge (Basic)";
+			mes "[7] ^00FF003 Days^000000 VIP";
+			next;
+			specialeffect2 331;
+
+		} else {
+			mes "[Alpha Test Event]";
+			mes "^FF0000This code does not match any package.^000000";
+			close;
+		}
+
+		// VIP Extension
+		set .@seconds, .@days * 86400;
+		if (#vip_time < gettimetick(2))
+			set #vip_time, gettimetick(2) + .@seconds;
+		else
+			set #vip_time, #vip_time + .@seconds;
+
+		query_sql("UPDATE `login` SET `group_id` = 5 WHERE `account_id` = " + .@aid);
+		query_sql("UPDATE alphatest_vouchers SET used = 1, used_by = " + .@aid + ", used_date = NOW() WHERE code = '" + escape_sql(.@code$) + "'");
+		query_sql("INSERT INTO donation_data (account_id, total_donate) VALUES (" + .@aid + ", " + .@amount + ") ON DUPLICATE KEY UPDATE total_donate = total_donate + " + .@amount);
+
+		mes "[Alpha Test Event]";
+		mes "^00FF00VIP extended by " + .@days + " day(s)!^000000";
+		mes "^FF69B4Thank you for supporting Enduring Power!^000000";
+		close;
+
+	//======================================================
+	case 2: // RATE MY SERVER
+	//======================================================
+		cutin "4job_maggi_02.png", 2;
+		mes "[Rate My Server Event]";
+		mes "Enter your 9-character Rate My Server Code (A-Z, 0-9).";
+		next;
+		cutin "", 255;
+		input .@code$;
+
+		set .@code$, strtoupper(.@code$);
+
+		if (getstrlen(.@code$) != 9) {
+			mes "[Rate My Server Event]";
+			mes "^FF0000Invalid code. Must be 9 characters.^000000";
+			close;
+		}
+
+		set .@aid, getcharid(3);
+
+		query_sql("SELECT COUNT(*) FROM ratemyserver_vouchers WHERE code = '" + escape_sql(.@code$) + "'", .@rms_exists);
+
+		if (!.@rms_exists) {
+			mes "[Rate My Server Event]";
+			mes "^FF0000Invalid or nonexistent code.^000000";
+			close;
+		}
+
+		query_sql("SELECT used FROM ratemyserver_vouchers WHERE code = '" + escape_sql(.@code$) + "'", .@rms_used);
+
+		if (.@rms_used) {
+			mes "[Rate My Server Event]";
+			mes "^FF0000This code has already been used.^000000";
+			close;
+		}
+
+		// Check 1 per account
+		query_sql("SELECT COUNT(*) FROM ratemyserver_vouchers WHERE used = 1 AND used_by = " + .@aid, .@rms_count);
+
+		if (.@rms_count > 0) {
+			mes "[Rate My Server Event]";
+			mes "^FF0000This account already claimed the Rate My Server reward!^000000";
+			close;
+		}
+
+		if (!checkweight(102399,1) || !checkweight(6238,1)) {
+			mes "[Rate My Server Event]";
+			mes "^FF0000Too heavy! Please free up inventory space.^000000";
+			close;
+		}
+
+		cutin "4job_maggi_01.png", 2;
+		mes "[Rate My Server Event]";
+		mes "^FFD700Thank you for rating Enduring Power!^000000";
+		next;
+		cutin "", 255;
+
+		set #CASHPOINTS, #CASHPOINTS + 50000;
+		getitem 102399, 1;
+		getitem 6238,   1;
+		getitem 6239,   1;
+
+		set .@seconds, 86400;
+		if (#vip_time < gettimetick(2))
+			set #vip_time, gettimetick(2) + .@seconds;
+		else
+			set #vip_time, #vip_time + .@seconds;
+
+		query_sql("UPDATE `login` SET `group_id` = 5 WHERE `account_id` = " + .@aid);
+		query_sql("UPDATE ratemyserver_vouchers SET used = 1, used_by = " + .@aid + ", used_date = NOW() WHERE code = '" + escape_sql(.@code$) + "'");
+
+		mes "[Rate My Server Event]";
+		mes "^00FF00Rate My Server Package:^000000";
+		mes "[1] ^00FF0050,000^000000 Cash Points";
+		mes "[2] ^00FF001x^000000 Costume Egg";
+		mes "[3] ^00FF001x^000000 Refine Ticket +11 Weapon";
+		mes "[4] ^00FF001x^000000 Refine Ticket +11 Armor";
+		mes "[5] ^00FF001 Day^000000 VIP";
+		next;
+		specialeffect2 331;
+
+		mes "[Rate My Server Event]";
+		mes "^FF69B4Thank you for your review! It helps us grow!^000000";
+		close;
+
+	//======================================================
+	case 3: // OPEN BETA TOP RANK
+	//======================================================
+		cutin "4job_maggi_02.png", 2;
+		mes "[Open Beta Top Rank Event]";
+		mes "Enter your 9-character Open Beta Rank Code (A-Z, 0-9).";
+		next;
+		cutin "", 255;
+		input .@code$;
+
+		set .@code$, strtoupper(.@code$);
+
+		if (getstrlen(.@code$) != 9) {
+			mes "[Open Beta Top Rank Event]";
+			mes "^FF0000Invalid code. Must be 9 characters.^000000";
+			close;
+		}
+
+		set .@aid, getcharid(3);
+
+		query_sql("SELECT amount, used FROM openbeta_vouchers WHERE code = '" + escape_sql(.@code$) + "'", .@ob_amount, .@ob_used);
+
+		if (!.@ob_amount) {
+			mes "[Open Beta Top Rank Event]";
+			mes "^FF0000Invalid or nonexistent code.^000000";
+			close;
+		}
+
+		if (.@ob_used) {
+			mes "[Open Beta Top Rank Event]";
+			mes "^FF0000This code has already been used.^000000";
+			close;
+		}
+
+		// $30 SPECIAL PACKAGE
+		if (.@ob_amount >= 30) {
+
+			if (!checkweight(1001258,200) || !checkweight(102399,1) || !checkweight(6870,1)) {
+				mes "[Open Beta Top Rank Event]";
+				mes "^FF0000Too heavy! Please free up inventory space.^000000";
+				close;
+			}
+
+			cutin "4job_maggi_03.png", 2;
+			mes "[Open Beta Top Rank Event]";
+			mes "^FFD700Open Beta - Special Rank Package^000000";
+			mes "Congratulations on your achievement!";
+			next;
+			cutin "", 255;
+
+			set #CASHPOINTS, #CASHPOINTS + 350000;
+			getitem 1001258, 200;
+			getitem 102399,  1;
+			getitem 6870,    1;
+			getitem 6876,    3;
+			getitem 1230020, 1;
+			set .@days, 7;
+
+			mes "[Open Beta Top Rank Event]";
+			mes "^FFD700Special Rank Package Contents:^000000";
+			mes "[1] ^00FF00350,000^000000 Cash Points";
+			mes "[2] ^00FF00200x^000000 Black VIP Coin";
+			mes "[3] ^00FF001x^000000 Costume Egg";
+			mes "[4] ^00FF001x^000000 Refine Ticket +13 Weapon";
+			mes "[5] ^00FF003x^000000 Refine Ticket +13 Armor";
+			mes "[6] ^00FF001x^000000 Special Badge";
+			mes "[7] ^00FF007 Days^000000 VIP";
+			next;
+			specialeffect2 332;
+
+		// $10 BASIC PACKAGE
+		} else if (.@ob_amount >= 10) {
+
+			if (!checkweight(1001258,50) || !checkweight(102399,1) || !checkweight(6238,1)) {
+				mes "[Open Beta Top Rank Event]";
+				mes "^FF0000Too heavy! Please free up inventory space.^000000";
+				close;
+			}
+
+			cutin "4job_maggi_02.png", 2;
+			mes "[Open Beta Top Rank Event]";
+			mes "^00FF00Open Beta - Basic Rank Package^000000";
+			mes "Congratulations on your achievement!";
+			next;
+			cutin "", 255;
+
+			set #CASHPOINTS, #CASHPOINTS + 100000;
+			getitem 1001258, 50;
+			getitem 102399,  1;
+			getitem 6238,    1;
+			getitem 6239,    3;
+			getitem 1230019, 1;
+			set .@days, 3;
+
+			mes "[Open Beta Top Rank Event]";
+			mes "^00FF00Basic Rank Package Contents:^000000";
+			mes "[1] ^00FF00100,000^000000 Cash Points";
+			mes "[2] ^00FF0050x^000000 Black VIP Coin";
+			mes "[3] ^00FF001x^000000 Costume Egg";
+			mes "[4] ^00FF001x^000000 Refine Ticket +11 Weapon";
+			mes "[5] ^00FF003x^000000 Refine Ticket +11 Armor";
+			mes "[6] ^00FF001x^000000 Basic Badge";
+			mes "[7] ^00FF003 Days^000000 VIP";
+			next;
+			specialeffect2 331;
+
+		} else {
+			mes "[Open Beta Top Rank Event]";
+			mes "^FF0000This code does not match any package.^000000";
+			close;
+		}
+
+		// VIP Extension
+		set .@seconds, .@days * 86400;
+		if (#vip_time < gettimetick(2))
+			set #vip_time, gettimetick(2) + .@seconds;
+		else
+			set #vip_time, #vip_time + .@seconds;
+
+		query_sql("UPDATE `login` SET `group_id` = 5 WHERE `account_id` = " + .@aid);
+		query_sql("UPDATE openbeta_vouchers SET used = 1, used_by = " + .@aid + ", used_date = NOW() WHERE code = '" + escape_sql(.@code$) + "'");
+		query_sql("INSERT INTO donation_data (account_id, total_donate) VALUES (" + .@aid + ", " + .@ob_amount + ") ON DUPLICATE KEY UPDATE total_donate = total_donate + " + .@ob_amount);
+
+		mes "[Open Beta Top Rank Event]";
+		mes "^00FF00VIP extended by " + .@days + " day(s)!^000000";
+		mes "^FF69B4Congratulations and thank you for playing Enduring Power!^000000";
+		close;
+
+	//======================================================
+	case 4: // NORMAL CODE - CONTRIBUTOR REWARD
+	//======================================================
+		cutin "4job_maggi_02.png", 2;
+		mes "[Contributor Reward]";
+		mes "Enter your 9-character Contributor Code (A-Z, 0-9).";
+		next;
+		cutin "", 255;
+		input .@code$;
+
+		set .@code$, strtoupper(.@code$);
+
+		if (getstrlen(.@code$) != 9) {
+			mes "[Contributor Reward]";
+			mes "^FF0000Invalid code. Must be 9 characters.^000000";
+			close;
+		}
+
+		set .@aid, getcharid(3);
+
+		query_sql("SELECT COUNT(*) FROM normal_vouchers WHERE code = '" + escape_sql(.@code$) + "'", .@nor_exists);
+
+		if (!.@nor_exists) {
+			mes "[Contributor Reward]";
+			mes "^FF0000Invalid or nonexistent code.^000000";
+			close;
+		}
+
+		query_sql("SELECT used FROM normal_vouchers WHERE code = '" + escape_sql(.@code$) + "'", .@nor_used);
+
+		if (.@nor_used) {
+			mes "[Contributor Reward]";
+			mes "^FF0000This code has already been used.^000000";
+			close;
+		}
+
+		if (!checkweight(6228,1) || !checkweight(6232,1)) {
+			mes "[Contributor Reward]";
+			mes "^FF0000Too heavy! Please free up inventory space.^000000";
+			close;
+		}
+
+		cutin "4job_maggi_01.png", 2;
+		mes "[Contributor Reward]";
+		mes "^FFD700Thank you for your contribution to Enduring Power!^000000";
+		next;
+		cutin "", 255;
+
+		set #CASHPOINTS, #CASHPOINTS + 20000;
+		getitem 1001258, 10;
+		getitem 102399,  1;
+		getitem 6228,    1;
+		getitem 6232,    1;
+
+		set .@seconds, 86400;
+		if (#vip_time < gettimetick(2))
+			set #vip_time, gettimetick(2) + .@seconds;
+		else
+			set #vip_time, #vip_time + .@seconds;
+
+		query_sql("UPDATE `login` SET `group_id` = 5 WHERE `account_id` = " + .@aid);
+		query_sql("UPDATE normal_vouchers SET used = 1, used_by = " + .@aid + ", used_date = NOW() WHERE code = '" + escape_sql(.@code$) + "'");
+
+		mes "[Contributor Reward]";
+		mes "^FFD700Contributor Package:^000000";
+		mes "[1] ^00FF0020,000^000000 Cash Points";
+		mes "[2] ^00FF0010x^000000 Black VIP Coin";
+		mes "[3] ^00FF001x^000000 Costume Egg";
+		mes "[4] ^00FF001x^000000 Refine Ticket +9 Weapon";
+		mes "[5] ^00FF001x^000000 Refine Ticket +9 Armor";
+		mes "[6] ^00FF001 Day^000000 VIP";
+		next;
+		specialeffect2 331;
+
+		mes "[Contributor Reward]";
+		mes "^FF69B4Your support means everything to us!^000000";
+		close;
+
+	//======================================================
+	case 5: // Leave
+	//======================================================
+		close;
+	}
+	close;
+}

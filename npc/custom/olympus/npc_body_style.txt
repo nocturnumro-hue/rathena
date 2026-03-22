@@ -1,0 +1,462 @@
+askald,133,80,3	script	Body Stylist	3097,{
+	set .@itemID, 7179;
+
+	mes "[Body Stylist]";
+	mes "Hello there, I'm Body Stylist from other RO.";
+	mes "I was just invited,";
+	mes "to perform some magic tricks.";
+	next;
+	mes "[Body Stylist]";
+	mes "I can change your appearance, for example,";
+	mes "^0000FFYour current job is:^000000";
+	mes " ^0088FF" + jobname(Class) + "^000000";	
+	mes "Which job would you like to change to?";
+	next;
+	mes "[Body Stylist]";
+	mes "Pretty cool, right?";
+	mes "Would you like to change it right now?\n";
+	mes "^FF0000Novice style = FREE^000000";
+	next;
+	
+	if(select("No:Yes") == 1) {
+		mes "[Body Stylist]";
+		mes "Very well. Return at once if you seek my services.";
+		close;
+	}
+	
+	switch(select("Novice:Main Class:Extended Class")){
+		case 1:
+			mes "[Body Stylist]";
+			mes "Novice Style is free";
+			mes "Do you want to continue?";
+			next;
+			switch(select("No:Yes")){
+				case 1:
+					mes "[Body Stylist]";
+					mes "Very well. Return at once if you seek my services.";
+					close;
+				case 2:
+					mes "[Body Stylist]";
+					mes "Success!";
+					atcommand "@bodystyle 0";
+					close;
+					end;
+			}
+		case 2:
+			if(countitem(.@itemID) < 1){
+				mes "[Body Stylist]";
+				mes "Sorry, you don't have ^i[7179]";
+				close;
+			}
+			
+			mes "[Body Stylist]";
+			mes "Please select body style you want:";
+			next;
+			switch(select("1st Class:2nd Class:Transcendent 2nd Class:3rd Class:4th Class")){
+				case 1:
+					.@classChoice = select("Swordman:Magician:Archer:Acolyte:Merchant:Thief");
+
+					// Set the body style number based on the class selection
+					.@number = (.@classChoice == 1) ? 1 : 6;
+				
+					mes "[Body Stylist]";
+					mes "Do you want to change your body style?";
+					next;
+				
+					switch(select("No:Yes")) {
+						case 1: // No
+							mes "[Body Stylist]";
+							mes "Very well. Return at once if you seek my services.";
+							close;
+						case 2: // Yes
+							mes "[Body Stylist]";
+							mes "Success!";
+							
+							delitem .@itemID, 1;
+							
+							atcommand "@bodystyle " + .@number; // Use dynamic style based on class
+							close;
+							end;
+					}
+				case 2:
+					.@classChoice = select("Knight:Priest:Wizard:Blacksmith:Hunter:Assassin:Crusader:Monk:Sage:Rogue:Alchemist:Bard/Dancer");
+
+					// Set the body style number based on the class selection
+					switch(.@classChoice) {
+						case 1: // Knight
+							.@number = 7;
+							break;
+						case 2: // Priest
+							.@number = 8;
+							break;
+						case 3: // Wizard
+							.@number = 9;
+							break;
+						case 4: // Blacksmith
+							.@number = 10;
+							break;
+						case 5: // Hunter
+							.@number = 11;
+							break;
+						case 6: // Assassin
+							.@number = 12;
+							break;
+						case 7: // Crusader
+							.@number = 14;
+							break;
+						case 8: // Monk
+							.@number = 15;
+							break;
+						case 9:
+							.@number = 16;
+							break;
+						case 10:
+							.@number = 17;
+							break;
+						case 11:
+							.@number = 18;
+							break;
+						case 12:
+							if(sex) {
+								.@number = 19;
+							}
+							else {
+								.@number = 20;
+							}
+							break;
+						default:
+							.@number = 0; // Default case, in case something goes wrong
+							break;
+					}
+					
+					mes "[Body Stylist]";
+					mes "Do you want to change your body style?";
+					next;
+					
+					switch(select("No:Yes")) {
+						case 1: // No
+							mes "[Body Stylist]";
+							mes "Very well. Return at once if you seek my services.";
+							close;
+						case 2: // Yes
+							mes "[Body Stylist]";
+							mes "Success!";
+							
+							delitem .@itemID, 1;
+							
+							atcommand "@bodystyle " + .@number;
+							close;
+							end;
+					}
+				case 3:
+					.@classChoice = select("Lord Knight:High Priest:High Wizard:Whitesmith:Sniper:Assassin Cross:Paladin:Champion:Professor:Stalker:Creator:Clown/Gypsy");
+
+					// Set the body style number based on the class selection
+					switch(.@classChoice) {
+						case 1:
+							.@number = 4008;
+							break;
+						case 2:
+							.@number = 4009;
+							break;
+						case 3:
+							.@number = 4010;
+							break;
+						case 4:
+							.@number = 4011;
+							break;
+						case 5:
+							.@number = 4012;
+							break;
+						case 6:
+							.@number = 4013;
+							break;
+						case 7:
+							.@number = 4015;
+							break;
+						case 8:
+							.@number = 4016;
+							break;
+						case 9:
+							.@number = 4017;
+							break;
+						case 10:
+							.@number = 4018;
+							break;
+						case 11:
+							.@number = 4019;
+							break;
+						case 12:
+							if(sex) {
+								.@number = 4020;
+							}
+							else {
+								.@number = 4021;
+							}
+							break;
+						default:
+							.@number = 0; // Default case, in case something goes wrong
+							break;
+					}
+					
+					mes "[Body Stylist]";
+					mes "Do you want to change your body style?";
+					next;
+					
+					switch(select("No:Yes")) {
+						case 1: // No
+							mes "[Body Stylist]";
+							mes "Very well. Return at once if you seek my services.";
+							close;
+						case 2: // Yes
+							mes "[Body Stylist]";
+							mes "Success!";
+							
+							delitem .@itemID, 1;
+							
+							atcommand "@bodystyle " + .@number;
+							close;
+							end;
+					}
+				case 4:
+					.@classChoice = select("Rune Knight:Warlock:Ranger:Arch Bishop:Mechanic:Guillotine Cross:Royal Guard:Sorcerer:Minstrel/Wanderer:Sura:Genetic:Shadow Chaser");
+
+					// Set the body style number based on the class selection
+					switch(.@classChoice) {
+						case 1:
+							.@number = 4054;
+							break;
+						case 2:
+							.@number = 4055;
+							break;
+						case 3:
+							.@number = 4056;
+							break;
+						case 4:
+							.@number = 4057;
+							break;
+						case 5:
+							.@number = 4058;
+							break;
+						case 6:
+							.@number = 4059;
+							break;
+						case 7:
+							.@number = 4066;
+							break;
+						case 8:
+							.@number = 4067;
+							break;
+						case 9:
+							if(sex) {
+								.@number = 4068;
+							}
+							else {
+								.@number = 4069;
+							}
+							break;
+						case 10:
+							.@number = 4070;
+							break;
+						case 11:
+							.@number = 4071;
+							break;
+						case 12:
+							.@number = 4072;
+							break;
+						default:
+							.@number = 0; // Default case, in case something goes wrong
+							break;
+					}
+					
+					mes "[Body Stylist]";
+					mes "Do you want to change your body style?";
+					next;
+					
+					switch(select("No:Yes")) {
+						case 1: // No
+							mes "[Body Stylist]";
+							mes "Very well. Return at once if you seek my services.";
+							close;
+						case 2: // Yes
+							mes "[Body Stylist]";
+							mes "Success!";
+							
+							delitem .@itemID, 1;
+							
+							atcommand "@bodystyle " + .@number;
+							close;
+							end;
+					}
+				case 5:
+					.@classChoice = select("Dragon Knight:Meister:Shadow Cross:Arch Mage:Cardinal:Windhawk:Imperial Guard:Biolo:Abyss Chaser:Elemental Master:Inquisitor:Troubadour/Trouvere");
+
+					// Set the body style number based on the class selection
+					switch(.@classChoice) {
+						case 1:
+							.@number = 4252;
+							break;
+						case 2:
+							.@number = 4253;
+							break;
+						case 3:
+							.@number = 4254;
+							break;
+						case 4:
+							.@number = 4255;
+							break;
+						case 5:
+							.@number = 4256;
+							break;
+						case 6:
+							.@number = 4257;
+							break;
+						case 7:
+							.@number = 4258;
+							break;
+						case 8:
+							.@number = 4259;
+							break;
+						case 9:
+							.@number = 4260;
+							break;
+						case 10:
+							.@number = 4261;
+							break;
+						case 11:
+							.@number = 4262;
+							break;
+						case 12:
+							if(sex) {
+								.@number = 4263;
+							}
+							else {
+								.@number = 4264;
+							}
+							break;
+						default:
+							.@number = 0; // Default case, in case something goes wrong
+							break;
+					}
+					
+					mes "[Body Stylist]";
+					mes "Do you want to change your body style?";
+					next;
+					
+					switch(select("No:Yes")) {
+						case 1: // No
+							mes "[Body Stylist]";
+							mes "Very well. Return at once if you seek my services.";
+							close;
+						case 2: // Yes
+							mes "[Body Stylist]";
+							mes "Success!";
+							
+							delitem .@itemID, 1;
+							
+							atcommand "@bodystyle " + .@number;
+							close;
+							end;
+					}
+			}
+		case 3:
+			if(countitem(.@itemID) < 1){
+				mes "[Body Stylist]";
+				mes "Sorry, you don't have ^i[969]";
+				close;
+			}
+			
+			mes "[Body Stylist]";
+			mes "Please select body style you want:";
+			next;
+			.@classChoice = select("Super Novice:Gunslinger:Ninja:Taekwon:Star Gladiator:Soul Linker:Kagerou/Oboro:Rebellion:Summoner:Star Emperor:Soul Reaper:Sky Emperor:Soul Ascetic:Shinkiro/Shiranui:Night Watch:Hyper Novice:Spirit Handler");
+
+					// Set the body style number based on the class selection
+					switch(.@classChoice) {
+						case 1:
+							.@number = 23;
+							break;
+						case 2:
+							.@number = 24;
+							break;
+						case 3:
+							.@number = 25;
+							break;
+						case 4:
+							.@number = 4046;
+							break;
+						case 5:
+							.@number = 4047;
+							break;
+						case 6:
+							.@number = 4049;
+							break;
+						case 7:
+							if(sex) {
+								.@number = 4211;
+							}
+							else {
+								.@number = 4212;
+							}
+							break;
+						case 8:
+							.@number = 4215;
+							break;
+						case 9:
+							.@number = 4218;
+							break;
+						case 10:
+							.@number = 4239;
+							break;
+						case 11:
+							.@number = 4240;
+							break;
+						case 12:
+							.@number = 4302;
+							break;
+						case 13:
+							.@number = 4303;
+							break;
+						case 14:
+							if(sex) {
+								.@number = 4304;
+							}
+							else {
+								.@number = 4305;
+							}
+							break;
+						case 15:
+							.@number = 4306;
+							break;
+						case 16:
+							.@number = 4307;
+							break;
+						case 17:
+							.@number = 4308;
+							break;
+						default:
+							.@number = 0; // Default case, in case something goes wrong
+							break;
+					}
+					
+					mes "[Body Stylist]";
+					mes "Do you want to change your body style?";
+					next;
+					
+					switch(select("No:Yes")) {
+						case 1: // No
+							mes "[Body Stylist]";
+							mes "Very well. Return at once if you seek my services.";
+							close;
+						case 2: // Yes
+							mes "[Body Stylist]";
+							mes "Success!";
+							
+							delitem .@itemID, 1;
+							
+							atcommand "@bodystyle " + .@number;
+							close;
+							end;
+					}
+				}
+}

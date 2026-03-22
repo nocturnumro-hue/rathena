@@ -1,0 +1,230 @@
+/*
+	SQL - Chay trong database rathena_log:
+
+	CREATE TABLE IF NOT EXISTS `evt_is_itemfloor_logs` (
+		`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`char_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+		`account_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+		`char_name` VARCHAR(24) NOT NULL DEFAULT '',
+		`nameid` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+		`item_name` VARCHAR(50) NOT NULL DEFAULT '',
+		`aegis_name` VARCHAR(50) NOT NULL DEFAULT '',
+		`amount` SMALLINT(5) UNSIGNED NOT NULL DEFAULT 0,
+		`drop_effect` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0,
+		`map` VARCHAR(12) NOT NULL DEFAULT '',
+		`x` SMALLINT(5) UNSIGNED NOT NULL DEFAULT 0,
+		`y` SMALLINT(5) UNSIGNED NOT NULL DEFAULT 0,
+		`ip_address` VARCHAR(15) NOT NULL DEFAULT '',
+		`gm_level` SMALLINT(3) UNSIGNED NOT NULL DEFAULT 0,
+		`timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (`id`),
+		INDEX `idx_char_id` (`char_id`),
+		INDEX `idx_account_id` (`account_id`),
+		INDEX `idx_nameid` (`nameid`),
+		INDEX `idx_map` (`map`),
+		INDEX `idx_timestamp` (`timestamp`)
+	) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+*/
+
+-	script	AtFloorItem	FAKE_NPC,{
+	end();
+
+OnInit:
+	bindatcmd("flooritem", strnpcinfo(3) +"::OnFloorItem", 0, 99);
+
+	.gm_full_access		= 99;		// GM Level Unrestricted
+	.max_amount_normal	= 10;		// Normal GM
+	.max_amount_admin	= 99;		// Full Access
+	.cooldown_seconds	= 3;		// Delay
+	.enable_logging		= true;		// SQL Logs
+	.enable_dropeffect	= true;		// Drop effects
+	.scatter_radius		= 5;
+
+	// Allowed items by Item ID
+	// 909=Jellopy, 607=Yggdrasilberry, 7135=Poison_Bottle, 604=Bloody_Dead_Branch
+	setarray(.allowed_items[0], 909, 607, 7135, 604);
+
+	// Drop Effects - dung so truc tiep de tranh loi DROPEFFECT_MAX
+	// 0=CLIENT, 1=WHITE, 2=BLUE, 3=YELLOW, 4=PURPLE, 5=ORANGE, 6=RED  (MAX=7, dung 0-6)
+	.dropeffect_etc     = 1;	// White  - ETC
+	.dropeffect_usable  = 5;	// Orange - Consumables
+	.dropeffect_equip   = 2;	// Blue   - Equipment
+	.dropeffect_card    = 4;	// Purple - Cards
+	.dropeffect_special = 6;	// Red    - Special/Rare
+	.dropeffect_default = 0;	// Client default
+
+	// Special Items by Item ID
+	// 4121=Turtle_General_Card, 4103=Eddga_Card, 4399=Thanatos_Card, 4341=Randgris_Card
+	setarray(.special_items[0], 4121, 4103, 4399, 4341);
+	end();
+
+OnFloorItem:
+	if( .cooldown_seconds > 0 ) {
+		.@last_use = getd(sprintf(".cooldown_%d", getcharid(3)));
+		if( .@last_use && gettimetick(2) - .@last_use < .cooldown_seconds ) {
+			.@remaining = .cooldown_seconds - (gettimetick(2) - .@last_use);
+			message strcharinfo(0), sprintf("[ Floor Item ] : Please wait %d second(s) before using this command again.", .@remaining);
+			end();
+		}
+	}
+
+	if( !.@atcmd_numparameters ) {
+		callsub S_Usage;
+		end();
+	}
+
+	.@gm_level = getgmlevel();
+	.@input$   = .@atcmd_parameters$[0];
+	.@amount   = atoi(.@atcmd_parameters$[1]);
+
+	if( .@gm_level < .gm_full_access ) {
+		.@found    = false;
+		.@arr_size = getarraysize(.allowed_items);
+		for( .@i = 0; .@i < .@arr_size; ++.@i ) {
+			.@check_id     = .allowed_items[.@i];
+			.@check_aegis$ = getiteminfo(.@check_id, ITEMINFO_AEGISNAME);
+			if( atoi(.@input$) == .@check_id || strtolower(.@check_aegis$) == strtolower(.@input$) ) {
+				.@item_id = .@check_id;
+				.@found   = true;
+				break;
+			}
+		}
+		if( !.@found ) {
+			message strcharinfo(0), "[ Floor Item ] : You don't have permission to spawn this item.";
+			message strcharinfo(0), "[ Floor Item ] : Use '@flooritem list' to see available items.";
+			end();
+		}
+		.@amount = (.@amount < 1) ? 1 : ((.@amount > .max_amount_normal) ? .max_amount_normal : .@amount);
+	}
+	else {
+		if( .@input$ == "list" ) {
+			callsub S_ListItems;
+			end();
+		}
+		.@item_id = is_getitemid(.@input$);
+		if( .@item_id < 1 )
+			.@item_id = atoi(.@input$);
+		if( .@item_id < 1 || getitemname(.@item_id) == "null" ) {
+			message strcharinfo(0), sprintf("[ Floor Item ] : Invalid Item: '%s'", .@input$);
+			callsub S_Usage;
+			end();
+		}
+		.@amount = (.@amount < 1) ? 1 : ((.@amount > .max_amount_admin) ? .max_amount_admin : .@amount);
+	}
+
+	// Determine Drop Effect
+	.@drop_effect  = .dropeffect_default;
+	.@effect_name$ = "DEFAULT";
+
+	if( .enable_dropeffect ) {
+		.@is_special = false;
+		for( .@i = 0; .@i < getarraysize(.special_items); ++.@i ) {
+			if( .@item_id == .special_items[.@i] ) {
+				.@is_special = true;
+				break;
+			}
+		}
+		if( .@is_special ) {
+			.@drop_effect  = .dropeffect_special;
+			.@effect_name$ = "RARE (Red)";
+		}
+		else {
+			.@item_type = getiteminfo(.@item_id, ITEMINFO_TYPE);
+			switch( .@item_type ) {
+				case IT_ETC:
+				case IT_AMMO:
+					.@drop_effect  = .dropeffect_etc;
+					.@effect_name$ = "ETC (White)";
+					break;
+				case IT_HEALING:
+				case IT_USABLE:
+				case IT_DELAYCONSUME:
+				case IT_CASH:
+					.@drop_effect  = .dropeffect_usable;
+					.@effect_name$ = "USABLE (Green)";
+					break;
+				case IT_WEAPON:
+				case IT_ARMOR:
+				case IT_SHADOWGEAR:
+					.@drop_effect  = .dropeffect_equip;
+					.@effect_name$ = "EQUIP (Blue)";
+					break;
+				case IT_CARD:
+					.@drop_effect  = .dropeffect_card;
+					.@effect_name$ = "CARD (Purple)";
+					break;
+				default:
+					.@drop_effect  = .dropeffect_default;
+					.@effect_name$ = "DEFAULT";
+					break;
+			}
+		}
+	}
+
+	.@item_name$  = getitemname(.@item_id);
+	.@aegis_name$ = getiteminfo(.@item_id, ITEMINFO_AEGISNAME);
+	.@map$        = strcharinfo(3);
+	getmapxy(.@map_name$, .@x, .@y, BL_PC);
+
+	is_itemfloor(.@item_id, .@amount, .@drop_effect, .scatter_radius);
+
+	if( .cooldown_seconds > 0 )
+		setd(sprintf(".cooldown_%d", getcharid(3)), gettimetick(2));
+
+	dispbottom("------------------------------------------------------------------", 0xffce00);
+	dispbottom("               [Floor Item] Completed                             ", 0xffce00);
+	dispbottom("------------------------------------------------------------------", 0xffce00);
+	dispbottom(sprintf("  Item     : [%d] %s", .@item_id, .@item_name$), 0x00aa00);
+	dispbottom(sprintf("  Aegis    : %s", .@aegis_name$), 0x00aa00);
+	dispbottom(sprintf("  Amount   : %d", .@amount), 0x00aa00);
+	dispbottom(sprintf("  Location : %s (%d, %d)", .@map$, .@x, .@y), 0x00aa00);
+	if( .enable_dropeffect )
+		dispbottom(sprintf("  Effect   : %s", .@effect_name$), 0x00aa00);
+	dispbottom("------------------------------------------------------------------", 0xffce00);
+
+	if( .enable_logging ) {
+		.@ip$ = getcharip();
+		.@query$ = sprintf(
+			"INSERT INTO evt_is_itemfloor_logs (char_id, account_id, char_name, nameid, item_name, aegis_name, amount, drop_effect, map, x, y, ip_address, gm_level) VALUES ('%d','%d','%s','%d','%s','%s','%d','%d','%s','%d','%d','%s','%d')",
+			getcharid(CHAR_ID_CHAR),
+			getcharid(CHAR_ID_ACCOUNT),
+			escape_sql(strcharinfo(PC_NAME)),
+			.@item_id,
+			escape_sql(.@item_name$),
+			escape_sql(.@aegis_name$),
+			.@amount,
+			.@drop_effect,
+			escape_sql(.@map$),
+			.@x,
+			.@y,
+			escape_sql(.@ip$),
+			.@gm_level
+		);
+		query_logsql(.@query$);
+	}
+	end();
+
+S_Usage:
+	dispbottom("Usage:", 0xffce00);
+	dispbottom("  @flooritem <item_id|aegis_name> [amount]", 0xffce00);
+	dispbottom("  @flooritem list - Show allowed items", 0xffce00);
+	dispbottom("Examples:", 0xffce00);
+	dispbottom("  @flooritem 1201 5", 0x000000);
+	dispbottom("  @flooritem Knife 5", 0x000000);
+	return;
+
+S_ListItems:
+	dispbottom("------------------------------------------------------------------", 0xffce00);
+	dispbottom("             [Floor Item] Allowed Items                           ", 0xffce00);
+	dispbottom("------------------------------------------------------------------", 0xffce00);
+	for( .@i = 0; .@i < getarraysize(.allowed_items); ++.@i ) {
+		.@id = .allowed_items[.@i];
+		message strcharinfo(0), sprintf("  [%d] %s", .@id, itemlink(.@id));
+	}
+	dispbottom("------------------------------------------------------------------", 0xffce00);
+	message strcharinfo(0), sprintf("  Total: %d Item(s)", getarraysize(.allowed_items));
+	if( getgmlevel() >= .gm_full_access )
+		message strcharinfo(0), "  (Admin: All Items Allowed)";
+	dispbottom("------------------------------------------------------------------", 0xffce00);
+	return;
+}

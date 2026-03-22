@@ -1,0 +1,274 @@
+prontera,167,202,5	script	Delete Item	10390,{
+	mes "[Item Cleaner]";
+	mes "Hello! I can help you clean";
+	mes "invalid or corrupted items from";
+	mes "your inventory.";
+	next;
+	
+	mes "[Item Cleaner]";
+	mes "What would you like to do?";
+	next;
+	
+	switch(select("Quick Delete (By Category):Clean Inventory (Invalid Items):Delete by Item ID:Cancel")) {
+	case 1:
+		// Quick Delete - Filter by category first
+		mes "[Item Cleaner]";
+		mes "^0000FFQuick Delete Mode^000000";
+		mes "Select item category to display:";
+		next;
+		
+		.@category = select("Usable Items:Equipment Items:Etc Items:All Items:Back") - 1;
+		
+		if(.@category == 4) {
+			close;
+		}
+		
+		while(1) {
+			getinventorylist();
+			
+			if(@inventorylist_count <= 0) {
+				mes "[Item Cleaner]";
+				mes "Your inventory is empty!";
+				close;
+			}
+			
+			// Build filtered item list
+			deletearray .@filtered_index[0], 128;
+			.@filtered_count = 0;
+			.@menu$ = "";
+			
+			for(.@i = 0; .@i < @inventorylist_count; .@i++) {
+				// Skip equipped items
+				if(@inventorylist_equip[.@i]) {
+					continue;
+				}
+				
+				.@id = @inventorylist_id[.@i];
+				.@amount = @inventorylist_amount[.@i];
+				.@type = getiteminfo(.@id, ITEMINFO_TYPE);
+				.@name$ = getitemname(.@id);
+				
+				// Filter by category
+				.@show = 0;
+				if(.@category == 3) {
+					.@show = 1; // All items
+				} else if(.@category == 0 && (.@type == IT_HEALING || .@type == IT_USABLE || .@type == IT_CASH || .@type == 7 || .@type == 8)) {
+					.@show = 1; // Usable items (0=healing, 2=usable, 18=cash, 7=petegg, 8=petarmor)
+				} else if(.@category == 1 && (.@type == IT_WEAPON || .@type == IT_ARMOR || .@type == 6 || .@type == 10 || .@type == 11 || .@type == 24)) {
+					.@show = 1; // Equipment items (4=weapon, 5=armor, 6=card, 10=ammo, 11=delayconsume, 24=shadowgear)
+				} else if(.@category == 2 && .@type == IT_ETC) {
+					.@show = 1; // Etc items (3=etc)
+				}
+				
+				if(.@show) {
+					.@filtered_index[.@filtered_count] = .@i;
+					.@filtered_count++;
+					
+					// Mark invalid items with red color
+					if(.@name$ == "null" || .@name$ == "" || .@id <= 0) {
+						.@menu$ += "^FF0000[INVALID] (x" + .@amount + ")^000000:";
+					} else {
+						.@menu$ += .@name$ + " (x" + .@amount + "):";
+					}
+				}
+			}
+			
+			if(.@filtered_count <= 0) {
+				mes "[Item Cleaner]";
+				mes "No items found in this category!";
+				mes "(Equipped items are hidden)";
+				close;
+			}
+			
+			.@menu$ += "^00FF00[Back to Category Selection]^000000";
+			
+			mes "[Item Cleaner]";
+			switch(.@category) {
+				case 0: mes "^0000FFUsable Items^000000"; break;
+				case 1: mes "^0000FFEquipment Items^000000"; break;
+				case 2: mes "^0000FFEtc Items^000000"; break;
+				case 3: mes "^0000FFAll Items^000000"; break;
+			}
+			mes "Total: " + .@filtered_count;
+			mes "(Equipped items hidden)";
+			mes "Select item to delete:";
+			next;
+			
+			.@selected = select(.@menu$) - 1;
+			
+			// If selected "Back"
+			if(.@selected >= .@filtered_count) {
+				break;
+			}
+			
+			// Get the actual inventory index
+			.@inv_index = .@filtered_index[.@selected];
+			
+			// Get selected item info
+			.@id = @inventorylist_id[.@inv_index];
+			.@amount = @inventorylist_amount[.@inv_index];
+			.@refine = @inventorylist_refine[.@inv_index];
+			.@identify = @inventorylist_identify[.@inv_index];
+			.@attribute = @inventorylist_attribute[.@inv_index];
+			.@card1 = @inventorylist_card1[.@inv_index];
+			.@card2 = @inventorylist_card2[.@inv_index];
+			.@card3 = @inventorylist_card3[.@inv_index];
+			.@card4 = @inventorylist_card4[.@inv_index];
+			.@name$ = getitemname(.@id);
+			
+			// Delete the selected item immediately
+			if(delitem2(.@id, .@amount, .@identify, .@refine, .@attribute, .@card1, .@card2, .@card3, .@card4)) {
+				mes "[Item Cleaner]";
+				mes "^00FF00Deleted!^000000";
+				mes .@name$ + " (x" + .@amount + ")";
+				next;
+			} else {
+				mes "[Item Cleaner]";
+				mes "^FF0000Failed to delete!^000000";
+				next;
+			}
+		}
+		close;
+		
+	case 2:
+		// Clean invalid items from inventory
+		mes "[Item Cleaner]";
+		mes "^FF0000WARNING!^000000";
+		mes "This will scan and delete items";
+		mes "that don't exist in the database";
+		mes "(red apple icons or missing images)";
+		mes "from your ^0000FFinventory^000000.";
+		mes " ";
+		mes "^00FF00Note: Equipped items will be skipped.^000000";
+		next;
+		
+		mes "[Item Cleaner]";
+		mes "Do you want to continue?";
+		next;
+		
+		if(select("Yes, clean my inventory:No, cancel") == 2) {
+			mes "[Item Cleaner]";
+			mes "Cancelled.";
+			close;
+		}
+		
+		// Scan inventory for invalid items
+		.@deleted = 0;
+		.@checked = 0;
+		.@skipped = 0;
+		
+		getinventorylist();
+		
+		for(.@i = 0; .@i < @inventorylist_count; .@i++) {
+			// Skip equipped items
+			if(@inventorylist_equip[.@i]) {
+				.@skipped++;
+				continue;
+			}
+			
+			.@id = @inventorylist_id[.@i];
+			.@amount = @inventorylist_amount[.@i];
+			.@name$ = getitemname(.@id);
+			
+			if(.@name$ == "null" || .@name$ == "" || .@id <= 0) {
+				if(delitem2(.@id, .@amount, @inventorylist_identify[.@i], 
+					@inventorylist_refine[.@i], @inventorylist_attribute[.@i],
+					@inventorylist_card1[.@i], @inventorylist_card2[.@i],
+					@inventorylist_card3[.@i], @inventorylist_card4[.@i])) {
+					.@deleted++;
+				}
+			}
+			.@checked++;
+		}
+		
+		mes "[Item Cleaner]";
+		mes "Scan complete!";
+		mes "Checked: ^0000FF" + .@checked + "^000000 items";
+		mes "Skipped: ^00FF00" + .@skipped + "^000000 equipped items";
+		mes "Deleted: ^FF0000" + .@deleted + "^000000 invalid items";
+		
+		if(.@deleted > 0) {
+			mes " ";
+			mes "Your inventory has been cleaned!";
+		}
+		close;
+		
+	case 3:
+		// Delete by specific Item ID from inventory
+		mes "[Item Cleaner]";
+		mes "Enter the Item ID to delete:";
+		mes "(You can find this in item description)";
+		mes " ";
+		mes "^FF0000Note: This will NOT delete equipped items!^000000";
+		next;
+		
+		input .@item_id;
+		
+		if(.@item_id <= 0) {
+			mes "[Item Cleaner]";
+			mes "Invalid Item ID!";
+			close;
+		}
+		
+		// Count only non-equipped items
+		.@amount = 0;
+		getinventorylist();
+		
+		for(.@i = 0; .@i < @inventorylist_count; .@i++) {
+			if(@inventorylist_id[.@i] == .@item_id && !@inventorylist_equip[.@i]) {
+				.@amount += @inventorylist_amount[.@i];
+			}
+		}
+		
+		if(.@amount <= 0) {
+			mes "[Item Cleaner]";
+			mes "You don't have this item in inventory!";
+			mes "(or all items are equipped)";
+			close;
+		}
+		
+		.@name$ = getitemname(.@item_id);
+		mes "[Item Cleaner]";
+		mes "Item: " + ((.@name$ == "null" || .@name$ == "") ? "^FF0000Invalid^000000" : .@name$);
+		mes "ID: ^0000FF" + .@item_id + "^000000";
+		mes "Amount: ^FF0000" + .@amount + "^000000";
+		mes "(non-equipped only)";
+		mes " ";
+		mes "Delete all from inventory?";
+		next;
+		
+		if(select("Yes, delete:No, cancel") == 2) {
+			mes "[Item Cleaner]";
+			mes "Cancelled.";
+			close;
+		}
+		
+		// Delete only non-equipped items
+		.@deleted = 0;
+		for(.@i = 0; .@i < @inventorylist_count; .@i++) {
+			if(@inventorylist_id[.@i] == .@item_id && !@inventorylist_equip[.@i]) {
+				if(delitem2(.@item_id, @inventorylist_amount[.@i], 
+					@inventorylist_identify[.@i], @inventorylist_refine[.@i], 
+					@inventorylist_attribute[.@i], @inventorylist_card1[.@i], 
+					@inventorylist_card2[.@i], @inventorylist_card3[.@i], 
+					@inventorylist_card4[.@i])) {
+					.@deleted += @inventorylist_amount[.@i];
+				}
+			}
+		}
+		
+		mes "[Item Cleaner]";
+		mes "Successfully deleted!";
+		mes "Removed ^FF0000" + .@deleted + "^000000 items";
+		close;
+		
+	case 4:
+		mes "[Item Cleaner]";
+		mes "See you later!";
+		close;
+	}
+	
+	OnInit:
+		setarray .invalid_ids[0], 0;
+		end;
+}

@@ -1,0 +1,102 @@
+//============================================================
+// Episode 19 Skip Quest NPC
+// Skips Episode 19 Main Quest using Episode 19 Clear Ticket
+//============================================================
+askald,66,101,1	script	Skip Quest Ep19#SkipEP19	10456,{
+
+	// --- Configuration ---
+	set .@ticket_19, 1000988;  // Episode 19 Clear Ticket
+	set .@EP19_QUEST, 17639;    // Episode 19 completion quest ID
+	set .@EP19_MAIN_VAL, 100;   // Final step value (ep19_main = 100)
+	set .@EP18_MAIN_REQ, 38;    // Minimum EP18 requirement (based on Bamdat NPC check)
+	
+	mes "[Aurelie - EP19]";
+	mes "Hello adventurer!";
+	mes "I can help you complete ^0000FFEpisode 19^000000 instantly.";
+	mes "^FF0000This will skip all Episode 19 main quests.^000000";
+	next;
+
+	// Check if EP18 is completed
+	if (ep18_main < .@EP18_MAIN_REQ) {
+		mes "[Aurelie - EP19]";
+		mes "You must finish ^FFAA00Episode 18^000000 before skipping Episode 19.";
+		mes "Please complete that episode first.";
+		close;
+	}
+
+	// Check if already completed
+	if (ep19_main >= .@EP19_MAIN_VAL) {
+		mes "[Aurelie - EP19]";
+		mes "You have already completed Episode 19!";
+		mes "There's nothing more for me to help you with.";
+		close;
+	}
+
+	// Check Ticket
+	if (countitem(.@ticket_19) < 1) {
+		mes "[Aurelie - EP19]";
+		mes "You need an ^0000FFEpisode 19 Clear Ticket^000000 to use this service.";
+		mes "Item ID: ^FF0000" + .@ticket_19 + "^000000";
+		mes "Come back when you have one.";
+		close;
+	}
+
+	mes "[Aurelie - EP19]";
+	mes "I see you have an ^0000FFEpisode 19 Clear Ticket^000000.";
+	mes "Shall I consume it and complete Episode 19 for you?";
+	next;
+
+	if (select("Yes, complete Episode 19:No, not now") == 2) {
+		mes "[Aurelie - EP19]";
+		mes "Come back anytime you're ready!";
+		close;
+	}
+
+	// Consume Ticket
+	delitem .@ticket_19, 1;
+	specialeffect EF_POTION_BERSERK;
+	soundeffect "joblevelup.wav", 0;
+
+	mes "[Aurelie - EP19]";
+	mes "Alright, please hold still...";
+	mes "I'm setting your records to reflect a completed Episode 19.";
+	next;
+
+	// Complete Quest & Unlock
+	if (isbegin_quest(.@EP19_QUEST) == 0) {
+		setquest .@EP19_QUEST;
+	}
+	completequest .@EP19_QUEST;
+	
+	// Set progress variable
+	set ep19_main, .@EP19_MAIN_VAL;
+
+	dispbottom "[System] Episode 19 has been completed.";
+	dispbottom "[System] All Episode 19 content unlocked.";
+	dispbottom "[System] You can now proceed to Episode 20.";
+	
+	specialeffect2 EF_LEVELUP;
+	soundeffect "levelup.wav", 0;
+
+	next;
+	mes "[Aurelie - EP19]";
+	mes "Everything is complete!";
+	mes "You can now access Episode 20 content.";
+	next;
+
+	mes "[Aurelie - EP19]";
+	mes "Would you like me to send you to ^0000FFJor Nest^000000?";
+	next;
+
+	if (select("Yes, take me there!:No, I'll stay here.") == 1) {
+		mes "[Aurelie - EP19]";
+		mes "Safe journey, adventurer!";
+		close2;
+		warp "jor_nest", 227, 255;
+		end;
+	}
+
+	mes "[Aurelie - EP19]";
+	mes "Good luck on your adventures!";
+	close;
+}

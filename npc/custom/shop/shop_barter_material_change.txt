@@ -1,0 +1,26 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC TRADER
+// ============================================
+askald,159,119,5	script	Change Material	563,{
+	mes "[Change Material]";
+	mes "Well Come Change Material!";
+	mes "Please select shop Type:";
+	next;
+	
+	switch(select("Shop Material Change:Exit")) {
+		case 1:
+			mes "[Material Trader]";
+			mes "Open Trade Metarial...";
+			close2;
+			callshop "Material_Change";
+			end;
+	
+		case 2:
+			mes "Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

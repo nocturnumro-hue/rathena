@@ -1,0 +1,54 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC TRADER - Eda Biolab
+// ============================================
+askald,17,195,1	script	Eda Biolab	10375,{
+
+	mes "^FF0000[Item Eda Biolab]^000000";
+	mes "^0000FFWelcome to the Eda Biolab Material Shop!^000000";
+	mes "^008000Please select the shop type:^000000";
+	next;
+
+		// Using ^008000 for Green, ^0000FF for Blue, and ^FF0000 for Red
+		switch(select(
+		"^008000Eda Biolab Usable^000000:" +
+		"^008000Ancient Hero Eda Biolab^000000:" +
+		"^0000FFPatent Eda Biolab^000000:" +
+		"^FF0000Hero-LT Eda Biolab^000000:Exit")) {
+		case 1:
+			mes "[Item Eda Biolab]";
+			mes "<FONT color='#008000'>Opening Ancient Hero Eda Biolab Shop...</FONT>"; // Added color to the opening message
+			close2;
+			callshop "Eda_Biolab_Usable";
+			end;
+
+		case 2:
+			mes "[Item Eda Biolab]";
+			mes "<FONT color='#008000'>Opening Ancient Hero Eda Biolab Shop...</FONT>"; // Added color to the opening message
+			close2;
+			callshop "Eda_Biolab";
+			end;
+
+		case 3:
+			mes "[Item Eda Biolab]";
+			mes "<FONT color='#0000FF'>Opening Patent Eda Biolab Shop...</FONT>"; // Added color to the opening message
+			close2;
+			callshop "Eda_Biolab1";
+			end;
+
+		case 4:
+			mes "[Item Eda Biolab]";
+			mes "<FONT color='#FF0000'>Opening Hero-LT Eda Biolab Shop...</FONT>"; // Added color to the opening message
+			close2;
+			callshop "Eda_Biolab2";
+			end;
+
+		case 5:
+			mes "[Item Eda Biolab]";
+			mes "Thank you for visiting!";
+			mes "Have a great day!";
+			close;
+	}
+	end;
+}

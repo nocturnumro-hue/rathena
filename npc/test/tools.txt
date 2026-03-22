@@ -1,0 +1,1026 @@
+// --------------------------
+// Load Inventory (Online/Offline)
+// --------------------------
+function	script	F_LoadInventory	{
+	.@cid = getarg(0);
+	.@online = getarg(1, 0);
+
+	deletearray @inventory_id[0], getarraysize(@inventory_id);
+	deletearray @inventory_amount[0], getarraysize(@inventory_amount);
+	set @inventory_count, 0;
+
+	if (.@cid == getcharid(3) || (.@online && attachrid(.@cid))) {
+		getinventorylist;
+		copyarray @inventory_id, @inventorylist_id, @inventorylist_count;
+		copyarray @inventory_amount, @inventorylist_amount, @inventorylist_count;
+		set @inventory_count, @inventorylist_count;
+		if (.@online && .@cid != getcharid(3)) detachrid;
+	} else {
+		query_sql("SELECT `nameid`, `amount` FROM `inventory` WHERE `char_id` = "+.@cid+" AND `equip` = 0", @inventory_id, @inventory_amount);
+		set @inventory_count, getarraysize(@inventory_id);
+	}
+
+	return @inventory_count;
+}
+
+// ===============================================================
+// STARTING CODE LINE
+// ===============================================================
+function	script	tools__	{
+
+mes "[^0000FFGM Tools^000000]";
+mes "-----------------------------------";
+mes "Hello ^0000FF" + strcharinfo(0) + "^000000";
+mes "-----------------------------------";
+mes "Select the basic commands";
+mes "that you want to use";
+next;
+
+back3:
+switch(select("^0000FF~ [Buff]^000000 Boost Energy:^0000FF~ [Money]^000000 Zeny and Cash:^0000FF~ [Character]^000000 Player Character:^0000FF~ [Items]^000000 Items:^0000FF~ [Refine Build]^000000 Refine and Grade Weapons")){
+case 1:
+	healap 200;
+	sc_start SC_ASPDPOTION2,3600000,5;
+	sc_start SC_EDP,3600000,5;
+	sc_start SC_STRFOOD,3600000,100;
+	sc_start SC_AGIFOOD,3600000,100;
+	sc_start SC_VITFOOD,3600000,100;
+	sc_start SC_INTFOOD,3600000,100;
+	sc_start SC_DEXFOOD,3600000,100;
+	sc_start SC_LUKFOOD,3600000,100;
+	sc_start SC_ATKPOTION,3600000,10000;
+	sc_start SC_MATKPOTION,3600000,10000;
+	sc_start SC_HitFood,3600000,300;
+	sc_start SC_FleeFood,3600000,300;
+	sc_start SC_BATKFood,3600000,500;
+	sc_start SC_MATKFood,3600000,500;
+	sc_start SC_PROTECTSHADOWEQUIP,3600000,5;
+	percentheal 100,100;
+end;
+	
+case 2:
+	switch(select("~ Add Zeny:~ Add Cash:^FF0000~ Go back^000000")){
+		case 1:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Enter the amount of Zeny";
+			mes "^FF0000Cancel by entering 0^000000";
+			input @playersearchname$;
+			specialeffect2 EF_BASH3D;
+			atcommand "@zeny " + @playersearchname$ + "";
+			end;
+	
+		case 2:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Enter the amount of Cash";
+			mes "^FF0000Cancel by entering 0^000000";
+			input @playersearchname$;
+			specialeffect2 EF_BASH3D;
+			atcommand "@cash " + @playersearchname$ + "";
+			end;
+	
+		case 3:
+			goto back3;
+			end;
+	}
+
+case 3:
+	switch(select("~ Base Level:~ Job Level:^FF0000~ Go Back^000000")){
+		//case 1:
+		//OnUse:
+		//	menu
+		//	"^33AA33Add Base EXP^000000", Base,
+		//	"^AA33AAAdd Job EXP^000000", Job,
+		//	"^777777Cancel^000000", -;
+		//
+		//Base:
+		//	set .@type$, "Base";
+		//	set .@current, getexp();
+		//	set .@next, getexp(getbaselevel() + 1);
+		//	set .@needed, .@next - .@current;
+		//	goto Input;
+		//
+		//Job:
+		//	set .@type$, "Job";
+		//	set .@current, getexp(1);
+		//	set .@next, getexp(getjoblevel() + 1, 1);
+		//	set .@needed, .@next - .@current;
+		//	goto Input;
+		//
+		//Input:
+		//	mes "[^0000FFCurrent "+.@type$+" Level^000000]: "+( .@type$ == "Base" ? getbaselevel() : getjoblevel() );
+		//	mes "Current EXP: ^33AA33"+.@current+"^000000";
+		//	mes "EXP to next level: ^33AA33"+.@needed+"^000000";
+		//	mes "Enter amount to add (0 to cancel):";
+		//	next;
+		//
+		//	mes "[^0000FFGM EXP Tool^000000]";
+		//	mes "Select EXP type to add:";
+		//	next;
+		//	input .@amt;
+		//	if (.@amt <= 0) close;
+		//
+		//	set .@max_base_exp, getexp(175);
+		//	set .@max_job_exp, getexp( isupper(getjobname(getjobid())) ? 70 : 50, 1 );
+		//	if (.@type$ == "Base" && .@current + .@amt > .@max_base_exp) {
+		//		mes "^FF0000Warning: Base EXP capped at Lv 175.^000000";
+		//		set .@amt, .@max_base_exp - .@current;
+		//		if (.@amt <= 0) {
+		//			mes "Already at max level.";
+		//			close;
+		//		}
+		//	}
+		//	if (.@type$ == "Job" && .@current + .@amt > .@max_job_exp) {
+		//		mes "^FF0000Warning: Job EXP capped at max job level.^000000";
+		//		set .@amt, .@max_job_exp - .@current;
+		//		if (.@amt <= 0) {
+		//			mes "Already at max job level.";
+		//			close;
+		//		}
+		//	}
+		//
+		//	if (.@type$ == "Base") {
+		//		setexp .@current + .@amt, getexp(1);
+		//	} else {
+		//		setexp getexp(), .@current + .@amt;
+		//	}
+		//
+		//	mes "^00AA00SUCCESS!^000000";
+		//	mes "Added ^FF0000"+.@amt+"^000000 "+.@type$+" EXP.";
+		//	mes "New "+.@type$+" EXP: ^33AA33"+( .@type$ == "Base" ? getexp() : getexp(1) )+"^000000";
+		//	close;
+
+		case 1:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Enter Base Level";
+			mes "1-275";
+			mes "^FF0000Cancel by entering 0^000000";
+			input @playersearchname$;
+			specialeffect2 EF_BASH3D;
+			atcommand "@blevel " + @playersearchname$ + "";
+		end;
+		
+		case 2:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Enter Job Level";
+			mes "1-70";
+			mes "^FF0000Cancel by entering 0^000000";
+			input @playersearchname$;
+			specialeffect2 EF_BASH3D;
+			atcommand "@jlevel " + @playersearchname$ + "";
+		end;
+	
+		case 3:
+			goto back3;
+		end;
+	}
+	
+case 4:
+	mes "[^0000FFGM Tools^000000]";
+	mes "Tools for Items";
+	next;
+	
+	switch(select("~ Summon Items:~ Summon with Enchant:~ Delete Items:^FF0000~ Go Back^000000")){
+		case 1:
+			mes "[^0000FFGM Tools^000000]";
+			mes "You have selected the command";
+			mes "^FF0000Summon Items^000000";
+			mes "You can check here <URL>Items ID<INFO>https://www.xymphonyro.com/?module=item</INFO></URL>";
+			mes "Enter the [ID] of the item and press OK";
+			mes "^FF0000Cancel by entering 0^000000";
+			input @playersearchname$;
+			next;
+			
+			mes "[^0000FFGM Tools^000000]";
+			mes "Please enter the quantity of the item";
+			mes "^FF0000Cancel by entering 0^000000";
+			input @playersearchname2$;
+			specialeffect2 EF_BASH3D;
+			atcommand "@item " + @playersearchname$ + " " + @playersearchname2$ + "";
+		end;
+	
+		case 2:
+			mes "[^0000FFGM Tools^000000]";
+			mes "You have selected the command";
+			mes "^FF0000Summon Items with Enchant^000000";
+			next;
+			if(select("~ Go Back:~ Start to Custom Item")== 1){goto back3;}
+
+L_Start:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Enter the ^00FF00Item ID^000000 you want to create.";
+			input .@item_id;
+			.@item_name$ = getitemname(.@item_id);
+			if (.@item_name$ == "Unknown Item") {
+				mes "Invalid Item ID!";
+				close;
+			}
+			next;
+		
+			mes "[^0000FFGM Tools^000000]";
+			mes "Selected item: ^00FF00" + getitemname(.@item_id) + "^000000";
+			mes "Enter refine level (0~20):";
+			input .@refine,0,20;
+			next;
+		
+			for (.@i = 1; .@i <= 4; .@i++) {
+				mes "Enter enchant for slot ^0000FF" + .@i + "^000000 (0 for empty):";
+				input .@card[.@i];
+			
+				if (.@card[.@i]) {
+					.@card_name$ = getitemname(.@card[.@i]);
+					if (.@card_name$ == "Unknown Item") {
+						mes "Invalid enchant ID!";
+						close;
+					}
+				}
+				next;
+			}
+		
+			while (1) {
+				mes "[^0000FFItem Preview^000000]";
+				mes "Item: ^00FF00" + getitemname(.@item_id) + "^000000";
+				mes "Refine: +"+.@refine;
+				for (.@i = 1; .@i <= 4; .@i++) {
+					if (.@card[.@i])
+						mes "Slot "+.@i+": "+getitemname(.@card[.@i]);
+					else
+						mes "Slot "+.@i+": (empty)";
+				}
+				next;
+		
+				mes "[NPC]";
+				mes "Is everything correct?";
+				next;
+				switch(select("Create item:Change refine:Change enchant:Restart from beginning")) {
+					case 1:
+						getitem2 .@item_id, 1, 1, .@refine, 0, .@card[1], .@card[2], .@card[3], .@card[4];
+						mes "[NPC]";
+						mes "Item has been created successfully!";
+						close;
+		
+					case 2:
+						mes "Enter new refine value (0~20):";
+						input .@refine,0,20;
+						next;
+						break;
+		
+					case 3:
+						mes "Which slot do you want to change? (1~4)";
+						input .@slot,1,4;
+						mes "Enter new enchant for slot ^0000FF" + .@slot + "^000000 (0 for empty):";
+						input .@card[.@slot];
+						
+						if (.@card[.@slot]) {
+							.@card_name$ = getitemname(.@card[.@slot]);
+							if (.@card_name$ == "Unknown Item") {
+								mes "Invalid enchant ID!";
+								close;
+							}
+						}
+						next;
+						break;
+		
+					case 4:
+						mes "Restarting from the beginning...";
+						close2;
+						goto L_Start;
+						end;
+				}
+			}
+		end;
+		
+		case 3:
+			//mes "[^0000FFGM Tools^000000]";
+			//mes "Tools for Deleting Items";
+			//mes "Please select the item in your inventory";
+			//mes "Enter the ^FF0000[item ID number]^000000 of the item you wish to delete";
+			//mes "Then, enter the quantity you wish to delete";
+			//next;
+			//
+			//9delitem:
+			//getinventorylist;
+			//for(set .@i,0; .@i<@inventorylist_count; set .@i,.@i+1)
+			//	mes "[ "+@inventorylist_id[.@i]+" ] "+getitemname(@inventorylist_id[.@i])+" x"+@inventorylist_amount[.@i];
+			//
+			//next;
+			//input .@item;
+			//if (getitemname(.@item) != "null") {
+			//	if (countitem(.@item)) {
+			//		input .@amount;
+			//		if (.@amount && countitem(.@item) >= .@amount) {
+			//			delitem .@item,.@amount;
+			//			mes "[Delete Master]:";
+			//			mes "The selected item has been successfully deleted^FF0000";
+			//			mes getitemname(.@item)+" x"+.@amount+"^000000";
+			//			next;
+			//				goto 9delitem;
+			//			close;
+			//		} else {
+			//			mes "Quantity deleted: "+.@amount+".";
+			//				goto 9delitem;
+			//			close;
+			//		}
+			//	}
+			//}
+			//mes "[^0000FFGM Tools^000000]";
+			//mes "No data found for " + .@item + ".";
+			//mes "Operation cancelled";
+			//close;
+		OnMenu:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Delete item from:";
+			next;
+			menu
+				"^33AA33Myself^000000", Selfi,
+				"^FF6600Another player (online only)^000000", Other,
+				"Cancel", -;
+		
+		Selfi:
+			set .@cid, getcharid(3);
+			callfunc "F_LoadInventory", .@cid, 1;
+			goto DoDelete;
+
+		Other:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Enter target character name:";
+			next;
+			input .@name$;
+			if (.@name$ == "") close;
+		
+			query_sql("SELECT `char_id`, `account_id`, `online` FROM `char` WHERE `name` = '"+escape_sql(.@name$)+"' LIMIT 1", .@cid, .@aid, .@online);
+			if (.@cid == 0) {
+				mes "^FF0000Character not found.^000000";
+				close;
+			}
+			set .@target_name$, .@name$;
+			
+			deletearray @inventory_id[0], getarraysize(@inventory_id);
+			deletearray @inventory_amount[0], getarraysize(@inventory_amount);
+			set @inventory_count, 0;
+		
+			if (.@online && attachrid(.@cid)) {
+				getinventorylist;
+				copyarray @inventory_id, @inventorylist_id, @inventorylist_count;
+				copyarray @inventory_amount, @inventorylist_amount, @inventorylist_count;
+				set @inventory_count, @inventorylist_count;
+				detachrid;
+			} else {
+				query_sql("SELECT `nameid`, `amount` FROM `inventory` WHERE `char_id` = "+.@cid+" AND `equip` = 0", @inventory_id, @inventory_amount);
+				set @inventory_count, getarraysize(@inventory_id);
+			}
+		
+			if (@inventory_count == 0) {
+				mes "^FF0000No items found in inventory (non-equipped only).^000000";
+				close;
+			}
+		
+			goto DoDelete;
+		
+		DoDelete:
+			mes "[^0000FFInventory^000000] of ^6666FF"+((.@cid == getcharid(3)) ? "You" : .@target_name$)+"^000000:";
+			for (.@i = 0; .@i < @inventory_count; .@i++) {
+				mes "[^FF0000"+@inventory_id[.@i]+"^000000] "+getitemname(@inventory_id[.@i])+" x"+@inventory_amount[.@i];
+			}
+			next;
+		
+			input .@item_id;
+			if (.@item_id <= 0 || getitemname(.@item_id) == "null") {
+				mes "Invalid item ID.";
+				close;
+			}
+		
+			set .@avail, 0;
+			for (.@i = 0; .@i < @inventory_count; .@i++) {
+				if (@inventory_id[.@i] == .@item_id) {
+					set .@avail, @inventory_amount[.@i];
+					break;
+				}
+			}
+			if (.@avail == 0) {
+				mes "Item not found in inventory.";
+				close;
+			}
+		
+			mes "Delete how many? (1~"+.@avail+")";
+			next;
+			input .@amt;
+			if (.@amt < 1 || .@amt > .@avail) {
+				mes "Invalid amount.";
+				close;
+			}
+		
+			if (.@cid == getcharid(3)) {
+				delitem .@item_id, .@amt;
+			} else {
+				delitem2 .@item_id, .@amt, 1, 0, 0, 0, 0, 0, 0, .@aid;
+			}
+		
+			mes "^00AA00SUCCESS!^000000";
+			mes "Deleted ^FF0000"+getitemname(.@item_id)+"^000000 x"+.@amt;
+			mes "from ^6666FF"+((.@cid == getcharid(3)) ? "you" : .@target_name$)+"^000000.";
+			close;
+
+		case 4:
+			goto back3;
+		end;
+	}
+	
+case 5:
+	switch(select("~ Grade Enhancing:~ Refine Equipment:~ Elemental Weapon:^FF0000~ Go Back^000000")){
+		case 1:
+			mes "[^0000FFGM Tools^000000]";
+			mes "Grade Enhancing";
+			mes "Levels D, C, B, A";
+			mes "This will enhance the capabilities of";
+			mes "^FF0000Weapons/Armor^000000";
+			next;
+	
+		switch(select("~ Upgrade^FF0000:~ Go Back^000000")){
+			case 1:
+				switch(select("~ Upgrade to D:~ Upgrade to C:~ Upgrade to B:~ Upgrade to A")){
+					case 1:
+						mes "[^0000FFGM Tools^000000]";
+						mes "^FF0000~ Upgrade to D ~^000000";
+						mes "^0000FFIncreases ATK & MATK by 10% per enhancement^000000";
+						mes "Select the equipment to upgrade";
+						next;
+						switch(select("~ Upper Headgear:~ Middle Headgear:~ Lower Headgear:~ Armor:~ Cloak:~ Left Hand:~ Right Hand:~ Shoes:~ Right Accessory:~ ^FF0000Upgrade All^000000")){
+							case 1:
+								.@weamro = 256;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 256 1";
+								specialeffect2 EF_BASH3D;
+							end;
+	
+							case 2:
+								.@weamro = 512;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 512 1";
+								specialeffect2 EF_BASH3D;
+							end;
+	
+							case 3:
+								.@weamro = 1;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 1 1";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 4:
+								.@weamro = 16;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 16 1";
+								specialeffect2 EF_BASH3D;
+							end;
+	
+							case 5:
+								.@weamro = 4;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 4 1";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 6:
+								.@weamro = 32;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 32 1";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 7:
+								.@weamro = 2;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 2 1";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 8:
+								.@weamro = 64;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 64 1";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 9:
+								.@weamro = 12;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 24 1";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 10:
+								.@weamro = 24;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to D^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 0 1";
+								specialeffect2 EF_BASH3D;
+							end;
+						}
+					end;
+
+					case 2:
+						mes "[^0000FFGM Tools^000000]";
+						mes "^FF0000~ Upgrade to C ~^000000";
+						mes "^0000FFIncreases ATK & MATK by 30% per enhancement^000000";
+						mes "Select the equipment to upgrade";
+						next;
+						switch(select("~ Upper Headgear:~ Middle Headgear:~ Lower Headgear:~ Armor:~ Cloak:~ Left Hand:~ Right Hand:~ Shoes:~ Right Accessory:~ ^FF0000Upgrade All^000000")){
+							case 1:
+								.@weamro = 256;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 256 2";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 2:
+								.@weamro = 512;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 512 2";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 3:
+								.@weamro = 1;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 1 2";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 4:
+								.@weamro = 16;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 16 2";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 5:
+								.@weamro = 4;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 4 2";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 6:
+								.@weamro = 32;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 32 2";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 7:
+								.@weamro = 2;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 2 2";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 8:
+							.@weamro = 64;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 64 2";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 9:
+								.@weamro = 12;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 24 2";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 10:
+								.@weamro = 24;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to C^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 0 2";
+								specialeffect2 EF_BASH3D;
+							end;
+						}
+					end;
+
+					case 3:
+						mes "[^0000FFGM Tools^000000]";
+						mes "^FF0000~ Upgrade to B ~^000000";
+						mes "^0000FFIncreases ATK & MATK by 50% per enhancement^000000";
+						mes "Select the equipment to upgrade";
+						next;
+						switch(select("~ Upper Headgear:~ Middle Headgear:~ Lower Headgear:~ Armor:~ Cloak:~ Left Hand:~ Right Hand:~ Shoes:~ Right Accessory:~ ^FF0000Upgrade All^000000")){
+							case 1:
+								.@weamro = 256;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 256 3";
+								specialeffect2 EF_BASH3D;
+					
+							end;
+					
+							case 2:
+								.@weamro = 512;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 512 3";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 3:
+								.@weamro = 1;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 1 3";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 4:
+								.@weamro = 16;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 16 3";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 5:
+								.@weamro = 4;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 4 3";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 6:
+								.@weamro = 32;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 32 3";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 7:
+								.@weamro = 2;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 2 3";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 8:
+								.@weamro = 64;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 64 3";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 9:
+								.@weamro = 12;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 24 3";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 10:
+								.@weamro = 24;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to B^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 0 3";
+								specialeffect2 EF_BASH3D;
+							end;
+						}
+					end;
+
+					case 4:
+						mes "[^0000FFGM Tools^000000]";
+						mes "^FF0000~ Upgrade to A ~^000000";
+						mes "^0000FFIncreases ATK & MATK by 100% per enhancement^000000";
+						mes "Select the equipment to upgrade";
+						next;
+						switch(select("~ Upper Headgear:~ Middle Headgear:~ Lower Headgear:~ Armor:~ Cloak:~ Left Hand:~ Right Hand:~ Shoes:~ Right Accessory:~ ^FF0000Upgrade All^000000")){
+							case 1:
+								.@weamro = 256;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 256 4";
+								specialeffect2 EF_BASH3D;
+					
+							end;
+					
+							case 2:
+								.@weamro = 512;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 512 4";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 3:
+								.@weamro = 1;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 1 4";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 4:
+								.@weamro = 16;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 16 4";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 5:
+								.@weamro = 4;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 4 4";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 6:
+								.@weamro = 32;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 32 4";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 7:
+								.@weamro = 2;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 2 4";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 8:
+								.@weamro = 64;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 64 4";
+								specialeffect2 EF_BASH3D;
+							end;
+
+							case 9:
+								.@weamro = 12;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 24 4";
+								specialeffect2 EF_BASH3D;
+							end;
+					
+							case 10:
+								.@weamro = 24;
+								mes "[^0000FFGM Tools^000000]";
+								mes "^0000FF======================^000000";
+								mes "^FF0000Starting Upgrade to A^000000";
+								mes "^0000FF======================^000000";
+								next;
+								atcommand "@grade 0 4";
+								specialeffect2 EF_BASH3D;
+							end;
+						}
+					end;
+				}
+			end;
+
+			case 2:
+				goto back3;
+			end;
+		}
+		end;
+
+		case 2:
+			switch(select("~ Increase Refinement +:~ Decrease Refinement -:^FF0000~ Go Back^000000")){
+				case 1:
+					mes "[^0000FFGM Tools^000000]";
+					mes "You have selected the command";
+					mes "Refine all equipment (maximum +20)";
+					mes "Please enter a number between 1-20";
+					mes "^FF0000Cancel by entering 0^000000";
+					input @playersearchname$;
+					atcommand "@refine 0 " + @playersearchname$ + "";
+					specialeffect2 EF_BASH3D;
+				end;
+		
+				case 2:
+					mes "[^0000FFGM Tools^000000]";
+					mes "You have selected the command";
+					mes "Decrease all refinements";
+					mes "Please enter a number between 1-20";
+					mes "^FF0000Cancel by entering 0^000000";
+					input @playersearchname$;
+					atcommand "@refine 0 -" + @playersearchname$ + "";
+					specialeffect2 EF_BASH3D;
+				end;
+
+			case 3:
+				goto back3;
+			end;
+		}
+
+
+		case 3:
+			switch(select("~ Very Very Very Strong:~ Very Very Very Strong (Water):~ Very Very Very Strong (Earth):~ Very Very Very Strong (Fire):~ Very Very Very Strong (Wind)")){
+				case 1:
+					mes "[^0000FFGM Tools^000000]";
+					mes "You have chosen to create a weapon";
+					mes "^FF0000Very Very Very Strong^000000";
+					mes "You can view it here <URL>Weapons ID<INFO>https://www.xymphonyro.com/?module=item</INFO></URL>";
+					mes "Please enter the ID of the weapon you want";
+					mes "^FF0000Cancel by entering 0^000000";
+					input @playersearchname$;
+					specialeffect2 EF_BASH3D;
+					atcommand "@produce " + @playersearchname$ + " 0 3";
+				end;
+			
+				case 2:
+					mes "[^0000FFGM Tools^000000]";
+					mes "You have chosen to create a weapon";
+					mes "^FF0000Very Very Very Strong (Water)^000000";
+					mes "You can view it here <URL>Weapons ID<INFO>https://www.xymphonyro.com/?module=item</INFO></URL>";
+					mes "Please enter the ID of the weapon you want";
+					mes "^FF0000Cancel by entering 0^000000";
+					input @playersearchname$;
+					specialeffect2 EF_BASH3D;
+					atcommand "@produce " + @playersearchname$ + " 1 3";
+				end;
+			
+				case 3:
+					mes "[^0000FFGM Tools^000000]";
+					mes "You have chosen to create a weapon";
+					mes "^FF0000Very Very Very Strong (Earth)^000000";
+					mes "You can view it here <URL>Weapons ID<INFO>https://www.xymphonyro.com/?module=item</INFO></URL>";                    
+					mes "Please enter the ID of the weapon you want";
+					mes "^FF0000Cancel by entering 0^000000";
+					input @playersearchname$;
+					specialeffect2 EF_BASH3D;
+					atcommand "@produce " + @playersearchname$ + " 2 3";
+				end;
+
+				case 4:
+					mes "[^0000FFGM Tools^000000]";
+					mes "You have chosen to create a weapon";
+					mes "^FF0000Very Very Very Strong (Fire)^000000";	
+					mes "You can view it here <URL>Weapons ID<INFO>https://www.xymphonyro.com/?module=item</INFO></URL>";
+					mes "Please enter the ID of the weapon you want";
+					mes "^FF0000Cancel by entering 0^000000";
+					input @playersearchname$;
+					specialeffect2 EF_BASH3D;
+					atcommand "@produce " +@playersearchname$+" 3 3";
+				end;
+
+				case 5:
+					mes "[^0000FFGM Tools^000000]";
+					mes "You have chosen to create a weapon";
+					mes "^FF0000Very Very Very Strong (Wind)^000000";	
+					mes "You can view it here <URL>Weapons ID<INFO>https://www.xymphonyro.com/?module=item</INFO></URL>";
+					mes "Please enter the ID of the weapon you want";
+					mes "^FF0000Cancel by entering 0^000000";
+					input @playersearchname$;
+					specialeffect2 EF_BASH3D;
+					atcommand "@produce " +@playersearchname$+" 4 3";
+				end;
+
+			}
+			
+		case 4:
+			goto back3;
+		end;
+	}
+}
+}

@@ -1,0 +1,630 @@
+//============================================================
+// Weapon/Armor Refiners & Reform NPC
+// npc/custom/Episode25_Olympusro/Npc_Refine_Reform.txt
+//============================================================
+askald,113,98,1	script	Refiners Reform	22360,{
+	cutin "ep21_yortus_a.png",2;
+	
+	mes "[Hollgrehenn]";
+	mes "Welcome!";
+	mes "I can help you ^0000FFRefine^000000 your equipment";
+	mes "or ^FF0000Reform^000000 special items.";
+	next;
+	
+	switch(select("Refine Equipment:Reform Items:Cancel")) {
+		case 1:
+			if( getbattleflag( "feature.refineui" ) ){
+				close2;
+				cutin "",255;
+				refineui();
+				end;
+			} else {
+				cutin "",255;
+				callfunc "refinemain","Hollgrehenn",0;
+				end;
+			}
+			break;
+		case 2: goto L_ReformMenu; break;
+		case 3:
+			mes "[Hollgrehenn]";
+			mes "Alright, see you again!";
+			close2;
+			cutin "",255;
+			end;
+	}
+	close2;
+	cutin "",255;
+	end;
+
+L_ReformMenu:
+	mes "[Hollgrehenn]";
+	mes "Which category would you like to Reform?";
+	next;
+	switch(select("Armor Reform:Weapon Reform:Special Reform:Class Item Reform:Back")) {
+		case 1: goto L_ArmorReformMenu; break;
+		case 2: goto L_WeaponReformMenu; break;
+		case 3: goto L_SpecialReformMenu; break;
+		case 4: goto L_ClassReformMenu; break;
+		case 5: goto L_MainMenu; break;
+	}
+	end;
+
+// ============================================================
+// ARMOR REFORM
+// ============================================================
+L_ArmorReformMenu:
+	mes "[Hollgrehenn]";
+	mes "Select Armor Reform:";
+	next;
+	switch(select("[1] Armor Reform List 1:[2] Armor Reform List 2:[3] Armor Reform List 3:Back")) {
+		case 1: goto L_ArmorReform1; break;
+		case 2: goto L_ArmorReform2; break;
+		case 3: goto L_ArmorReform3; break;
+		case 4: goto L_ReformMenu; break;
+	}
+	end;
+
+// C_Armor_Reform_1
+// Thanos Helm 1, Thanos Helm 2, Thanos Helm 3, Thanos Helm 4,
+// Great Hero Boots, Smoky Transform Hat,
+// Whikebain Ears, Whikebain Ears K, Survive Circlet K,
+// GoldFish Hat, Imp Hat, Mad Bunny K, King Tiger Doll Hat,
+// Zaha Doll Hat, Sagittarius Diadem K, Scorpio Diadem K,
+// Large Sorcerer Crown, Stripe Hat, Phantom Cap,
+// Ignis Cap K, Clock Casket RD, Officer Cap, Dolor Hat K
+L_ArmorReform1:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Armor Reform List 1]^000000";
+	mes " ";
+	mes "Thanos Helm 1 / 2 / 3 / 4";
+	mes "Great Hero Boots";
+	mes "Smoky Transform Hat";
+	mes "Whikebain Ears / Whikebain Ears K";
+	mes "Survive Circlet K";
+	mes "GoldFish Hat";
+	mes "Imp Hat";
+	mes "Mad Bunny K";
+	mes "King Tiger Doll Hat";
+	mes "Zaha Doll Hat";
+	mes "Sagittarius Diadem K";
+	mes "Scorpio Diadem K";
+	mes "Large Sorcerer Crown";
+	mes "Stripe Hat";
+	mes "Phantom Cap";
+	mes "Ignis Cap K";
+	mes "Clock Casket RD";
+	mes "Officer Cap";
+	mes "Dolor Hat K";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("C_Armor_Reform_1");
+		end;
+	}
+	goto L_ArmorReformMenu;
+	end;
+
+// C_Armor_Reform_2
+// Same items as Armor Reform List 1
+L_ArmorReform2:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Armor Reform List 2]^000000";
+	mes " ";
+	mes "Thanos Helm 1 / 2 / 3 / 4";
+	mes "Great Hero Boots";
+	mes "Smoky Transform Hat";
+	mes "Whikebain Ears / Whikebain Ears K";
+	mes "Survive Circlet K";
+	mes "GoldFish Hat";
+	mes "Imp Hat";
+	mes "Mad Bunny K";
+	mes "King Tiger Doll Hat";
+	mes "Zaha Doll Hat";
+	mes "Sagittarius Diadem K";
+	mes "Scorpio Diadem K";
+	mes "Large Sorcerer Crown";
+	mes "Stripe Hat";
+	mes "Phantom Cap";
+	mes "Ignis Cap K";
+	mes "Clock Casket RD";
+	mes "Officer Cap";
+	mes "Dolor Hat K";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("C_Armor_Reform_2");
+		end;
+	}
+	goto L_ArmorReformMenu;
+	end;
+
+// C_Armor_Reform_3
+// SurviveOrb K, SeeOtter Fan, FurSeal Fan,
+// Red Force Pendant, Blue Mental Pendant
+L_ArmorReform3:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Armor Reform List 3]^000000";
+	mes " ";
+	mes "Survive Orb K";
+	mes "SeeOtter Fan";
+	mes "FurSeal Fan";
+	mes "Red Force Pendant";
+	mes "Blue Mental Pendant";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("C_Armor_Reform_3");
+		end;
+	}
+	goto L_ArmorReformMenu;
+	end;
+
+// ============================================================
+// WEAPON REFORM
+// ============================================================
+L_WeaponReformMenu:
+	mes "[Hollgrehenn]";
+	mes "Select Weapon Reform:";
+	next;
+	switch(select("[1] Weapon Reform List 1:[2] Weapon Reform List 2:[3] Weapon Reform List 3:Back")) {
+		case 1: goto L_WeaponReform1; break;
+		case 2: goto L_WeaponReform2; break;
+		case 3: goto L_WeaponReform3; break;
+		case 4: goto L_ReformMenu; break;
+	}
+	end;
+
+// C_Weapon_Reform_1 / _2 / _3 - same item list all tiers
+L_WeaponReform1:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Weapon Reform List 1]^000000";
+	mes " ";
+	mes "Saint Hall / Undine Spear K / Demon Hunting Bible";
+	mes "Light Blade / Magic Sword / Fatalist";
+	mes "Iron Staff / Blue Crystal Staff / Shadow Staff K";
+	mes "Freezing Rod / Iron Nail K / Ray Knuckle";
+	mes "Sword of Bluefire / Slate Sword";
+	mes "Royal Bow K / Scalet Dragon L Bow";
+	mes "Trumpet Shell K / Barb Wire K / Narcis Bow";
+	mes "Avenger / Meteor Striker";
+	mes "Blade Katar / Shiver Katar K";
+	mes "Dragonic Slayer / Oriental Sword / Fog Dew Sword";
+	mes "Humma Clear / The Black Gatling / Crimson Rose";
+	mes "Demon S Shot / OneSkyOneSun";
+	mes "Golden L Launcher / Master Soul Rifle";
+	mes "SoulWeight / MeawFoxtail / Freedom Stick / Blessed Knife";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("C_Weapon_Reform_1");
+		end;
+	}
+	goto L_WeaponReformMenu;
+	end;
+
+L_WeaponReform2:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Weapon Reform List 2]^000000";
+	mes " ";
+	mes "Saint Hall / Undine Spear K / Demon Hunting Bible";
+	mes "Light Blade / Magic Sword / Fatalist";
+	mes "Iron Staff / Blue Crystal Staff / Shadow Staff K";
+	mes "Freezing Rod / Iron Nail K / Ray Knuckle";
+	mes "Sword of Bluefire / Slate Sword";
+	mes "Royal Bow K / Scalet Dragon L Bow";
+	mes "Trumpet Shell K / Barb Wire K / Narcis Bow";
+	mes "Avenger / Meteor Striker";
+	mes "Blade Katar / Shiver Katar K";
+	mes "Dragonic Slayer / Oriental Sword / Fog Dew Sword";
+	mes "Humma Clear / The Black Gatling / Crimson Rose";
+	mes "Demon S Shot / OneSkyOneSun";
+	mes "Golden L Launcher / Master Soul Rifle";
+	mes "SoulWeight / MeawFoxtail / Freedom Stick / Blessed Knife";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("C_Weapon_Reform_2");
+		end;
+	}
+	goto L_WeaponReformMenu;
+	end;
+
+L_WeaponReform3:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Weapon Reform List 3]^000000";
+	mes " ";
+	mes "Saint Hall / Undine Spear K / Demon Hunting Bible";
+	mes "Light Blade / Magic Sword / Fatalist";
+	mes "Iron Staff / Blue Crystal Staff / Shadow Staff K";
+	mes "Freezing Rod / Iron Nail K / Ray Knuckle";
+	mes "Sword of Bluefire / Slate Sword";
+	mes "Royal Bow K / Scalet Dragon L Bow";
+	mes "Trumpet Shell K / Barb Wire K / Narcis Bow";
+	mes "Avenger / Meteor Striker";
+	mes "Blade Katar / Shiver Katar K";
+	mes "Dragonic Slayer / Oriental Sword / Fog Dew Sword";
+	mes "Humma Clear / The Black Gatling / Crimson Rose";
+	mes "Demon S Shot / OneSkyOneSun";
+	mes "Golden L Launcher / Master Soul Rifle";
+	mes "SoulWeight / MeawFoxtail / Freedom Stick / Blessed Knife";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("C_Weapon_Reform_3");
+		end;
+	}
+	goto L_WeaponReformMenu;
+	end;
+
+// ============================================================
+// SPECIAL REFORM
+// ============================================================
+L_SpecialReformMenu:
+	mes "[Hollgrehenn]";
+	mes "Select Special Reform:";
+	next;
+	switch(select("[1] Thanos Weapon Reform List 1:[2] Thanos Weapon Reform List 2:Back")) {
+		case 1: goto L_ThanosWReform1; break;
+		case 2: goto L_ThanosWReform2; break;
+		case 3: goto L_ReformMenu; break;
+	}
+	end;
+
+// Thanos_W_Reform_1
+// Thanos Sword, Thanos Great Sword, Thanos Hammer, Thanos Dagger,
+// Thanos Rod, Thanos Whip, Thanos Violin, Thanos Staff,
+// Thanos Spear, Thanos Katar, Thanos Axe, Thanos Bow, Thanos Knuckle
+L_ThanosWReform1:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Thanos Weapon Reform List 1]^000000";
+	mes " ";
+	mes "Thanos Sword";
+	mes "Thanos Great Sword";
+	mes "Thanos Hammer";
+	mes "Thanos Dagger";
+	mes "Thanos Rod";
+	mes "Thanos Whip";
+	mes "Thanos Violin";
+	mes "Thanos Staff";
+	mes "Thanos Spear";
+	mes "Thanos Katar";
+	mes "Thanos Axe";
+	mes "Thanos Bow";
+	mes "Thanos Knuckle";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("Thanos_W_Reform_1");
+		end;
+	}
+	goto L_SpecialReformMenu;
+	end;
+
+// Thanos_W_Reform_2 - same items
+L_ThanosWReform2:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Thanos Weapon Reform List 2]^000000";
+	mes " ";
+	mes "Thanos Sword";
+	mes "Thanos Great Sword";
+	mes "Thanos Hammer";
+	mes "Thanos Dagger";
+	mes "Thanos Rod";
+	mes "Thanos Whip";
+	mes "Thanos Violin";
+	mes "Thanos Staff";
+	mes "Thanos Spear";
+	mes "Thanos Katar";
+	mes "Thanos Axe";
+	mes "Thanos Bow";
+	mes "Thanos Knuckle";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("Thanos_W_Reform_2");
+		end;
+	}
+	goto L_SpecialReformMenu;
+	end;
+
+// ============================================================
+// CLASS ITEM REFORM
+// 4th Job classes in Ragnarok Online:
+// Swordsman line:    Arch Bishop -> Inquisitor | Lord Knight -> Dragon Knight | Paladin -> Imperial Guard
+// Mage line:         High Wizard -> Arcane Master | Warlock -> Soul Reaper (Abyss Chaser) | Professor -> Elemental Master
+// Archer line:       Sniper -> Windhawk | Clown/Gypsy -> Troubadour/Trouvere
+// Thief line:        Assassin Cross -> Shadow Cross | Stalker -> Abyss Chaser
+// Merchant line:     Whitesmith -> Mechanic (Meister) | Creator -> Biolo | Blacksmith -> Genetic
+// Acolyte line:      High Priest -> Arch Bishop (Inquisitor) | Champion -> Sura
+// Ninja line:        Kagerou/Oboro -> Ninja 4th
+// Taekwon line:      Star Emperor / Soul Reaper
+// Gunslinger line:   Night Watch
+// ============================================================
+L_ClassReformMenu:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Class Item Reform]^000000";
+	mes "Select your class:";
+	next;
+	// Note: select() supports max 9 options, split into 2 pages
+	switch(select("Dragon Knight:Imperial Guard:Arch Bishop:Inquisitor:Windhawk:Troubadour / Trouvere:Shadow Cross:Abyss Chaser:More Classes...")) {
+		case 1: goto L_Class_DragonKnight; break;
+		case 2: goto L_Class_ImperialGuard; break;
+		case 3: goto L_Class_ArchBishop; break;
+		case 4: goto L_Class_Inquisitor; break;
+		case 5: goto L_Class_Windhawk; break;
+		case 6: goto L_Class_Troubadour; break;
+		case 7: goto L_Class_ShadowCross; break;
+		case 8: goto L_Class_AbyssChaser; break;
+		case 9: goto L_ClassReformMenu2; break;
+	}
+	end;
+
+L_ClassReformMenu2:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Class Item Reform]^000000";
+	mes "Select your class:";
+	next;
+	switch(select("Meister:Biolo:Elemental Master:Arcane Master:Sura:Soul Reaper:Night Watch:Star Emperor:Back")) {
+		case 1: goto L_Class_Meister; break;
+		case 2: goto L_Class_Biolo; break;
+		case 3: goto L_Class_ElementalMaster; break;
+		case 4: goto L_Class_ArcaneMaster; break;
+		case 5: goto L_Class_Sura; break;
+		case 6: goto L_Class_SoulReaper; break;
+		case 7: goto L_Class_NightWatch; break;
+		case 8: goto L_Class_StarEmperor; break;
+		case 9: goto L_ClassReformMenu; break;
+	}
+	end;
+
+// ---- Class Reform placeholders - add item_reform() calls when ready ----
+
+// Dragon Knight (Lord Knight -> Rune Knight -> Dragon Knight)
+L_Class_DragonKnight:
+	mes "[Enduring Power]";
+	mes "^FF0000[Dragon Knight Reform]^000000";
+	mes "Select tier:";
+	next;
+	switch(select("[1] Twinhead Dragon:[2] Dragon Knight Reform List 2:[3] Dragon Knight Reform List 3:Back")) {
+		case 1: goto L_DK_Reform1; break;
+		case 2: goto L_DK_Reform2; break;
+		case 3: goto L_DK_Reform3; break;
+		case 4: goto L_ClassReformMenu; break;
+	}
+	end;
+
+// EnduringPower_DragonKnight
+// Twinhead Dragon Scale, Twinhead Dragon Boots, Twinhead Dragonmail
+L_DK_Reform1:
+	mes "[Enduring Power]";
+	mes "^FF0000[Twinhead Dragon Reform]^000000";
+	mes " ";
+	mes "^0000CC Twinhead Dragon Scale ^000000";
+	mes "^0000CC Twinhead Dragon Boots ^000000";
+	mes "^0000CC Twinhead Dragonmail ^000000";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("EnduringPower_DragonKnight");
+		end;
+	}
+	goto L_Class_DragonKnight;
+	end;
+
+// EnduringPower_Twinhead_Dragon2
+// Twinhead Dragon Scale, Twinhead Dragon Boots, Twinhead Dragonmail
+L_DK_Reform2:
+	mes "[Enduring Power]";
+	mes "^FF0000[Dragon Knight Reform List 2]^000000";
+	mes " ";
+	mes "^0000CC Twinhead Dragon Scale ^000000";
+	mes "^0000CC Twinhead Dragon Boots ^000000";
+	mes "^0000CC Twinhead Dragonmail ^000000";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("EnduringPower_Twinhead_Dragon2");
+		end;
+	}
+	goto L_Class_DragonKnight;
+	end;
+
+// EnduringPower_Twinhead_Dragon3
+// Twinhead Dragon Scale, Twinhead Dragon Boots, Twinhead Dragonmail
+L_DK_Reform3:
+	mes "[Enduring Power]";
+	mes "^FF0000[Dragon Knight Reform List 3]^000000";
+	mes " ";
+	mes "Twinhead Dragon Scale";
+	mes "Twinhead Dragon Boots";
+	mes "Twinhead Dragonmail";
+	next;
+	if(select("Proceed:Back") == 1) {
+		close2; cutin "",255;
+		item_reform("EnduringPower_Twinhead_Dragon3");
+		end;
+	}
+	goto L_Class_DragonKnight;
+	end;
+
+// Imperial Guard (Paladin -> Royal Guard -> Imperial Guard)
+L_Class_ImperialGuard:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Imperial Guard Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu;
+	end;
+
+// Arch Bishop (Priest -> High Priest -> Arch Bishop)
+L_Class_ArchBishop:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Arch Bishop Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu;
+	end;
+
+// Inquisitor (Arch Bishop -> Inquisitor)
+L_Class_Inquisitor:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Inquisitor Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu;
+	end;
+
+// Windhawk (Hunter -> Sniper -> Ranger -> Windhawk)
+L_Class_Windhawk:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Windhawk Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu;
+	end;
+
+// Troubadour / Trouvere (Bard/Dancer -> Clown/Gypsy -> Minstrel/Wanderer -> Troubadour/Trouvere)
+L_Class_Troubadour:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Troubadour / Trouvere Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu;
+	end;
+
+// Shadow Cross (Assassin -> Assassin Cross -> Guillotine Cross -> Shadow Cross)
+L_Class_ShadowCross:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Shadow Cross Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu;
+	end;
+
+// Abyss Chaser (Rogue -> Stalker -> Shadow Chaser -> Abyss Chaser)
+L_Class_AbyssChaser:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Abyss Chaser Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu;
+	end;
+
+// Meister (Blacksmith -> Whitesmith -> Mechanic -> Meister)
+L_Class_Meister:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Meister Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// Biolo (Alchemist -> Creator -> Geneticist -> Biolo)
+L_Class_Biolo:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Biolo Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// Elemental Master (Sage -> Professor -> Sorcerer -> Elemental Master)
+L_Class_ElementalMaster:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Elemental Master Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// Arcane Master (Mage -> High Wizard -> Warlock -> Arcane Master)
+L_Class_ArcaneMaster:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Arcane Master Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// Sura (Monk -> Champion -> Sura)
+L_Class_Sura:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Sura Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// Soul Reaper (Ninja line 4th)
+L_Class_SoulReaper:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Soul Reaper Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// Night Watch (Gunslinger -> Rebellion -> Night Watch)
+L_Class_NightWatch:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Night Watch Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// Star Emperor (Taekwon -> Star Gladiator -> Star Emperor)
+L_Class_StarEmperor:
+	mes "[Hollgrehenn]";
+	mes "^FF0000[Star Emperor Reform]^000000";
+	mes " ";
+	mes "^777777(Items will be added soon)^000000";
+	next;
+	if(select("Back") == 1) goto L_ClassReformMenu2;
+	end;
+
+// ============================================================
+// MAIN MENU (return label)
+// ============================================================
+L_MainMenu:
+	mes "[Hollgrehenn]";
+	mes "Welcome!";
+	mes "I can help you ^0000FFRefine^000000 your equipment";
+	mes "or ^FF0000Reform^000000 special items.";
+	next;
+	switch(select("Refine Equipment:Reform Items:Cancel")) {
+		case 1:
+			if( getbattleflag( "feature.refineui" ) ){
+				close2; cutin "",255;
+				refineui();
+				end;
+			} else {
+				cutin "",255;
+				callfunc "refinemain","Hollgrehenn",0;
+				end;
+			}
+			break;
+		case 2: goto L_ReformMenu; break;
+		case 3:
+			mes "[Hollgrehenn]";
+			mes "Alright, see you again!";
+			close2; cutin "",255;
+			end;
+	}
+	close2; cutin "",255;
+	end;
+}

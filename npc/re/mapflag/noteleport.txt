@@ -180,7 +180,7 @@ verus04	mapflag	monster_noteleport
 //============================================================
 // Nightmare Biolab
 //============================================================
-lhz_dun_n	mapflag	noteleport
+//lhz_dun_n	mapflag	noteleport
 lhz_d_n2	mapflag	noteleport
 
 //============================================================
@@ -372,7 +372,7 @@ job4_tro	mapflag	noteleport
 //============================================================
 // Traces of Heroes
 //============================================================
-1@mjo1	mapflag	noteleport
+//1@mjo1	mapflag	noteleport
 1@mjo2	mapflag	noteleport
 1@spa2	mapflag	noteleport
 1@mjo1	mapflag	monster_noteleport
@@ -402,7 +402,7 @@ job4_tro	mapflag	noteleport
 //============================================================
 // Glastheim Challenge Mode
 //============================================================
-1@gl_he	mapflag	noteleport
+//1@gl_he	mapflag	noteleport
 1@gl_he2	mapflag	noteleport
 1@gl_he	mapflag	monster_noteleport
 1@gl_he2	mapflag	monster_noteleport
@@ -411,7 +411,7 @@ job4_tro	mapflag	noteleport
 // EDDA
 //============================================================
 1@gl_prq	mapflag	noteleport
-1@gol1	mapflag	noteleport
+//1@gol1	mapflag	noteleport
 1@gol2	mapflag	noteleport
 1@gl_prq	mapflag	monster_noteleport
 1@gol1	mapflag	monster_noteleport

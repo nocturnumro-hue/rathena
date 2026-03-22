@@ -1,0 +1,108 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC TRADER - DEPTH MATERIALS
+// ============================================
+ba_in01,292,118,5	script	Biosphere Depth SHOP	563,{
+	.@points_depth1 = get_reputation_points(REPU_BIO_DEEP1);
+	.@points_depth2 = get_reputation_points(REPU_BIO_DEEP2);
+	
+	mes "[Depth Trader]";
+	mes "Welcome to the ^0000FFDepth Material Exchange^000000!";
+	mes "^FF8800Current Reputation Points:^000000";
+	mes "^0000FFDepth 1:^000000 " + (.@points_depth1 >= 500 ? "^00FF00" + .@points_depth1 + "/500^000000" : "^FF0000" + .@points_depth1 + "/500^000000");
+	mes "^9900FFDepth 1 VIP:^000000 " + (.@points_depth1 >= 1000 ? "^00FF00" + .@points_depth1 + "/1000^000000" : "^FF0000" + .@points_depth1 + "/1000^000000");
+	mes "^0000FFDepth 2:^000000 " + (.@points_depth2 >= 1000 ? "^00FF00" + .@points_depth2 + "/1000^000000" : "^FF0000" + .@points_depth2 + "/1000^000000");
+	mes "^9900FFDepth 2 VIP:^000000 " + (.@points_depth2 >= 2000 ? "^00FF00" + .@points_depth2 + "/2000^000000" : "^FF0000" + .@points_depth2 + "/2000^000000");
+	mes " ";
+	
+	// Build menu based on reputation
+	.@menu$ = "";
+	.@depth1_available = 0;
+	.@depth2_available = 0;
+	.@depth1_vip_available = 0;
+	.@depth2_vip_available = 0;
+	
+	if (.@points_depth1 >= 500) {
+		.@menu$ = .@menu$ + "Varmundt Depth 1:";
+		.@depth1_available = 1;
+	}
+	if (.@points_depth1 >= 1000) {
+		.@menu$ = .@menu$ + "Varmundt Depth 1 VIP:";
+		.@depth1_vip_available = 1;
+	}
+	if (.@points_depth2 >= 1000) {
+		.@menu$ = .@menu$ + "Varmundt Depth 2:";
+		.@depth2_available = 1;
+	}
+	if (.@points_depth2 >= 2000) {
+		.@menu$ = .@menu$ + "Varmundt Depth 2 VIP:";
+		.@depth2_vip_available = 1;
+	}
+	.@menu$ = .@menu$ + "Exit";
+	
+	if (.@depth1_available == 0 && .@depth1_vip_available == 0 && .@depth2_available == 0 && .@depth2_vip_available == 0) {
+		mes "You don't have enough reputation points!";
+		close;
+	}
+	
+	mes "Please select your tier:";
+	next;
+	
+	.@choice = select(.@menu$);
+	.@option_count = 1;
+	
+	// Check Depth 1 Normal
+	if (.@depth1_available == 1) {
+		if (.@choice == .@option_count) {
+			mes "[Varmundt Depth 1]";
+			mes "Opening Depth 1 shop...";
+			close2;
+			callshop "Depth_Shop_1";
+			end;
+		}
+		.@option_count++;
+	}
+	
+	// Check Depth 1 VIP
+	if (.@depth1_vip_available == 1) {
+		if (.@choice == .@option_count) {
+			mes "[Varmundt Depth 1 VIP]";
+			mes "Opening Depth 1 VIP shop...";
+			close2;
+			callshop "Depth_Shop_VIP";
+			end;
+		}
+		.@option_count++;
+	}
+	
+	// Check Depth 2 Normal
+	if (.@depth2_available == 1) {
+		if (.@choice == .@option_count) {
+			mes "[Varmundt Depth 2]";
+			mes "Opening Depth 2 shop...";
+			close2;
+			callshop "Depth2_Shop_1";
+			end;
+		}
+		.@option_count++;
+	}
+	
+	// Check Depth 2 VIP
+	if (.@depth2_vip_available == 1) {
+		if (.@choice == .@option_count) {
+			mes "[Varmundt Depth 2 VIP]";
+			mes "Opening Depth 2 VIP shop...";
+			close2;
+			callshop "Depth2_Shop_VIP";
+			end;
+		}
+		.@option_count++;
+	}
+	
+	// Exit
+	mes "[Depth Trader]";
+	mes "Have a good day!";
+	mes "Good Bye!";
+	close;
+}

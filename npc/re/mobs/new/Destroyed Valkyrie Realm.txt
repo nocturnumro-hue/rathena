@@ -1,0 +1,10 @@
+//==================================================
+// hem_dun02 - Destroyed Valkyrie Realm (Extreme Difficulty)
+// Level 220-277 High Density (200+ mobs)
+//==================================================
+
+hem_dun02	monster	Infectious Agent	22471,85
+hem_dun02	monster	Bizarre Prus	22472,85
+hem_dun02	monster	Earwax	22473,85
+hem_dun02	monster	Immortal Legion Officer	22474,65
+hem_dun02	monster	Immortal Legion Officer2	22475,65

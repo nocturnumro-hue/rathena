@@ -1,0 +1,183 @@
+//===================================================
+//= NPC: Buy VIP with Cash Points (Complete Version)
+//= Author: Nam (Fixed + VIP Icon)
+//= File: npc/custom/vip_cash_seller.txt
+//= Command: @reloadnpcfile npc/custom/vip_cash_seller.txt
+//= Fix: SC_VIPSTATE dung duration thuc, apply lai khi login/restart
+//===================================================
+prontera,162,198,5	script	VIP Upgrade	10369,{
+	set .@npc_name$, "[^0000FF VIP Seller ^000000]";
+	mes .@npc_name$;
+	mes "Hello! I offer several VIP packages:";
+	mes "Your current Cash Points: ^00FF00" + #CASHPOINTS + "^000000";
+	next;
+	
+	switch(select("3 Days (30,000 CP):7 Days (60,000 CP):30 Days (250,000 CP):Check VIP Time:Cancel")) {
+		case 1: callsub(L_BuyVIP, 30000, 3); end;
+		case 2: callsub(L_BuyVIP, 60000, 7); end;
+		case 3: callsub(L_BuyVIP, 250000, 30); end;
+		case 4:
+			mes .@npc_name$;
+			if (#vip_time > gettimetick(2)) {
+				mes "^00FF00You are a VIP member!^000000";
+				mes " ";
+				mes "Your VIP expires in:";
+				mes "^0088FF" + callfunc("F_VIPTime2Str", #vip_time) + "^000000";
+			} else {
+				mes "You are not a VIP user.";
+			}
+			close;
+		case 5:
+			mes .@npc_name$;
+			mes "See you next time!";
+			close;
+	}
+	
+L_BuyVIP:
+	.@price = getarg(0);
+	.@days  = getarg(1);
+	
+	if (#CASHPOINTS < .@price) {
+		mes .@npc_name$;
+		mes "Sorry, you don't have enough Cash Points.";
+		mes " ";
+		mes "Required: ^FF0000" + callfunc("F_InsertComma", .@price) + " CP^000000";
+		mes "Current: ^0055FF" + callfunc("F_InsertComma", #CASHPOINTS) + " CP^000000";
+		close;
+	}
+	
+	// Deduct cash
+	set #CASHPOINTS, #CASHPOINTS - .@price;
+	
+	// Calculate new VIP expiration time
+	.@seconds = .@days * 86400;
+	if (#vip_time < gettimetick(2))
+		set #vip_time, gettimetick(2) + .@seconds;
+	else
+		set #vip_time, #vip_time + .@seconds;
+	
+	// ===== SAVE VIP TO DATABASE (PERMANENT) =====
+	.@aid = getcharid(3);
+	query_sql("UPDATE `login` SET `group_id` = 5 WHERE `account_id` = " + .@aid);
+	
+	// ===== APPLY VIP STATUS EFFECT WITH REAL REMAINING TIME =====
+	.@vip_duration = (#vip_time - gettimetick(2)) * 1000;
+	sc_end SC_VIPSTATE;
+	sc_start SC_VIPSTATE, .@vip_duration, 1;
+	
+	// Announce to server
+	announce strcharinfo(0) + " has become a VIP member for " + .@days + " days!", bc_all, 0x00FF00;
+	
+	mes .@npc_name$;
+	mes "^00FF00Congratulations!^000000";
+	mes "You bought VIP for ^FF0000" + .@days + " days^000000.";
+	mes " ";
+	mes "Your VIP will expire in:";
+	mes "^0088FF" + callfunc("F_VIPTime2Str", #vip_time) + "^000000";
+	close;
+	
+OnInit:
+	waitingroom "VIP Seller", 0;
+	bindatcmd "fixvip",   strnpcinfo(3)+"::OnFixVIP",   0, 100;
+	bindatcmd "resetvip", strnpcinfo(3)+"::OnResetVIP", 99, 99; // GM only
+	end;
+
+OnFixVIP:
+	if (#vip_time > gettimetick(2)) {
+		.@vip_duration = (#vip_time - gettimetick(2)) * 1000;
+		sc_end SC_VIPSTATE;
+		sc_start SC_VIPSTATE, .@vip_duration, 1;
+		dispbottom "================================================";
+		dispbottom "^00FF00VIP icon refreshed successfully!^000000";
+		dispbottom "VIP remaining: ^0088FF" + callfunc("F_VIPTime2Str", #vip_time) + "^000000";
+		dispbottom "================================================";
+	} else {
+		dispbottom "^FF0000You are not a VIP member.^000000";
+	}
+	end;
+
+OnResetVIP:
+	// GM only - reset VIP for testing
+	.@aid = getcharid(CHAR_ID_ACCOUNT);
+	query_sql("UPDATE `login` SET `group_id` = 0 WHERE `account_id` = " + .@aid);
+	set #vip_time, 0;
+	sc_end SC_VIPSTATE;
+	dispbottom "================================================";
+	dispbottom "^FF0000[GM] VIP has been reset!^000000";
+	dispbottom "vip_time cleared, group_id set to 0";
+	dispbottom "SC_VIPSTATE removed";
+	dispbottom "^FFFF00Relog to apply group change fully.^000000";
+	dispbottom "================================================";
+	end;
+}
+
+//===== Function: Format VIP Expiration Time =====
+function	script	F_VIPTime2Str	{
+	.@left = getarg(0) - gettimetick(2);
+	if (.@left <= 0) return "Expired";
+	.@days  = .@left / 86400;
+	.@hours = (.@left % 86400) / 3600;
+	.@mins  = (.@left % 3600) / 60;
+	return .@days + " days " + .@hours + " hours " + .@mins + " minutes";
+}
+
+//===== VIP Expiration Checker (Runs every hour) =====
+-	script	VIP_Checker	-1,{
+OnInit:
+	initnpctimer;
+	end;
+
+OnTimer3600000: // 1 hour
+	.@online = getunits(BL_PC, .@players);
+	
+	for (.@i = 0; .@i < .@online; .@i++) {
+		if(attachrid(.@players[.@i])) {
+			
+			// ===== VIP EXPIRED =====
+			if (#vip_time > 0 && #vip_time <= gettimetick(2)) {
+				.@aid = getcharid(3);
+				query_sql("UPDATE `login` SET `group_id` = 0 WHERE `account_id` = " + .@aid);
+				
+				// Remove VIP status icon
+				sc_end SC_VIPSTATE;
+				
+				set #vip_time, 0;
+				
+				message strcharinfo(0), "Your VIP membership has expired!";
+				dispbottom "Your VIP membership has expired. Please visit VIP Seller to renew.";
+			}
+			// ===== VIP STILL ACTIVE - refresh sc_start với duration mới =====
+			else if (#vip_time > gettimetick(2)) {
+				.@vip_duration = (#vip_time - gettimetick(2)) * 1000;
+				sc_end SC_VIPSTATE;
+				sc_start SC_VIPSTATE, .@vip_duration, 1;
+				dispbottom "VIP remaining: " + callfunc("F_VIPTime2Str", #vip_time);
+			}
+		}
+	}
+	
+	initnpctimer;
+	end;
+}
+
+//===== VIP Auto-Apply on Login =====
+-	script	VIP_OnLogin	-1,{
+OnPCLoginEvent:
+	// Check if player has active VIP
+	if (#vip_time > gettimetick(2)) {
+		// sc_end trước để force refresh icon đúng duration
+		.@vip_duration = (#vip_time - gettimetick(2)) * 1000;
+		sc_end SC_VIPSTATE;
+		sc_start SC_VIPSTATE, .@vip_duration, 1;
+		dispbottom "Welcome back, VIP member! Your VIP expires in: " + callfunc("F_VIPTime2Str", #vip_time);
+	}
+	else if (#vip_time > 0 && #vip_time <= gettimetick(2)) {
+		// VIP expired while offline - clean up
+		.@aid = getcharid(3);
+		query_sql("UPDATE `login` SET `group_id` = 0 WHERE `account_id` = " + .@aid);
+		set #vip_time, 0;
+		sc_end SC_VIPSTATE;
+		dispbottom "Your VIP membership has expired. Please visit VIP Seller to renew.";
+	}
+	end;
+}

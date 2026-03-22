@@ -835,6 +835,9 @@ void pc_setinvincibletimer(map_session_data& sd) {
 	t_tick val;
 	map_data* mapdata = map_getmapdata(sd.m);
 
+   if(sd.sc.getSCE(SC_AUTOATTACK))
+       return;
+
 	if (mapdata != nullptr && mapdata->getMapFlag(MF_INVINCIBLE_TIME) > 0)
 		val = mapdata->getMapFlag(MF_INVINCIBLE_TIME);
 	else
@@ -1356,7 +1359,13 @@ void pc_makesavestatus(map_session_data *sd) {
 		sd->status.clothes_color = 0;
 
 	if(!battle_config.save_body_style)
+	{
+#if PACKETVER >= 20231220
+ 		sd->status.body = sd->status.class_;
+#else
 		sd->status.body = 0;
+#endif
+ 	}
 
 	//Only copy the Cart/Peco/Falcon options, the rest are handled via
 	//status change load/saving. [Skotlex]
@@ -2073,6 +2082,174 @@ bool pc_lastpoint_special( map_session_data& sd ){
 	return false;
 }
 
+void pc_aa_load(map_session_data* sd){
+	int type;
+	t_tick tick = gettick();
+
+	// aa_common_config
+	if (Sql_Query(mmysql_handle,
+		"SELECT `stopmelee`,`pickup_item_config`,`prio_item_config`,`aggressive_behavior`,`autositregen_conf`,`autositregen_maxhp`,`autositregen_minhp`,`autositregen_maxsp`,`autositregen_minsp`,`tp_use_teleport`,`tp_use_flywing`,`tp_min_hp`,`tp_delay_nomobmeet` "
+		"FROM `aa_common_config` "
+		"WHERE `char_id` = %d ",
+		sd->status.char_id ) != SQL_SUCCESS )
+	{
+		Sql_ShowDebug(mmysql_handle);
+		return;
+	}
+
+	if( Sql_NumRows(mmysql_handle) > 0 ){
+		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
+			char* data;
+			Sql_GetData(mmysql_handle, 0, &data, NULL); sd->aa.stopmelee = atoi(data);
+			Sql_GetData(mmysql_handle, 1, &data, NULL); sd->aa.pickup_item_config = atoi(data);
+			Sql_GetData(mmysql_handle, 2, &data, NULL); sd->aa.prio_item_config = atoi(data);
+			Sql_GetData(mmysql_handle, 3, &data, NULL); sd->aa.mobs.aggressive_behavior = atoi(data);
+			Sql_GetData(mmysql_handle, 4, &data, NULL); sd->aa.autositregen.is_active = atoi(data);
+			Sql_GetData(mmysql_handle, 5, &data, NULL); sd->aa.autositregen.max_hp = atoi(data);
+			Sql_GetData(mmysql_handle, 6, &data, NULL); sd->aa.autositregen.min_hp = atoi(data);
+			Sql_GetData(mmysql_handle, 7, &data, NULL); sd->aa.autositregen.max_sp = atoi(data);
+			Sql_GetData(mmysql_handle, 8, &data, NULL); sd->aa.autositregen.min_sp = atoi(data);
+			Sql_GetData(mmysql_handle, 9, &data, NULL); sd->aa.teleport.use_teleport = atoi(data);
+			Sql_GetData(mmysql_handle, 10, &data, NULL); sd->aa.teleport.use_flywing = atoi(data);
+			Sql_GetData(mmysql_handle, 11, &data, NULL); sd->aa.teleport.min_hp = atoi(data);
+			Sql_GetData(mmysql_handle, 12, &data, NULL); sd->aa.teleport.delay_nomobmeet = atoi(data);
+		}
+	} else {
+		sd->aa.stopmelee = 0;	
+		sd->aa.pickup_item_config = 0;
+		sd->aa.prio_item_config = 0;
+		sd->aa.mobs.aggressive_behavior = 0;
+		sd->aa.autositregen.is_active = 0;
+		sd->aa.autositregen.max_hp = 0;
+		sd->aa.autositregen.min_hp = 0;
+		sd->aa.autositregen.max_sp = 0;
+		sd->aa.autositregen.min_sp = 0;
+		sd->aa.teleport.use_teleport = 0;
+		sd->aa.teleport.use_flywing = 0;
+		sd->aa.teleport.min_hp = 0;
+		sd->aa.teleport.delay_nomobmeet = 0;
+	}
+	Sql_FreeResult(mmysql_handle);
+
+	// aa_items
+	if (Sql_Query(mmysql_handle,
+		"SELECT `type`,`item_id`,`min_hp`,`min_sp`,`delay` "
+		"FROM `aa_items` "
+		"WHERE `char_id` = %d ",
+		sd->status.char_id ) != SQL_SUCCESS )
+	{
+		Sql_ShowDebug(mmysql_handle);
+		return;
+	}
+
+	if( Sql_NumRows(mmysql_handle) > 0 ){
+		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
+			char* data;
+			Sql_GetData(mmysql_handle, 0, &data, NULL); type = atoi(data);
+			switch(type){
+				case 0:
+					struct s_autobuffitems autobuffitems;
+					autobuffitems.is_active = 1;
+					Sql_GetData(mmysql_handle, 1, &data, NULL); autobuffitems.item_id = atoi(data);
+					Sql_GetData(mmysql_handle, 4, &data, NULL); autobuffitems.delay = atoi(data);
+					autobuffitems.last_use = 0;
+					sd->aa.autobuffitems.push_back(autobuffitems);
+					break;
+				case 1:
+					struct s_autopotion autopotion;
+					autopotion.is_active = 1;
+					Sql_GetData(mmysql_handle, 1, &data, NULL); autopotion.item_id = atoi(data);
+					Sql_GetData(mmysql_handle, 2, &data, NULL); autopotion.min_hp = atoi(data);
+					Sql_GetData(mmysql_handle, 3, &data, NULL); autopotion.min_sp = atoi(data);
+					sd->aa.autopotion.push_back(autopotion);
+					break;
+				case 2:
+					t_itemid nameid;
+					Sql_GetData(mmysql_handle, 1, &data, NULL); nameid = atoi(data);
+					sd->aa.pickup_item_id.push_back(nameid);
+					break;
+			}
+		}
+	}
+	Sql_FreeResult(mmysql_handle);
+
+	// aa_mobs
+	if (Sql_Query(mmysql_handle,
+		"SELECT `mob_id` "
+		"FROM `aa_mobs` "
+		"WHERE `char_id` = %d ",
+		sd->status.char_id ) != SQL_SUCCESS )
+	{
+		Sql_ShowDebug(mmysql_handle);
+		return;
+	}
+
+	if( Sql_NumRows(mmysql_handle) > 0 ){
+		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
+			char* data;
+			uint32 mob_id;
+			Sql_GetData(mmysql_handle, 0, &data, NULL); mob_id = atoi(data);
+			sd->aa.mobs.id.push_back(mob_id);
+		}
+	}
+	Sql_FreeResult(mmysql_handle);
+
+	// aa_skills
+	if (Sql_Query(mmysql_handle,
+		"SELECT `type`,`skill_id`,`skill_lv`,`min_hp`"
+		"FROM `aa_skills` "
+		"WHERE `char_id` = %d ",
+		sd->status.char_id ) != SQL_SUCCESS )
+	{
+		Sql_ShowDebug(mmysql_handle);
+		return;
+	}
+
+	if( Sql_NumRows(mmysql_handle) > 0 ){
+		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
+			char* data;
+			Sql_GetData(mmysql_handle, 0, &data, NULL); type = atoi(data);
+			switch(type){
+				case 0:
+					struct s_autoheal autoheal;
+					autoheal.is_active = 1;
+					Sql_GetData(mmysql_handle, 1, &data, NULL); autoheal.skill_id = atoi(data);
+					Sql_GetData(mmysql_handle, 2, &data, NULL); autoheal.skill_lv = atoi(data);
+					Sql_GetData(mmysql_handle, 3, &data, NULL); autoheal.min_hp = atoi(data);
+					autoheal.last_use = 1;
+					sd->aa.autoheal.push_back(autoheal);
+					break;
+				case 1:
+					struct s_autobuffskills autobuffskills;
+					autobuffskills.is_active = 1;
+					Sql_GetData(mmysql_handle, 1, &data, NULL); autobuffskills.skill_id = atoi(data);
+					Sql_GetData(mmysql_handle, 2, &data, NULL); autobuffskills.skill_lv = atoi(data);
+					autobuffskills.last_use = 1;
+					sd->aa.autobuffskills.push_back(autobuffskills);
+					break;
+				case 2:
+					struct s_autoattackskills autoattackskills;
+					autoattackskills.is_active = 1;
+					Sql_GetData(mmysql_handle, 1, &data, NULL); autoattackskills.skill_id = atoi(data);
+					Sql_GetData(mmysql_handle, 2, &data, NULL); autoattackskills.skill_lv = atoi(data);
+					autoattackskills.last_use = 1;
+					sd->aa.autoattackskills.push_back(autoattackskills);
+					break;
+			}
+		}
+	}
+	Sql_FreeResult(mmysql_handle);
+
+	sd->aa.last_hit = gettick();
+	sd->aa.last_teleport = gettick();
+	sd->aa.last_move = gettick();
+	sd->aa.last_attack = gettick();
+	sd->aa.attack_target_id = 0;
+	sd->aa.target_id = 0;
+	sd->aa.itempick_id = 0;
+}
+
+
 /*==========================================
  * No problem with the session id
  * set the status that has been sent from char server
@@ -2299,6 +2476,8 @@ bool pc_authok(map_session_data *sd, uint32 login_id2, time_t expiration_time, i
 		sd->status.job_exp = MAX_LEVEL_JOB_EXP;
 		clif_updatestatus(*sd, SP_JOBEXP);
 	}
+
+	pc_aa_load(sd);
 
 	// Request all registries (auth is considered completed whence they arrive)
 	intif_request_registry(sd,7);
@@ -6142,14 +6321,26 @@ bool pc_dropitem(map_session_data *sd,int32 n,int32 amount)
 
 	return true;
 }
+bool pc_faketakeitem(map_session_data* sd)
+{
+	if (!sd)
+		return false;
 
+	unit_stop_attack(sd);
+
+	block_list fake_dst{};
+	fake_dst.id = 0;
+
+	clif_takeitem(*sd, fake_dst);
+	return true;
+}
 /*==========================================
  * Attempt to pick up an item.
  * @param sd
  * @param fitem Item that will be picked
  * @return False = fail; True = success
  *------------------------------------------*/
-bool pc_takeitem(map_session_data *sd,flooritem_data *fitem)
+bool pc_takeitem(map_session_data *sd,struct flooritem_data *fitem)
 {
 	int32 flag = 0;
 	t_tick tick = gettick();
@@ -6793,7 +6984,7 @@ bool pc_steal_item(map_session_data *sd,block_list *bl, uint16 skill_lv)
 	status_data* md_status = status_get_status_data(*bl);
 
 	if (md->master_id || status_has_mode(md_status, MD_STATUSIMMUNE) || util::vector_exists(status_get_race2(md), RC2_TREASURE) ||
-		map_getmapflag(bl->m, MF_NOMOBLOOT) || // check noloot map flag [Lorky]
+		map_getmapflag(bl->m, MF_NOMOBLOOT) || md->get_bosstype() == BOSSTYPE_NONE && map_getmapflag(bl->m, MF_NOLOOTNORMALMOB) || // check noloot map flag [Lorky]
 		(battle_config.skill_steal_max_tries && //Reached limit of steal attempts. [Lupus]
 			md->state.steal_flag++ >= battle_config.skill_steal_max_tries)
   	) { //Can't steal from
@@ -6899,7 +7090,7 @@ enum e_setpos pc_setpos(map_session_data* sd, uint16 mapindex, int32 x, int32 y,
 		return SETPOS_MAPINDEX;
 	}
 
-	if ( sd->state.autotrade && (sd->vender_id || sd->buyer_id) ) // Player with autotrade just causes clif glitch! @ FIXME
+	if ( (sd->sc.getSCE(SC_AUTOATTACK) && sd->mapindex != mapindex) || (sd->state.autotrade && sd->sc.getSCE(SC_AUTOATTACK)) || (sd->state.autotrade && (sd->vender_id || sd->buyer_id)) ) // Player with autotrade just causes clif glitch! @ FIXME
 		return SETPOS_AUTOTRADE;
 
 	if( battle_config.revive_onwarp && pc_isdead(sd) ) { //Revive dead people before warping them
@@ -9644,6 +9835,7 @@ static TIMER_FUNC(pc_respawn_timer){
  *------------------------------------------*/
 void pc_damage(map_session_data *sd,block_list *src,uint32 hp, uint32 sp, uint32 ap)
 {
+	struct status_data* status = status_get_status_data(*sd);
 	if (ap) clif_updatestatus(*sd,SP_AP);
 	if (sp) clif_updatestatus(*sd,SP_SP);
 	if (hp) clif_updatestatus(*sd,SP_HP);
@@ -9668,6 +9860,19 @@ void pc_damage(map_session_data *sd,block_list *src,uint32 hp, uint32 sp, uint32
 
 	if(battle_config.prevent_logout_trigger&PLT_DAMAGE)
 		sd->canlog_tick = gettick();
+
+	if(sd->sc.getSCE(SC_AUTOATTACK)){
+		if((!sd->aa.teleport.use_teleport || !sd->aa.teleport.use_flywing) && sd->aa.teleport.min_hp && (status->hp * 100 / sd->aa.teleport.min_hp) < sd->status.max_hp)
+			aa_teleport(sd);
+
+		if(!sd->aa.target_id && !sd->aa.mobs.aggressive_behavior && src->type == BL_MOB){
+			if(sd->aa.itempick_id)
+				sd->aa.itempick_id = 0; // priority to defend player
+			sd->aa.target_id = src->id;
+		}
+
+		sd->aa.last_hit = gettick();
+	}
 }
 
 TIMER_FUNC(pc_close_npc_timer){
@@ -9737,6 +9942,12 @@ int32 pc_dead(map_session_data *sd,block_list *src)
 	t_tick tick = gettick();
 	struct map_data *mapdata = map_getmapdata(sd->m);
 
+	status_change_end(sd, SC_AUTOATTACK);
+	for(auto &itAutobuffitem : sd->aa.autobuffitems){
+		if(itAutobuffitem.is_active)				
+			itAutobuffitem.last_use = 0;
+	}
+
 	// Activate Steel body if a super novice dies at 99+% exp [celest]
 	// Super Novices have no kill or die functions attached when saved by their angel
 	if (!sd->state.snovice_dead_flag && (sd->class_&MAPID_SECONDMASK) == MAPID_SUPER_NOVICE) {
@@ -9800,7 +10011,7 @@ int32 pc_dead(map_session_data *sd,block_list *src)
 	}
 
 	if(sd->status.pet_id > 0 && sd->pd) {
-		pet_data *pd = sd->pd;
+		struct pet_data *pd = sd->pd;
 		if( !mapdata->getMapFlag(MF_NOEXPPENALTY) ) {
 			pet_set_intimate(pd, pd->pet.intimate + pd->get_pet_db()->die);
 			clif_send_petdata( sd, *sd->pd, CHANGESTATEPET_INTIMACY );
@@ -10866,6 +11077,21 @@ bool pc_jobchange(map_session_data *sd,int32 job, char upper)
 		pc_resethate(sd);
 	}
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+	// Reset body style to 0 before changing job to avoid
+	// errors since not every job has a alternate outfit.
+#if PACKETVER >= 20231220
+	sd->status.body = job;
+#else
+	sd->status.body = 0;
+#endif
+	clif_changelook(sd, LOOK_BODY2, sd->status.body);
+
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 	sd->status.class_ = job;
 	// Reset body style before changing job to avoid errors since not every job has a alternate outfit.
 	sd->status.body = sd->status.class_;
@@ -15338,7 +15564,7 @@ void pc_show_questinfo(map_session_data *sd) {
 		return; // init was not called yet
 
 	for (int32 i = 0; i < mapdata->qi_npc.size(); i++) {
-		npc_data *nd = map_id2nd(mapdata->qi_npc[i]);
+		struct npc_data *nd = map_id2nd(mapdata->qi_npc[i]);
 
 		if (!nd || nd->qi_data.empty())
 			continue;

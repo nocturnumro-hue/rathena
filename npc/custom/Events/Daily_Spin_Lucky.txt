@@ -1,0 +1,263 @@
+//===== Rathena Script ======================================
+//= Lucky Spin Day
+//===== Edit By =============================================
+//= Olympus Ro Asia
+//===== Description =========================================
+//= Daily wheel of fortune event
+//= - 5 free spins per IP per day
+//= - Additional spins cost 10 Event Stone (ID 7000)
+//===========================================================
+
+-	script	Lucky_Spin_Day	FAKE_NPC,{
+
+OnInit:
+	.EventName$ = "[Lucky Spin Day]";
+	bindatcmd "luckyspin", "Lucky_Spin_Day::OnCommand", 98, 98;
+	end;
+
+OnClock0000:
+	// Reset daily IP tracking at midnight
+	deletearray $IPSpinCount$[0], getarraysize($IPSpinCount$);
+	deletearray $IPSpinTotal[0], getarraysize($IPSpinTotal);
+	announce "[Lucky Spin Day] : Daily free spins have been reset! Everyone gets 5 new free spins!", bc_blue | bc_all;
+	end;
+
+OnCommand:
+	if (.@atcmd_numparameters < 1) {
+		dispbottom("Usage: @luckyspin <reload|resetip>", 0x00FF00);
+		end;
+	}
+	if (.@atcmd_parameters$[0] == "reload") {
+		dispbottom("Lucky Spin Day event reloaded!", 0x00FF00);
+	} else if (.@atcmd_parameters$[0] == "resetip") {
+		deletearray $IPSpinCount$[0], getarraysize($IPSpinCount$);
+		deletearray $IPSpinTotal[0], getarraysize($IPSpinTotal);
+		dispbottom("IP tracking has been reset!", 0x00FF00);
+	}
+	end;
+}
+
+askald,123,120,6	script	Lucky Spin Day#Main	864,{
+
+OnTalk:
+	// Get player's IP address
+	.@myIP$ = getcharip();
+	
+	if (.@myIP$ == "") {
+		mes("[^FF6600Lucky Spin Day^000000]");
+		mes("Error: Cannot detect your IP address.");
+		mes("Please contact a GM.");
+		close;
+	}
+
+	// Find IP in the array
+	.@ipIndex = -1;
+	for (.@i = 0; .@i < getarraysize($IPSpinCount$); .@i++) {
+		if ($IPSpinCount$[.@i] == .@myIP$) {
+			.@ipIndex = .@i;
+			break;
+		}
+	}
+
+	// If IP not found, add it
+	if (.@ipIndex == -1) {
+		.@ipIndex = getarraysize($IPSpinCount$);
+		$IPSpinCount$[.@ipIndex] = .@myIP$;
+		$IPSpinTotal[.@ipIndex] = 0;
+	}
+
+	// Get remaining free spins for this IP
+	.@usedSpins = $IPSpinTotal[.@ipIndex];
+	.@freeSpins = 5 - .@usedSpins;
+	if (.@freeSpins < 0) .@freeSpins = 0;
+
+	.@hasEventStone = countitem(.EventStone_ID) >= .EventStone_Cost;
+	.@hasFreeSpins = .@freeSpins > 0;
+
+	// Check if player can play
+	if (!.@hasFreeSpins && !.@hasEventStone) {
+		cutin("marin20", 2);
+		mes("[^FF6600" + .EventName$ + "^000000]");
+		mes("Oh no! Your IP has used all");
+		mes("5 free spins today and you don't");
+		mes("have enough Event Stones.");
+		mes(" ");
+		mes("^0055FFYou need " + .EventStone_Cost + " Event Stone to spin!^000000");
+		mes(" ");
+		mes("Come back tomorrow for 5 more free spins!");
+		close2();
+		cutin("", 255);
+		end;
+	}
+
+	cutin("marin9", 2);
+	mes("[^FF6600" + .EventName$ + "^000000]");
+	mes("Welcome to Lucky Spin Day!");
+	mes(" ");
+	mes("^0055FFThis IP has ^FF0000" + .@freeSpins + "^0055FF free spin(s) today!^000000");
+	mes("^777777(5 free spins per IP daily)^000000");
+	if (.@hasEventStone)
+		mes("^00AA00You have " + countitem(.EventStone_ID) + " Event Stone(s).^000000");
+	mes(" ");
+	mes("Additional spins cost ^FF0000" + .EventStone_Cost + " Event Stone^000000 each.");
+	next();
+
+	while (true) {
+		// Recheck IP spins
+		.@ipIndex = -1;
+		for (.@i = 0; .@i < getarraysize($IPSpinCount$); .@i++) {
+			if ($IPSpinCount$[.@i] == .@myIP$) {
+				.@ipIndex = .@i;
+				break;
+			}
+		}
+		
+		.@usedSpins = $IPSpinTotal[.@ipIndex];
+		.@freeSpins = 5 - .@usedSpins;
+		if (.@freeSpins < 0) .@freeSpins = 0;
+
+		.@hasEventStone = countitem(.EventStone_ID) >= .EventStone_Cost;
+		.@hasFreeSpins = .@freeSpins > 0;
+
+		if (!.@hasFreeSpins && !.@hasEventStone) {
+			cutin("marin20", 2);
+			mes("[^FF6600" + .EventName$ + "^000000]");
+			mes("You're out of spins!");
+			mes("Come back tomorrow!");
+			callsub(S_End);
+		}
+
+		switch (select(
+			(.@hasFreeSpins) ? "Use Free Spin! (" + .@freeSpins + " left for this IP)" : "",
+			(.@hasEventStone) ? "Use Event Stone (costs " + .EventStone_Cost + " stones)" : "",
+			"Leave"
+		)) {
+		// Use free spin
+		case 1:
+			if (.@freeSpins > 0) {
+				$IPSpinTotal[.@ipIndex]++;
+				callsub(S_Spin);
+			} else
+				callsub(S_End);
+			break;
+
+		// Use Event Stone
+		case 2:
+			if (countitem(.EventStone_ID) >= .EventStone_Cost) {
+				delitem .EventStone_ID, .EventStone_Cost;
+				callsub(S_Spin);
+			} else {
+				cutin("marin9", 2);
+				mes("[^FF6600" + .EventName$ + "^000000]");
+				mes("You don't have enough Event Stones!");
+				mes(" ");
+				mes("You need ^FF0000" + .EventStone_Cost + " Event Stone^000000!");
+				callsub(S_End);
+			}
+			break;
+
+		default:
+			callsub(S_End);
+		}
+	}
+
+// Wheel spin animation
+S_Spin:
+	.@Sector = rand(.Sector_Range[0], .Sector_Range[1]);
+	.@Display = .@Sector * 2 - 1;
+	.@Speed = .Spin_Speed;
+	
+	for (.@i = 0; .@i < .nbTurns; .@i++) {
+		.@b = .Cutin_Range[0];
+		while (.@b <= .Cutin_Range[1]) {
+			cutin(sprintf("%s%d", .Cutin$, .@b), 4);
+			sleep2(.@Speed);
+			.@b++;
+			.@Speed += 1;
+		}
+	}
+	
+	.@b = .Cutin_Range[0];
+	while (.@b < .@Display) {
+		cutin(sprintf("%s%d", .Cutin$, .@b), 4);
+		sleep2(.@Speed);
+		.@b++;
+	}
+
+	cutin(sprintf("%s%d", .Cutin$, .@b), 4);
+
+	if (.Prize_ID[.@Sector] == -1) {
+		// Extra Event Stone reward
+		if (.Sound_Effects)
+			soundeffect("wheel_jackpot.wav", 0);
+		announce(sprintf("[%s] %s: Jackpot! Won %dx %s!", .EventName$, strcharinfo(0), .Prize_Qty[.@Sector], getitemname(.Prize_ID_Special)), bc_blue | bc_self);
+		getitem .Prize_ID_Special, .Prize_Qty[.@Sector];
+	} else if (.Prize_ID[.@Sector] == 0) {
+		// Nothing
+		if (.Sound_Effects)
+			soundeffect("wheel_lost.wav", 0);
+		announce(sprintf("[%s] %s: No luck this time... Try again!", .EventName$, strcharinfo(0)), bc_blue | bc_self);
+	} else { 
+		// Item prize
+		if (.Sound_Effects)
+			soundeffect("wheel_won.wav", 0);
+		announce(sprintf("[%s] %s won: %dx %s!", .EventName$, strcharinfo(0), .Prize_Qty[.@Sector], getitemname(.Prize_ID[.@Sector])), bc_blue | bc_self);
+		getitem .Prize_ID[.@Sector], .Prize_Qty[.@Sector];
+	}
+
+	sleep2(1000);
+	
+	// Recheck spins and stones
+	.@myIP$ = getcharip();
+	.@ipIndex = -1;
+	for (.@i = 0; .@i < getarraysize($IPSpinCount$); .@i++) {
+		if ($IPSpinCount$[.@i] == .@myIP$) {
+			.@ipIndex = .@i;
+			break;
+		}
+	}
+	
+	.@usedSpins = $IPSpinTotal[.@ipIndex];
+	.@freeSpins = 5 - .@usedSpins;
+	if (.@freeSpins < 0) .@freeSpins = 0;
+	
+	.@hasEventStone = countitem(.EventStone_ID) >= .EventStone_Cost;
+	.@hasFreeSpins = .@freeSpins > 0;
+
+	if (!.@hasFreeSpins && !.@hasEventStone) {
+		cutin("marin15", 2);
+		mes("[^FF6600" + .EventName$ + "^000000]");
+		mes("Your IP is out of spins for today!");
+		mes(" ");
+		mes("Come back tomorrow for 5 more free spins!");
+		close2();
+		cutin("", 255);
+		end;
+	}
+	return;
+	
+S_End:
+	close2();
+	cutin("", 255);
+	end;
+	
+OnInit:
+	.EventName$ = "Lucky Spin Day";
+	.Spin_Speed = 50; // Base spin speed (ms)
+	.nbTurns = 2; // Complete turns before stopping
+	.EventStone_ID = 7000; // Event Stone item ID
+	.EventStone_Cost = 10; // Cost per spin
+	.Sound_Effects = true; // Enable sound effects
+	.Prize_ID_Special = 7000; // Special prize for -1 (Event Stone)
+
+	// Prize configuration (10 prizes total)
+	// -1 = Event Stone reward, 0 = Nothing, other = Item ID
+	setarray .Prize_ID[1], -1, 12103, 13277, 12187, 617, 607, 12186, 604, 0, 7000;
+	setarray .Prize_Qty[1], 20, 1, 1, 1, 3, 3, 1, 3, 0, 5;
+
+	// System settings (don't touch)
+	.Cutin$ = "WheelOfFortune_";
+	setarray .Sector_Range, 1, 10;
+	setarray .Cutin_Range, 0, 19;
+	end;
+}

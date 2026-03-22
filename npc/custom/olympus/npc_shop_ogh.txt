@@ -1,0 +1,192 @@
+//===== rAthena Script =======================================
+//= OGH Challenge Shop (Currency Based - No Zeny)
+//============================================================
+
+-	shop	OGH_Shop	-1,512:100
+
+prontera,164,163,4	script	OGH Challenge Shop	4_F_KAFRA7,{
+	function ShopSettings;
+	function ClearData;
+	function ValueConvert;
+	function ErrorNotice;
+	
+	mes "====================================";
+	mes "   OGH CHALLENGE SHOP";
+	mes "====================================";
+	mes "Welcome adventurer!";
+	mes " ";
+	mes "Special Challenge Equipment";
+	mes "Available for purchase";
+	mes "with various currencies";
+	next;
+	
+	mes "====================================";
+	mes "   SELECT SHOP CATEGORY";
+	mes "====================================";
+	next;
+	
+	set @menu, select(
+		"^003399Hats (Temporal Fragment)^000000",
+		"^006600Weapons (Temporal Gemstone)^000000",
+		"^CC0000Jewels (Temporal Spell)^000000",
+		"^CC9900Cards (Temporal Gemstone)^000000",
+		"^003399Exit^000000"
+	);
+	
+	if (@menu == 5) {
+		mes "^777777Thank you for visiting!^000000";
+		close;
+	}
+	
+	ClearData();
+	ShopSettings(@menu);
+	npcshopitem "OGH_Shop", 512, 100;
+	npcshopdelitem "OGH_Shop", 512;
+	for (set .@i, 0; .@i < getarraysize(@ItemLists); set .@i, .@i + 1)
+		npcshopadditem "OGH_Shop", @ItemLists[.@i], @ItemCost[.@i];
+	
+	mes "^003399=============================^000000";
+	mes "^003399   SHOP INFORMATION^000000";
+	mes "^003399=============================^000000";
+	if (getitemname(atoi(@Currency$)) != "null") {
+		mes "^003399Currency:^000000 ^003399" + getitemname(atoi(@Currency$)) + "^000000";
+		mes "^003399You have:^000000 ^CC0000" + ValueConvert(countitem(atoi(@Currency$))) + "^000000";
+	}
+	mes "^003399=============================^000000";
+	mes " ";
+	mes "^FFFFFFClick an item to purchase^000000";
+	callshop "OGH_Shop", 1;
+	npcshopattach "OGH_Shop";
+	end;
+	
+	function ShopSettings {
+		switch (getarg(0)) {
+			case 1:
+				// HATS - Temporal Fragment (25867)
+				set @Currency$, "25867";
+				setarray @ItemLists[0],
+					19474, 19475, 19476, 19477, 19478, 19479, 19480, 19481,
+					19482, 19483, 19484, 19485, 19486, 19487, 19488, 19489,
+					19490, 19491, 19492;
+				setarray @ItemCost[0],
+					200, 200, 200, 200, 200, 200, 200, 200,
+					200, 200, 200, 200, 200, 200, 200, 200,
+					200, 200, 200;
+				break;
+			case 2:
+				// WEAPONS - Temporal Gemstone (25865)
+				set @Currency$, "25865";
+				setarray @ItemLists[0],
+					1336, 18191, 21055, 28141, 32027, 32353, 1870, 2060,
+					13347, 18198, 26165, 26166, 26172, 26216, 28046, 28636,
+					28774, 28775, 28776, 32111, 32304, 32401, 32402, 32403;
+				setarray @ItemCost[0],
+					300, 300, 300, 300, 300, 300, 300, 300,
+					300, 300, 300, 300, 300, 300, 300, 300,
+					300, 300, 300, 300, 300, 300, 300, 300;
+				break;
+			case 3:
+				// JEWELS - Temporal Spell (25866)
+				set @Currency$, "25866";
+				setarray @ItemLists[0],
+					29672, 29673, 29674, 29675, 29676, 29677, 29678, 29679,
+					29680, 29681, 29682, 29683, 29684, 29685, 29686, 29687,
+					29688, 29689, 4818, 4817, 4816, 4843, 4832, 4833,
+					4834, 4835, 4869, 4872, 4873, 4881, 4815, 4814,
+					4813, 4812;
+				setarray @ItemCost[0],
+					10, 50, 100, 10, 50, 100, 10, 50,
+					100, 10, 50, 100, 10, 50, 100, 10,
+					50, 100, 10, 20, 50, 100, 10, 20,
+					50, 100, 10, 20, 50, 100, 10, 20,
+					50, 100;
+				break;
+			case 4:
+				// CARDS - Temporal Gemstone (25865)
+				set @Currency$, "25865";
+				setarray @ItemLists[0],
+					27381, 27382, 27383, 27384, 27385, 27386, 27387, 27388;
+				setarray @ItemCost[0],
+					1000, 300, 750, 200, 200, 200, 200, 200;
+				break;
+			default:
+				ErrorNotice("Invalid Menu Selection");
+				close;
+		}
+		return;
+	}
+	
+	function ClearData {
+		set @Currency$, "";
+		set @TotalCost, 0;
+		deletearray @bought_nameid[0], getarraysize(@bought_nameid);
+		deletearray @bought_quantity[0], getarraysize(@bought_quantity);
+		deletearray @ItemLists[0], getarraysize(@ItemLists);
+		deletearray @ItemCost[0], getarraysize(@ItemCost);
+		return;
+	}
+	
+	function ValueConvert {
+		set .@num, atoi("" + getarg(0));
+		if (.@num == 0 || .@num >= 2147483647) return getarg(0);
+		set .@l, getstrlen("" + .@num);
+		for (set .@i, 0; .@i < .@l; set .@i, .@i + 1) {
+			set .@num$, .@num % pow(10, .@i + 1) / pow(10, .@i) + .@num$;
+			if ((.@i + 1) % 3 == 0 && .@i + 1 != .@l) set .@num$, "," + .@num$;
+		}
+		return .@num$;
+	}
+	
+	function ErrorNotice {
+		mes "^CC0000=============================^000000";
+		mes "^CC0000   SYSTEM ERROR^000000";
+		mes "^CC0000=============================^000000";
+		mes "^CC0000ERROR:^000000 " + getarg(0);
+		mes " ";
+		mes "^777777Please contact GM staff^000000";
+		mes "^777777immediately!^000000";
+		close;
+	}
+	
+	OnBuyItem:
+	ShopSettings(@menu);
+	for (set @i, 0; @i < getarraysize(@bought_nameid); set @i, @i + 1)
+		for (set @j, 0; @j < getarraysize(@ItemLists); set @j, @j + 1)
+			if (@ItemLists[@j] == @bought_nameid[@i])
+				set @TotalCost, @TotalCost + (@ItemCost[@j] * @bought_quantity[@i]);
+	
+	mes "^008080=============================^000000";
+	mes "^008080   PURCHASE SUMMARY^000000";
+	mes "^008080=============================^000000";
+	for (set @i, 0; @i < getarraysize(@bought_nameid); set @i, @i + 1)
+		mes "^FFA500" + @bought_quantity[@i] + " x ^000000" + getitemname(@bought_nameid[@i]) + "^000000";
+	mes "^008080=============================^000000";
+	mes "^FFFFFFTotal Cost:^000000 ^00FF00" + ValueConvert(@TotalCost) + " " + getitemname(atoi(@Currency$)) + "^000000";
+	mes "^00FF88=============================^000000";
+	
+	if (countitem(atoi(@Currency$)) < @TotalCost) {
+		mes "^FF0000ERROR: Insufficient " + getitemname(atoi(@Currency$)) + "^000000";
+		mes " ";
+		mes "^999999You need more currency!^000000";
+	} else {
+		mes " ";
+		mes "^FFFFFFConfirm purchase?^000000";
+		if (select("^00FF00Yes, Buy Now^000000", "^FF0000Cancel^000000") == 1) {
+			delitem atoi(@Currency$), @TotalCost;
+			for (set @i, 0; @i < getarraysize(@bought_nameid); set @i, @i + 1)
+				getitem @bought_nameid[@i], @bought_quantity[@i];
+			
+			announce "Successfully purchased " + getarraysize(@bought_nameid) + " items!", bc_self;
+			dispbottom "^00FF00[SUCCESS] Purchase completed!^000000";
+			mes "^00FF00=============================^000000";
+			mes "^00FF00   TRANSACTION SUCCESS^000000";
+			mes "^00FF00=============================^000000";
+			mes "^FFFFFFThank you for your purchase!^000000";
+			mes "^999999Enjoy your new items!^000000";
+		} else {
+			mes "^999999Purchase cancelled.^000000";
+		}
+	}
+	ClearData();
+	close;
+}

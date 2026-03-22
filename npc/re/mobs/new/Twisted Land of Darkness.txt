@@ -1,0 +1,14 @@
+//===== rAthena Script =======================================
+//= Twisted Land of Darkness
+//= @warp ygg_roots
+//= Mob Lvl 205
+//= Mob ID 22443 - 22444
+//= Mob AegisName: CH1_YGGRING CH1_LEAFEING
+//= Mob Name: Igling Iparing
+//============================================================
+
+ygg_roots	monster	Igling	22443,155
+ygg_roots	monster	Iparing	22444,155
+
+// unknown respawn timer
+ygg_roots	boss_monster	Abyss Boss	30047,1,7200000,600000,1

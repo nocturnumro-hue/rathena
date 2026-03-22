@@ -1,0 +1,10 @@
+// lasa_sea - Illusion of Underwater F3 
+//==================================================
+lasa_sea	monster	Water Baby	22156,65
+lasa_sea	monster	Lonely Rock	22157,30
+lasa_sea	monster	Warner of Sea	22159,45
+lasa_sea	monster	Water Queen	22164,65
+lasa_sea	monster	Manager of Seolsan	22158,30
+
+// unknown respawn timer
+lasa_sea	boss_monster	Queen Sea	30100,1,7200000,600000,1

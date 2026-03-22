@@ -1144,7 +1144,7 @@ Body:
     Name: Yggdrasil Berry
     Type: Healing
     Buy: 5000
-    Weight: 300
+    Weight: 3
     Flags:
       BuyingStore: true
     Delay:
@@ -1157,7 +1157,7 @@ Body:
     Name: Yggdrasil Seed
     Type: Healing
     Buy: 5000
-    Weight: 300
+    Weight: 3
     Flags:
       BuyingStore: true
     Delay:
@@ -29944,7 +29944,7 @@ Body:
     Buy: 20
     Weight: 10
     Flags:
-      UniqueId: true
+      UniqueId: false
     Trade:
       NoDrop: true
       NoTrade: true
@@ -31402,13 +31402,13 @@ Body:
     Script: |
       getitem 14598,10;
   - Id: 14316
-    AegisName: July7_Scroll
-    Name: July7 Scroll
+    AegisName: Autoattack_Device
+    Name: Autoattack Device
     Type: Usable
-    Buy: 20
-    Weight: 10
     Flags:
-      Container: true
+      NoConsume: true
+    Buy: 20
+    Weight: 0
     Trade:
       NoDrop: true
       NoTrade: true
@@ -31418,15 +31418,15 @@ Body:
       NoMail: true
       NoAuction: true
     Script: |
-      getgroupitem(IG_July7_Scroll);
+      autoattack_fromitem;
+    UnEquipScript: |
+      sc_end SC_AUTOATTACK;
   - Id: 14317
-    AegisName: Bacsojin_Scroll
-    Name: Bacsojin Scroll
+    AegisName: Autoattack_Pack
+    Name: Autoattack Pack
     Type: Usable
     Buy: 20
-    Weight: 10
-    Flags:
-      Container: true
+    Weight: 0
     Trade:
       NoDrop: true
       NoTrade: true
@@ -31436,7 +31436,7 @@ Body:
       NoMail: true
       NoAuction: true
     Script: |
-      getgroupitem(IG_Bacsojin_Scroll);
+      rentitem 14316,604800;
   - Id: 14318
     AegisName: Radio_Antenna_Box
     Name: Antenna Box
@@ -57525,7 +57525,7 @@ Body:
     AegisName: Squid_Bbq
     Name: Barbecued Squid
     Type: Usable
-    Buy: 5000
+    Buy: 10
     Weight: 250
     Flags:
       BuyingStore: true
@@ -66479,7 +66479,7 @@ Body:
     Flags:
       Container: true
     Script: |
-      getgroupitem(IG_BIO_DOCU_BOX);
+      getitem 25786,rand(1,10); getitem 25787,rand(1,10);
   - Id: 23994
     AegisName: Bio_Reactant_Box
     Name: Bio Reactor Box
@@ -66488,7 +66488,276 @@ Body:
     Flags:
       Container: true
     Script: |
-      getgroupitem(IG_BIO_REACTANT_BOX);
+      setarray .@weapon,21051,21052,32023,1333,16092,28138,28765,28766,28044,28042,26158,2055,2056,26161,2057,16095,18185,18187,18186,32350,32024,32025,32351,16093,16094,28767,28768,18184,28633,26159,26160,1865,1866,16096,18188,26212,26213,32107,32108; getitem .@weapon[rand(getarraysize(.@weapon))],1;
+  - Id: 30000
+    AegisName: Germinating_Sprout1
+    Name: Seed
+    Type: Usable
+    Flags:
+      NoConsume: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      callfunc("plant_system",1,30000);
+  - Id: 30001
+    AegisName: Germinating_Sprout2
+    Name: Seed
+    Type: Usable
+    Flags:
+      NoConsume: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      callfunc("plant_system",2,30001);
+  - Id: 30002
+    AegisName: Germinating_Sprout3
+    Name: Seed
+    Type: Usable
+    Flags:
+      NoConsume: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      callfunc("plant_system",3,30002);
+  - Id: 30003
+    AegisName: Germinating_Sprout4
+    Name: Seed
+    Type: Usable
+    Flags:
+      NoConsume: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      callfunc("plant_system",4,30003);
+  - Id: 30004
+    AegisName: Germinating_Sprout5
+    Name: Seed
+    Type: Usable
+    Flags:
+      NoConsume: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      callfunc("plant_system",5,30004);
+  - Id: 30005
+    AegisName: Battle_Manual1
+    Name: Battle Manual [24H]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_EXPBOOST,86400000,100;
+  - Id: 30006
+    AegisName: Battle_Manual2
+    Name: Battle Manual [3Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_EXPBOOST,259200000,100;
+  - Id: 30007
+    AegisName: Battle_Manual3
+    Name: Battle Manual 200 [1Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_EXPBOOST,86400000,200;
+  - Id: 30008
+    AegisName: Battle_Manual4
+    Name: Battle Manual 200 [3Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_EXPBOOST,259200000,200;
+  - Id: 30009
+    AegisName: Battle_Manual5
+    Name: Battle Manual Gum [3Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_EXPBOOST,259200000,200;
+      sc_start SC_ITEMBOOST,259200000,200;       
+  - Id: 30010
+    AegisName: HE_Bubble1
+    Name: SR Bubble Gum [1Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_ITEMBOOST,86400000,100;
+  - Id: 30011
+    AegisName: HE_Bubble2
+    Name: SR Bubble Gum [3Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_ITEMBOOST,259200000,100;
+  - Id: 30012
+    AegisName: HE_Bubble3
+    Name: SSR Bubble Gum [1Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_ITEMBOOST,86400000,200;
+  - Id: 30013
+    AegisName: HE_Bubble4
+    Name: SSR Bubble Gum [3Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_ITEMBOOST,259200000,200; 
+  - Id: 30014
+    AegisName: HE_Bubble5
+    Name: VIP Bubble Gum [7Day]
+    Type: Usable
+    Weight: 10
+    NoUse:
+      Sitting: true
+    Trade:
+      NoDrop: true
+      NoTrade: true
+      NoSell: true
+      NoCart: true
+      NoGuildStorage: true
+      NoMail: true
+      NoAuction: true
+    Script: |
+      sc_start SC_ITEMBOOST,604800000,200;      
+  - Id: 41246
+    AegisName: Dim_Glacier_Weapon_Box 
+    Name: Dim Glacier Weapon Box
+    Type: Usable
+    Weight: 10
+    Flags:
+      Container: true
+    Script: |
+      setarray .@weapon,600030,520021,540056,580033,630019,590047,610041,650028,500054,590048,550089,800015,500055,510075,640034,810015,530034,510076,550090,820011,620019,700059,570032,830015,560037,840010; getitem .@weapon[rand(getarraysize(.@weapon))],1;
+  - Id: 41247
+    AegisName: Glacier_Weapon_Box 
+    Name: Glacier Weapon Box
+    Type: Usable
+    Weight: 10
+    Flags:
+      Container: true
+    Script: |
+      setarray .@weapon,500049,500050,510061,510062,520017,530025,540049,550069,550070,560032,570029,580030,590038,590039,600027,610037,620017,630018,640033,650025,700052,800014,810010,820008,830013,840009; getitem .@weapon[rand(getarraysize(.@weapon))],1;  
   - Id: 100000
     AegisName: IDTest_Special
     Name: IDTest Special
@@ -68831,7 +69100,7 @@ Body:
     Type: Usable
     Weight: 10
     Script: |
-      addhomintimacy 100; // !TODO: Confirm increase amount
+      addhomintimacy 1000; // !TODO: Confirm increase amount
   - Id: 100372
     AegisName: RoyalGuard_S_Cube
     Name: Royal Guard Shadow Cube
@@ -72845,7 +73114,7 @@ Body:
   - Id: 101099
     AegisName: ClockTower_Regulator
     Name: Spring Regulator
-    Type: Usable
+    Type: DelayConsume
     Weight: 10
     Script: |
       item_enchant(24);
@@ -73185,8 +73454,8 @@ Body:
       NoMail: true
       NoAuction: true
     Script: |
-      transform 21530,1200000; /* Confirm time */
-      bonus_script " bonus2 bAddItemHealRate,1100006,100; ",120,1,1;
+      specialeffect2 EF_CLOAKING;
+      transform 21530,1200000,SC_MTP_W_POTION_100,100;
   - Id: 101166
     AegisName: Kr_B_Special05
     Name: G-Star RO Shop Box
@@ -88434,6 +88703,10 @@ Body:
       NoAuction: true
     Script: |
       itemheal 0,300; /* average value */
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
   - Id: 1100036
     AegisName: aegis_1100036
     Name: Sharing Fish    # !todo check english name
@@ -88455,3 +88728,83 @@ Body:
       NoGuildStorage: true
       NoMail: true
       NoAuction: true
+<<<<<<< Updated upstream
+=======
+=======
+  - Id: 1100100
+    AegisName: HappyYear_Box 
+    Name: Happy Gift Box
+    Type: Usable
+    Weight: 10
+    Flags:
+      Container: true
+    Script: |
+      setarray .@items[0],607,608,7227,1001009,7615,1001258,12208,12210,12412,100232,100233;
+      setarray .@amounts[0],10,10,10,10,1,1,5,5,1,2,2;
+      .@rand = rand(getarraysize(.@items));
+      getitem .@items[.@rand],.@amounts[.@rand];
+  - Id: 1100101
+    AegisName: New_Box 
+    Name: New Gift Box
+    Type: Usable
+    Weight: 10
+    Flags:
+      Container: true
+    Script: |
+      setarray .@items[0],6456,6231,6230,6229,6228,6993,6457,6235,6234,6233,6232,6994,6240,6241,6635;
+      setarray .@amounts[0],1,1,1,1,1,1,1,1,1,1,1,1,1,1,3;
+      setarray .@rates[0],100,80,60,40,20,10,100,80,60,40,20,10,70,70,50;
+      .@totalRate = 0;
+      for(.@i = 0; .@i < getarraysize(.@items); .@i++){
+        .@totalRate += .@rates[.@i];
+      }
+      .@rand = rand(.@totalRate);
+      .@currentRate = 0;
+      for(.@i = 0; .@i < getarraysize(.@items); .@i++){
+        .@currentRate += .@rates[.@i];
+        if(.@rand < .@currentRate){
+          getitem .@items[.@i],.@amounts[.@i];
+          end;
+        }
+      }
+  - Id: 1100102
+    AegisName: Year_Box 
+    Name: Year Gift Box
+    Type: Usable
+    Weight: 10
+    Flags:
+      Container: true
+    Script: |
+      getgroupitem(IG_ALL_SHADOW_CUBE);
+  - Id: 1100103
+    AegisName: HappyNewYear_Box 
+    Name: New Year Gift Package
+    Type: Usable
+    Weight: 10
+    Flags:
+      Container: true
+    Script: |
+      setarray .@items[0],1230001,1230001,1230001,1230002,1230002,1230002,1230003,1230003,1230003,1230004,1230004,1230004,1230005,1230005,1230005,1230006,1230006,1230006,1001258,1001258,1001258,1001258,1001258,7615,7615,7615,7615,7615,1000988,1001214;
+      setarray .@amounts[0],5,7,10,5,7,10,5,7,10,5,7,10,5,7,10,5,7,10,1,2,3,4,5,1,2,3,4,5,1,1;
+      setarray .@rates[0],100,50,25,100,50,25,100,50,25,100,50,25,100,50,25,100,50,25,100,50,25,12,6,100,50,25,12,6,50,10;
+      .@totalRate = 0;
+      for(.@i = 0; .@i < getarraysize(.@items); .@i++){
+        .@totalRate += .@rates[.@i];
+      }
+      .@rand = rand(.@totalRate);
+      .@currentRate = 0;
+      for(.@i = 0; .@i < getarraysize(.@items); .@i++){
+        .@currentRate += .@rates[.@i];
+        if(.@rand < .@currentRate){
+          getitem .@items[.@i],.@amounts[.@i];
+          end;
+        }
+      }
+  - Id: 1100104
+    AegisName: OlympusRo_Armor_Reform_1
+    Name: Armor Olympusro Reform
+    Type: DelayConsume
+    Script: |
+      item_reform();
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes

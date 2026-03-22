@@ -1256,7 +1256,7 @@ Body:
     Name: Oridecon
     Type: Etc
     Buy: 1100
-    Weight: 200
+    Weight: 2
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -1265,7 +1265,7 @@ Body:
     Name: Elunium
     Type: Etc
     Buy: 1100
-    Weight: 200
+    Weight: 2
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -4320,6 +4320,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bHit,100;
@@ -4349,6 +4350,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMaxHPrate,-25;
@@ -4425,10 +4427,11 @@ Body:
       Left_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
-      bonus bNoMagicDamage,100;
-      bonus bUseSPrate,100;
+      bonus bNoMagicDamage,70;
+      bonus bNoWeaponDamage,30;
   - Id: 4129
     AegisName: Baphomet__Card
     Name: Bapho Jr. Card
@@ -4466,6 +4469,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bSpeedRate,25;
@@ -4481,6 +4485,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bNoGemStone;
@@ -4508,6 +4513,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bSPDrainRate,100,5;
@@ -4521,6 +4527,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bShortWeaponDamageReturn,30;
@@ -4547,6 +4554,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bNoSizeFix;
@@ -4614,6 +4622,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bAspdRate,10;
@@ -4629,6 +4638,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bVit,3;
@@ -4643,6 +4653,7 @@ Body:
       Both_Accessory: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bRestartFullRecover;
@@ -4656,6 +4667,7 @@ Body:
       Both_Accessory: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bVariableCastrate,-30;
@@ -4669,6 +4681,7 @@ Body:
       Left_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMagicDamageReturn,50;
@@ -4682,6 +4695,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bHit,-10;
@@ -4698,6 +4712,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bUseSPrate,-30;
@@ -4988,6 +5003,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus3 bAutoSpellWhenHit,"WZ_METEOR",5,100;
@@ -5961,6 +5977,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bAllStats,1;
@@ -6352,6 +6369,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bIgnoreDefClass,Class_Normal;
@@ -6543,6 +6561,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus3 bAddEff,Eff_Stun,500,ATF_SHORT;
@@ -6913,6 +6932,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMaxHPrate,100;
@@ -6962,6 +6982,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bAtkRate,20;
@@ -7150,6 +7171,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus3 bAutoSpell,"WZ_STORMGUST",1,20;
@@ -7232,6 +7254,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddEffWhenHit,Eff_Freeze,5000;
@@ -7321,6 +7344,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bInt,3;
@@ -7491,6 +7515,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bVit,3;
@@ -7551,6 +7576,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bStr,readparam(bInt)/18;
@@ -7941,6 +7967,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bHealPower,30;
@@ -7972,6 +7999,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bDex,2;
@@ -8001,6 +8029,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMaxHPrate,-40;
@@ -8156,6 +8185,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMdef,-20;
@@ -8402,6 +8432,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bDelayrate,-30;
@@ -8456,6 +8487,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bUnbreakableWeapon;
@@ -8471,6 +8503,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddEle,Ele_Holy,40;
@@ -8719,6 +8752,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bBaseAtk,25;
@@ -8798,6 +8832,7 @@ Body:
       Both_Accessory: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bBaseAtk,(JobLevel/10);
@@ -8986,6 +9021,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMatkRate,10;
@@ -9972,6 +10008,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddRace2,RC2_SCARABA,30;
@@ -10002,6 +10039,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bInt,3;
@@ -10165,6 +10203,7 @@ Body:
       Garment: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bStr,3;
@@ -10237,6 +10276,7 @@ Body:
       Garment: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bFlee,10;
@@ -10978,6 +11018,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       .@i = getiteminfo(getequipid(EQI_HAND_R), ITEMINFO_VIEW);
@@ -11016,6 +11057,7 @@ Body:
       Garment: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bMagicAtkEle,Ele_Wind,100;
@@ -11045,6 +11087,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bCritAtkRate,30;
@@ -11076,6 +11119,7 @@ Body:
       Garment: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bSubEle,Ele_Water,50;
@@ -11565,6 +11609,7 @@ Body:
       Right_Hand: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMatkRate,20;
@@ -11969,6 +12014,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bMagicAddRace,RC_Demon,50;
@@ -17653,7 +17699,7 @@ Body:
     Name: Carnium
     Type: Etc
     Buy: 2000
-    Weight: 150
+    Weight: 15
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -17662,7 +17708,7 @@ Body:
     Name: Bradium
     Type: Etc
     Buy: 2000
-    Weight: 150
+    Weight: 15
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -35224,8 +35270,8 @@ Body:
     Name: Eden Group Coin
     Type: Etc
     Trade:
-      NoDrop: true
-      NoTrade: true
+      NoDrop: false
+      NoTrade: false
       NoCart: true
       NoGuildStorage: true
       NoMail: true
@@ -37195,7 +37241,7 @@ Body:
     AegisName: Shadowdecon_Ore
     Name: Shadowdecon Ore
     Type: Etc
-    Weight: 10
+    Weight: 1
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -37203,7 +37249,7 @@ Body:
     AegisName: Shadowdecon
     Name: Shadowdecon
     Type: Etc
-    Weight: 20
+    Weight: 2
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -37211,7 +37257,7 @@ Body:
     AegisName: Zelunium_Ore
     Name: Zelunium Ore
     Type: Etc
-    Weight: 10
+    Weight: 1
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -37219,7 +37265,7 @@ Body:
     AegisName: Zelunium
     Name: Zelunium
     Type: Etc
-    Weight: 20
+    Weight: 2
     Flags:
       BuyingStore: true
       DropEffect: CLIENT
@@ -37779,21 +37825,21 @@ Body:
     AegisName: S_Circlet_Of_Time
     Name: Sealed Temporal Circlet
     Type: Etc
-    Weight: 100
+    Weight: 1
     Flags:
       BuyingStore: true
   - Id: 25865
     AegisName: Jewel_Of_Time_Ore
     Name: Temporal Gemstone
     Type: Etc
-    Weight: 10
+    Weight: 1
     Flags:
       BuyingStore: true
   - Id: 25866
     AegisName: Spell_Of_Time
     Name: Temporal Spell
     Type: Etc
-    Weight: 10
+    Weight: 1
     Flags:
       BuyingStore: true
   - Id: 25867
@@ -38297,6 +38343,7 @@ Body:
     Locations:
       Right_Hand: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddClass,Class_All,10;
@@ -39302,6 +39349,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddEle,Ele_Wind,40;
@@ -39626,6 +39674,7 @@ Body:
     Locations:
       Armor: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddEle,Ele_Earth,50;
@@ -39824,6 +39873,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bSPDrainValue,5;
@@ -41430,6 +41480,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddEle,Ele_Poison,40;
@@ -41811,6 +41862,7 @@ Body:
     Locations:
       Left_Hand: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bSubRace,RC_Dragon,30;
@@ -42025,6 +42077,7 @@ Body:
     Locations:
       Garment: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bSubEle,Ele_All,-30;
@@ -42039,6 +42092,7 @@ Body:
     Locations:
       Right_Accessory: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bAspd,1;
@@ -42351,6 +42405,7 @@ Body:
     Locations:
       Garment: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bMagicAtkEle,Ele_Neutral,100;
@@ -42364,6 +42419,7 @@ Body:
     Locations:
       Garment: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMatk,30;
@@ -42376,6 +42432,7 @@ Body:
     Locations:
       Shoes: true
     Flags:
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bMaxHPrate,10;
@@ -48063,6 +48120,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddEle,Ele_Fire,40;
@@ -48281,6 +48339,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddRace,RC_Undead,40;
@@ -48793,6 +48852,7 @@ Body:
       Both_Accessory: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddItemHealRate,513,500;
@@ -49955,6 +50015,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bDelayrate,-5;
@@ -49971,6 +50032,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bDelayrate,-5;
@@ -50248,6 +50310,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bSubEle,Ele_All,-15;
@@ -50386,6 +50449,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bMagicAddRace,RC_Angel,75;
@@ -50399,6 +50463,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bMagicAddRace,RC_Demon,75;
@@ -50708,6 +50773,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bUseSPrate,50;
@@ -50926,6 +50992,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bUseSPrate,50;
@@ -51205,6 +51272,7 @@ Body:
       Shoes: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bUseSPrate,50;
@@ -52421,6 +52489,7 @@ Body:
       Head_Top: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bAtkRate,5;
@@ -53560,6 +53629,7 @@ Body:
       Armor: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bMagicAddClass,Class_Boss,40;
@@ -53582,6 +53652,7 @@ Body:
       Garment: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bLongAtkRate,30+5*(getrefine()/3);
@@ -53598,6 +53669,7 @@ Body:
       Garment: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus bShortAtkRate,30+5*(getrefine()/3);
@@ -55446,6 +55518,7 @@ Body:
       Left_Accessory: true
     Flags:
       BuyingStore: true
+      DropAnnounce: true
       DropEffect: CLIENT
     Script: |
       bonus2 bAddRace,RC_Angel,25;
@@ -71044,7 +71117,7 @@ Body:
       bonus bCon,5;
   - Id: 311356
     AegisName: Archbishop_Top3
-    Name: Archbishop Stone (Top)
+    Name: Archbishop Stone (Upper)
     Type: Card
     SubType: Enchant
     Script: |
@@ -89889,6 +89962,10 @@ Body:
       bonus2 bMagicAddRace,RC_All,3*(getskilllv("SOA_SOUL_MASTERY")/2);
       bonus2 bMagicAddRace,RC_Player_Human,-3*(getskilllv("SOA_SOUL_MASTERY")/2);
       bonus2 bMagicAddRace,RC_Player_Doram,-3*(getskilllv("SOA_SOUL_MASTERY")/2);
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
   - Id: 314066
     AegisName: ROS2025Victory_Foot
     Name: ROS 2025 Footprint
@@ -89948,30 +90025,61 @@ Body:
     SubType: Enchant
     Script: |
       skill "BS_GREED",1;
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314181
     AegisName: aegis_314181
     Name: Archbishop Stone II (Upper)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
       .@m = getskilllv("AB_CANTO");
       bonus2 bAddSize,Size_All,.@m*3;
       bonus2 bMagicAddSize,Size_All,.@m*3;
+=======
+<<<<<<< Updated upstream
+      .@m = getskilllv("AB_CANTO");
+      bonus2 bAddSize,Size_All,.@m*3;
+      bonus2 bMagicAddSize,Size_All,.@m*3;
+=======
+      bonus bShortAtkRate,3*getskilllv("AB_CANTO");
+      bonus bLongAtkRate,3*getskilllv("AB_CANTO");
+      bonus2 bMagicAtkEle,Ele_All,3*getskilllv("AB_CANTO");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314182
     AegisName: aegis_314182
     Name: Archbishop Stone II (Middle)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
       .@m = getskilllv("AB_LAUDARAMUS");
       bonus2 bMagicAtkEle,Ele_Holy,.@m*4;
       bonus2 bMagicAtkEle,Ele_Neutral,.@m*4;
+=======
+<<<<<<< Updated upstream
+      .@m = getskilllv("AB_LAUDARAMUS");
+      bonus2 bMagicAtkEle,Ele_Holy,.@m*4;
+      bonus2 bMagicAtkEle,Ele_Neutral,.@m*4;
+=======
+      bonus2 bMagicAtkEle,Ele_Neutral,4*getskilllv("AB_LAUDARAMUS");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314183
     AegisName: aegis_314183
     Name: Archbishop Stone II (Lower)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
       bonus bFixedCast,-100*(getskilllv("AB_ORATIO")/2);
   - Id: 314184
     AegisName: aegis_314184
@@ -89981,28 +90089,57 @@ Body:
     Script: |
       bonus bCritical,10;
       bonus2 bSkillAtk,"CD_DIVINUS_FLOS",15;
+<<<<<<< Updated upstream
+=======
+=======
+      bonus bFixedCast,-100*getskilllv("AB_ORATIO");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314185
     AegisName: aegis_314185
     Name: Shadow Chaser Stone II (Upper)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
       .@m = getskilllv("SC_ESCAPE");
       bonus bShortAtkRate,.@m;
       bonus bLongAtkRate,.@m;
+=======
+<<<<<<< Updated upstream
+      .@m = getskilllv("SC_ESCAPE");
+      bonus bShortAtkRate,.@m;
+      bonus bLongAtkRate,.@m;
+=======
+      bonus bShortAtkRate,getskilllv("SC_ESCAPE");
+      bonus bLongAtkRate,getskilllv("SC_ESCAPE");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314186
     AegisName: aegis_314186
     Name: Shadow Chaser Stone II (Middle)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
       bonus bDelayrate,-getskilllv("SC_SHADOWFORM");
+=======
+<<<<<<< Updated upstream
+      bonus bDelayrate,-getskilllv("SC_SHADOWFORM");
+=======
+      bonus bGlobalCoolDown,-getskilllv("SC_SHADOWFORM");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314187
     AegisName: aegis_314187
     Name: Shadow Chaser Stone II (Lower)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
       bonus bAspdRate,getskilllv("SC_REPRODUCE");
   - Id: 314188
     AegisName: aegis_314188
@@ -90011,21 +90148,43 @@ Body:
     SubType: Enchant
     Script: |
       bonus2 bSkillAtk,"ABC_ABYSS_DAGGER",10;
+<<<<<<< Updated upstream
+=======
+=======
+      bonus bDelayRate,-getskilllv("SC_REPRODUCE");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314189
     AegisName: aegis_314189
     Name: Super Novice Stone II (Upper)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
       .@m = getskilllv("NV_BREAKTHROUGH");
       bonus2 bAddSize,Size_All,.@m*3;
       bonus2 bMagicAddSize,Size_All,.@m*3;
+=======
+<<<<<<< Updated upstream
+      .@m = getskilllv("NV_BREAKTHROUGH");
+      bonus2 bAddSize,Size_All,.@m*3;
+      bonus2 bMagicAddSize,Size_All,.@m*3;
+=======
+      bonus bShortAtkRate,3*getskilllv("NV_BREAKTHROUGH");
+      bonus bLongAtkRate,3*getskilllv("NV_BREAKTHROUGH");
+      bonus2 bMagicAtkEle,Ele_All,3*getskilllv("NV_BREAKTHROUGH");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314190
     AegisName: aegis_314190
     Name: Super Novice Stone II (Middle)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
       .@m = getskilllv("NV_TRANSCENDENCE");
       bonus2 bMagicAtkEle,Ele_Water,.@m*2;
       bonus2 bMagicAtkEle,Ele_Wind,.@m*2;
@@ -90034,12 +90193,28 @@ Body:
       bonus2 bMagicAtkEle,Ele_Neutral,.@m*2;
       bonus2 bMagicAtkEle,Ele_Holy,.@m*2;
       bonus2 bMagicAtkEle,Ele_Ghost,.@m*2;
+<<<<<<< Updated upstream
+=======
+=======
+      bonus2 bMagicAtkEle,Ele_Water,2*getskilllv("NV_TRANSCENDENCE");
+      bonus2 bMagicAtkEle,Ele_Wind,2*getskilllv("NV_TRANSCENDENCE");
+      bonus2 bMagicAtkEle,Ele_Earth,2*getskilllv("NV_TRANSCENDENCE");
+      bonus2 bMagicAtkEle,Ele_Fire,2*getskilllv("NV_TRANSCENDENCE");
+      bonus2 bMagicAtkEle,Ele_Neutral,2*getskilllv("NV_TRANSCENDENCE");
+      bonus2 bMagicAtkEle,Ele_Holy,2*getskilllv("NV_TRANSCENDENCE");
+      bonus2 bMagicAtkEle,Ele_Ghost,2*getskilllv("NV_TRANSCENDENCE");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 314191
     AegisName: aegis_314191
     Name: Super Novice Stone II (Lower)
     Type: Card
     SubType: Enchant
     Script: |
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
       if (getskilllv("NV_HELPANGEL")>=1) {
          bonus bLongAtkRate,15;
          bonus bShortAtkRate,15;
@@ -90451,19 +90626,43 @@ Body:
   - Id: 314670
     AegisName: aegis_314670
     Name: Warlock Stone II (Upper)    # !todo check english name
+<<<<<<< Updated upstream
+=======
+=======
+      if(getskilllv("NV_HELPANGEL") >= 1) {
+        bonus bShortAtkRate,15;
+        bonus bLongAtkRate,15;
+      }
+  - Id: 314670
+    AegisName: aegis_314670
+    Name: Warlock Stone II (Upper)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Card
     SubType: Enchant
     Script: |
       bonus2 bMagicAtkEle,Ele_All,2*getskilllv("WL_CRIMSONROCK");
   - Id: 314671
     AegisName: aegis_314671
+<<<<<<< Updated upstream
     Name: Warlock Stone II (Middle)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Warlock Stone II (Middle)    # !todo check english name
+=======
+    Name: Warlock Stone II (Middle)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Card
     SubType: Enchant
     Script: |
       bonus bFixedCast,-100*getskilllv("WL_COMET");
   - Id: 314672
     AegisName: aegis_314672
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
     Name: Warlock Stone II (Lower)    # !todo check english name
     Type: Card
     SubType: Enchant
@@ -90488,12 +90687,45 @@ Body:
   - Id: 314675
     AegisName: aegis_314675
     Name: Generic Stone II (Lower)    # !todo check english name
+<<<<<<< Updated upstream
+=======
+=======
+    Name: Warlock Stone II (Lower)
+    Type: Card
+    SubType: Enchant
+    Script: |
+      bonus bDelayRate,-getskilllv("WL_CHAINLIGHTNING");
+  - Id: 314673
+    AegisName: aegis_314673
+    Name: Genetic Stone II (Upper)
+    Type: Card
+    SubType: Enchant
+    Script: |
+      if (getskilllv("GN_CART_TORNADO") >= 2) bonus bDelayrate,-1;
+      if (getskilllv("GN_CART_TORNADO") >= 4) bonus bDelayrate,-1;
+  - Id: 314674
+    AegisName: aegis_314674
+    Name: Genetic Stone II (Middle)
+    Type: Card
+    SubType: Enchant
+    Script: |
+      bonus bShortAtkRate,getskilllv("GN_REMODELING_CART");
+      bonus bLongAtkRate,getskilllv("GN_REMODELING_CART");
+  - Id: 314675
+    AegisName: aegis_314675
+    Name: Genetic Stone II (Lower)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Card
     SubType: Enchant
     Script: |
       bonus bFixedCast,-100*getskilllv("GN_TRAINING_SWORD");
   - Id: 314676
     AegisName: aegis_314676
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
     Name: Holy Emperor Stone II (Upper)    # !todo check english name
     Type: Card
     SubType: Enchant
@@ -90502,12 +90734,29 @@ Body:
   - Id: 314677
     AegisName: aegis_314677
     Name: Holy Emperor Stone II (Middle)    # !todo check english name
+<<<<<<< Updated upstream
+=======
+=======
+    Name: Star Emperor Stone II (Upper)
+    Type: Card
+    SubType: Enchant
+    Script: |
+      bonus2 bSkillAtk,"SJ_LIGHTOFSUN",4*getskilllv("SJ_LIGHTOFSUN");
+  - Id: 314677
+    AegisName: aegis_314677
+    Name: Star Emperor Stone II (Middle)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Card
     SubType: Enchant
     Script: |
       bonus2 bSkillAtk,"SJ_FULLMOONKICK",4*getskilllv("SJ_LIGHTOFMOON");
   - Id: 314678
     AegisName: aegis_314678
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
     Name: Holy Emperor Stone II (Lower)    # !todo check english name
     Type: Card
     SubType: Enchant
@@ -90542,6 +90791,16 @@ Body:
       hateffect FOOTPRINT_EF_DIVINE_BLUE,true;
     UnEquipScript: |
       hateffect FOOTPRINT_EF_DIVINE_BLUE,false;
+<<<<<<< Updated upstream
+=======
+=======
+    Name: Star Emperor Stone II (Lower)
+    Type: Card
+    SubType: Enchant
+    Script: |
+      bonus2 bSkillAtk,"SJ_FALLINGSTAR",4*getskilllv("SJ_LIGHTOFSTAR");
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 1000000
     AegisName: IDTest_event
     Name: IDTest event
@@ -93992,7 +94251,7 @@ Body:
     Weight: 100
   - Id: 1000857
     AegisName: ArchbishopStone_Top3
-    Name: Archbishop Stone (Top)
+    Name: Archbishop Stone (Upper)
     Type: Etc
     Weight: 100
   - Id: 1000858
@@ -94002,7 +94261,7 @@ Body:
     Weight: 100
   - Id: 1000859
     AegisName: ArchbishopStone_Bottom3
-    Name: Archbishop Stone (Bottom)
+    Name: Archbishop Stone (Lower)
     Type: Etc
     Weight: 100
   - Id: 1000860
@@ -94017,7 +94276,7 @@ Body:
     Weight: 100
   - Id: 1000862
     AegisName: RangerStone_Bottom3
-    Name: Ranger Stone (Bottom)
+    Name: Ranger Stone (Lower)
     Type: Etc
     Weight: 100
   - Id: 1000863
@@ -94032,7 +94291,7 @@ Body:
     Weight: 100
   - Id: 1000865
     AegisName: ShadowchasStone_Bottom3
-    Name: Shadow Chaser Stone (Bottom)
+    Name: Shadow Chaser Stone (Lower)
     Type: Etc
     Weight: 100
   - Id: 1000874
@@ -94077,7 +94336,7 @@ Body:
     Weight: 5
   - Id: 1000882
     AegisName: ElectricEffect_Bottom
-    Name: Electric Effect (Bottom)
+    Name: Electric Effect (Lower)
     Type: Etc
     Weight: 100
   - Id: 1000883
@@ -95927,7 +96186,6 @@ Body:
     Type: Etc
     Trade:
       NoDrop: true
-      NoTrade: true
       NoSell: true
       NoCart: true
       NoGuildStorage: true
@@ -100318,6 +100576,10 @@ Body:
     Weight: 10
     Flags:
       BuyingStore: true
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
   - Id: 1002185
     AegisName: Summer_Leaflet
     Name: Ocean Week Flyer    # !todo check english name
@@ -100577,6 +100839,11 @@ Body:
     Weight: 100
     Trade:
       NoDrop: true
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 1002273
     AegisName: aegis_1002273
     Name: Archbishop Stone II (Upper)
@@ -100592,11 +100859,20 @@ Body:
     Name: Archbishop Stone II (Lower)
     Type: Etc
     Weight: 100
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
   - Id: 1002276
     AegisName: aegis_1002276
     Name: Cardinal Stone II (Garment)
     Type: Etc
     Weight: 100
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 1002277
     AegisName: aegis_1002277
     Name: Shadow Chaser Stone II (Upper)
@@ -100609,12 +100885,22 @@ Body:
     Weight: 100
   - Id: 1002279
     AegisName: aegis_1002279
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
     Name: Shadow Chaser Stone II (Lower)    # !todo check english name
     Type: Etc
     Weight: 100
   - Id: 1002280
     AegisName: aegis_1002280
     Name: Abyss Chaser Stone II (Garment)
+<<<<<<< Updated upstream
+=======
+=======
+    Name: Shadow Chaser Stone II (Lower)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002281
@@ -100632,6 +100918,10 @@ Body:
     Name: Super Novice Stone II (Lower)
     Type: Etc
     Weight: 100
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
   - Id: 1002284
     AegisName: aegis_1002284
     Name: Hyper Novice Stone II (Garment)
@@ -100825,45 +101115,113 @@ Body:
   - Id: 1002408
     AegisName: aegis_1002408
     Name: Warlock Stone II (Upper)    # !todo check english name
+<<<<<<< Updated upstream
+=======
+=======
+  - Id: 1002408
+    AegisName: aegis_1002408
+    Name: Warlock Stone II (Upper)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002409
     AegisName: aegis_1002409
+<<<<<<< Updated upstream
     Name: Warlock Stone II (Middle)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Warlock Stone II (Middle)    # !todo check english name
+=======
+    Name: Warlock Stone II (Middle)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002410
     AegisName: aegis_1002410
+<<<<<<< Updated upstream
     Name: Warlock Stone II (Lower)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Warlock Stone II (Lower)    # !todo check english name
+=======
+    Name: Warlock Stone II (Lower)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002411
     AegisName: aegis_1002411
+<<<<<<< Updated upstream
     Name: Generic Stone II (Upper)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Generic Stone II (Upper)    # !todo check english name
+=======
+    Name: Genetic Stone II (Upper)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002412
     AegisName: aegis_1002412
+<<<<<<< Updated upstream
     Name: Generic Stone II (Middle)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Generic Stone II (Middle)    # !todo check english name
+=======
+    Name: Genetic Stone II (Middle)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002413
     AegisName: aegis_1002413
+<<<<<<< Updated upstream
     Name: Generic Stone II (Lower)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Generic Stone II (Lower)    # !todo check english name
+=======
+    Name: Genetic Stone II (Lower)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002414
     AegisName: aegis_1002414
+<<<<<<< Updated upstream
     Name: Holy Stone II (Upper)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Holy Stone II (Upper)    # !todo check english name
+=======
+    Name: Star Emperor Stone II (Upper)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002415
     AegisName: aegis_1002415
+<<<<<<< Updated upstream
     Name: Holy Stone II (Middle)    # !todo check english name
+=======
+<<<<<<< Updated upstream
+    Name: Holy Stone II (Middle)    # !todo check english name
+=======
+    Name: Star Emperor Stone II (Middle)
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     Type: Etc
     Weight: 100
   - Id: 1002416
     AegisName: aegis_1002416
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
     Name: Holy Stone II (Lower)    # !todo check english name
     Type: Etc
     Weight: 100
@@ -101539,6 +101897,14 @@ Body:
       NoDrop: true
       NoMail: true
       NoAuction: true
+<<<<<<< Updated upstream
+=======
+=======
+    Name: Star Emperor Stone II (Lower)
+    Type: Etc
+    Weight: 100
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Id: 1200000
     AegisName: IDTest_arrow
     Name: IDTest arrow
@@ -101645,3 +102011,380 @@ Body:
       Ammo: true
     Flags:
       BuyingStore: true
+  - Id: 1230001
+    AegisName: Wind_Coin
+    Name: Wind Coin
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230002
+    AegisName: Water_Coin
+    Name: Water Coin
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230003
+    AegisName: Fire_Coin
+    Name: Fire Coin
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230004
+    AegisName: Earth_Coin
+    Name: Earth Coin
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230005
+    AegisName: Holy_Coin
+    Name: Holy Coin
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230006
+    AegisName: Neutral_Coin
+    Name: Neutral Coin
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230007
+    AegisName: Happy_Event
+    Name: Happy
+    Type: Etc
+    Buy: 10
+    Weight: 1 
+  - Id: 1230008
+    AegisName: Awesome_Event
+    Name: Awesome
+    Type: Etc
+    Buy: 10
+    Weight: 1 
+  - Id: 1230009
+    AegisName: Prosperity_Event
+    Name: Prosperity
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230010
+    AegisName: Peace_Event
+    Name: Peace
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230011
+    AegisName: Year_Event
+    Name: Year
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230012
+    AegisName: New_Event
+    Name: New
+    Type: Etc
+    Buy: 10
+    Weight: 1 
+  - Id: 1230013
+    AegisName: Excitement_Event
+    Name: Excitement
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230014
+    AegisName: Wish_Event
+    Name: Wish
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230015
+    AegisName: Year_Event_Y
+    Name: Y
+    Type: Etc
+    Buy: 10
+    Weight: 1  
+  - Id: 1230016
+    AegisName: Year_Event_E
+    Name: E
+    Type: Etc
+    Buy: 10
+    Weight: 1  
+  - Id: 1230017
+    AegisName: Year_Event_A
+    Name: A
+    Type: Etc
+    Buy: 10
+    Weight: 1   
+  - Id: 1230018
+    AegisName: Year_Event_R
+    Name: R
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230019
+    AegisName: _silvercard
+    Name: Silver Card
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230020
+    AegisName: _goldcard
+    Name: Gold Card
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230021
+    AegisName: _violetcard
+    Name: Violet Card
+    Type: Etc
+    Buy: 10
+    Weight: 1
+  - Id: 1230022
+    AegisName: Princess_Tiara_Card
+    Name: Princess Tiara Card
+    Type: Card
+    Weight: 10
+    Locations:
+      Head_Low: true
+      Head_Mid: true
+      Head_Top: true
+    Flags:
+      BuyingStore: true
+      DropAnnounce: true
+      DropEffect: CLIENT
+    Script: |
+      bonus bAtkRate,10;
+      bonus bMatkRate,10;
+      .@r = getrefine();
+      bonus bPAtk,5*(.@r/3);
+      bonus bSMatk,5*(.@r/3);
+      if (.@r >= 11) {
+        bonus bFixedCast,-1000;
+      }
+  - Id: 1230023
+    AegisName: HEROS_DRAGON_1
+    Name: Beryl Dragon Card
+    Type: Card
+    Weight: 10
+    Locations:
+      Armor: true
+    Flags:
+      BuyingStore: true
+      DropAnnounce: true
+      DropEffect: CLIENT
+    Script: |
+      bonus2 bMagicAddClass,Class_Boss,50;
+      bonus bMaxHPrate,-20;
+      if (getrefine()>=15) {
+         bonus bSMatk,30;
+      }
+      if (BaseLevel>=250) {
+         bonus bSpl,30;
+      }
+      if (readparam(bSpl)>=110) {
+         bonus bMatkRate,30;
+      }
+  - Id: 1230024
+    AegisName: HEROS_DRAGON_2
+    Name: Ignis Fatuus Card
+    Type: Card
+    Weight: 10
+    Locations:
+      Garment: true
+    Flags:
+      BuyingStore: true
+      DropAnnounce: true
+      DropEffect: CLIENT
+    Script: |
+        bonus bMatkRate,30+5*(getrefine()/3);
+        bonus bCritical,-10*(readparam(bLuk)/20);
+        if (getequiparmorlv()==2) {
+        bonus2 bMagicAddClass,Class_Boss,10;
+        }
+  - Id: 1230025
+    AegisName: HEROS_DRAGON_3
+    Name: Abyssal Leviathan Dragon
+    Type: Card
+    Weight: 10
+    Locations:
+      Shoes: true
+    Flags:
+      BuyingStore: true
+      DropAnnounce: true
+      DropEffect: CLIENT
+    Script: |
+      bonus2 bSubEle,Ele_All,-10;
+      bonus bMatkRate,30;
+  - Id: 1230026
+    AegisName: HEROS_DRAGON_4
+    Name: The Void Reaver Card
+    Type: Card
+    Weight: 10
+    Locations:
+      Left_Hand: true
+    Flags:
+      BuyingStore: true
+      DropEffect: CLIENT
+    Script: |
+      bonus2 bSubRace,RC_All,25;
+      bonus2 bSubRace,RC_Player_Human,-15;
+      bonus2 bSubRace,RC_Player_Doram,-15;
+      .@rate = (getrefine() < 12) ? -35 : 35;
+      bonus2 bSubSize,Size_All,.@rate;
+      if (getequiparmorlv() == 2) {
+        bonus bRes,250;
+        bonus bMRes,250;
+      }
+  - Id: 1230027
+    AegisName: Refine_Armor_9Up
+    Name: +9 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230028
+    AegisName: Refine_Armor_10Up
+    Name: +10 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230029
+    AegisName: Refine_Armor_11Up
+    Name: +11 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230030
+    AegisName: Refine_Armor_12Up
+    Name: +12 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230031
+    AegisName: Refine_Armor_13Up
+    Name: +13 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230032
+    AegisName: Refine_Armor_14Up
+    Name: +14 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230033
+    AegisName: Refine_Armor_15Up
+    Name: +15 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230034
+    AegisName: Refine_Armor_16Up
+    Name: +16 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230035
+    AegisName: Refine_Armor_17Up
+    Name: +17 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230036
+    AegisName: Refine_Armor_18Up
+    Name: +18 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230037
+    AegisName: Refine_Armor_19Up
+    Name: +19 Universal Refine Ticket
+    Type: Etc
+  - Id: 1230038
+    AegisName: Refine_Armor_20Up
+    Name: Max Universal Refine Ticket
+    Type: Etc
+  - Id: 1230039
+    AegisName: Material_Exchange_Ticket
+    Name: Material Exchange Ticket
+    Type: Etc
+  - Id: 1230040
+    AegisName: Episode1617_Exchange_Ticket
+    Name: Episode 16 17 Exchange Ticket
+    Type: Etc
+  - Id: 1230041
+    AegisName: Episode18_Exchange_Ticket
+    Name: Episode 18 Exchange Ticket
+    Type: Etc
+  - Id: 1230042
+    AegisName: Episode19_Exchange_Ticket
+    Name: Episode 19 Exchange Ticket
+    Type: Etc
+  - Id: 1230043
+    AegisName: Episode20_Exchange_Ticket
+    Name: Episode 20 Exchange Ticket
+    Type: Etc
+#####=== Twinhead Dragon SET ===####
+  - Id: 1230044
+    AegisName: Twinhead_Dragon_Boots_Ticket
+    Name: Twinhead Dragon Boots Ticket
+    Type: Etc
+  - Id: 1230045
+    AegisName: Twinhead_Dragon_Mail_Ticket
+    Name: Twinhead Dragon Mail Ticket
+    Type: Etc
+#####=== Eduring Power ===####
+  - Id: 1230046
+    AegisName: farmhouse_coin
+    Name: Farm House Coin
+    Type: Etc
+    
+#####=== Eduring Power Enchant===####    
+  - Id: 1230100
+    AegisName: Extended_Memory
+    Name: Extended Memory
+    Type: Card
+    SubType: Enchant
+    Buy: 20
+    Script: |
+      .@r = getequiprefinerycnt(EQI_SHOES);
+      bonus bBaseAtk,30;
+      bonus bAtkRate,5;
+      if (.@r >= 15) {
+        bonus bBaseAtk,150;
+        bonus bAtkRate,30;
+      } else if (.@r >= 11) {
+        bonus bBaseAtk,90;
+        bonus bAtkRate,20;
+      } else if (.@r >= 9) {
+        bonus bBaseAtk,60;
+        bonus bAtkRate,15;
+      } else if (.@r >= 7) {
+        bonus bBaseAtk,30;
+        bonus bAtkRate,10;
+      }
+
+  - Id: 1230101
+    AegisName: Extended_Memory1
+    Name: Extended Memory Lv1
+    Type: Card
+    SubType: Enchant
+    Buy: 20
+    Script: |
+      .@r = getequiprefinerycnt(EQI_SHOES);
+      bonus bMatk,30;
+      bonus bMagicDamageReturn,5;
+      if (.@r >= 15) {
+        bonus bMatk,150;
+        bonus bMagicDamageReturn,30;
+      } else if (.@r >= 11) {
+        bonus bMatk,90;
+        bonus bMagicDamageReturn,20;
+      } else if (.@r >= 9) {
+        bonus bMatk,60;
+        bonus bMagicDamageReturn,15;
+      } else if (.@r >= 7) {
+        bonus bMatk,30;
+        bonus bMagicDamageReturn,10;
+      }
+
+  - Id: 1230102
+    AegisName: Extended_Memory2
+    Name: Extended Memory Lv2
+    Type: Card
+    SubType: Enchant
+    Buy: 20
+    Script: |
+      .@r = getequiprefinerycnt(EQI_SHOES);
+      bonus bCritical,10;
+      bonus bCritAtkRate,10;
+      if (.@r >= 15) {
+        bonus bCritical,30;
+        bonus bCritAtkRate,30;
+      } else if (.@r >= 11) {
+        bonus bCritical,20;
+        bonus bCritAtkRate,20;
+      } else if (.@r >= 9) {
+        bonus bCritical,15;
+        bonus bCritAtkRate,15;
+      } else if (.@r >= 7) {
+        bonus bCritical,10;
+        bonus bCritAtkRate,10;
+      }   

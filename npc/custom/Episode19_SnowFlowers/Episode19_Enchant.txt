@@ -1,0 +1,69 @@
+// ============================================
+// Episode 19 ENCHANT NPC
+// ============================================
+askald,71,117,1	script	Episode19 ENCHANT	10468,{
+	cutin "ep19_vellgunde01.png", 2;
+	mes "^0000FFWelcome to Episode 19 Glacier Enchant System!^000000";
+	mes "I can enchant the following Weapons:";
+	mes "^FF0000=>Glacier Weapons^000000";
+	mes "^0088FF=>Dim Glacier Weapons^000000";
+	mes "^9900FF=>Snow Flower Armors^000000";
+	mes "^00CC00=>Snow Flower Garments^000000";
+	mes "^00CC00=>Snow Flower Footgears^000000";
+	mes "^9900FF=>Snow Flower Accessories (Right)^000000";
+	mes "^9900FF=>Snow Flower Accessories (Left)^000000";	
+	next;
+	
+	cutin "ep19_vellgunde02.png", 2;
+	switch(select("^FF0000Glacier Weapons^000000:^0088FFDim Glacier Weapons^000000:^9900FFSnow Flower Armors^000000:^00CC00Snow Flower Garments^000000:^00CC00Snow Flower Footgears^000000:^9900FFSnow Flower Accessories (Right)^000000:^9900FFSnow Flower Accessories (Left)^000000:Exit")) {
+		case 1:
+			// Episode 19 Glacier Weapons - TABLE 31
+			cutin "", 255;
+			item_enchant(31);
+			close;
+			
+		case 2:
+			// Dim Glacier Weapons 47
+			cutin "", 255;
+			item_enchant(47);
+			close;
+			
+		case 3:
+			// Snow Flower Armors - TABLE 26
+			cutin "", 255;
+			item_enchant(26);
+			close;
+			
+		case 4:
+			// Snow Flower Garments - TABLE 27
+			cutin "", 255;
+			item_enchant(27);
+			close;
+			
+		case 5:
+			// Snow Flower Footgears - TABLE 28
+			cutin "", 255;
+			item_enchant(28);
+			close;
+			
+		case 6:
+			// Snow Flower Accessories (Right) - TABLE 29
+			cutin "", 255;
+			item_enchant(29);
+			close;
+			
+		case 7:
+			// Snow Flower Accessories (Left) - TABLE 30
+			cutin "", 255;
+			item_enchant(30);
+			close;
+			
+		case 8:
+			cutin "ep19_vellgunde01.png", 2;
+			mes "[Weapon Enchanter]";
+			mes "Have a nice day!";
+			mes "Come back anytime!";
+			cutin "", 255;
+			close;
+	}
+}

@@ -1,0 +1,434 @@
+// ============================================================
+// NPC: Promotional Code Generator & Redeemer
+// Place: prontera,162,210,6
+// Save as: npc/custom/npc_promo_code.txt
+// ============================================================
+
+prontera,162,210,6	script	PromoCodeNPC	90,{
+
+	// --- MAIN BODY (runs on NPC click) ---
+	if(getgmlevel() >= 99) goto GMMenu;
+
+	// --- PLAYER FLOW ---
+	mes "[^0055FFPromo Code NPC^000000]";
+	mes " ";
+	mes "Welcome, ^FF6600" + strcharinfo(0) + "^000000!";
+	mes "Enter your promo code to receive a reward.";
+	next;
+	mes "[^0055FFPromo Code NPC^000000]";
+	mes " ";
+	mes "Enter your promo code:";
+	input .@pcode$;
+	close2;
+	callfunc "F_ClaimCode", .@pcode$;
+	end;
+
+// ============================================================
+// GM MENU
+// ============================================================
+GMMenu:
+	mes "[^FF0000GM - Promo Code Manager^000000]";
+	mes " ";
+	mes "Select an option:";
+	menu
+		"Create Item Code",       GMCreateItem,
+		"Create Cash Code",       GMCreateCash,
+		"Create Multi-Item Code", GMCreateMulti,
+		"View All Codes",         GMView,
+		"Delete Single Code",     GMDelete,
+		"Delete All Used Codes",  GMDeleteUsed,
+		"Close",                  GMClose;
+
+GMClose:
+	close;
+
+// ============================================================
+// GM: CREATE ITEM CODE
+// ============================================================
+GMCreateItem:
+	mes "[^FF0000Create Item Code^000000]";
+	mes " ";
+	mes "Enter code name:";
+	input .@pc$;
+	set .@pc$, strtoupper(.@pc$);
+
+	if(getstrlen(.@pc$) < .length[0] || getstrlen(.@pc$) > .length[1]) {
+		mes " ";
+		mes "^FF0000Invalid code length! (" + .length[0] + "-" + .length[1] + " characters)^000000";
+		close;
+	}
+
+	set .@exist, query_sql("SELECT COUNT(*) FROM `reward_codes` WHERE `promo` = '" + escape_sql(.@pc$) + "'", .@cnt);
+	if(.@cnt > 0) {
+		mes " ";
+		mes "^FF0000Code [" + .@pc$ + "] already exists!^000000";
+		close;
+	}
+
+	mes " ";
+	mes "Enter Item ID:";
+	input .@reward;
+
+	if(.@reward <= 0) {
+		mes " ";
+		mes "^FF0000Invalid Item ID!^000000";
+		close;
+	}
+
+	mes " ";
+	mes "Enter amount:";
+	input .@amount;
+	if(.@amount <= 0) set .@amount, 1;
+
+	mes " ";
+	mes "Enter claim limit (pool):";
+	input .@limit;
+	if(.@limit <= 0) set .@limit, 1;
+
+	query_sql("INSERT INTO `reward_codes` (`promo`,`reward_type`,`nameid`,`item_name`,`amount`,`time_created`,`use_limit`,`pool`) VALUES ('" + escape_sql(.@pc$) + "','item','" + .@reward + "','" + escape_sql(getitemname(.@reward)) + "','" + .@amount + "',NOW(),'" + .@limit + "','" + .@limit + "')");
+
+	mes " ";
+	mes "^00AA00[SUCCESS] Code [" + .@pc$ + "] created!^000000";
+	mes "  Item : " + getitemname(.@reward) + " x" + .@amount;
+	mes "  Pool : " + .@limit;
+	close;
+
+// ============================================================
+// GM: CREATE CASH CODE
+// ============================================================
+GMCreateCash:
+	mes "[^FF0000Create Cash Code^000000]";
+	mes " ";
+	mes "Enter code name:";
+	input .@pc$;
+	set .@pc$, strtoupper(.@pc$);
+
+	if(getstrlen(.@pc$) < .length[0] || getstrlen(.@pc$) > .length[1]) {
+		mes " ";
+		mes "^FF0000Invalid code length!^000000";
+		close;
+	}
+
+	set .@exist, query_sql("SELECT COUNT(*) FROM `reward_codes` WHERE `promo` = '" + escape_sql(.@pc$) + "'", .@cnt);
+	if(.@cnt > 0) {
+		mes " ";
+		mes "^FF0000Code [" + .@pc$ + "] already exists!^000000";
+		close;
+	}
+
+	mes " ";
+	mes "Enter Cash Points amount:";
+	input .@cash;
+	if(.@cash <= 0) set .@cash, 1;
+
+	mes " ";
+	mes "Enter claim limit (pool):";
+	input .@limit;
+	if(.@limit <= 0) set .@limit, 1;
+
+	query_sql("INSERT INTO `reward_codes` (`promo`,`reward_type`,`cash_points`,`time_created`,`use_limit`,`pool`) VALUES ('" + escape_sql(.@pc$) + "','cash','" + .@cash + "',NOW(),'" + .@limit + "','" + .@limit + "')");
+
+	mes " ";
+	mes "^00AA00[SUCCESS] Cash Code [" + .@pc$ + "] created!^000000";
+	mes "  Cash : " + .@cash + " Points";
+	mes "  Pool : " + .@limit;
+	close;
+
+// ============================================================
+// GM: CREATE MULTI-ITEM CODE
+// ============================================================
+GMCreateMulti:
+	mes "[^FF0000Create Multi-Item Code^000000]";
+	mes " ";
+	mes "Enter code name:";
+	input .@pc$;
+	set .@pc$, strtoupper(.@pc$);
+
+	if(getstrlen(.@pc$) < .length[0] || getstrlen(.@pc$) > .length[1]) {
+		mes " ";
+		mes "^FF0000Invalid code length!^000000";
+		close;
+	}
+
+	set .@exist, query_sql("SELECT COUNT(*) FROM `reward_codes` WHERE `promo` = '" + escape_sql(.@pc$) + "'", .@cnt);
+	if(.@cnt > 0) {
+		mes " ";
+		mes "^FF0000Code [" + .@pc$ + "] already exists!^000000";
+		close;
+	}
+
+	mes " ";
+	mes "Enter claim limit (pool):";
+	input .@limit;
+	if(.@limit <= 0) set .@limit, 1;
+
+	query_sql("INSERT INTO `reward_codes` (`promo`,`reward_type`,`time_created`,`use_limit`,`pool`) VALUES ('" + escape_sql(.@pc$) + "','multi',NOW(),'" + .@limit + "','" + .@limit + "')");
+
+	set .@count, 0;
+	set .@stop, 0;
+
+	dispbottom "--- Adding items to [" + .@pc$ + "] (Pool: " + .@limit + ") ---";
+	dispbottom "Enter Item ID in the dialog. Type 0 to finish.";
+
+	while(!.@stop) {
+		mes "[^FF0000Multi-Item^000000] Code: ^0055FF" + .@pc$ + "^000000";
+		mes "Items added: ^FF6600" + .@count + "^000000  |  Enter Item ID (0 to finish):";
+		input .@itemid;
+
+		if(.@itemid == 0) {
+			set .@stop, 1;
+		} else {
+			mes "[^FF0000Multi-Item^000000] Code: ^0055FF" + .@pc$ + "^000000";
+			mes "Item: ^FF6600" + getitemname(.@itemid) + "^000000  |  Enter amount:";
+			input .@amt;
+			if(.@amt <= 0) set .@amt, 1;
+
+			query_sql("INSERT INTO `reward_multi_items` (`promo`,`nameid`,`amount`) VALUES ('" + escape_sql(.@pc$) + "','" + .@itemid + "','" + .@amt + "')");
+
+			set .@count, .@count + 1;
+			dispbottom "[" + .@count + "] " + .@amt + " x " + getitemname(.@itemid) + " -- added!";
+		}
+	}
+
+	if(.@count == 0) {
+		query_sql("DELETE FROM `reward_codes` WHERE `promo` = '" + escape_sql(.@pc$) + "'");
+		mes "[^FF0000Multi-Item^000000]";
+		mes "^FF0000No items added. Code cancelled.^000000";
+	} else {
+		mes "[^FF0000Multi-Item^000000]";
+		mes "^00AA00[SUCCESS] Code [" + .@pc$ + "] created!^000000";
+		mes "Total items: ^FF6600" + .@count + "^000000  |  Pool: ^FF6600" + .@limit + "^000000";
+		dispbottom "--- [" + .@pc$ + "] done! " + .@count + " item(s), Pool: " + .@limit + " ---";
+	}
+	close;
+
+// ============================================================
+// GM: VIEW ALL CODES
+// ============================================================
+GMView:
+	set .@nb, query_sql("SELECT `promo`,`reward_type`,`item_name`,`amount`,`cash_points`,`pool`,`use_limit` FROM `reward_codes` ORDER BY `time_created` DESC LIMIT 20", .@code$, .@type$, .@iname$, .@amt, .@cash, .@pool, .@ulimit);
+
+	mes "[^FF0000Code List (Last 20)^000000]";
+	mes " ";
+
+	if(!.@nb) {
+		mes "No codes found.";
+		close;
+	}
+
+	for(set .@i, 0; .@i < .@nb; set .@i, .@i + 1) {
+		if(.@type$[.@i] == "item") {
+			mes "^0000FF[ITEM]^000000  " + .@code$[.@i];
+			mes "  > " + .@iname$[.@i] + " x" + .@amt[.@i];
+		} else if(.@type$[.@i] == "cash") {
+			mes "^FF6600[CASH]^000000  " + .@code$[.@i];
+			mes "  > " + .@cash[.@i] + " Cash Points";
+		} else if(.@type$[.@i] == "multi") {
+			mes "^9900CC[MULTI]^000000 " + .@code$[.@i];
+			mes "  > Multiple Items";
+		}
+		mes "  > Pool: " + .@pool[.@i] + " / " + .@ulimit[.@i];
+		mes " ";
+	}
+	close;
+
+// ============================================================
+// GM: DELETE SINGLE CODE (numbered list + input)
+// ============================================================
+GMDelete:
+	set .@nb, query_sql("SELECT `promo`,`reward_type`,`pool` FROM `reward_codes` ORDER BY `time_created` DESC LIMIT 20", .@dc$, .@dt$, .@dp);
+
+	mes "[^FF0000Delete Code^000000]";
+	mes " ";
+
+	if(!.@nb) {
+		mes "No codes found.";
+		close;
+	}
+
+	mes "Type the ^FF6600NUMBER^000000 of the code to delete:";
+	mes " ";
+	for(set .@i, 0; .@i < .@nb; set .@i, .@i + 1) {
+		if(.@dt$[.@i] == "item")       set .@tag$, "^0000FF[ITEM]^000000 ";
+		else if(.@dt$[.@i] == "cash")  set .@tag$, "^FF6600[CASH]^000000 ";
+		else                            set .@tag$, "^9900CC[MULTI]^000000";
+		mes " ^777777" + (.@i + 1) + ".^000000 " + .@tag$ + " " + .@dc$[.@i] + " ^777777(Pool: " + .@dp[.@i] + ")^000000";
+	}
+	mes " ";
+	mes "Enter 0 to cancel.";
+	input .@sel;
+
+	if(.@sel <= 0 || .@sel > .@nb) {
+		mes " ";
+		mes "Cancelled.";
+		close;
+	}
+
+	set .@sel, .@sel - 1;
+	set .@dcode$, .@dc$[.@sel];
+
+	mes "[^FF0000Delete Code^000000]";
+	mes " ";
+	mes "Are you sure you want to delete:";
+	mes " ";
+	if(.@dt$[.@sel] == "item")       mes "^0000FF[ITEM]^000000  " + .@dcode$;
+	else if(.@dt$[.@sel] == "cash")  mes "^FF6600[CASH]^000000  " + .@dcode$;
+	else                              mes "^9900CC[MULTI]^000000 " + .@dcode$;
+	mes "Pool remaining: ^FF6600" + .@dp[.@sel] + "^000000";
+	mes " ";
+	mes "^FF0000This cannot be undone!^000000";
+	menu "Yes, delete it", GMDeleteDo, "No, cancel", GMClose;
+
+GMDeleteDo:
+	query_sql("DELETE FROM `reward_codes` WHERE `promo` = '" + escape_sql(.@dcode$) + "'");
+	query_sql("DELETE FROM `reward_logs` WHERE `code` = '" + escape_sql(.@dcode$) + "'");
+	query_sql("DELETE FROM `reward_multi_items` WHERE `promo` = '" + escape_sql(.@dcode$) + "'");
+
+	mes "[^FF0000Delete Code^000000]";
+	mes " ";
+	mes "^00AA00[DELETED] Code [" + .@dcode$ + "] has been removed.^000000";
+	close;
+
+// ============================================================
+// GM: DELETE ALL USED (pool = 0) CODES
+// ============================================================
+GMDeleteUsed:
+	set .@ex, query_sql("SELECT COUNT(*) FROM `reward_codes` WHERE `pool` = 0", .@dcnt);
+
+	mes "[^FF0000Delete Used Codes^000000]";
+	mes " ";
+
+	if(!.@dcnt) {
+		mes "No codes with pool = 0 found.";
+		close;
+	}
+
+	mes "^FF0000WARNING^000000: This will permanently delete ^FF0000" + .@dcnt + "^000000 code(s) with pool = 0.";
+	mes "This action ^FF0000CANNOT^000000 be undone!";
+	mes " ";
+	mes "Are you sure?";
+	menu "Yes, delete them", GMDeleteUsedConfirm, "No, cancel", GMClose;
+
+GMDeleteUsedConfirm:
+	set .@nb2, query_sql("SELECT `promo` FROM `reward_codes` WHERE `pool` = 0", .@del_codes$);
+
+	for(set .@i, 0; .@i < .@nb2; set .@i, .@i + 1) {
+		query_sql("DELETE FROM `reward_logs` WHERE `code` = '" + escape_sql(.@del_codes$[.@i]) + "'");
+		query_sql("DELETE FROM `reward_multi_items` WHERE `promo` = '" + escape_sql(.@del_codes$[.@i]) + "'");
+	}
+
+	query_sql("DELETE FROM `reward_codes` WHERE `pool` = 0");
+
+	mes "[^FF0000Delete Used Codes^000000]";
+	mes " ";
+	mes "^00AA00[SUCCESS] Deleted " + .@nb2 + " code(s) and their logs.^000000";
+	close;
+
+// ============================================================
+// ON INIT - Create / migrate tables
+// ============================================================
+OnInit:
+	setarray .length, 5, 26;
+
+	// Create tables if they do not exist
+	query_sql "CREATE TABLE IF NOT EXISTS `reward_codes` (`promo` VARCHAR(26) NOT NULL, `reward_type` ENUM('item','cash','multi') NOT NULL DEFAULT 'item', `nameid` INT UNSIGNED DEFAULT NULL, `item_name` VARCHAR(50) DEFAULT NULL, `amount` SMALLINT UNSIGNED DEFAULT NULL, `cash_points` INT UNSIGNED DEFAULT NULL, `time_created` DATETIME NOT NULL DEFAULT NOW(), `use_limit` INT UNSIGNED NOT NULL DEFAULT 1, `pool` INT UNSIGNED NOT NULL DEFAULT 1, PRIMARY KEY (`promo`)) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+
+	query_sql "CREATE TABLE IF NOT EXISTS `reward_logs` (`account_id` INT UNSIGNED NOT NULL, `last_ip` VARCHAR(15) NOT NULL, `code` VARCHAR(26) NOT NULL, `redeem_time` DATETIME NOT NULL, PRIMARY KEY (`account_id`, `code`)) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+
+	query_sql "CREATE TABLE IF NOT EXISTS `reward_multi_items` (`promo` VARCHAR(26) NOT NULL, `nameid` INT UNSIGNED NOT NULL, `amount` SMALLINT UNSIGNED NOT NULL, KEY `promo_idx` (`promo`)) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+
+	// Migration: rename old column `limit` -> `use_limit` if it still exists
+	set .@old_col, query_sql("SELECT COUNT(*) FROM `information_schema`.`COLUMNS` WHERE `TABLE_SCHEMA` = DATABASE() AND `TABLE_NAME` = 'reward_codes' AND `COLUMN_NAME` = 'limit'", .@col_exists);
+	if(.@col_exists > 0) {
+		query_sql "ALTER TABLE `reward_codes` CHANGE `limit` `use_limit` INT UNSIGNED NOT NULL DEFAULT 1";
+	}
+
+	// Migration: rename old column `last_ip` BINARY(9) -> VARCHAR(15) if needed
+	set .@ip_col, query_sql("SELECT COUNT(*) FROM `information_schema`.`COLUMNS` WHERE `TABLE_SCHEMA` = DATABASE() AND `TABLE_NAME` = 'reward_logs' AND `COLUMN_NAME` = 'last_ip' AND `DATA_TYPE` = 'binary'", .@ip_exists);
+	if(.@ip_exists > 0) {
+		query_sql "ALTER TABLE `reward_logs` MODIFY `last_ip` VARCHAR(15) NOT NULL";
+	}
+
+	end;
+}
+
+// ============================================================
+// FUNCTION: CLAIM CODE HANDLER
+// ============================================================
+function	script	F_ClaimCode	{
+	set .@pcode$, getarg(0);
+	set .@pc$,    strtoupper(.@pcode$);
+	set .@aid,    getcharid(3);
+	set .@ip$,    getcharip(strcharinfo(0));
+
+	// 1. Length check
+	if(getstrlen(.@pc$) < 5 || getstrlen(.@pc$) > 26) {
+		dispbottom "[Promo] Invalid code format! (5-26 characters)";
+		return;
+	}
+
+	// 2. Code existence check
+	set .@found, query_sql("SELECT `promo`,`reward_type`,`nameid`,`amount`,`cash_points`,`pool` FROM `reward_codes` WHERE `promo` = '" + escape_sql(.@pc$) + "' LIMIT 1", .@promo$, .@rtype$, .@item, .@amt, .@cash, .@pool);
+
+	if(!.@found) {
+		dispbottom "[Promo] Code does not exist or has expired!";
+		return;
+	}
+
+	// 3. Pool check
+	if(.@pool <= 0) {
+		dispbottom "[Promo] Code [" + .@pc$ + "] has no claims remaining!";
+		return;
+	}
+
+	// 4. Account duplicate check
+	set .@log_acc, query_sql("SELECT COUNT(*) FROM `reward_logs` WHERE `code` = '" + escape_sql(.@pc$) + "' AND `account_id` = '" + .@aid + "' LIMIT 1", .@acc_cnt);
+	if(.@acc_cnt > 0) {
+		dispbottom "[Promo] Your account has already claimed this code!";
+		return;
+	}
+
+	// 5. IP duplicate check
+	set .@log_ip, query_sql("SELECT COUNT(*) FROM `reward_logs` WHERE `code` = '" + escape_sql(.@pc$) + "' AND `last_ip` = '" + escape_sql(.@ip$) + "' LIMIT 1", .@ip_cnt);
+	if(.@ip_cnt > 0) {
+		dispbottom "[Promo] Your IP has already claimed this code!";
+		return;
+	}
+
+	// 6. Give reward
+	if(.@rtype$ == "item") {
+		getitem .@item, .@amt;
+		announce strcharinfo(0) + " has claimed a reward from a Promo Code!", bc_self;
+		dispbottom "[Promo] Code   : " + .@pc$;
+		dispbottom "[Promo] Reward : " + .@amt + " x " + getitemname(.@item);
+	}
+	else if(.@rtype$ == "cash") {
+		set #CASHPOINTS, #CASHPOINTS + .@cash;
+		announce strcharinfo(0) + " has received Cash Points from a Promo Code!", bc_self;
+		dispbottom "[Promo] Code   : " + .@pc$;
+		dispbottom "[Promo] Reward : +" + .@cash + " Cash Points";
+		dispbottom "[Promo] Total  : " + #CASHPOINTS + " Points";
+	}
+	else if(.@rtype$ == "multi") {
+		set .@nb_items, query_sql("SELECT `nameid`,`amount` FROM `reward_multi_items` WHERE `promo` = '" + escape_sql(.@pc$) + "'", .@multi_id, .@multi_amt);
+		if(!.@nb_items) {
+			dispbottom "[Promo] Error: This code has no rewards configured!";
+			return;
+		}
+		announce strcharinfo(0) + " has claimed Special Rewards from a Promo Code!", bc_self;
+		dispbottom "[Promo] Code    : " + .@pc$;
+		dispbottom "[Promo] Rewards :";
+		for(set .@i, 0; .@i < .@nb_items; set .@i, .@i + 1) {
+			getitem .@multi_id[.@i], .@multi_amt[.@i];
+			dispbottom "[Promo]   > " + .@multi_amt[.@i] + " x " + getitemname(.@multi_id[.@i]);
+		}
+	}
+
+	// 7. Insert claim log
+	query_sql("INSERT INTO `reward_logs` (`account_id`,`last_ip`,`code`,`redeem_time`) VALUES ('" + .@aid + "','" + escape_sql(.@ip$) + "','" + escape_sql(.@pc$) + "',NOW())");
+
+	// 8. Decrement pool atomically
+	query_sql("UPDATE `reward_codes` SET `pool` = `pool` - 1 WHERE `promo` = '" + escape_sql(.@pc$) + "' AND `pool` > 0");
+
+	return;
+}

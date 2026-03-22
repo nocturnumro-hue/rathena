@@ -1,0 +1,309 @@
+prontera,165,198,5	script	Stats Seller 2.0	10173,{
+	set @name$, "[^1100AA Stats Seller ^000000]";
+	@addStats = 1;
+	@priceStats = 10000000;
+	@priceReset = 50000000;
+	@maxStatsPerPurchase = 100;
+	@baseMaxStats = 100;
+	@rebirthBonusPerLevel = 10;
+	@serverMaxStat = 150;
+	
+	// ===== REBIRTH STAT BONUS KHI RESET (GIỐNG REBIRTH SYSTEM) =====
+	setarray @rebirthStatBonus[0], 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400;
+	
+	// Tính limit mua từ NPC
+	@maxStatsTotal = @baseMaxStats + (Rebirth * @rebirthBonusPerLevel);
+	
+	mes @name$;
+	mes "Hello, I sell " + @addStats + " stats for " + callfunc("F_InsertComma", @priceStats) + "z";
+	mes "Stats reset costs: " + callfunc("F_InsertComma", @priceReset) + "z";
+	mes " ";
+	mes "^008000Your Rebirth: ^FF0000" + Rebirth + "^000000";
+	mes "^008000Purchase Limit: ^0080FF" + @maxStatsTotal + "^000000";
+	mes "  (Base: " + @baseMaxStats + " + Rebirth: +" + (Rebirth * @rebirthBonusPerLevel) + ")";
+	mes "^008000Stats Purchased: ^FF0000" + TotalStatsBought + "^000000 / " + @maxStatsTotal;
+	
+	// Kiểm tra nếu có stats chưa redistribute
+	if (PendingStatsRedistribute > 0) {
+		mes " ";
+		mes "^FF0000You have " + PendingStatsRedistribute + " stats waiting to redistribute!^000000";
+		mes "^00AA00Click 'Reset Stats' to continue redistribution.^000000";
+	}
+	
+	mes " ";
+	if (Rebirth > 0) {
+		mes "^FF00FFWhen you reset stats:^000000";
+		mes "^00AA00You will get +" + @rebirthStatBonus[Rebirth - 1] + " Status Points^000000";
+	}
+	
+	if (TotalStatsBought >= @maxStatsTotal) {
+		mes " ";
+		mes "Sorry, you already reached the purchase limit.";
+		mes "^0000FFYou can still reset to redistribute stats.^000000";
+	}
+	
+	mes " ";
+	mes "What would you like to do?";
+	next;
+	
+	switch(select("Buy Stats:Reset Stats (Redistribute):Cancel")) {
+		case 1:
+			if (TotalStatsBought >= @maxStatsTotal) {
+				mes @name$;
+				mes "You've reached the maximum stats limit.";
+				mes " ";
+				mes "Use ^0000FFReset Stats^000000 to redistribute";
+				mes "your purchased stats for free!";
+				close;
+			}
+			switch(select("Buy STR:Buy AGI:Buy VIT:Buy INT:Buy DEX:Buy LUK")) {
+				case 1: callsub S_BuyStat, bStr, "STR"; break;
+				case 2: callsub S_BuyStat, bAgi, "AGI"; break;
+				case 3: callsub S_BuyStat, bVit, "VIT"; break;
+				case 4: callsub S_BuyStat, bInt, "INT"; break;
+				case 5: callsub S_BuyStat, bDex, "DEX"; break;
+				case 6: callsub S_BuyStat, bLuk, "LUK"; break;
+			}
+		break;
+		
+		case 2:
+			callsub S_ResetStats;
+		break;
+		
+		case 3:
+			close;
+	}
+	end;
+	
+	//===== Function mua stats =====
+	S_BuyStat:
+		.@statID = getarg(0);
+		.@statName$ = getarg(1);
+		.@isFreeRedistribute = getarg(2, 0);
+		
+		if (readparam(.@statID) >= @serverMaxStat) {
+			message strcharinfo(0), .@statName$ + " is already max (" + @serverMaxStat + ").";
+			end;
+		}
+		
+		input .@amount, 0, @serverMaxStat;
+		
+		.@need   = @serverMaxStat - readparam(.@statID);
+		
+		// Nếu đang redistribute, dùng PendingStatsRedistribute
+		if (.@isFreeRedistribute) {
+			.@remain = PendingStatsRedistribute;
+		} else {
+			.@remain = @maxStatsTotal - TotalStatsBought;
+		}
+		
+		if (.@amount > @maxStatsPerPurchase) {
+			message strcharinfo(0), "You can only add up to " + @maxStatsPerPurchase + " per transaction.";
+			end;
+		}
+		if (.@amount > .@need) .@amount = .@need;
+		if (.@amount > .@remain) .@amount = .@remain;
+		
+		if (.@amount < 1) {
+			message strcharinfo(0), "Please put your desired number of stats.";
+			end;
+		}
+		
+		if (!.@isFreeRedistribute && Zeny < .@amount * @priceStats) {
+			message strcharinfo(0), "Not Enough Zeny.";
+			end;
+		}
+		
+		mes @name$;
+		mes "Stats : " + .@statName$ + " +" + .@amount;
+		if (.@isFreeRedistribute) {
+			mes "Price : ^00AA00FREE (Redistribution)^000000";
+		} else {
+			mes "Price : " + callfunc("F_InsertComma", .@amount * @priceStats) + "z";
+		}
+		mes "Do you want to continue?";
+		next;
+		
+		switch(select("Add " + .@statName$ + " +" + .@amount, "Cancel")) {
+			case 1:
+				if (!.@isFreeRedistribute) {
+					Zeny -= .@amount * @priceStats;
+					TotalStatsBought += .@amount;
+				} else {
+					// Trừ từ pending stats
+					PendingStatsRedistribute -= .@amount;
+					TotalStatsBought += .@amount;
+				}
+				
+				statusup2 .@statID, .@amount;
+				
+				if (.@isFreeRedistribute) {
+					message strcharinfo(0), .@statName$ + " Increased. Remaining: " + PendingStatsRedistribute;
+				} else {
+					message strcharinfo(0), .@statName$ + " Increased. Total: " + TotalStatsBought + "/" + @maxStatsTotal;
+				}
+				
+				if (.@isFreeRedistribute) {
+					return;
+				}
+				close;
+			case 2:
+				if (.@isFreeRedistribute) {
+					return;
+				}
+				close;
+		}
+	end;
+	
+	//===== Function reset stats =====
+	S_ResetStats:
+		// Lấy rebirth bonus STATUS POINT (500, 600, 700...)
+		if (Rebirth > 0 && Rebirth <= 10) {
+			.@rebirthStatusBonus = @rebirthStatBonus[Rebirth - 1];
+		} else {
+			.@rebirthStatusBonus = 0;
+		}
+		
+		// Kiểm tra nếu đang có pending stats
+		if (PendingStatsRedistribute > 0) {
+			mes @name$;
+			mes "^FF0000You have " + PendingStatsRedistribute + " stats waiting!^000000";
+			mes " ";
+			mes "Do you want to continue redistribution?";
+			next;
+			goto L_RedistributeMenu;
+		}
+		
+		// Số stats đã mua từ NPC
+		.@savedPurchased = TotalStatsBought;
+		
+		mes @name$;
+		mes "^0000FFStats Redistribution Service^000000";
+		mes " ";
+		mes "This will reset your stats to base and give:";
+		mes " ";
+		mes "^00AA001. Base Status Points from Level " + BaseLevel + "^000000";
+		if (.@rebirthStatusBonus > 0) {
+			mes "^00AA002. Rebirth Status Bonus: +" + .@rebirthStatusBonus + "^000000";
+		}
+		if (.@savedPurchased > 0) {
+			mes "^00AA003. NPC Purchased Stats: +" + .@savedPurchased + "^000000";
+			mes "   ^0080FF(Can redistribute for FREE)^000000";
+		}
+		mes " ";
+		mes "^FF0000Reset Cost: " + callfunc("F_InsertComma", @priceReset) + "z^000000";
+		next;
+		
+		if (.@savedPurchased < 1 && .@rebirthStatusBonus < 1) {
+			mes @name$;
+			mes "You have no bonus stats to redistribute!";
+			close;
+		}
+		
+		if (Zeny < @priceReset) {
+			mes @name$;
+			mes "^FF0000Not enough Zeny!^000000";
+			mes "You need " + callfunc("F_InsertComma", @priceReset) + "z to reset stats.";
+			close;
+		}
+		
+		mes @name$;
+		mes "^FF0000CONFIRMATION^000000";
+		mes " ";
+		mes "After reset:";
+		mes "^0080FF1. Status Points = Base + " + .@rebirthStatusBonus + "^000000";
+		if (.@savedPurchased > 0) {
+			mes "^00AA002. You can redistribute " + .@savedPurchased + " NPC stats FREE^000000";
+		}
+		mes " ";
+		mes "^FF0000Cost: " + callfunc("F_InsertComma", @priceReset) + "z^000000";
+		next;
+		
+		switch(select("Yes, Reset & Redistribute:No, Cancel")) {
+			case 1:
+				mes @name$;
+				mes "Resetting your stats...";
+				
+				// Trừ tiền
+				Zeny -= @priceReset;
+				
+				// ===== LƯU STATS ĐÃ MUA VÀO BIẾN PENDING =====
+				set PendingStatsRedistribute, .@savedPurchased;
+				
+				// ===== RESET COUNTER VỀ 0 =====
+				set TotalStatsBought, 0;
+				
+				// ===== RESET STATS VỀ BASE =====
+				resetstatus;
+				
+				// ===== TỰ ĐỘNG CỘNG REBIRTH STATUS BONUS =====
+				if (.@rebirthStatusBonus > 0) {
+					StatusPoint += .@rebirthStatusBonus;
+				}
+				
+				next;
+				mes @name$;
+				mes "^00AA00Stats reset successfully!^000000";
+				mes " ";
+				mes "^0080FFYour current Status Points:^000000";
+				mes "Total: ^FF0000" + StatusPoint + "^000000";
+				if (.@rebirthStatusBonus > 0) {
+					mes "(Base + Rebirth Bonus: +" + .@rebirthStatusBonus + ")";
+				}
+				
+				if (PendingStatsRedistribute > 0) {
+					mes " ";
+					mes "You can redistribute ^FF0000" + PendingStatsRedistribute + " NPC stats^000000 for FREE!";
+					specialeffect2 EF_ABSORBSPIRITS;
+					next;
+					
+					// Redistribute NPC purchased stats
+					L_RedistributeMenu:
+						if (PendingStatsRedistribute <= 0) {
+							mes @name$;
+							mes "^00AA00Redistribution complete!^000000";
+							mes " ";
+							mes "All NPC purchased stats have been redistributed.";
+							mes "^FF0000Total: " + TotalStatsBought + "^000000 stats";
+							
+							// Reset biến pending
+							set PendingStatsRedistribute, 0;
+							close;
+						}
+						
+						mes @name$;
+						mes "^0000FFNPC Stats Redistribution^000000";
+						mes "Remaining: ^FF0000" + PendingStatsRedistribute + "^000000";
+						mes "Redistributed: ^00AA00" + TotalStatsBought + "^000000";
+						mes " ";
+						mes "Select stat to add:";
+						
+						switch(select("Add STR:Add AGI:Add VIT:Add INT:Add DEX:Add LUK:Finish Later")) {
+							case 1: callsub S_BuyStat, bStr, "STR", 1; goto L_RedistributeMenu;
+							case 2: callsub S_BuyStat, bAgi, "AGI", 1; goto L_RedistributeMenu;
+							case 3: callsub S_BuyStat, bVit, "VIT", 1; goto L_RedistributeMenu;
+							case 4: callsub S_BuyStat, bInt, "INT", 1; goto L_RedistributeMenu;
+							case 5: callsub S_BuyStat, bDex, "DEX", 1; goto L_RedistributeMenu;
+							case 6: callsub S_BuyStat, bLuk, "LUK", 1; goto L_RedistributeMenu;
+							case 7:
+								mes @name$;
+								mes "You can come back anytime to";
+								mes "continue redistributing.";
+								mes " ";
+								mes "Remaining: ^FF0000" + PendingStatsRedistribute + "^000000";
+								mes " ";
+								mes "^00AA00Just talk to me again and select";
+								mes "'Reset Stats' to continue!^000000";
+								close;
+						}
+				} else {
+					close;
+				}
+				
+			case 2:
+				mes @name$;
+				mes "Reset cancelled.";
+				close;
+		}
+	end;
+}

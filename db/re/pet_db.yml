@@ -63,9 +63,12 @@ Body:
     Fullness: 3
     IntimacyFed: 50
     CaptureRate: 2000
+    SupportScript: >
+      petskillsupport "AL_HEAL",99999,10,1000,1000;
+      petskillattack "RK_SONICWAVE",99999,80,5000;
     Script: >
       .@i = getpetinfo(PETINFO_INTIMATE);
-
+      
       if (.@i >= PET_INTIMATE_LOYAL) {
          bonus bCritical,1;
          bonus bLuk,3;
@@ -89,6 +92,9 @@ Body:
     Fullness: 4
     IntimacyFed: 40
     CaptureRate: 1500
+    SupportScript: >
+      petskillsupport "AL_HEAL",99999,10,1000,1000;
+      petskillattack "RK_WINDCUTTER",99999,80,5000;
     Script: >
       .@i = getpetinfo(PETINFO_INTIMATE);
 
@@ -1031,6 +1037,7 @@ Body:
     FoodItem: Vital_Flower_
     Fullness: 3
     IntimacyFed: 10
+    AllowAutoFeed: true    
     CaptureRate: 200
     SpecialPerformance: false
     Script: >
@@ -1051,6 +1058,7 @@ Body:
     Fullness: 3
     IntimacyFed: 10
     CaptureRate: 50
+    AllowAutoFeed: true    
     SpecialPerformance: false
     Script: >
       if (getpetinfo(PETINFO_INTIMATE) >= PET_INTIMATE_LOYAL) {
@@ -1543,9 +1551,15 @@ Body:
     Fullness: 2
     HungryDelay: 120
     IntimacyFed: 15
-    CaptureRate: 0
+    CaptureRate: 100   
     SpecialPerformance: false
+    AttackRate: 1000
+    RetaliateRate: 1000
+    ChangeTargetRate: 1000
     AllowAutoFeed: true
+    SupportScript: >
+      petskillsupport "AL_HEAL",99999,10,1000,1000;
+      petskillattack "RK_SONICWAVE",99999,80,5000;
     Script: >
       .@i = getpetinfo(PETINFO_INTIMATE);
 
@@ -1617,6 +1631,9 @@ Body:
     CaptureRate: 0
     SpecialPerformance: false
     AllowAutoFeed: true
+    SupportScript: >
+      petskillsupport "AL_HEAL",99999,10,1000,1000;
+      petskillattack "LG_RAYOFGENESIS",99999,80,5000;
     Script: >
       .@i = getpetinfo(PETINFO_INTIMATE);
 

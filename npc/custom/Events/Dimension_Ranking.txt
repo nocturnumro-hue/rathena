@@ -1,0 +1,156 @@
+//=============================================================================
+// THE OTHER DIMENSION - TOP 3 STATUE SYSTEM (Simple Version)
+//=============================================================================
+// Auto-updates every 30 seconds - Shows Top 3 highest stage players
+//=============================================================================
+
+-	script	DimensionStatueController	FAKE_NPC,{
+OnInit:
+	.showstatue = 3;
+	.fix_custom_sprite = false;
+	.sql_t$ = "other_dimension_instance";
+	
+	initnpctimer;
+	end;
+
+OnTimer300000:
+	callfunc "F_UpdateDimensionStatues";
+	stopnpctimer;
+	initnpctimer;
+	end;
+
+OnUpdateStatues:
+	callfunc "F_UpdateDimensionStatues";
+	end;
+}
+
+//=============================================================================
+// FUNCTION: Update Top 3 Statues
+//=============================================================================
+function	script	F_UpdateDimensionStatues	{
+	.@sql_t$ = getvariableofnpc(.sql_t$, "DimensionStatueController");
+	
+	.@query$ = "SELECT `char`.char_id, `char`.name, `char`.guild_id, `char`.class, "
+			 + "`char`.sex, `char`.hair, `char`.hair_color, `char`.clothes_color, "
+			 + "`char`.body, `char`.head_top, `char`.head_mid, `char`.head_bottom, `char`.robe, "
+			 + "t1.max_round "
+			 + "FROM `char` RIGHT JOIN " + .@sql_t$ + " t1 ON `char`.char_id = t1.char_id "
+			 + "WHERE t1.max_round > 0 "
+			 + "ORDER BY t1.max_round DESC, t1.char_id ASC "
+			 + "LIMIT " + getvariableofnpc(.showstatue, "DimensionStatueController");
+	
+	.@nb = query_sql(.@query$, .@cid, .@name$, .@guild_id, .@class, .@sex$, .@hair, 
+					 .@hair_color, .@clothes_color, .@body, .@head_top, .@head_mid, 
+					 .@head_bottom, .@robe, .@stage);
+	
+	if (getvariableofnpc(.fix_custom_sprite, "DimensionStatueController")) {
+		for (.@i = 0; .@i < .@nb; .@i++) {
+			.@statue_id = getelementofarray(getvariableofnpc(.statue, "DimensionStatueController"), .@i + 1);
+			setunitdata .@statue_id, UNPC_HEADTOP, 0;
+			setunitdata .@statue_id, UNPC_HEADMIDDLE, 0;
+			setunitdata .@statue_id, UNPC_HEADBOTTOM, 0;
+			setunitdata .@statue_id, UNPC_ROBE, 0;
+		}
+	}
+	
+	for (.@i = 0; .@i < .@nb; .@i++) {
+		.@statue_id = getelementofarray(getvariableofnpc(.statue, "DimensionStatueController"), .@i + 1);
+		
+		setunitdata .@statue_id, UNPC_CLASS, .@class[.@i];
+		setunitdata .@statue_id, UNPC_SEX, (.@sex$[.@i] == "F") ? SEX_FEMALE : SEX_MALE;
+		setunitdata .@statue_id, UNPC_HAIRSTYLE, .@hair[.@i];
+		setunitdata .@statue_id, UNPC_HAIRCOLOR, .@hair_color[.@i];
+		setunitdata .@statue_id, UNPC_CLOTHCOLOR, .@clothes_color[.@i];
+		setunitdata .@statue_id, UNPC_BODY2, .@body[.@i];
+		setunitdata .@statue_id, UNPC_HEADTOP, .@head_top[.@i];
+		setunitdata .@statue_id, UNPC_HEADMIDDLE, .@head_mid[.@i];
+		setunitdata .@statue_id, UNPC_HEADBOTTOM, .@head_bottom[.@i];
+		setunitdata .@statue_id, UNPC_ROBE, .@robe[.@i];
+		
+		setnpcdisplay "dimension_statue#" + (.@i + 1), .@name$[.@i];
+		
+		set getvariableofnpc(.statue_name$[.@i + 1], "DimensionStatueController"), .@name$[.@i];
+		set getvariableofnpc(.statue_guild$[.@i + 1], "DimensionStatueController"), getguildname(.@guild_id[.@i]);
+		set getvariableofnpc(.statue_stage[.@i + 1], "DimensionStatueController"), .@stage[.@i];
+	}
+	
+	for (.@i = .@nb; .@i < getvariableofnpc(.showstatue, "DimensionStatueController"); .@i++) {
+		.@statue_id = getelementofarray(getvariableofnpc(.statue, "DimensionStatueController"), .@i + 1);
+		setunitdata .@statue_id, UNPC_CLASS, HIDDEN_WARP_NPC;
+	}
+	
+	return;
+}
+
+//=============================================================================
+// STATUE NPCs
+//=============================================================================
+-	script	dimension_statue	FAKE_NPC,{
+	.@id = getelementofarray(getvariableofnpc(.npcgid, "DimensionStatueController"), getnpcid(0));
+	
+	mes "^996600[TOP " + .@id + "]^000000";
+	mes "^006699Name:^000000 " + getelementofarray(getvariableofnpc(.statue_name$, "DimensionStatueController"), .@id);
+	
+	.@guild$ = getelementofarray(getvariableofnpc(.statue_guild$, "DimensionStatueController"), .@id);
+	mes "^00AAAAGuild:^000000 " + ((.@guild$ == "null") ? "^AAAAAANone^000000" : .@guild$);
+	
+	mes "^00AA00Highest Stage:^000000 [" + getelementofarray(getvariableofnpc(.statue_stage, "DimensionStatueController"), .@id) + "]";
+	close;
+
+OnInit:
+	.@id = strnpcinfo(2);
+	set getvariableofnpc(.statue[.@id], "DimensionStatueController"), getnpcid(0);
+	set getvariableofnpc(.npcgid[getnpcid(0)], "DimensionStatueController"), .@id;
+	end;
+}
+
+//=============================================================================
+// STATUE PLACEMENTS
+//=============================================================================
+askald,159,150,4	duplicate(dimension_statue)	dimension_statue#1	1_F_MARIA
+askald,159,155,4	duplicate(dimension_statue)	dimension_statue#2	1_F_MARIA
+askald,159,160,4	duplicate(dimension_statue)	dimension_statue#3	1_F_MARIA
+
+//=============================================================================
+// FLOATING LABELS
+//=============================================================================
+askald,159,150,5	script	#dim_top1	HIDDEN_WARP_NPC,{
+OnInit:
+	initnpctimer;
+	end;
+OnTimer1000:
+	showscript("Top-1 Dimension");
+	setnpctimer 0;
+	end;
+}
+
+askald,159,155,5	script	#dim_top2	HIDDEN_WARP_NPC,{
+OnInit:
+	initnpctimer;
+	end;
+OnTimer1000:
+	showscript("Top-2 Dimension");
+	setnpctimer 0;
+	end;
+}
+
+askald,159,160,5	script	#dim_top3	HIDDEN_WARP_NPC,{
+OnInit:
+	initnpctimer;
+	end;
+OnTimer1000:
+	showscript("Top-3 Dimension");
+	setnpctimer 0;
+	end;
+}
+
+//=============================================================================
+// ADD THIS TO YOUR EXISTING OTHER DIMENSION SCRIPT
+// In OtherDimensionSolo script, find OnSqlUpdate and add this line:
+//
+// donpcevent "DimensionStatueController::OnUpdateStatues";
+//
+// Add it after these lines:
+// - After: query_sql("UPDATE `" + .sql_t$ + "`...
+// - After: query_sql("INSERT INTO `" + .sql_t$ + "`...
+//=============================================================================

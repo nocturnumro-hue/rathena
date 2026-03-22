@@ -1,0 +1,15 @@
+//==================================================
+// mu_fild01 - Outer Volund Valley (Extreme Difficulty)
+// Level 209-250 High Density (200+ mobs)
+//==================================================
+
+mu_fild01	monster	Chacoring	22445,45
+mu_fild01	monster	Bullying	22446,45
+mu_fild01	monster	Ring Of Fire	22447,45
+mu_fild01	monster	Elixir Of Life	22448,45
+mu_fild01	monster	Volcanic Clams	22449,45
+mu_fild01	monster	Flame Flower	22450,45
+
+
+mu_fild01	boss_monster	--Starfish--	22494,1,21600000,600000,0
+

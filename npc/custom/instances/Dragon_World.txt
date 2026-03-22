@@ -1,0 +1,1511 @@
+//===== rAthena Script =======================================
+//= Dragon World Instance - Complete
+//===== Description: =========================================
+//= Dragon World - 2 Maps Instance with Dragon Boss
+//= Click NPC to warp to next boss after defeating current boss
+//===== Changelogs: ==========================================
+//= 1.0 Initial release based on Hall of Life structure
+//= 1.1 Fixed syntax errors and added Boss 2 logic
+//= 1.2 Changed to NPC warp system instead of auto warp
+//============================================================
+
+3@vrpop,0,0,0	script	Dragon_World	-1,{
+
+OnInstanceInit:
+	'map$ = instance_mapname("3@vrpop");
+	'gate_map$ = instance_mapname("1@vrpop");
+	set_instance_var("gate_map$", 'gate_map$);
+	
+	// Set mapflags for both maps
+	setmapflag 'map$, mf_noteleport;
+	setmapflag 'map$, mf_nowarp;
+	setmapflag 'map$, mf_nowarpto;
+	setmapflag 'map$, mf_nodrop;
+	setmapflag 'map$, mf_nomobloot;
+	setmapflag 'gate_map$, mf_noteleport;
+	setmapflag 'gate_map$, mf_nowarp;
+	setmapflag 'gate_map$, mf_nowarpto;
+	
+	// Enable NPCs in map 1
+	enablenpc instance_npcname("Dragon Keeper#start");
+	hideoffnpc instance_npcname("Dragon Keeper#start");
+	
+	// Disable NPCs that appear later
+	disablenpc instance_npcname("Dragon Keeper#valley");
+	hideonnpc instance_npcname("Dragon Keeper#valley");
+	disablenpc instance_npcname("#valley_portal");
+	
+	// Exit NPC (hidden until all chests opened)
+	disablenpc instance_npcname("#dragon_exit");
+	hideonnpc instance_npcname("#dragon_exit");
+	
+	// Hide all reward chests
+	disablenpc instance_npcname("#dragon_reward_chest");
+	hideonnpc instance_npcname("#dragon_reward_chest");
+	disablenpc instance_npcname("#dragon_reward_chest2");
+	hideonnpc instance_npcname("#dragon_reward_chest2");
+	disablenpc instance_npcname("#dragon_reward_chest3");
+	hideonnpc instance_npcname("#dragon_reward_chest3");
+	
+	// Hide all boss warp NPCs initially
+	disablenpc instance_npcname("Dragon Keeper#warp_boss2");
+	hideonnpc instance_npcname("Dragon Keeper#warp_boss2");
+	disablenpc instance_npcname("Dragon Keeper#warp_boss3");
+	hideonnpc instance_npcname("Dragon Keeper#warp_boss3");
+	disablenpc instance_npcname("Dragon Keeper#warp_boss4");
+	hideonnpc instance_npcname("Dragon Keeper#warp_boss4");
+	
+	end;
+
+//=== MAP 1: DRAGON VALLEY (3@vrpop) ===================================
+
+OnMob01_0:
+	mapannounce 'map$, "There are "+mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_0")+" dragons remaining!", bc_map, 0xFFFF00;
+	if(!mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_0")) {
+		viewpoint 1, 190, 33, 1, 0xFF0000;
+		viewpoint 1, 178, 41, 2, 0xFF0000;
+		viewpoint 1, 161, 42, 3, 0xFF0000;
+		mapannounce 'map$, "More ancient dragons awaken from their slumber!", bc_map, 0xFFFF00;
+		
+		areamonster 'map$, 185, 28, 195, 38, "--en--", 21899, 8, instance_npcname("Dragon_World")+"::OnMob01_1";
+		areamonster 'map$, 173, 36, 183, 46, "--en--", 21900, 8, instance_npcname("Dragon_World")+"::OnMob01_1";
+		areamonster 'map$, 156, 37, 166, 47, "--en--", 21901, 8, instance_npcname("Dragon_World")+"::OnMob01_1";
+	}
+	end;
+
+OnMob01_1:
+	viewpoint 2, 190, 33, 1, 0xFF0000;
+	viewpoint 2, 178, 41, 2, 0xFF0000;
+	viewpoint 2, 161, 42, 3, 0xFF0000;
+	mapannounce 'map$, "There are "+mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_1")+" dragons remaining!", bc_map, 0xFFFF00;
+	if(!mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_1")) {
+		viewpoint 1, 141, 43, 1, 0xFF0000;
+		viewpoint 1, 128, 58, 2, 0xFF0000;
+		viewpoint 1, 123, 70, 3, 0xFF0000;
+		mapannounce 'map$, "The dragon fury intensifies! Steel yourselves!", bc_map, 0xFFFF00;
+		
+		areamonster 'map$, 136, 38, 146, 48, "--en--", 21899, 8, instance_npcname("Dragon_World")+"::OnMob01_2";
+		areamonster 'map$, 123, 53, 133, 63, "--en--", 21900, 8, instance_npcname("Dragon_World")+"::OnMob01_2";
+		areamonster 'map$, 118, 65, 128, 75, "--en--", 21901, 8, instance_npcname("Dragon_World")+"::OnMob01_2";
+	}
+	end;
+
+OnMob01_2:
+	viewpoint 2, 141, 43, 1, 0xFF0000;
+	viewpoint 2, 128, 58, 2, 0xFF0000;
+	viewpoint 2, 123, 70, 3, 0xFF0000;
+	mapannounce 'map$, "There are "+mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_2")+" dragons remaining!", bc_map, 0xFFFF00;
+	if(!mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_2")) {
+		viewpoint 1, 144, 93, 1, 0xFF0000;
+		viewpoint 1, 165, 110, 2, 0xFF0000;
+		viewpoint 1, 172, 130, 3, 0xFF0000;
+		mapannounce 'map$, "Elder dragons emerge! Their power is immense!", bc_map, 0xFFFF00;
+		
+		areamonster 'map$, 139, 88, 149, 98, "--en--", 21901, 10, instance_npcname("Dragon_World")+"::OnMob01_3";
+		areamonster 'map$, 160, 105, 170, 115, "--en--", 21902, 10, instance_npcname("Dragon_World")+"::OnMob01_3";
+		areamonster 'map$, 167, 125, 177, 135, "--en--", 21903, 10, instance_npcname("Dragon_World")+"::OnMob01_3";
+	}
+	end;
+
+OnMob01_3:
+	viewpoint 2, 144, 93, 1, 0xFF0000;
+	viewpoint 2, 165, 110, 2, 0xFF0000;
+	viewpoint 2, 172, 130, 3, 0xFF0000;
+	mapannounce 'map$, "There are "+mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_3")+" dragons remaining!", bc_map, 0xFFFF00;
+	if(!mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_3")) {
+		viewpoint 1, 170, 150, 1, 0xFF0000;
+		viewpoint 1, 163, 163, 2, 0xFF0000;
+		mapannounce 'map$, "Dragon Keeper: The final guardians approach! Brace for battle!", bc_map, 0xFFFF00;
+		sleep2 2000;
+		
+		areamonster 'map$, 165, 145, 175, 155, "--en--", 21901, 15, instance_npcname("Dragon_World")+"::OnMob01_4";
+		areamonster 'map$, 158, 158, 168, 168, "--en--", 21902, 15, instance_npcname("Dragon_World")+"::OnMob01_4";
+		areamonster 'map$, 165, 145, 175, 155, "--en--", 21903, 15, instance_npcname("Dragon_World")+"::OnMob01_4";
+	}
+	end;
+
+OnMob01_4:
+	viewpoint 2, 170, 150, 1, 0xFF0000;
+	viewpoint 2, 163, 163, 2, 0xFF0000;
+	mapannounce 'map$, "There are "+mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_4")+" dragons remaining!", bc_map, 0xFFFF00;
+	if(!mobcount('map$, instance_npcname("Dragon_World")+"::OnMob01_4")) {
+		mapannounce 'map$, "Dragon Keeper: Victory! The valley is secured!", bc_map, 0xFFFF00;
+		sleep2 2000;
+		mapannounce 'map$, "Dragon Keeper: The portal to the Dragon Lair opens. Prepare for the ultimate trial!", bc_map, 0xFFFF00;
+		enablenpc instance_npcname("Dragon Keeper#valley");
+		hideoffnpc instance_npcname("Dragon Keeper#valley");
+	}
+	end;
+}
+
+//=== MAP 1 NPCs =========================================================
+
+3@vrpop,208,11,4	script	Dragon Keeper#start	4_M_FROZEN1,{
+	// ADMIN BYPASS - Check level 99
+	if(BaseLevel >= 99) {
+		mes "[Dragon Keeper]";
+		mes "^FF0000[ADMIN MODE]^000000";
+		mes "You have administrator privileges.";
+		next;
+		mes "[Dragon Keeper]";
+		mes "What would you like to do?";
+		next;
+		
+		switch(select("Start normally:Skip to Boss Map:Cancel")) {
+		case 1:
+			// Normal flow - continue below
+			break;
+		case 2:
+			mes "[Dragon Keeper]";
+			mes "Warping you to the Dragon Lair...";
+			close2;
+			warp 'gate_map$, 83, 83;
+			end;
+		case 3:
+			mes "[Dragon Keeper]";
+			mes "Understood.";
+			close;
+		}
+	}
+	
+	if(getpartyleader(getcharid(1), 2) != getcharid(0)) {
+		mes "[Dragon Keeper]";
+		mes "Only the party leader may speak with me.";
+		close;
+	}
+	
+	if('started) {
+		mes "[Dragon Keeper]";
+		mes "The trial has begun!";
+		mes "Defeat all the ancient dragons!";
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "Welcome to the Dragon World.";
+	mes "This sacred valley has been invaded";
+	mes "by corrupted dragons from the abyss.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "You must purge these tainted beasts";
+	mes "before facing the Dragon Lords within";
+	mes "the inner sanctum.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "Are you ready to begin your trial?";
+	next;
+	
+	if(select("Not yet:Let's begin!") == 1) {
+		mes "[Dragon Keeper]";
+		mes "Take your time to prepare.";
+		mes "This will not be an easy fight.";
+		close;
+	}
+	
+	close2;
+	'started = 1;
+	disablenpc instance_npcname("Dragon Keeper#start");
+	
+	sleep2 1000;
+	mapannounce 'map$, "Dragon Keeper: The ancient dragons stir! Their rage awakens!", bc_map, 0xFFFF00;
+	sleep2 2000;
+	
+	viewpoint 1, 203, 21, 1, 0xFF0000;
+	areamonster 'map$, 198, 16, 208, 26, "--en--", 21903, 8, instance_npcname("Dragon_World")+"::OnMob01_0";
+	
+	mapannounce 'map$, "Hunt down the corrupted dragons!", bc_map, 0xFFFF00;
+	end;
+
+OnInstanceInit:
+	end;
+}
+
+3@vrpop,160,174,4	script	Dragon Keeper#valley	4_M_FROZEN1,{
+	if('portal_opened) {
+		mes "[Dragon Keeper]";
+		mes "The portal is already open.";
+		mes "Proceed when you're ready.";
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "You have cleansed the Dragon Valley!";
+	mes "Your strength is truly remarkable.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "However, I must warn you...";
+	mes "Beyond this portal lies the Dragon Lair,";
+	mes "home to the most powerful dragons";
+	mes "in existence.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "There, ^FF0000Inferno Dragon King^000000 rules supreme.";
+	mes "A legendary beast whose flames can";
+	mes "melt mountains and whose roar shakes";
+	mes "the very foundations of the world.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "The Dragon King commands legions of";
+	mes "lesser dragon lords. Four of its most";
+	mes "powerful lieutenants guard the treasures";
+	mes "you seek.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "Many warriors have challenged them...";
+	mes "Their bones now decorate the lair.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "Do you still wish to proceed?";
+	next;
+	
+	if(select("I need more time:Open the portal!") == 1) {
+		mes "[Dragon Keeper]";
+		mes "A wise decision. Steel your resolve.";
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "Then may the spirits of ancient heroes";
+	mes "guide your blade through the inferno ahead.";
+	next;
+	mes "[Dragon Keeper]";
+	mes "The portal opens now!";
+	close2;
+	
+	'portal_opened = 1;
+	
+	enablenpc instance_npcname("#valley_portal");
+	hideoffnpc instance_npcname("#valley_portal");
+	specialeffect EF_PORTAL, AREA, instance_npcname("#valley_portal");
+	
+	mapannounce 'map$, "The portal to the Dragon Lair has been opened!", bc_map, 0xFF0000;
+	end;
+
+OnInstanceInit:
+	disablenpc instance_npcname("Dragon Keeper#valley");
+	hideonnpc instance_npcname("Dragon Keeper#valley");
+	end;
+}
+
+3@vrpop,178,168,0	script	#valley_portal	WARPNPC,2,2,{
+	end;
+	
+OnTouch:
+	warp 'gate_map$, 83, 83;
+	end;
+
+OnInstanceInit:
+	disablenpc instance_npcname("#valley_portal");
+	hideonnpc instance_npcname("#valley_portal");
+	end;
+}
+
+//=== MAP: DRAGON LAIR (1@vrpop) - SEQUENTIAL BOSS SYSTEM ================
+//=== BOSS 1: Floral Pegasus (22177) - METEOR STORM =====================
+1@vrpop,90,85,4	script	Dragon Keeper#boss1	3029,{
+	if('boss1_started) {
+		mes "[Dragon Keeper]";
+		mes "The trial has already begun!";
+		close;
+	}
+	
+	if(getpartyleader(getcharid(1), 2) != getcharid(0)) {
+		mes "[Dragon Keeper]";
+		mes "Only the party leader may speak with me.";
+		close;
+	}
+	
+	cutin "ep19_iwin06.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Welcome to the Dragon Lair!";
+	mes "You must defeat 4 powerful dragons.";
+	next;
+	cutin "ep19_iwin04.png", 2;
+	mes "[Dragon Keeper]";
+	mes "First, you'll face the";
+	mes "^FF0000Floral Pegasus^000000!";
+	mes "Beware of its devastating ^FF0000Meteor Storm^000000!";
+	next;
+	cutin "ep19_iwin01.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Are you ready?";
+	next;
+	
+	if(select("Not yet:I'm ready!") == 1) {
+		mes "[Dragon Keeper]";
+		mes "Take your time to prepare.";
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "Good luck!";
+	close2;
+	cutin "", 255;
+	
+	'boss1_started = 1;
+	hideonnpc instance_npcname(strnpcinfo(0));
+	donpcevent instance_npcname("#dragon_boss1_ctrl")+"::OnStartBoss";
+	end;
+
+OnInstanceInit:
+	end;
+}
+
+1@vrpop,0,0,0	script	#dragon_boss1_ctrl	HIDDEN_NPC,{
+	end;
+
+OnStartBoss:
+	.@map$ = instance_mapname("1@vrpop");
+	sleep 1000;
+	mapannounce .@map$, "Dragon Keeper: The Floral Pegasus awakens!", bc_map, 0xFF0000;
+	sleep 2000;
+	
+	monster .@map$, 90, 85, "Floral Pegasus", 22177, 1, instance_npcname("#dragon_boss1_ctrl")+"::OnBoss1Dead";
+	'boss1_gid = $@mobid[0];
+	set_instance_var("boss1_gid", 'boss1_gid);
+	
+	setunitdata 'boss1_gid, UMOB_MAXHP, 1800000000;
+	setunitdata 'boss1_gid, UMOB_HP, 1800000000;
+	
+	donpcevent instance_npcname("#dragon_boss1_skills")+"::OnStart";
+	end;
+
+OnBoss1Dead:
+	.@map$ = instance_mapname("1@vrpop");
+	donpcevent instance_npcname("#dragon_boss1_skills")+"::OnStop";
+	
+	mapannounce .@map$, "Floral Pegasus has been defeated!", bc_map, 0x00FF00;
+	sleep 2000;
+	mapannounce .@map$, "Talk to the Dragon Keeper to proceed to the next challenge!", bc_map, 0xFFFF00;
+	
+	enablenpc instance_npcname("Dragon Keeper#warp_boss2");
+	hideoffnpc instance_npcname("Dragon Keeper#warp_boss2");
+	specialeffect EF_ENHANCE, AREA, instance_npcname("Dragon Keeper#warp_boss2");
+	end;
+}
+
+// BOSS 1 SKILL: METEOR STORM - Diagonal meteor rain (X pattern)
+1@vrpop,0,0,0	script	#dragon_boss1_skills	HIDDEN_NPC,{
+	end;
+
+OnStart:
+	initnpctimer;
+	end;
+
+OnStop:
+	stopnpctimer;
+	end;
+
+OnTimer10000:
+	.@gid = get_instance_var("boss1_gid");
+	if(!unitexists(.@gid)) {
+		stopnpctimer;
+		end;
+	}
+	
+	.@map$ = instance_mapname("1@vrpop");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+	
+	getunitdata .@gid, .@data;
+	.@x = .@data[UMOB_X];
+	.@y = .@data[UMOB_Y];
+	
+	mapannounce .@map$, "Floral Pegasus: METEOR STORM!!!", bc_map, 0xFF0000;
+	showscript "METEOR STORM!", .@gid, AREA;
+	
+	.@range = 3;
+	for(.@i = 0; .@i < 15; .@i += .@range) {
+		// Diagonal pattern (X shape)
+		if(checkcell(.@map$, .@x+.@i, .@y+.@i, cell_chkpass)) {
+			monster .@map$, .@x+.@i, .@y+.@i, "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x+.@i, .@y+.@i, -5000;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x+.@i, .@y+.@i, -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		
+		if(checkcell(.@map$, .@x+.@i, .@y-.@i, cell_chkpass)) {
+			monster .@map$, .@x+.@i, .@y-.@i, "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x+.@i, .@y-.@i, -5000;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x+.@i, .@y-.@i, -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		
+		if(checkcell(.@map$, .@x-.@i, .@y-.@i, cell_chkpass)) {
+			monster .@map$, .@x-.@i, .@y-.@i, "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x-.@i, .@y-.@i, -5000;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x-.@i, .@y-.@i, -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		
+		if(checkcell(.@map$, .@x-.@i, .@y+.@i, cell_chkpass)) {
+			monster .@map$, .@x-.@i, .@y+.@i, "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x-.@i, .@y+.@i, -5000;
+			unitskillusepos .@unit_id, "NPC_RAINOFMETEOR", 10, .@x-.@i, .@y+.@i, -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		sleep 600;
+	}
+	
+	sleep 3000;
+	for(.@i = 0; .@i < getarraysize(.@bot); .@i++) {
+		if(unitexists(.@bot[.@i])) unitkill .@bot[.@i];
+	}
+	initnpctimer;
+	end;
+
+OnMobKill:
+	end;
+}
+
+1@vrpop,95,85,4	script	Dragon Keeper#warp_boss2	3029,{
+	cutin "ep19_iwin03.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Excellent work defeating the Floral Pegasus!";
+	mes "Are you ready to face the next challenge?";
+	next;
+	
+	if(select("Not yet:Let's go!") == 1) {
+		mes "[Dragon Keeper]";
+		mes "Take your time to prepare.";
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "May the spirits guide you!";
+	close2;
+	cutin "", 255;
+	warp instance_mapname("1@vrpop"), 120, 150;
+	end;
+
+OnInstanceInit:
+	hideonnpc instance_npcname(strnpcinfo(0));
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+}
+
+//=== BOSS 2: Coral Marine (22178) - HEAVEN DRIVE CROSS =================
+1@vrpop,120,145,4	script	Dragon Keeper#boss2	3029,{
+	if('boss2_started) {
+		mes "[Dragon Keeper]";
+		mes "The battle has begun!";
+		close;
+	}
+	
+	if(getpartyleader(getcharid(1), 2) != getcharid(0)) {
+		mes "[Dragon Keeper]";
+		mes "Only the party leader may speak with me.";
+		close;
+	}
+	
+	cutin "ep19_iwin06.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Next challenge:";
+	mes "^0000FFCoral Marine^000000!";
+	mes "Its ^0000FFHeaven Drive^000000 will crush you!";
+	next;
+	cutin "ep19_iwin01.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Ready to continue?";
+	next;
+	
+	if(select("Not yet:Let's go!") == 1) {
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "Fight well!";
+	close2;
+	cutin "", 255;
+	
+	'boss2_started = 1;
+	hideonnpc instance_npcname(strnpcinfo(0));
+	donpcevent instance_npcname("#dragon_boss2_ctrl")+"::OnStartBoss";
+	end;
+
+OnInstanceInit:
+	end;
+}
+
+1@vrpop,0,0,0	script	#dragon_boss2_ctrl	HIDDEN_NPC,{
+	end;
+
+OnStartBoss:
+	.@map$ = instance_mapname("1@vrpop");
+	sleep 1000;
+	mapannounce .@map$, "The Coral Marine emerges!", bc_map, 0x0000FF;
+	sleep 2000;
+	
+	monster .@map$, 120, 150, "Coral Marine", 22178, 1, instance_npcname("#dragon_boss2_ctrl")+"::OnBoss2Dead";
+	'boss2_gid = $@mobid[0];
+	set_instance_var("boss2_gid", 'boss2_gid);
+	
+	setunitdata 'boss2_gid, UMOB_MAXHP, 2000000000;
+	setunitdata 'boss2_gid, UMOB_HP, 2000000000;
+	
+	donpcevent instance_npcname("#dragon_boss2_skills")+"::OnStart";
+	end;
+
+OnBoss2Dead:
+	.@map$ = instance_mapname("1@vrpop");
+	donpcevent instance_npcname("#dragon_boss2_skills")+"::OnStop";
+	
+	mapannounce .@map$, "Coral Marine has been defeated!", bc_map, 0x00FF00;
+	sleep 2000;
+	mapannounce .@map$, "Talk to the Dragon Keeper to continue!", bc_map, 0xFFFF00;
+	
+	enablenpc instance_npcname("Dragon Keeper#warp_boss3");
+	hideoffnpc instance_npcname("Dragon Keeper#warp_boss3");
+	specialeffect EF_ENHANCE, AREA, instance_npcname("Dragon Keeper#warp_boss3");
+	end;
+}
+
+// BOSS 2 SKILL: HEAVEN DRIVE CROSS - Ground spikes in + pattern
+1@vrpop,0,0,0	script	#dragon_boss2_skills	HIDDEN_NPC,{
+	end;
+
+OnStart:
+	initnpctimer;
+	end;
+
+OnStop:
+	stopnpctimer;
+	end;
+
+OnTimer12000:
+	.@gid = get_instance_var("boss2_gid");
+	if(!unitexists(.@gid)) {
+		stopnpctimer;
+		end;
+	}
+	
+	.@map$ = instance_mapname("1@vrpop");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+	
+	getunitdata .@gid, .@data;
+	.@x = .@data[UMOB_X];
+	.@y = .@data[UMOB_Y];
+	
+	mapannounce .@map$, "Coral Marine: HEAVEN DRIVE CROSS!!!", bc_map, 0x0000FF;
+	showscript "HEAVEN DRIVE!", .@gid, AREA;
+	
+	.@range = 5;
+	for(.@i = 1; .@i < 9; .@i++) {
+		// Center
+		if(checkcell(.@map$, .@x, .@y, cell_chkpass)) {
+			monster .@map$, .@x, .@y, "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y, -5000;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y, -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		
+		// North
+		if(checkcell(.@map$, .@x, .@y+(.@range*.@i), cell_chkpass)) {
+			monster .@map$, .@x, .@y+(.@range*.@i), "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y+(.@range*.@i), -5000;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y+(.@range*.@i), -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		
+		// South
+		if(checkcell(.@map$, .@x, .@y-(.@range*.@i), cell_chkpass)) {
+			monster .@map$, .@x, .@y-(.@range*.@i), "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y-(.@range*.@i), -5000;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y-(.@range*.@i), -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		
+		// West
+		if(checkcell(.@map$, .@x-(.@range*.@i), .@y, cell_chkpass)) {
+			monster .@map$, .@x-(.@range*.@i), .@y, "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-(.@range*.@i), .@y, -5000;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-(.@range*.@i), .@y, -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+		
+		// East
+		if(checkcell(.@map$, .@x+(.@range*.@i), .@y, cell_chkpass)) {
+			monster .@map$, .@x+(.@range*.@i), .@y, "", 20562, 1, .@event$;
+			.@unit_id = $@mobid[0];
+			setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+			setunitdata .@unit_id, UMOB_CLASS, 139;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+(.@range*.@i), .@y, -5000;
+			unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+(.@range*.@i), .@y, -5000;
+			.@bot[getarraysize(.@bot)] = .@unit_id;
+		}
+	}
+	
+	sleep 3000;
+	for(.@i = 0; .@i < getarraysize(.@bot); .@i++) {
+		if(unitexists(.@bot[.@i])) unitkill .@bot[.@i];
+	}
+	initnpctimer;
+	end;
+
+OnMobKill:
+	end;
+}
+
+1@vrpop,125,150,4	script	Dragon Keeper#warp_boss3	3029,{
+	cutin "ep19_iwin03.png", 2;
+	mes "[Dragon Keeper]";
+	mes "The Coral Marine has fallen!";
+	mes "Ready for the third challenge?";
+	next;
+	
+	if(select("Not yet:Let's continue!") == 1) {
+		mes "[Dragon Keeper]";
+		mes "Recover your strength.";
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "Onward to victory!";
+	close2;
+	cutin "", 255;
+	warp instance_mapname("1@vrpop"), 280, 150;
+	end;
+
+OnInstanceInit:
+	hideonnpc instance_npcname(strnpcinfo(0));
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+}
+
+//=== BOSS 3: Maple Tree (22179) - FIREWALL PRISON =======================
+1@vrpop,280,145,4	script	Dragon Keeper#boss3	3029,{
+	if('boss3_started) {
+		mes "[Dragon Keeper]";
+		mes "The battle continues!";
+		close;
+	}
+	
+	if(getpartyleader(getcharid(1), 2) != getcharid(0)) {
+		mes "[Dragon Keeper]";
+		mes "Only the party leader may speak with me.";
+		close;
+	}
+	
+	cutin "ep19_iwin06.png", 2;
+	mes "[Dragon Keeper]";
+	mes "The third guardian:";
+	mes "^00FF00Maple Tree^000000!";
+	mes "Its ^FF0000Fire Prison^000000 will burn everything!";
+	next;
+	cutin "ep19_iwin01.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Are you prepared?";
+	next;
+	
+	if(select("Not yet:Yes!") == 1) {
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "Go forth!";
+	close2;
+	cutin "", 255;
+	
+	'boss3_started = 1;
+	hideonnpc instance_npcname(strnpcinfo(0));
+	donpcevent instance_npcname("#dragon_boss3_ctrl")+"::OnStartBoss";
+	end;
+
+OnInstanceInit:
+	end;
+}
+
+1@vrpop,0,0,0	script	#dragon_boss3_ctrl	HIDDEN_NPC,{
+	end;
+
+OnStartBoss:
+	.@map$ = instance_mapname("1@vrpop");
+	sleep 1000;
+	mapannounce .@map$, "The ancient Maple Tree awakens!", bc_map, 0x00FF00;
+	sleep 2000;
+	
+	monster .@map$, 280, 150, "Maple Tree", 22179, 1, instance_npcname("#dragon_boss3_ctrl")+"::OnBoss3Dead";
+	'boss3_gid = $@mobid[0];
+	set_instance_var("boss3_gid", 'boss3_gid);
+	
+	setunitdata 'boss3_gid, UMOB_MAXHP, 2200000000;
+	setunitdata 'boss3_gid, UMOB_HP, 2200000000;
+	
+	donpcevent instance_npcname("#dragon_boss3_skills")+"::OnStart";
+	end;
+
+OnBoss3Dead:
+	.@map$ = instance_mapname("1@vrpop");
+	donpcevent instance_npcname("#dragon_boss3_skills")+"::OnStop";
+	
+	mapannounce .@map$, "Maple Tree has been defeated!", bc_map, 0x00FF00;
+	sleep 2000;
+	mapannounce .@map$, "Talk to the Dragon Keeper to continue!", bc_map, 0xFFFF00;
+	
+	enablenpc instance_npcname("Dragon Keeper#warp_boss4");
+	hideoffnpc instance_npcname("Dragon Keeper#warp_boss4");
+	specialeffect EF_ENHANCE, AREA, instance_npcname("Dragon Keeper#warp_boss4");
+	end;
+}
+
+// BOSS 3 SKILL: FIREWALL PRISON - X pattern fire walls
+1@vrpop,0,0,0	script	#dragon_boss3_skills	HIDDEN_NPC,{
+	end;
+
+OnStart:
+	initnpctimer;
+	end;
+
+OnStop:
+	stopnpctimer;
+	end;
+
+OnTimer14000:
+	.@gid = get_instance_var("boss3_gid");
+	if(!unitexists(.@gid)) {
+		stopnpctimer;
+		end;
+	}
+	
+	.@map$ = instance_mapname("1@vrpop");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+	
+	getunitdata .@gid, .@data;
+	.@x = .@data[UMOB_X];
+	.@y = .@data[UMOB_Y];
+	
+	mapannounce .@map$, "Maple Tree: FIRE PRISON!!!", bc_map, 0xFF0000;
+	showscript "BURN!!", .@gid, AREA;
+	
+	.@range = 2;
+	.@FireWall = 0;
+	while(.@FireWall <= 5) {
+		.@FireWall++;
+		switch(.@FireWall) {
+			case 1: break;
+			case 2: .@x = .@x+1; .@y = .@y+1; break;
+			case 3: .@x = .@x+1; .@y = .@y-1; break;
+			case 4: .@x = .@x-1; .@y = .@y-1; break;
+			case 5: .@x = .@x-1; .@y = .@y+1; break;
+			default: break;
+		}
+		
+		for(.@i = 0; .@i < 12; .@i += .@range) {
+			if(checkcell(.@map$, .@x+.@i, .@y+.@i, cell_chkpass)) {
+				monster .@map$, .@x+.@i, .@y+.@i, "", 20562, 1, .@event$;
+				.@unit_id = $@mobid[0];
+				setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+				setunitdata .@unit_id, UMOB_CLASS, 139;
+				unitskillusepos .@unit_id, "MG_FIREWALL", 10, .@x+.@i, .@y+.@i, -1;
+				.@bot[getarraysize(.@bot)] = .@unit_id;
+			}
+			
+			if(checkcell(.@map$, .@x+.@i, .@y-.@i, cell_chkpass)) {
+				monster .@map$, .@x+.@i, .@y-.@i, "", 20562, 1, .@event$;
+				.@unit_id = $@mobid[0];
+				setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+				setunitdata .@unit_id, UMOB_CLASS, 139;
+				unitskillusepos .@unit_id, "MG_FIREWALL", 10, .@x+.@i, .@y-.@i, -1;
+				.@bot[getarraysize(.@bot)] = .@unit_id;
+			}
+			
+			if(checkcell(.@map$, .@x-.@i, .@y-.@i, cell_chkpass)) {
+				monster .@map$, .@x-.@i, .@y-.@i, "", 20562, 1, .@event$;
+				.@unit_id = $@mobid[0];
+				setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+				setunitdata .@unit_id, UMOB_CLASS, 139;
+				unitskillusepos .@unit_id, "MG_FIREWALL", 10, .@x-.@i, .@y-.@i, -1;
+				.@bot[getarraysize(.@bot)] = .@unit_id;
+			}
+			
+			if(checkcell(.@map$, .@x-.@i, .@y+.@i, cell_chkpass)) {
+				monster .@map$, .@x-.@i, .@y+.@i, "", 20562, 1, .@event$;
+				.@unit_id = $@mobid[0];
+				setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+				setunitdata .@unit_id, UMOB_CLASS, 139;
+				unitskillusepos .@unit_id, "MG_FIREWALL", 10, .@x-.@i, .@y+.@i, -1;
+				.@bot[getarraysize(.@bot)] = .@unit_id;
+			}
+		}
+	}
+	
+	sleep 5000;
+	for(.@i = 0; .@i < getarraysize(.@bot); .@i++) {
+		if(unitexists(.@bot[.@i])) unitkill .@bot[.@i];
+	}
+	initnpctimer;
+	end;
+
+OnMobKill:
+	end;
+}
+
+1@vrpop,285,150,4	script	Dragon Keeper#warp_boss4	3029,{
+	cutin "ep19_iwin03.png", 2;
+	mes "[Dragon Keeper]";
+	mes "The Maple Tree has fallen!";
+	mes "Ready for the final challenge?";
+	next;
+	
+	if(select("Not yet:Let's finish this!") == 1) {
+		mes "[Dragon Keeper]";
+		mes "Prepare yourself well.";
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "This is the ultimate battle!";
+	close2;
+	cutin "", 255;
+	warp instance_mapname("1@vrpop"), 105, 340;
+	end;
+
+OnInstanceInit:
+	hideonnpc instance_npcname(strnpcinfo(0));
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+}
+
+//=== BOSS 4: Monarch Penguin (22180) - GROUND DRIVE GRID ===============
+1@vrpop,105,335,4	script	Dragon Keeper#boss4	3029,{
+	if('boss4_started) {
+		mes "[Dragon Keeper]";
+		mes "The final battle rages on!";
+		close;
+	}
+	
+	if(getpartyleader(getcharid(1), 2) != getcharid(0)) {
+		mes "[Dragon Keeper]";
+		mes "Only the party leader may speak with me.";
+		close;
+	}
+	
+	cutin "ep19_iwin06.png", 2;
+	mes "[Dragon Keeper]";
+	mes "The final guardian:";
+	mes "^FFFFFFMonarch Penguin^000000!";
+	next;
+	cutin "ep19_iwin04.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Beware its ultimate skill:";
+	mes "^FFFFFF【GROUND DRIVE GRID】^000000!";
+	mes "It will shatter the earth beneath you!";
+	next;
+	cutin "ep19_iwin01.png", 2;
+	mes "[Dragon Keeper]";
+	mes "Are you ready for the final battle?";
+	next;
+	
+	if(select("Not yet:Let's finish this!") == 1) {
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Dragon Keeper]";
+	mes "May victory be yours!";
+	close2;
+	cutin "", 255;
+	
+	'boss4_started = 1;
+	hideonnpc instance_npcname(strnpcinfo(0));
+	donpcevent instance_npcname("#dragon_boss4_ctrl")+"::OnStartBoss";
+	end;
+
+OnInstanceInit:
+	end;
+}
+
+1@vrpop,0,0,0	script	#dragon_boss4_ctrl	HIDDEN_NPC,{
+	end;
+
+OnStartBoss:
+	.@map$ = instance_mapname("1@vrpop");
+	sleep 1000;
+	mapannounce .@map$, "The Monarch Penguin - Final Boss appears!", bc_map, 0xFFFFFF;
+	sleep 2000;
+	
+	monster .@map$, 105, 340, "Monarch Penguin", 22180, 1, instance_npcname("#dragon_boss4_ctrl")+"::OnBoss4Dead";
+	'boss4_gid = $@mobid[0];
+	set_instance_var("boss4_gid", 'boss4_gid);
+	
+	setunitdata 'boss4_gid, UMOB_MAXHP, 2500000000;
+	setunitdata 'boss4_gid, UMOB_HP, 2500000000;
+	
+	donpcevent instance_npcname("#dragon_boss4_skills")+"::OnStart";
+	end;
+
+OnBoss4Dead:
+	.@map$ = instance_mapname("1@vrpop");
+	donpcevent instance_npcname("#dragon_boss4_skills")+"::OnStop";
+	
+	mapannounce .@map$, "Monarch Penguin has been defeated!", bc_map, 0x00FF00;
+	sleep 2000;
+	mapannounce .@map$, "You have conquered all 4 Dragon Lords!", bc_map, 0xFFFF00;
+	sleep 2000;
+	mapannounce .@map$, "Claim your legendary rewards!", bc_map, 0x00FF00;
+	
+	enablenpc instance_npcname("#dragon_reward_chest");
+	hideoffnpc instance_npcname("#dragon_reward_chest");
+	specialeffect EF_GLASSWALL, AREA, instance_npcname("#dragon_reward_chest");
+	
+	enablenpc instance_npcname("#dragon_reward_chest2");
+	hideoffnpc instance_npcname("#dragon_reward_chest2");
+	specialeffect EF_GLASSWALL, AREA, instance_npcname("#dragon_reward_chest2");
+	
+	enablenpc instance_npcname("#dragon_reward_chest3");
+	hideoffnpc instance_npcname("#dragon_reward_chest3");
+	specialeffect EF_GLASSWALL, AREA, instance_npcname("#dragon_reward_chest3");
+	end;
+}
+
+// BOSS 4 SKILL: GROUND DRIVE GRID - 9x9 grid pattern
+1@vrpop,0,0,0	script	#dragon_boss4_skills	HIDDEN_NPC,{
+	end;
+
+OnStart:
+	initnpctimer;
+	end;
+
+OnStop:
+	stopnpctimer;
+	end;
+
+OnTimer16000:
+	.@gid = get_instance_var("boss4_gid");
+	if(!unitexists(.@gid)) {
+		stopnpctimer;
+		end;
+	}
+	
+	.@map$ = instance_mapname("1@vrpop");
+	.@event$ = instance_npcname(strnpcinfo(0)) + "::OnMobKill";
+	
+	getunitdata .@gid, .@data;
+	.@x = .@data[UMOB_X];
+	.@y = .@data[UMOB_Y];
+	
+	mapannounce .@map$, "Monarch Penguin: GROUND DRIVE GRID!!!", bc_map, 0x00FFFF;
+	showscript "SHATTER!!", .@gid, AREA;
+	
+	.@range = 5;
+	
+	// 9x9 Grid pattern
+	if(checkcell(.@map$, .@x-.@range, .@y+.@range, cell_chkpass)) {
+		monster .@map$, .@x-.@range, .@y+.@range, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-.@range, .@y+.@range, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-.@range, .@y+.@range, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x, .@y+.@range, cell_chkpass)) {
+		monster .@map$, .@x, .@y+.@range, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y+.@range, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y+.@range, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x+.@range, .@y+.@range, cell_chkpass)) {
+		monster .@map$, .@x+.@range, .@y+.@range, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+.@range, .@y+.@range, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+.@range, .@y+.@range, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x-.@range, .@y, cell_chkpass)) {
+		monster .@map$, .@x-.@range, .@y, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-.@range, .@y, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-.@range, .@y, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x, .@y, cell_chkpass)) {
+		monster .@map$, .@x, .@y, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x+.@range, .@y, cell_chkpass)) {
+		monster .@map$, .@x+.@range, .@y, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+.@range, .@y, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+.@range, .@y, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x-.@range, .@y-.@range, cell_chkpass)) {
+		monster .@map$, .@x-.@range, .@y-.@range, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-.@range, .@y-.@range, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-.@range, .@y-.@range, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x, .@y-.@range, cell_chkpass)) {
+		monster .@map$, .@x, .@y-.@range, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y-.@range, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y-.@range, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x+.@range, .@y-.@range, cell_chkpass)) {
+		monster .@map$, .@x+.@range, .@y-.@range, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+.@range, .@y-.@range, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+.@range, .@y-.@range, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	// Extended positions
+	if(checkcell(.@map$, .@x, .@y+(.@range*2), cell_chkpass)) {
+		monster .@map$, .@x, .@y+(.@range*2), "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y+(.@range*2), -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y+(.@range*2), -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x, .@y-(.@range*2), cell_chkpass)) {
+		monster .@map$, .@x, .@y-(.@range*2), "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y-(.@range*2), -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x, .@y-(.@range*2), -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x-(.@range*2), .@y, cell_chkpass)) {
+		monster .@map$, .@x-(.@range*2), .@y, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-(.@range*2), .@y, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x-(.@range*2), .@y, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	if(checkcell(.@map$, .@x+(.@range*2), .@y, cell_chkpass)) {
+		monster .@map$, .@x+(.@range*2), .@y, "", 20562, 1, .@event$;
+		.@unit_id = $@mobid[0];
+		setunitdata .@unit_id, UMOB_DMGIMMUNE, 1;
+		setunitdata .@unit_id, UMOB_CLASS, 139;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+(.@range*2), .@y, -5000;
+		unitskillusepos .@unit_id, "WZ_HEAVENDRIVE", 10, .@x+(.@range*2), .@y, -5000;
+		.@bot[getarraysize(.@bot)] = .@unit_id;
+	}
+	
+	sleep 3000;
+	for(.@i = 0; .@i < getarraysize(.@bot); .@i++) {
+		if(unitexists(.@bot[.@i])) unitkill .@bot[.@i];
+	}
+	initnpctimer;
+	end;
+
+OnMobKill:
+	end;
+}
+
+//=== REWARD CHESTS =====================================================
+
+1@vrpop,100,345,4	script	#dragon_reward_chest	4_STAR_BOX_CRT1,{
+	if(get_instance_var("rewarded")) {
+		end;
+	}
+	
+	set_instance_var("rewarded", 1);
+	
+	.@map$ = instance_mapname("1@vrpop");
+	
+	// Drop 30 individual items of Silver Card
+	for(.@i = 0; .@i < 30; .@i++) {
+		makeitem 1230019, 1, .@map$, 100, 345;
+	}
+	// Drop 20 individual items of Gold Card
+	for(.@i = 0; .@i < 20; .@i++) {
+		makeitem 1230020, 1, .@map$, 100, 345;
+	}
+	// Drop 10 individual items of Violet Card
+	for(.@i = 0; .@i < 10; .@i++) {
+		makeitem 1230021, 1, .@map$, 100, 345;
+	}
+	
+	specialeffect EF_CONE;
+	announce strcharinfo(0)+" opened Dragon Treasure Chest 1!", bc_map, 0x00FF00;
+	
+	// Check if all 3 chests opened
+	donpcevent instance_npcname("#dragon_check_exit")+"::OnCheckExit";
+	
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+
+OnInstanceInit:
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+}
+
+1@vrpop,105,345,4	script	#dragon_reward_chest2	4_STAR_BOX_CRT1,{
+	if(get_instance_var("rewarded2")) {
+		end;
+	}
+	
+	set_instance_var("rewarded2", 1);
+	
+	.@map$ = instance_mapname("1@vrpop");
+	
+	// Drop 50 individual items of Gold Coin
+	for(.@i = 0; .@i < 50; .@i++) {
+		makeitem 7517, 1, .@map$, 105, 345;
+	}
+
+	// Drop 30 individual items of Mythril Coin
+	for(.@i = 0; .@i < 30; .@i++) {
+		makeitem 674, 1, .@map$, 105, 345;
+	}
+
+	// Drop 10 individual items of Platinum Coin
+	for(.@i = 0; .@i < 10; .@i++) {
+		makeitem 677, 1, .@map$, 105, 345;
+	}
+	
+	specialeffect EF_CONE;
+	announce strcharinfo(0)+" opened Dragon Treasure Chest 2!", bc_map, 0x00FF00;
+	
+	// Check if all 3 chests opened
+	donpcevent instance_npcname("#dragon_check_exit")+"::OnCheckExit";
+	
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+
+OnInstanceInit:
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+}
+
+1@vrpop,110,345,4	script	#dragon_reward_chest3	4_STAR_BOX_CRT1,{
+	if(get_instance_var("rewarded3")) {
+		end;
+	}
+	
+	set_instance_var("rewarded3", 1);
+	
+	.@map$ = instance_mapname("1@vrpop");
+	
+	// Drop 10 individual items of Prenium Black Coin
+	for(.@i = 0; .@i < 10; .@i++) {
+		makeitem 1001258, 1, .@map$, 110, 345;
+	}
+
+	// Drop 5 individual items of MVP Voucher
+	for(.@i = 0; .@i < 5; .@i++) {
+		makeitem 7615, 1, .@map$, 110, 345;
+	}
+
+	// Drop 20 individual items of Enchant Ticket
+	for(.@i = 0; .@i < 20; .@i++) {
+		makeitem 1000874, 1, .@map$, 110, 345;
+	}
+	
+	specialeffect EF_CONE;
+	announce strcharinfo(0)+" opened Dragon Treasure Chest 3!", bc_map, 0x00FF00;
+	
+	// Check if all 3 chests opened
+	donpcevent instance_npcname("#dragon_check_exit")+"::OnCheckExit";
+	
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+
+OnInstanceInit:
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+}
+
+// Controller to check if all chests opened
+1@vrpop,0,0,0	script	#dragon_check_exit	HIDDEN_NPC,{
+	end;
+
+OnCheckExit:
+	if(get_instance_var("rewarded") && get_instance_var("rewarded2") && get_instance_var("rewarded3")) {
+		sleep 2000;
+		mapannounce instance_mapname("1@vrpop"), "All treasures claimed! The exit portal appears!", bc_map, 0x00FFFF;
+		sleep 1000;
+		enablenpc instance_npcname("#dragon_exit");
+		specialeffect EF_PORTAL, AREA, instance_npcname("#dragon_exit");
+	}
+	end;
+}
+
+// Exit Portal
+1@vrpop,105,330,0	script	#dragon_exit	WARPNPC,2,2,{
+	end;
+
+OnTouch:
+	mes "[Dragon Guardian]";
+	mes "Congratulations on your victory!";
+	mes "You will be warped out now.";
+	close2;
+	warp "SavePoint", 0, 0;
+	end;
+	
+OnInstanceInit:
+	hideonnpc instance_npcname(strnpcinfo(0));
+	disablenpc instance_npcname(strnpcinfo(0));
+	end;
+}
+
+//=== INSTANCE ENTRANCE NPC ==============================================
+
+t_garden,113,105,4	script	Dragon Guardian#entrance	GATE_SKYBLUE,{
+	// Check if already has instance, allow warp back
+	if(instance_id(IM_PARTY) > 0) {
+		mes "[Dragon Guardian]";
+		mes "Your party already has an active instance.";
+		next;
+		switch(select("Warp me back:Cancel")) {
+		case 1:
+			warp instance_mapname("3@vrpop", instance_id(IM_PARTY)), 208, 11;
+			end;
+		case 2:
+			close;
+		}
+	}
+	
+	set .@party_id, getcharid(1);
+	
+	// Check weight
+	if(checkweight(1201,1) == 0){
+		mes "[Dragon Guardian]";
+		mes "^008800You're carrying too much stuff. Put some away first.^000000";
+		close;
+	}
+	
+	// Check 12h cooldown
+	if(DragonWorld_Cooldown > 0) {
+		.@current_time = gettimetick(2);
+		.@time_diff = DragonWorld_Cooldown - .@current_time;
+		
+		if(.@time_diff <= 0) {
+			set DragonWorld_Cooldown, 0;
+		} else {
+			.@hours = .@time_diff / 3600;
+			.@minutes = (.@time_diff % 3600) / 60;
+			.@seconds = .@time_diff % 60;
+			
+			mes "[Dragon Guardian]";
+			mes "^ff0000You need to rest!^000000";
+			mes " ";
+			mes "^00BFFFTime Remaining:^000000";
+			mes "^ff0000" + .@hours + "h " + .@minutes + "m " + .@seconds + "s^000000";
+			next;
+			
+			mes "[Dragon Guardian]";
+			mes "Reset cooldown?";
+			mes " ";
+			mes "^FF0000Cost:^000000";
+			mes "- 100,000,000 Zeny";
+			mes "- 300 TCG";
+			next;
+			
+			if(select("Cancel:Reset (100M + 300 TCG)") == 1) {
+				close;
+			}
+			
+			if (Zeny < 100000000) {
+				mes "[Dragon Guardian]";
+				mes "^FF0000Not enough Zeny!^000000";
+				mes "Need: 100M | Have: " + Zeny;
+				close;
+			}
+			
+			if (countitem(7227) < 300) {
+				mes "[Dragon Guardian]";
+				mes "^FF0000Not enough TCG!^000000";
+				mes "Need: 300 | Have: " + countitem(7227);
+				close;
+			}
+			
+			set Zeny, Zeny - 100000000;
+			delitem 7227, 300;
+			set DragonWorld_Cooldown, 0;
+			
+			mes "[Dragon Guardian]";
+			mes "^00FF00Cooldown reset!^000000";
+			mes "You may now enter again.";
+			close;
+		}
+	}
+	
+	mes "[Dragon Guardian]";
+	mes "Greetings, brave warrior.";
+	mes "The Dragon World has been invaded";
+	mes "by corrupted dragons from the abyss.";
+	next;
+	mes "[Dragon Guardian]";
+	mes "We need heroes to purge";
+	mes "the valley and defeat the";
+	mes "Dragon Lords within the lair.";
+	next;
+	mes "[Dragon Guardian]";
+	mes "Will you answer the call?";
+	next;
+	
+	if(select("Tell me more:No thanks") == 2) {
+		mes "[Dragon Guardian]";
+		mes "Return when you're ready.";
+		close;
+	}
+	
+	mes "[Dragon Guardian]";
+	mes "^FF0000Instance Requirements:^000000";
+	mes "Party Size: ^0000FF"+.p_rest[0]+"^000000 to ^0000FF"+.p_rest[1]+"^000000 members";
+	mes "Level Range: ^0000FF"+.p_lvlr[0]+"^000000 to ^0000FF"+.p_lvlr[1]+"^000000";
+	mes "Cooldown: ^0000FF12 hours^000000 after completion";
+	next;
+	
+	if(!.@party_id) {
+		mes "[Dragon Guardian]";
+		mes "You must be in a party to enter.";
+		close;
+	}
+	
+	// Check if old instance exists
+	if(instance_mapname("3@vrpop") != "") {
+		mes "[Dragon Guardian]";
+		mes "An old instance still exists.";
+		mes "Do you want to destroy it?";
+		next;
+		if(select("Yes:No") == 1) {
+			instance_destroy;
+			mes "[Dragon Guardian]";
+			mes "Instance destroyed.";
+			mes "Talk to me again to create a new one.";
+		}
+		close;
+	}
+	
+	mes "[Dragon Guardian]";
+	mes "Are you ready to enter?";
+	next;
+	
+	if(select("Create Instance:Cancel") == 2) {
+		mes "[Dragon Guardian]";
+		mes "Come back when you're prepared.";
+		close;
+	}
+	
+	// Only party leader can create instance
+	if(getcharid(0) != getpartyleader(.@party_id, 2)) {
+		mes "[Dragon Guardian]";
+		mes "Only the party leader can";
+		mes "create an instance.";
+		close;
+	}
+	
+	// Get party member count
+	getpartymember .@party_id;
+	set .@plen, $@partymembercount;
+	
+	// Check party size
+	if(.@plen < .p_rest[0] || .@plen > .p_rest[1]) {
+		mes "[Dragon Guardian]";
+		mes "Your party size doesn't meet";
+		mes "the requirements.";
+		mes "You need "+.p_rest[0]+" to "+.p_rest[1]+" members.";
+		close;
+	}
+	
+	// Check level requirements
+	if(!instance_check_party(.@party_id, .p_rest, .p_lvlr[0], .p_lvlr[1])) {
+		mes "[Dragon Guardian]";
+		mes "Some party members don't meet";
+		mes "the level requirements.";
+		mes "All members must be level "+.p_lvlr[0]+" to "+.p_lvlr[1]+".";
+		close;
+	}
+	
+	// Create instance
+	.@instance = instance_create(.md_name$);
+	
+	if(.@instance < 0) {
+		mes "[Dragon Guardian]";
+		mes "Failed to create instance.";
+		mes "Please try again later.";
+		close;
+	}
+	
+	mes "[Dragon Guardian]";
+	mes "The path to the Dragon World";
+	mes "now opens before you.";
+	mes "May the dragon spirits guide you!";
+	close2;
+	
+	sleep2 1000;
+	mapannounce "t_garden", getpartyname(.@party_id)+" has entered the Dragon World!", bc_map, 0x00FF99;
+	
+	// Set cooldown for entire party and warp
+	addrid(2, 0, .@party_id);
+	set DragonWorld_Cooldown, gettimetick(2) + (12 * 3600); // 12 hours
+	instance_enter(.md_name$);
+	end;
+
+OnInit:
+	set .md_name$, "Dragon World";     // Instance Name
+	setarray .p_rest, 1, 12;           // Party Size: Min 1, Max 12
+	setarray .p_lvlr, 200, 275;        // Level Range: 200-275
+	end;
+}	

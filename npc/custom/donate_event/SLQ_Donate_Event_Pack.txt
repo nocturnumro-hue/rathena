@@ -1,0 +1,180 @@
+-- ============================================================
+-- BẢNG 1: alphatest_vouchers (Alpha Test)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `alphatest_vouchers` (
+  `id`         INT(11)     NOT NULL AUTO_INCREMENT,
+  `code`       VARCHAR(9)  NOT NULL UNIQUE,
+  `amount`     INT(11)     NOT NULL DEFAULT 10,
+  `used`       TINYINT(1)  NOT NULL DEFAULT 0,
+  `used_by`    INT(11)     DEFAULT NULL,
+  `used_date`  DATETIME    DEFAULT NULL,
+  `created_at` DATETIME    DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 10 code $30
+INSERT INTO `alphatest_vouchers` (code, amount) VALUES
+('A7K2P9XQR', 30),
+('M4Z8W3NHT', 30),
+('B6F1Y5VLD', 30),
+('C9G3R7KJW', 30),
+('Q2X8H4MBN', 30),
+('T5P6Z1YCF', 30),
+('D3N9K7WRX', 30),
+('H8L2B4QVG', 30),
+('J6M1T3PCZ', 30),
+('W4Y7F9DHK', 30);
+
+-- 10 code $10
+INSERT INTO `alphatest_vouchers` (code, amount) VALUES
+('R5C8N2XLT', 10),
+('V7Q3K6YBM', 10),
+('Z1H9P4WFD', 10),
+('G6T2M8NJR', 10),
+('X4B5Y1KCQ', 10),
+('L9W7D3HZP', 10),
+('N2F6R8VTX', 10),
+('K3J1C9MBW', 10),
+('P8H4Z7LGY', 10),
+('Y5X2Q6NKF', 10);
+
+
+-- ============================================================
+-- BẢNG 2: ratemyserver_vouchers (Rate My Server)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `ratemyserver_vouchers` (
+  `id`         INT(11)     NOT NULL AUTO_INCREMENT,
+  `code`       VARCHAR(9)  NOT NULL UNIQUE,
+  `used`       TINYINT(1)  NOT NULL DEFAULT 0,
+  `used_by`    INT(11)     DEFAULT NULL,
+  `used_date`  DATETIME    DEFAULT NULL,
+  `created_at` DATETIME    DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 20 code Rate My Server
+INSERT INTO `ratemyserver_vouchers` (code) VALUES
+('RMS1A2B3C'),
+('RMS4D5E6F'),
+('RMS7G8H9J'),
+('RMSK2L3M4N'),
+('RMS5P6Q7R'),
+('RMS8S9T1U'),
+('RMS2V3W4X'),
+('RMS5Y6Z7A'),
+('RMS8B9C1D'),
+('RMS2E3F4G'),
+('RMS5H6J7K'),
+('RMS8L9M1N'),
+('RMS2P3Q4R'),
+('RMS5S6T7U'),
+('RMS8V9W1X'),
+('RMS2Y3Z4A'),
+('RMS5B6C7D'),
+('RMS8E9F1G'),
+('RMS2H3J4K'),
+('RMS5L6M7N');
+
+
+-- ============================================================
+-- BẢNG 3: openbeta_vouchers (Open Beta Top Rank)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `openbeta_vouchers` (
+  `id`         INT(11)     NOT NULL AUTO_INCREMENT,
+  `code`       VARCHAR(9)  NOT NULL UNIQUE,
+  `amount`     INT(11)     NOT NULL DEFAULT 10,
+  `used`       TINYINT(1)  NOT NULL DEFAULT 0,
+  `used_by`    INT(11)     DEFAULT NULL,
+  `used_date`  DATETIME    DEFAULT NULL,
+  `created_at` DATETIME    DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 10 code $30 (Top Rank Special)
+INSERT INTO `openbeta_vouchers` (code, amount) VALUES
+('OB1A2B3C4', 30),
+('OB5D6E7F8', 30),
+('OB9G1H2J3', 30),
+('OB4K5L6M7', 30),
+('OB8N9P1Q2', 30),
+('OB3R4S5T6', 30),
+('OB7U8V9W1', 30),
+('OB2X3Y4Z5', 30),
+('OB6A7B8C9', 30),
+('OB1D2E3F4', 30);
+
+-- 10 code $10 (Top Rank Basic)
+INSERT INTO `openbeta_vouchers` (code, amount) VALUES
+('OB5G6H7J8', 10),
+('OB9K1L2M3', 10),
+('OB4N5P6Q7', 10),
+('OB8R9S1T2', 10),
+('OB3U4V5W6', 10),
+('OB7X8Y9Z1', 10),
+('OB2A3B4C5', 10),
+('OB6D7E8F9', 10),
+('OB1G2H3J4', 10),
+('OB5K6L7M8', 10);
+
+-- ============================================================
+-- normal_vouchers (Contributor Reward)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `normal_vouchers` (
+  `id`         INT(11)      NOT NULL AUTO_INCREMENT,
+  `code`       VARCHAR(9)   NOT NULL UNIQUE,
+  `used`       TINYINT(1)   NOT NULL DEFAULT 0,
+  `used_by`    INT(11)      DEFAULT NULL,
+  `used_date`  DATETIME     DEFAULT NULL,
+  `created_at` DATETIME     DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Sample contributor codes (replace or add your own)
+INSERT INTO `normal_vouchers` (`code`) VALUES
+('NR1A2B3C4'),
+('NR5D6E7F8'),
+('NR9G1H2J3'),
+('NR4K5L6M7'),
+('NR8N9P1Q2');
+
+
+-- ============================================================
+-- QUERY QUẢN LÝ
+-- ============================================================
+
+-- Xem code chưa dùng theo từng event
+SELECT 'AlphaTest' AS event, code, amount, created_at FROM alphatest_vouchers    WHERE used = 0
+UNION ALL
+SELECT 'RateMyServer',       code, NULL,   created_at FROM ratemyserver_vouchers  WHERE used = 0
+UNION ALL
+SELECT 'OpenBeta',           code, amount, created_at FROM openbeta_vouchers      WHERE used = 0
+ORDER BY event, amount DESC;
+
+-- Thống kê tổng quan
+SELECT 'AlphaTest'   AS event, COUNT(*) total, SUM(used) redeemed, COUNT(*)-SUM(used) remaining FROM alphatest_vouchers
+UNION ALL
+SELECT 'RateMyServer',         COUNT(*) total, SUM(used) redeemed, COUNT(*)-SUM(used) remaining FROM ratemyserver_vouchers
+UNION ALL
+SELECT 'OpenBeta',             COUNT(*) total, SUM(used) redeemed, COUNT(*)-SUM(used) remaining FROM openbeta_vouchers;
+
+INSERT INTO `normal_vouchers` (`code`, `used`, `used_by`, `used_date`) VALUES
+('A3K7BX2NP', 0, NULL, NULL),
+('BZ9QM4TRW', 0, NULL, NULL),
+('C5JH8YVLD', 0, NULL, NULL),
+('D2NF6XKQE', 0, NULL, NULL),
+('E8WR3LGUS', 0, NULL, NULL),
+('F4TP7MJCA', 0, NULL, NULL),
+('G1VB9ZKHN', 0, NULL, NULL),
+('H6XQ2NDYP', 0, NULL, NULL),
+('I7CM5WBTR', 0, NULL, NULL),
+('J3LK8YQFZ', 0, NULL, NULL),
+('K9GE4XVWM', 0, NULL, NULL),
+('L2RN7HCJB', 0, NULL, NULL),
+('M5YT1KQDP', 0, NULL, NULL),
+('N8BF6WZLS', 0, NULL, NULL),
+('P4HD3XMVQ', 0, NULL, NULL),
+('Q7JC9YNKR', 0, NULL, NULL),
+('R1WG5TBZE', 0, NULL, NULL),
+('S6MK2PNHF', 0, NULL, NULL),
+('T3QB8VXLJ', 0, NULL, NULL),
+('U9YN4RKCW', 0, NULL, NULL);

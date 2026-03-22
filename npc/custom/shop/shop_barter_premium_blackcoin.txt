@@ -1,0 +1,44 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC TRADER
+// ============================================
+askald,159,137,2	script	Premium Black Coin	10580,{
+	mes "[^FF6B00Premium Black Coin^000000]";
+	mes "^FFD700Welcome to VIP Item Shop^000000";
+	mes "^0099FFPlease select shop Type:^000000";
+	next;
+	
+	switch(select("^FF6B00Premium Black Coin^000000:^9370DBShadow 4Th Class^000000:^00CED1Jro-Iro SHOP^000000:^FF1493Combo Item VIP^000000::^FF0000Exit^000000")) {
+		case 1:
+			mes "[^FF6B00Premium Black Coin^000000]";
+			mes "^00FF00Opening VIP Item Trade...^000000";
+			close2;
+			callshop "Premium_BlackCoin";
+			end;
+		case 2:
+			mes "[^9370DBShadow 4th Class^000000]";
+			mes "^FFD700Opening Shadow Equipment Shop...^000000";
+			close2;
+			callshop "Premium_BlackCoin_Shadow";
+			end;		
+		case 3:
+			mes "[^00CED1Jro-Iro Item^000000]";
+			mes "^FFD700Opening Jro-Iro Collection...^000000";
+			close2;
+			callshop "Premium_BlackCoin_Iro";
+			end;
+		case 4:
+			mes "[^FF1493Combo Item VIP^000000]";
+			mes "^FFD700Opening Combo Equipment Shop...^000000";
+			close2;
+			callshop "Premium_BlackCoin_Combo";
+			end;		
+		case 5:
+			mes "[^FF6B00Premium Black Coin^000000]";
+			mes "^FFD700Thank you for visiting^000000";
+			mes "^00FF00Good Bye^000000";
+			close;
+	}
+	end;
+}

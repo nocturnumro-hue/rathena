@@ -979,7 +979,7 @@ OnInit:
 
 
 // t_garden,158,235,2	script(CLOAKED)	Dimension Prison#1	GATE_SKYBLUE,2,2,{	// unknown OnTouch effect
-t_garden,158,235,2	script(CLOAKED)	Dimension Prison#1	GATE_SKYBLUE,{
+t_garden,158,235,2	script(CLOAKED)	Dimensional Prison#1	GATE_SKYBLUE,{
 	if (isbegin_quest(12597) != 2)
 		end;
 	if (checkweight(1201,1) == 0) {
@@ -995,7 +995,7 @@ t_garden,158,235,2	script(CLOAKED)	Dimension Prison#1	GATE_SKYBLUE,{
 	}
 
 // t_garden,173,235,2	script(CLOAKED)	Dimension Prison#2	GATE_SKYBLUE,2,2,{	// unknown OnTouch effect
-t_garden,173,235,2	script(CLOAKED)	Dimension Prison#2	GATE_SKYBLUE,{
+t_garden,173,235,2	script(CLOAKED)	Dimensional Prison#2	GATE_SKYBLUE,{
 	if (isbegin_quest(12597) != 2)
 		end;
 	if (checkweight(1201,1) == 0) {
@@ -1293,6 +1293,7 @@ OnTouch:
 	cloakoffnpcself( "Subspace vending machine#1" );
 	cloakoffnpcself( "Subspace vending machine#2" );
 	cloakoffnpcself( "Subspace vending machine#3" );
+	cloakoffnpcself( "Subspace vending machine#4" );
 	cloakoffnpcself( "Spirit Complaint Terminal#1" );
 	end;
 }

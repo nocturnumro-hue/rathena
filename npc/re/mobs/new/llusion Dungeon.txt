@@ -1,0 +1,149 @@
+//==================================================
+// pay_d03_i - Illusion of Moonlight
+//==================================================
+pay_d03_i	monster	Blue Plant	1079,1
+pay_d03_i	monster	Green Plant	1080,1,5000,0
+pay_d03_i	monster	Yellow Plant	1081,1,5000,0
+pay_d03_i	monster	White Plant	1082,5,5000,0
+pay_d03_i	monster	Whisper	1185,1,5000,0
+pay_d03_i,154,112	monster	Whisper	1185,1,5000,0
+pay_d03_i,161,117	monster	Whisper	1185,1,5000,0
+pay_d03_i,84,63	monster	Whisper	1185,1,5000,0
+pay_d03_i,81,61	monster	Whisper	1185,1,5000,0
+
+pay_d03_i	monster	Resentful Munak	3760,65,5000,0
+pay_d03_i	monster	Resentful Bongun	3761,65,5000,0
+pay_d03_i	monster	Resentful Sohee	3762,65,5000,0
+pay_d03_i	monster	Resentful Soldier	3763,45
+pay_d03_i	monster	Deranged Adventurer	3765,15,15000,0,"ill_moonlight_wizard::OnMobDead"
+pay_d03_i	monster	Angry Nine Tail	3759,35,5000,0,"illusion_mob#moonlight::OnKill"
+
+-	script	illusion_mob#moonlight	-1,{
+	end;
+
+OnKill:
+	if (.mvp_spawn == 1)
+		end;
+	.kill_count += 1;
+	if (.kill_count > 1000) {
+		if (rand(100) < 10) // !todo Confirm chance
+			donpcevent strnpcinfo(0)+"::OnBossSpawn";
+	}
+	end;
+
+OnBossSpawn:
+	.mvp_spawn = 1;
+	.kill_count = 0;
+	monster "pay_d03_i",0,0,"Angry Moonlight Flower",3758,1,"illusion_mob#moonlight::OnBossKill";
+	mapannounce "pay_d03_i", "Angry Moonlight Flower: Who dares bully us again? They're in a lot of trouble!", bc_map, "0x70dbdb";
+	end;
+
+OnBossKill:
+	.mvp_spawn = 0;
+	.kill_count = 0;
+	end;
+}
+
+-	script	ill_moonlight_wizard	-1,{
+	end;
+OnMobDead:
+	if (.spawn || playerattached() < 1)
+		end;
+	.kill_count += 1;
+	if (.kill_count == 10) {
+		.spawn = true;
+		.kill_count = 0;
+		getunitdata( killedgid, .@data );
+		monster "pay_d03_i",.@data[UMOB_X],.@data[UMOB_Y],"Wizard of the Truth",3764,1,"ill_moonlight_wizard::OnBossDead";
+	}
+	end;
+OnBossDead:
+	.spawn = false;
+	end;
+}
+
+//==================================================
+// Illusion of Teddy Bear
+//==================================================
+ein_d02_i	monster	Red Teddybear	 20255,65,5000,0,"ein_d02_i_boss::OnMobDead"
+ein_d02_i	monster	Yellow Teddybear	 20256,65,5000,0,"ein_d02_i_boss::OnMobDead"
+ein_d02_i	monster	Green Teddybear	 20257,65,5000,0,"ein_d02_i_boss::OnMobDead"
+ein_d02_i	monster	White Teddybear	 20258,75,5000,0,"ein_d02_i_boss::OnMobDead"
+ein_d02_i	monster	Blue Teddybear	 20259,75,5000,0,"ein_d02_i_boss::OnMobDead"
+ein_d02_i	monster	Pitman Labor Type	 20261,75
+ein_d02_i	monster	Piece of Spirit	 20262,55
+ein_d02_i	monster	Spirit Dwelling Obsidian	 20263,55
+
+-	script	ein_d02_i_boss	-1,{
+	end;
+OnMobDead:
+	if (playerattached()) {
+		if (.count < 2500)
+			.count++;
+		if (!.boss_spawn && !.cooldown && .count == 2500) {
+			.boss_spawn = true;
+			.count = 0;
+			killmonster "ein_d02_i", "ein_d02_i_boss::OnBossDeath";
+			// mapannounce "ein_d02_i", "", bc_map;	// Unknown text
+			getunitdata( killedgid, .@data );
+			monster "ein_d02_i", .@data[UMOB_X], .@data[UMOB_Y], "--ja--", 20260,1, "ein_d02_i_boss::OnBossDeath";	// ILL_TEDDY_BEAR_S
+			end;
+		}
+	}
+	end;
+OnBossDeath:
+	// (no announce)
+	killmonster "ein_d02_i", "ein_d02_i_boss::OnBossDeath";
+	.boss_spawn = false;
+	.cooldown = true;
+	initnpctimer;
+	end;
+
+OnTimer7200000:
+	.cooldown = false;
+	stopnpctimer;
+	end;
+}
+
+//==================================================
+// gef_d01_i - Illusion of Vampire
+//==================================================
+gef_d01_i	monster	White Plant	1082,12
+gef_d01_i	monster	Blue Plant	1079,2
+gef_d01_i	monster	Matt Drainliar	3750,35,"ein_d02_i_boss::OnMobDead"
+gef_d01_i	monster	Living Dead	3751,20,"ein_d02_i_boss::OnMobDead"
+gef_d01_i	monster	Starving Living Dead	3752,35,"ein_d02_i_boss::OnMobDead"
+gef_d01_i	monster	Living Dead	3753,50,"ein_d02_i_boss::OnMobDead"
+gef_d01_i	monster	Sweet Nightmare	3754,45,"ein_d02_i_boss::OnMobDead"
+gef_d01_i	monster	Black Mushroom	3755,35,"ein_d02_i_boss::OnMobDead"
+
+-	script	gef_d01_i_boss	-1,{
+	end;
+OnMobDead:
+	if (playerattached()) {
+		if (.count < 2500)
+			.count++;
+		if (!.boss_spawn && !.cooldown && .count == 2500) {
+			.boss_spawn = true;
+			.count = 0;
+			killmonster "gef_d01_i", "gef_d01_i_boss::OnBossDeath";
+			// mapannounce "gef_d01_i", "", bc_map;	// Unknown text
+			getunitdata( killedgid, .@data );
+			monster "gef_d01_i", .@data[UMOB_X], .@data[UMOB_Y], "--ja--", 3757,1, "gef_d01_i_boss::OnBossDeath";	// ILL_TEDDY_BEAR_S
+			end;
+		}
+	}
+	end;
+OnBossDeath:
+	// (no announce)
+	killmonster "gef_d01_i", "gef_d01_i_boss::OnBossDeath";
+	.boss_spawn = false;
+	.cooldown = true;
+	initnpctimer;
+	end;
+
+OnTimer7200000:
+	.cooldown = false;
+	stopnpctimer;
+	end;
+}

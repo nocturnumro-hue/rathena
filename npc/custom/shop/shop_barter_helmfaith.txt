@@ -1,0 +1,466 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// @reloadnpcfile npc/custom/shop/shop_barter_helmfaith.txt
+askald,11,215,5	script	Helm and Vivatus Fides	10377,{
+	mes "^FF0000[Helm and Vivatus Fides]^000000";
+	mes "^0000FFWelcome to the Helm and Vivatus Fides Shop!^000000";
+	mes "^008000Please select the shop type:^000000";
+	next;
+
+	switch(select(
+		"^008000Helm of Faith^000000:" +
+		"^0000FFAdulter Weapon^000000:" +
+		"^0000FFVivatus Weapon^000000:" +		
+		"^FF0000Helm of Faith Enchant UI^000000:" +
+		"^FF0000Upgrade Enchant^000000:" +
+		"^008000Add Second Enchant^000000:" +
+		"Exit")) {
+	
+	case 1:
+		mes "[Helm of Faith Shop]";
+		mes "<FONT color='#008000'>Opening Helm of Faith Shop...</FONT>";
+		mes " ";
+		mes "^0000FFAvailable Items:^000000";
+		mes "- Helm of Faith (All Classes)";
+		close2;
+		callshop "Viva_Adul_Hat_KO";
+		end;
+
+	case 2:
+		mes "[Adulter Weapon Shop]";
+		mes "<FONT color='#0000FF'>Opening Adulter Weapon Shop...</FONT>";
+		mes " ";
+		mes "^0000FFCraft Requirements:^000000";
+		mes "- 3,500 Ep18 Amethyst Fragment";
+		close2;
+		callshop "Adulter_Weapon";
+		end;
+
+	case 3:
+		mes "[Vivatus Weapon Shop]";
+		mes "<FONT color='#0000FF'>Opening Vivatus Weapon Shop...</FONT>";
+		mes " ";
+		mes "^0000FFCraft Requirements:^000000";
+		mes "- Adulter Weapon +15 (same type)";
+		mes "- 4,000 Ep18 Amethyst Fragment";
+		mes "- 100 Weapon Stone 3";
+		mes "- 100 Weapon Stone 2";
+		close2;
+		callshop "Vivatus_Weapon";
+		end;
+
+	case 4:
+		mes "[Helm of Faith Enchant UI]";
+		mes "<FONT color='#0000FF'>Opening Enchant UI...</FONT>";
+		mes " ";
+		mes "^00FF00Random Enchant System^000000";
+		mes "Add random enchants to your Helm of Faith!";
+		close2;
+		item_enchant(25);
+		end;
+		
+	case 5:
+		// HELM OF FAITH ENCHANT UPGRADE SYSTEM
+		mes "[Helm of Faith Enchant Upgrade]";
+		mes "Welcome to Helm of Faith Enchant Upgrade System!";
+		mes " ";
+		mes "^0000FFThis system upgrades your enchants:^000000";
+		mes "^00FF00Available Enchants (Lv1 => Lv10):^000000";
+		mes "- Magic Essence";
+		mes "- Acute";
+		mes "- Master Archer";
+		mes "- Adamantine";
+		mes "- Affection";
+		mes "- Unyielding";
+		mes "- Mettle";
+		next;
+		
+		// Check if player has valid item equipped
+		if (!getequipid(EQI_HEAD_TOP)) {
+			mes "[Helm of Faith Enchant Upgrade]";
+			mes "^FF0000Please equip a Helm of Faith first!^000000";
+			close;
+		}
+		
+		.@equip_slot = EQI_HEAD_TOP;
+		.@equip_id = getequipid(.@equip_slot);
+		
+		// Check if item is valid Helm of Faith
+		.@is_valid = 0;
+		switch(.@equip_id) {
+			case 400178: case 400179: case 400180: case 400181:
+			case 400189: case 400190: case 400191: case 400192:
+			case 400198: case 400199: case 400200: case 400201:
+			case 400216: case 400217: case 400218: case 400219:
+			case 400226: case 400227: case 400228: case 400229:
+			case 400230: case 400231: case 400233: case 400234:
+			case 400235: case 400236: case 400237: case 400238:
+			case 400239: case 400240: case 400241: case 400242:
+			case 400243: case 400244:
+				.@is_valid = 1;
+				break;
+		}
+		
+		if (!.@is_valid) {
+			mes "[Helm of Faith Enchant Upgrade]";
+			mes "^FF0000This item cannot be upgraded here!^000000";
+			mes "Only Helm of Faith items are allowed.";
+			close;
+		}
+		
+		.@equip_refine = getequiprefinerycnt(.@equip_slot);
+		
+		setarray .@card[0],
+			getequipcardid(.@equip_slot, 0),
+			getequipcardid(.@equip_slot, 1),
+			getequipcardid(.@equip_slot, 2),
+			getequipcardid(.@equip_slot, 3);
+		
+		// Define enchant arrays (Item IDs for level 1-10)
+		setarray .@magic_essence[0], 29071, 29072, 29073, 29074, 29075, 29076, 29077, 29078, 29079, 29080;
+		setarray .@acute[0], 29081, 29082, 29083, 29084, 29085, 29086, 29087, 29088, 29089, 29090;
+		setarray .@master_archer[0], 29091, 29092, 29093, 29094, 29095, 29096, 29097, 29098, 29099, 29100;
+		setarray .@adamantine[0], 29101, 29102, 29103, 29104, 29105, 29106, 29107, 29108, 29109, 29110;
+		setarray .@affection[0], 29111, 29112, 29113, 29114, 29115, 29116, 29117, 29118, 29119, 29120;
+		setarray .@unyielding[0], 29706, 29707, 29708, 29709, 29710, 29711, 29712, 29713, 29714, 29715;
+		setarray .@mettle[0], 29061, 29062, 29063, 29064, 29065, 29066, 29067, 29068, 29069, 29070;
+		
+		// Check all 4 slots for upgradeable enchant
+		.@can_upgrade = 0;
+		.@current_level = 0;
+		.@enchant_type = -1;
+		.@enchant_slot = -1;
+		
+		// Loop through all 4 card slots
+		for (.@slot = 0; .@slot < 4; .@slot++) {
+			.@current_enchant = .@card[.@slot];
+			
+			// Check all enchant types
+			for (.@i = 0; .@i < 10; .@i++) {
+				if (.@current_enchant == .@magic_essence[.@i]) {
+					.@can_upgrade = 1;
+					.@current_level = .@i + 1;
+					.@enchant_type = 0;
+					.@enchant_slot = .@slot;
+					break;
+				}
+				if (.@current_enchant == .@acute[.@i]) {
+					.@can_upgrade = 1;
+					.@current_level = .@i + 1;
+					.@enchant_type = 1;
+					.@enchant_slot = .@slot;
+					break;
+				}
+				if (.@current_enchant == .@master_archer[.@i]) {
+					.@can_upgrade = 1;
+					.@current_level = .@i + 1;
+					.@enchant_type = 2;
+					.@enchant_slot = .@slot;
+					break;
+				}
+				if (.@current_enchant == .@adamantine[.@i]) {
+					.@can_upgrade = 1;
+					.@current_level = .@i + 1;
+					.@enchant_type = 3;
+					.@enchant_slot = .@slot;
+					break;
+				}
+				if (.@current_enchant == .@affection[.@i]) {
+					.@can_upgrade = 1;
+					.@current_level = .@i + 1;
+					.@enchant_type = 4;
+					.@enchant_slot = .@slot;
+					break;
+				}
+				if (.@current_enchant == .@unyielding[.@i]) {
+					.@can_upgrade = 1;
+					.@current_level = .@i + 1;
+					.@enchant_type = 5;
+					.@enchant_slot = .@slot;
+					break;
+				}
+				if (.@current_enchant == .@mettle[.@i]) {
+					.@can_upgrade = 1;
+					.@current_level = .@i + 1;
+					.@enchant_type = 6;
+					.@enchant_slot = .@slot;
+					break;
+				}
+			}
+			
+			// If found upgradeable enchant, stop searching
+			if (.@can_upgrade) break;
+		}
+		
+		if (!.@can_upgrade || .@current_level >= 10) {
+			mes "[Helm of Faith Enchant Upgrade]";
+			mes "^FF0000No upgradeable enchantment found!^000000";
+			mes " ";
+			mes "^0000FFDebug Info:^000000";
+			mes "Slot 1: " + .@card[0];
+			mes "Slot 2: " + .@card[1];
+			mes "Slot 3: " + .@card[2];
+			mes "Slot 4: " + .@card[3];
+			mes " ";
+			mes "Requirements:";
+			mes "- Item must have one of these enchants:";
+			mes "  Magic Essence/Acute/Master Archer/";
+			mes "  Adamantine/Affection/Unyielding";
+			mes "- Enchant must be below Level 10";
+			mes " ";
+			mes "^00FF00Try using 'Helm of Faith Enchant UI'";
+			mes "first to add random enchants!^000000";
+			close;
+		}
+		
+		.@next_level = .@current_level + 1;
+		
+		// NEW COST CALCULATION
+		// Lv1->2: 300 Amethyst + 1 Ticket
+		// Lv2->3: 400 Amethyst + 2 Tickets
+		// Lv3->4: 500 Amethyst + 3 Tickets
+		// etc.
+		.@amethyst_cost = 200 + (.@current_level * 100);
+		.@ticket_cost = .@current_level;
+		
+		// Get enchant name
+		switch(.@enchant_type) {
+			case 0: .@enchant_name$ = "Magic Essence"; break;
+			case 1: .@enchant_name$ = "Acute"; break;
+			case 2: .@enchant_name$ = "Master Archer"; break;
+			case 3: .@enchant_name$ = "Adamantine"; break;
+			case 4: .@enchant_name$ = "Affection"; break;
+			case 5: .@enchant_name$ = "Unyielding"; break;
+			case 6: .@enchant_name$ = "Mettle"; break;
+		}
+		
+		mes "[Helm of Faith Enchant Upgrade]";
+		mes "^0000FFCurrent Enchant:^000000 " + .@enchant_name$ + " Lv" + .@current_level;
+		mes "^00FF00Upgrade to:^000000 " + .@enchant_name$ + " Lv" + .@next_level;
+		mes " ";
+		mes "^FF0000Cost:^000000";
+		mes "- Ep18 Amethyst Fragment: " + .@amethyst_cost;
+		mes "- Enchant Ticket: " + .@ticket_cost;
+		next;
+		
+		if (select("Cancel:Upgrade") == 1) close;
+		
+		// Check materials
+		.@amethyst_frag = 1000405;
+		.@enchant_ticket = 1000874;
+		
+		if (countitem(.@amethyst_frag) < .@amethyst_cost) {
+			mes "[Helm of Faith Enchant Upgrade]";
+			mes "^FF0000Not enough Ep18 Amethyst Fragment!^000000";
+			mes "Required: " + .@amethyst_cost;
+			mes "You have: " + countitem(.@amethyst_frag);
+			close;
+		}
+		
+		if (countitem(.@enchant_ticket) < .@ticket_cost) {
+			mes "[Helm of Faith Enchant Upgrade]";
+			mes "^FF0000Not enough Enchant Tickets!^000000";
+			mes "Required: " + .@ticket_cost;
+			mes "You have: " + countitem(.@enchant_ticket);
+			close;
+		}
+		
+		// Consume materials
+		delitem .@amethyst_frag, .@amethyst_cost;
+		delitem .@enchant_ticket, .@ticket_cost;
+		
+		// Get new enchant ID
+		switch(.@enchant_type) {
+			case 0: .@new_enchant = .@magic_essence[.@next_level - 1]; break;
+			case 1: .@new_enchant = .@acute[.@next_level - 1]; break;
+			case 2: .@new_enchant = .@master_archer[.@next_level - 1]; break;
+			case 3: .@new_enchant = .@adamantine[.@next_level - 1]; break;
+			case 4: .@new_enchant = .@affection[.@next_level - 1]; break;
+			case 5: .@new_enchant = .@unyielding[.@next_level - 1]; break;
+			case 6: .@new_enchant = .@mettle[.@next_level - 1]; break;
+		}
+		
+		// UPGRADE IN PLACE - NO MOVEMENT
+		.@card[.@enchant_slot] = .@new_enchant;
+		
+		delequip .@equip_slot;
+		specialeffect2 EF_REPAIRWEAPON;
+		
+		mes "[Helm of Faith Enchant Upgrade]";
+		mes "^00FF00Upgrade successful!^000000";
+		mes " ";
+		mes "Your enchant is now: ^0000FF" + .@enchant_name$ + " Lv" + .@next_level + "^000000";
+		getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+		equip .@equip_id;
+		close;
+		
+	case 6:
+		// ADD SECOND ENCHANT TO SLOT 2
+		mes "[Add Second Enchant]";
+		mes "Welcome to Second Enchant System!";
+		mes " ";
+		mes "^0000FFRequirements:^000000";
+		mes "- Slot 3 must have a MAX level enchant (Lv10)";
+		mes "- Slot 2 must be empty";
+		mes " ";
+		mes "^00FF00Available enchants for Slot 2:^000000";
+		mes "- Magic Essence Lv1";
+		mes "- Acute Lv1";
+		mes "- Master Archer Lv1";
+		mes "- Adamantine Lv1";
+		mes "- Affection Lv1";
+		mes "- Unyielding Lv1";
+		mes "- Mettle Lv1";
+		next;
+		
+		// Check if player has valid item equipped
+		if (!getequipid(EQI_HEAD_TOP)) {
+			mes "[Add Second Enchant]";
+			mes "^FF0000Please equip a Helm of Faith first!^000000";
+			close;
+		}
+		
+		.@equip_slot = EQI_HEAD_TOP;
+		.@equip_id = getequipid(.@equip_slot);
+		
+		// Check if item is valid
+		.@is_valid = 0;
+		switch(.@equip_id) {
+			case 400178: case 400179: case 400180: case 400181:
+			case 400189: case 400190: case 400191: case 400192:
+			case 400198: case 400199: case 400200: case 400201:
+			case 400216: case 400217: case 400218: case 400219:
+			case 400226: case 400227: case 400228: case 400229:
+			case 400230: case 400231: case 400233: case 400234:
+			case 400235: case 400236: case 400237: case 400238:
+			case 400239: case 400240: case 400241: case 400242:
+			case 400243: case 400244:
+				.@is_valid = 1;
+				break;
+		}
+		
+		if (!.@is_valid) {
+			mes "[Add Second Enchant]";
+			mes "^FF0000This item cannot be enchanted here!^000000";
+			mes "Only Helm of Faith items are allowed.";
+			close;
+		}
+		
+		.@equip_refine = getequiprefinerycnt(.@equip_slot);
+		
+		setarray .@card[0],
+			getequipcardid(.@equip_slot, 0),
+			getequipcardid(.@equip_slot, 1),
+			getequipcardid(.@equip_slot, 2),
+			getequipcardid(.@equip_slot, 3);
+		
+		// Check if slot 2 is empty
+		if (.@card[1] != 0) {
+			mes "[Add Second Enchant]";
+			mes "^FF0000Slot 2 is not empty!^000000";
+			mes "You must have an empty slot 2 to add second enchant.";
+			close;
+		}
+		
+		// Check if slot 3 has max level enchant
+		.@slot3_enchant = .@card[2];
+		.@has_max_enchant = 0;
+		
+		// Define max level enchant IDs (Lv10)
+		setarray .@max_enchants[0], 29080, 29090, 29100, 29110, 29120, 29715, 29070;
+		
+		for (.@i = 0; .@i < 7; .@i++) {
+			if (.@slot3_enchant == .@max_enchants[.@i]) {
+				.@has_max_enchant = 1;
+				break;
+			}
+		}
+		
+		if (!.@has_max_enchant) {
+			mes "[Add Second Enchant]";
+			mes "^FF0000Slot 3 does not have a MAX level enchant!^000000";
+			mes " ";
+			mes "Requirements:";
+			mes "- Slot 3 must have Lv10 enchant";
+			mes "- Available: Magic Essence/Acute/Master Archer/";
+			mes "  Adamantine/Affection/Unyielding Lv10";
+			close;
+		}
+		
+		// Select enchant type
+		mes "[Add Second Enchant]";
+		mes "Select the enchant you want to add to Slot 2:";
+		next;
+		
+		switch(select("Magic Essence Lv1:Acute Lv1:Master Archer Lv1:Adamantine Lv1:Affection Lv1:Unyielding Lv1:Mettle Lv1:Cancel")) {
+			case 1: .@new_enchant = 29071; .@enchant_name$ = "Magic Essence"; break;
+			case 2: .@new_enchant = 29081; .@enchant_name$ = "Acute"; break;
+			case 3: .@new_enchant = 29091; .@enchant_name$ = "Master Archer"; break;
+			case 4: .@new_enchant = 29101; .@enchant_name$ = "Adamantine"; break;
+			case 5: .@new_enchant = 29111; .@enchant_name$ = "Affection"; break;
+			case 6: .@new_enchant = 29706; .@enchant_name$ = "Unyielding"; break;
+			case 7: .@new_enchant = 29061; .@enchant_name$ = "Mettle"; break;
+			case 8: close;
+		}
+		
+		// NEW COST FOR ADDING SECOND ENCHANT
+		.@amethyst_cost = 1000;
+		.@ticket_cost = 10;
+		.@amethyst_frag = 1000405;
+		.@enchant_ticket = 1000874;
+		
+		mes "[Add Second Enchant]";
+		mes "You selected: ^0000FF" + .@enchant_name$ + " Lv1^000000";
+		mes " ";
+		mes "^FF0000Cost:^000000";
+		mes "- Ep18 Amethyst Fragment: " + .@amethyst_cost;
+		mes "- Enchant Ticket: " + .@ticket_cost;
+		next;
+		
+		if (select("Cancel:Add Enchant") == 1) close;
+		
+		// Check materials
+		if (countitem(.@amethyst_frag) < .@amethyst_cost) {
+			mes "[Add Second Enchant]";
+			mes "^FF0000Not enough Ep18 Amethyst Fragment!^000000";
+			mes "Required: " + .@amethyst_cost;
+			mes "You have: " + countitem(.@amethyst_frag);
+			close;
+		}
+		
+		if (countitem(.@enchant_ticket) < .@ticket_cost) {
+			mes "[Add Second Enchant]";
+			mes "^FF0000Not enough Enchant Tickets!^000000";
+			mes "Required: " + .@ticket_cost;
+			mes "You have: " + countitem(.@enchant_ticket);
+			close;
+		}
+		
+		// Consume materials
+		delitem .@amethyst_frag, .@amethyst_cost;
+		delitem .@enchant_ticket, .@ticket_cost;
+		
+		// Add enchant to slot 2
+		.@card[1] = .@new_enchant;
+		
+		delequip .@equip_slot;
+		specialeffect2 EF_REPAIRWEAPON;
+		
+		mes "[Add Second Enchant]";
+		mes "^00FF00Enchant added successfully!^000000";
+		mes " ";
+		mes "Slot 2 now has: ^0000FF" + .@enchant_name$ + " Lv1^000000";
+		mes " ";
+		mes "^00FF00You can now upgrade this enchant using the Upgrade Enchant option!^000000";
+		getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+		equip .@equip_id;
+		close;
+		
+	case 7:
+		mes "[Helm and Vivatus Fides]";
+		mes "Thank you for visiting!";
+		mes "Have a great day!";
+		close;
+	}
+}

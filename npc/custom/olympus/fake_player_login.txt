@@ -1,0 +1,106 @@
+//============================================================
+//= Fake + Real Player Activity System
+//= Shows both fake and real player login/logout
+//============================================================
+
+-	script	Fake_Activity_System	-1,{
+OnInit:
+	// ===== FAKE PLAYER NAMES (100 names) =====
+	setarray .names$[0],
+		// English Names
+		"Sarah","Michael","Emma","David","Sophia","James","Olivia","Robert","Isabella","William",
+		"Ava","Richard","Mia","Charles","Charlotte","Thomas","Amelia","Daniel","Harper","Matthew",
+		"Ethan","Abigail","Lucas","Emily","Mason","Elizabeth","Logan","Scarlett","Alexander","Grace",
+		"Henry","Chloe","Jackson","Lily","Sebastian","Zoey","Benjamin","Aria","Samuel","Madison",
+		// Japanese Names
+		"Yuki","Sakura","Ryu","Hana","Kenji","Akira","Mei","Takeshi","Hinata","Haruto",
+		"Aiko","Kaito","Rin","Sota","Nanami","Daichi","Yui","Hiroshi","Sora","Kenta",
+		// Fantasy Names
+		"Aragon","Lyra","Theron","Luna","Zephyr","Nova","Orion","Selene","Phoenix","Aurora",
+		"Atlas","Celeste","Drake","Freya","Griffin","Ivy","Hunter","Jade","Knight","Raven",
+		// Korean Names
+		"MinHo","JiYeon","TaeYang","SuJin","JunSeo","HyeJin","DoYoon","SeoYeon","WooJin","NaRa",
+		// Vietnamese Names
+		"Minh","Linh","Hieu","Trang","Khanh","Huong","Phong","Thao","Tuan","Mai";
+	
+	// ===== ACTIVITY MESSAGES =====
+	setarray .actions$[0],
+		"has logged in",
+		"entered the city",
+		"joined the server",
+		"is now online",
+		"has arrived",
+		"connected successfully",
+		"has entered the world",
+		"is exploring",
+		"just logged in",
+		"appeared online";
+	
+	// ===== LOCATION MESSAGES =====
+	setarray .locations$[0],
+		"Prontera",
+		"Askald",
+		"Geffen",
+		"Payon",
+		"Morocc",
+		"Aldebaran",
+		"Izlude",
+		"Juno";
+	
+	// Start automatically
+	initnpctimer;
+	end;
+
+OnTimer120000: // Every 2 minutes (120 seconds)
+	// Only 1 announce per cycle
+	
+	// Random name
+	.@name_id = rand(0, getarraysize(.names$) - 1);
+	
+	// Random action
+	.@action_id = rand(0, getarraysize(.actions$) - 1);
+	
+	// 30% chance to include location
+	if (rand(100) < 30) {
+		.@loc_id = rand(0, getarraysize(.locations$) - 1);
+		.@msg$ = "[" + .names$[.@name_id] + "] " + .actions$[.@action_id] + " at " + .locations$[.@loc_id] + "!";
+	} else {
+		.@msg$ = "[" + .names$[.@name_id] + "] " + .actions$[.@action_id] + "!";
+	}
+	
+	// Announce to center of screen with System prefix - RED COLOR
+	announce "[System] " + .@msg$, bc_all | bc_blue, 0xFF0000;
+	
+	initnpctimer;
+	end;
+}
+
+//============================================================
+//= Real Player Login/Logout Announcer
+//============================================================
+
+-	script	Real_Player_Activity	-1,{
+OnPCLoginEvent:
+	// Get player's map name
+	.@map$ = strcharinfo(3);
+	
+	// Convert map name to readable location
+	if (.@map$ == "prontera") .@location$ = "Prontera";
+	else if (.@map$ == "askald") .@location$ = "Askald";
+	else if (.@map$ == "geffen") .@location$ = "Geffen";
+	else if (.@map$ == "payon") .@location$ = "Payon";
+	else if (.@map$ == "morocc") .@location$ = "Morocc";
+	else if (.@map$ == "aldebaran") .@location$ = "Aldebaran";
+	else if (.@map$ == "izlude") .@location$ = "Izlude";
+	else if (.@map$ == "yuno") .@location$ = "Juno";
+	else .@location$ = "the world";
+	
+	// Announce when real player logs in with location
+	announce "[System] [" + strcharinfo(0) + "] has logged in at " + .@location$ + "!", bc_all | bc_blue, 0xFF0000;
+	end;
+
+OnPCLogoutEvent:
+	// Announce when real player logs out
+	announce "[System] [" + strcharinfo(0) + "] has logged out!", bc_all | bc_blue, 0xFF0000;
+	end;
+}

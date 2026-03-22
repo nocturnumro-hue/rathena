@@ -310,7 +310,7 @@ prontera,140,331,6	script	Glasses-wearing Man	883,{
 	close;
 }
 
-prontera,146,218,4	script	Woman#job_min	90,{
+prontera,139,225,4	script	Woman#job_min	90,{
 	if (job_min == 3) {
 		mes "[Woman]";
 		mes "Do you know who Maestro Song is?";

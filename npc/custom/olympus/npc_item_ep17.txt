@@ -1,0 +1,192 @@
+//===== rAthena Script =======================================
+//= Barmeal Ticket Exchanger (With quantity input)
+//= @reloadnpcfile npc/custom/olympus/npc_item_ep17.txt
+//============================================================
+askald,96,119,5	script	Barmeal Vendor	10354,{
+	// Define constants
+	set .@ticket_id, 1000103;       // Target Barmeal Ticket ID
+	set .@exchange_ticket_id, 7227; // Item ID used for exchange (TCG Card)
+	set .@exchange_item_name$, "TCG Card";
+
+	mes "[Ticket Exchanger]";
+	mes "Welcome! You can exchange for Barmeal Tickets here.";
+
+	switch( select( "Exchange with Zeny (50,000 Zeny each)", "Exchange with TCG Card (1 Card = 1 Ticket)", "Cancel" ) ) {
+
+		case 1: // Exchange with Zeny
+			set .@zeny_unit_cost, 50000;
+
+			mes "[Ticket Exchanger]";
+			mes "Each ticket costs ^0000FF50,000 Zeny^000000.";
+			mes "How many tickets would you like?";
+			next;
+			input .@quantity;
+
+			if (.@quantity <= 0) {
+				mes "[Ticket Exchanger]";
+				mes "Transaction cancelled.";
+				close;
+			}
+
+			set .@total_cost, .@quantity * .@zeny_unit_cost;
+
+			// Format numbers with commas using string manipulation
+			set .@total_cost_display$, "" + .@total_cost;
+
+			mes "[Ticket Exchanger]";
+			mes "You want to purchase ^00AA00" + .@quantity + " ticket(s)^000000.";
+			mes "Total cost: ^0000FF" + callfunc("F_InsertComma", .@total_cost) + " Zeny^000000.";
+
+			if ( select("Confirm:Cancel") == 2 ) {
+				mes "[Ticket Exchanger]";
+				mes "Transaction cancelled.";
+				close;
+			}
+
+			if (Zeny < .@total_cost) {
+				mes "[Ticket Exchanger]";
+				mes "You don't have enough Zeny. You need ^FF0000" + callfunc("F_InsertComma", .@total_cost) + " Zeny^000000.";
+				close;
+			}
+
+			set Zeny, Zeny - .@total_cost;
+			getitem .@ticket_id, .@quantity;
+
+			mes "[Ticket Exchanger]";
+			mes "Deducted: ^0000FF" + callfunc("F_InsertComma", .@total_cost) + " Zeny^000000.";
+			mes "You received ^00AA00" + .@quantity + " Barmeal Ticket(s)^000000. Thank you!";
+			close;
+
+		case 2: // Exchange with TCG Card (1 Card = 1 Ticket)
+			set .@cost_per_ticket, 1;
+			set .@player_cards, countitem(.@exchange_ticket_id);
+			set .@max_possible, .@player_cards;
+
+			mes "[Ticket Exchanger]";
+			mes "Rate: ^FF00001 " + .@exchange_item_name$ + "^000000 = ^00AA001 Barmeal Ticket^000000.";
+			mes "You have ^FF0000" + .@player_cards + " " + .@exchange_item_name$ + "(s)^000000.";
+			mes "You can exchange up to ^00AA00" + .@max_possible + " ticket(s)^000000.";
+			mes "How many tickets would you like?";
+			next;
+			input .@quantity;
+
+			if (.@quantity <= 0) {
+				mes "[Ticket Exchanger]";
+				mes "Transaction cancelled.";
+				close;
+			}
+
+			set .@total_item_cost, .@quantity * .@cost_per_ticket;
+
+			mes "[Ticket Exchanger]";
+			mes "You want to exchange ^FF0000" + .@total_item_cost + " " + .@exchange_item_name$ + "(s)^000000";
+			mes "for ^00AA00" + .@quantity + " Barmeal Ticket(s)^000000.";
+
+			if ( select("Confirm:Cancel") == 2 ) {
+				mes "[Ticket Exchanger]";
+				mes "Transaction cancelled.";
+				close;
+			}
+
+			if ( countitem(.@exchange_ticket_id) < .@total_item_cost ) {
+				mes "[Ticket Exchanger]";
+				mes "You don't have enough ^FF0000" + .@exchange_item_name$ + "^000000.";
+				mes "Required: ^FF0000" + .@total_item_cost + "^000000, you have: ^FF0000" + countitem(.@exchange_ticket_id) + "^000000.";
+				close;
+			}
+
+			delitem .@exchange_ticket_id, .@total_item_cost;
+			getitem .@ticket_id, .@quantity;
+
+			mes "[Ticket Exchanger]";
+			mes "Deducted: ^FF0000" + .@total_item_cost + " " + .@exchange_item_name$ + "(s)^000000.";
+			mes "You received ^00AA00" + .@quantity + " Barmeal Ticket(s)^000000. Thank you!";
+			close;
+
+		case 3: // Cancel
+			mes "[Ticket Exchanger]";
+			mes "Goodbye!";
+			close;
+	}
+}
+
+//===== rAthena Script =======================================
+//= Magical Soapstone Exchanger (TCG Card + Zeny)
+//============================================================
+askald,96,115,5	script	Magical Soapstone	10355,{
+
+	.@item_id_tcg = 7227;
+	.@soapstone_id = 1000104;
+	.@exchange_zeny = 50000;
+	set .@name_tcg$, "TCG Card";
+
+	mes "[Stone Exchanger]";
+	mes "Hey there!";
+	mes "Bring me ^FF00001 " + .@name_tcg$ + "^000000 and ^0000FF50,000 Zeny^000000,";
+	mes "and I'll hand you ^00AA001 Magical Soapstone^000000 in return.";
+	mes "Sounds like a deal?";
+	next;
+
+	if (select("Exchange materials:Cancel") == 1) {
+
+		// Determine maximum possible exchanges
+		.@count_tcg = countitem(.@item_id_tcg);
+		set .@max_by_zeny, Zeny / .@exchange_zeny;
+		set .@max_exchanges, .@count_tcg;
+
+		if (.@max_by_zeny < .@max_exchanges) set .@max_exchanges, .@max_by_zeny;
+
+		if (.@max_exchanges == 0) {
+			mes "[Stone Exchanger]";
+			mes "Hmm...";
+			mes "You need at least ^FF00001 " + .@name_tcg$ + "^000000 and ^0000FF50,000 Zeny^000000 to exchange.";
+			mes "Come back when you have the materials!";
+			close;
+		}
+
+		// Ask how many exchanges the player wants
+		mes "[Stone Exchanger]";
+		mes "You have enough for up to ^00AA00" + .@max_exchanges + " exchange(s)^000000.";
+		mes "How many Magical Soapstones would you like?";
+		next;
+		input .@num_exchanges;
+
+		if (.@num_exchanges <= 0) {
+			mes "[Stone Exchanger]";
+			mes "Transaction cancelled.";
+			close;
+		}
+
+		if (.@num_exchanges > .@max_exchanges) {
+			mes "[Stone Exchanger]";
+			mes "Whoa! You only have enough materials for ^00AA00" + .@max_exchanges + " exchange(s)^000000.";
+			mes "Please enter a valid amount.";
+			close;
+		}
+
+		// Calculate totals
+		set .@total_tcg, .@num_exchanges;
+		set .@total_zeny, .@num_exchanges * .@exchange_zeny;
+
+		mes "[Stone Exchanger]";
+		mes "Exchanging ^FF0000" + .@total_tcg + " " + .@name_tcg$ + "(s)^000000";
+		mes "and ^0000FF" + callfunc("F_InsertComma", .@total_zeny) + " Zeny^000000";
+		mes "for ^00AA00" + .@num_exchanges + " Magical Soapstone(s)^000000.";
+
+		if ( select("Confirm:Cancel") == 2 ) {
+			mes "[Stone Exchanger]";
+			mes "Transaction cancelled.";
+			close;
+		}
+
+		// Perform exchange
+		set Zeny, Zeny - .@total_zeny;
+		delitem .@item_id_tcg, .@total_tcg;
+		getitem .@soapstone_id, .@num_exchanges;
+
+		mes "[Stone Exchanger]";
+		mes "Here are your ^00AA00" + .@num_exchanges + " Magical Soapstone(s)^000000!";
+		mes "Goodbye~";
+		close;
+	}
+}

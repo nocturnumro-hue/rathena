@@ -1,0 +1,4755 @@
+###########################################################################
+# Barter Database
+###########################################################################
+#
+# Barter Settings
+#
+###########################################################################
+#  - Name               NPC name.
+#    Map                Map name. (Default: not on a map)
+#    X                  Map x coordinate. (Default: 0)
+#    Y                  Map y coordinate. (Default: 0)
+#    Direction          Direction the NPC is looking. (Default: North)
+#    Sprite             Sprite name of the NPC. (Default: FakeNpc)
+#    Items:             List of sold items.
+#      - Index          Index of the item inside the shop. (0-...)
+#                       Maximum index depends on client.
+#        Item           Aegis name of the item.
+#        Stock          Amount of item in stock. 0 means unlimited. (Default: 0)
+#        Zeny           Cost of them item in Zeny. (Default: 0)
+#        Refine         Refine level of the item. (Default: 0)
+#        RequiredItems: List of required items (Optional)
+#          - Index      Index of the required item. (0-4)
+#            Item       Aegis name of required item.
+#            Amount     Amount of required item. (Default: 1)
+#            Refine     Refine level of required item. (Default: 0)
+###########################################################################
+
+Header:
+  Type: BARTER_DB
+  Version: 2
+
+Body:
+  - Name: Upgrade_SET_MATK
+    Items:
+      - Index: 0
+        Item: bronze_armor
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 150
+          - Index: 1
+            Item: Water_Coin
+            Amount: 150
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 150
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 150
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 150
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 150
+      - Index: 1
+        Item: bronze_manteau
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 150
+          - Index: 1
+            Item: Water_Coin
+            Amount: 150
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 150
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 150
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 150
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 150
+      - Index: 2
+        Item: bronze_shoes
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 100
+          - Index: 1
+            Item: Water_Coin
+            Amount: 100
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 100
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 100
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 100
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 100
+      - Index: 3
+        Item: Brown_Valkyrie_Helm
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 100
+          - Index: 1
+            Item: Water_Coin
+            Amount: 100
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 100
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 100
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 100
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 100
+      - Index: 4
+        Item: bronze_sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250
+      - Index: 5
+        Item: bronze_shield
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250
+  - Name: Upgrade_SET_ATK
+    Items:
+      - Index: 0
+        Item: silver_armor
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 150
+          - Index: 1
+            Item: Water_Coin
+            Amount: 150
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 150
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 150
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 150
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 150
+      - Index: 1
+        Item: silver_manteau
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 150
+          - Index: 1
+            Item: Water_Coin
+            Amount: 150
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 150
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 150
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 150
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 150
+      - Index: 2
+        Item: silver_shoes
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 100
+          - Index: 1
+            Item: Water_Coin
+            Amount: 100
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 100
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 100
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 100
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 100
+      - Index: 3
+        Item: saikos_valk
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 100
+          - Index: 1
+            Item: Water_Coin
+            Amount: 100
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 100
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 100
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 100
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 100
+      - Index: 4
+        Item: silver_sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250
+      - Index: 5
+        Item: silver_shield
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250
+  - Name: Upgrade_Weapon
+    Items:
+      - Index: 0
+        Item: Olympus_Dagger
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250
+      - Index: 1
+        Item: Olympus_2Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250 
+      - Index: 2
+        Item: Olympus_2Axe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250 
+      - Index: 3
+        Item: Olympus_katar
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Wind_Coin
+            Amount: 250
+          - Index: 1
+            Item: Water_Coin
+            Amount: 250
+          - Index: 2
+            Item: Fire_Coin
+            Amount: 250
+          - Index: 3
+            Item: Earth_Coin
+            Amount: 250
+          - Index: 4
+            Item: Holy_Coin
+            Amount: 250
+          - Index: 5
+            Item: Neutral_Coin
+            Amount: 250             
+  - Name: IRO_Headgear
+    Items:
+      - Index: 0
+        Item: Khalitzburg_KN_Helm_W
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Khaliz_Knightage_Card 
+            Amount: 15
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 1500
+      - Index: 1
+        Item: Striking_hat_A
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: White_Knightage_Card
+            Amount: 15
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 1500
+      - Index: 2
+        Item: Beelzebub_Crown_K
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Berzebub_Card
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Will_Of_Darkness_
+            Amount: 10
+      - Index: 3
+        Item: Vesper_H_Gear_K
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Apocalips_H_Card
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: EP19_Luminant
+            Amount: 10
+      - Index: 4
+        Item: Boitata_Hat_K
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Boitata_Card
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: EP19_Luminant
+            Amount: 20
+      - Index: 5
+        Item: Black_Ribbon_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Valhalla_Flower
+            Amount: 10
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: Bloody_Edge
+            Amount: 10
+      - Index: 6
+        Item: Divine_Guard_Hat_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Queen_Wing_Piece
+            Amount: 10
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: Bloody_Rune
+            Amount: 100
+      - Index: 7
+        Item: Boitata_Hat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Mother's_Nightmare 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: Emperium
+            Amount: 10
+      - Index: 8
+        Item: Faith_Of_Yggdrasil
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Pharaoh_Card
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: Tutankhamen's_Mask
+            Amount: 10
+      - Index: 9
+        Item: Celines_Ribbon
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Deadre_Card
+            Amount: 15
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: White_Snake_Tear
+            Amount: 10            
+  - Name: IRO_Headgear_Middle
+    Items:
+      - Index: 0
+        Item: Floating_Ball
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Doppelganger_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Osiris_Doll
+            Amount: 5
+      - Index: 1
+        Item: LittleGarden
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Osiris_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Token_of_OrcGeneral
+            Amount: 15            
+  - Name: IRO_Armor
+    Items:
+      - Index: 0
+        Item: Phreeoni_Wing_Suits
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Phreeoni_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Rojerta_Piece
+            Amount: 30
+      - Index: 1
+        Item: Screaming_Ghoost_Party
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Demigod_Lasgand_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 400
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 10000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 10000
+          - Index: 5
+            Item: Ep20_Cat_Whiskers
+            Amount: 300
+      - Index: 2
+        Item: Boitata_Armor
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Mother's_Nightmare 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 100
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 50
+          - Index: 3
+            Item: Zelunium
+            Amount: 1000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 1000
+          - Index: 5
+            Item: Fang_Of_Garm 
+            Amount: 3
+      - Index: 3
+        Item: Aramazd_revelation
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bone_Detale_Card
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 100
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 50
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: ClockTower_Gear 
+            Amount: 250
+      - Index: 4
+        Item: Drake_Coat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Pirate_Skel_Card
+            Amount: 15
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 100
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 50
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Tiger_Footskin 
+            Amount: 5
+      - Index: 5
+        Item: B_Celine_D_LT_TW
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: XM_Celine_Kimi_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 400
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 10000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 10000
+          - Index: 5
+            Item: Bloody_Coin
+            Amount: 300            
+  - Name: IRO_Garment
+    Items:
+      - Index: 0
+        Item: Scientist_Mantle
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 150
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 1500
+      - Index: 1
+        Item: Royal_Prontera_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500            
+      - Index: 2
+        Item: Royal_Payon_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500            
+      - Index: 3
+        Item: Royal_Geffen_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500            
+      - Index: 4
+        Item: Royal_Nightwatch_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500            
+      - Index: 5
+        Item: Royal_Alberta_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500            
+      - Index: 6
+        Item: Royal_Morroc_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500
+      - Index: 7
+        Item: Changeable_Magic_Cape
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500
+      - Index: 8
+        Item: White_Knight_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: VIP_Black_Coin
+            Amount: 350
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 7500
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 7500
+          - Index: 5
+            Item: Etel_Dust
+            Amount: 5500
+      - Index: 9
+        Item: Pirate_Captain_Coat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Drake_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Taegeuk_Plate
+            Amount: 30
+      - Index: 10
+        Item: Phreeoni_Wing
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Phreeoni_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Treasure_Box
+            Amount: 30
+      - Index: 11
+        Item: Violet_Halo
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: MVP_Ticket 
+            Amount: 10
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Treasure_Box
+            Amount: 30            
+  - Name: IRO_Shoes
+    Items:
+      - Index: 0
+        Item: Corruption_Boots_K
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Fallen_Bishop_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Broken_Pharaoh_Symbol
+            Amount: 30
+      - Index: 1
+        Item: Hollow_Aggressor
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: EP18_Burning_Fang_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_4
+            Amount: 400
+          - Index: 2
+            Item: Armor_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Ep20_Cat_Whiskers
+            Amount: 300
+      - Index: 2
+        Item: HalfBloodPrincess_Shoes
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Venom_Kimera_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Piece_Of_Chimera
+            Amount: 30
+      - Index: 3
+        Item: Hollow_Shoes_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Venom_Kimera_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Piece_Of_Chimera
+            Amount: 30 
+      - Index: 4
+        Item: Elemental_BootsK
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Timbers_Card 
+            Amount: 10
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Ein_DYNITE
+            Amount: 150
+      - Index: 5
+        Item: Flame_Rune_Boots
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Gloom_Under_Night_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Will_Of_Darkness_
+            Amount: 5
+      - Index: 6
+        Item: Authority_Sandals
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Lady_Tanee_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Silver_Knife_Of_Chaste
+            Amount: 5
+      - Index: 7
+        Item: KenZen_Ichinyo
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Turtle_General_Card 
+            Amount: 1
+          - Index: 1
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Armor_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Pieces_Of_Grudge
+            Amount: 500            
+  - Name: IRO_Accessory
+    Items:
+      - Index: 0
+        Item: Ring_of_SilverClaw
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Void_Mimic_Card 
+            Amount: 10
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Mother's_Nightmare
+            Amount: 5
+      - Index: 1
+        Item: Majesty_of_Yggdrasil_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Empathizer_Card 
+            Amount: 10
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: M_Dimension_Essence
+            Amount: 5
+      - Index: 2
+        Item: 4Element_magic_ring
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Aferde_Card 
+            Amount: 10
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Ein_DYNITE
+            Amount: 100
+      - Index: 3
+        Item: Overdrive_Rampage_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: MD_Geffen_Cert 
+            Amount: 100
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: MD_Geffen_Win
+            Amount: 100
+      - Index: 4
+        Item: Glove_Of_Smith
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Baphomet_Card 
+            Amount: 1
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Emperium
+            Amount: 10
+      - Index: 5
+        Item: Glove_Of_Wizard 
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Bacsojin_Card 
+            Amount: 1
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: White_Snake_Tear
+            Amount: 20
+      - Index: 6
+        Item: Celine_Brooch 
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Napeo_Card
+            Amount: 15
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Aromatic_Flower
+            Amount: 200
+      - Index: 7
+        Item: Evilspirit_Gloves 
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Galensis_Card 
+            Amount: 15
+          - Index: 1
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Acc_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: Aromatic_Flower
+            Amount: 200            
+  - Name: IRO_Weapon
+    Items:
+      - Index: 0
+        Item: Elemental_Sword
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Regen_Scientist_Card 
+            Amount: 10
+          - Index: 1
+            Item: Weapon_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Weapon_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 1000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 1000
+          - Index: 5
+            Item: MD_Airboat_Tokken
+            Amount: 150
+      - Index: 1
+        Item: Deus_Ex_Machina_JP
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: C_White_Knight_Card 
+            Amount: 20
+          - Index: 1
+            Item: Weapon_Ore_4
+            Amount: 200
+          - Index: 2
+            Item: Weapon_Stone_4
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 5000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 5000
+          - Index: 5
+            Item: M_Dimension_Essence
+            Amount: 15
+  - Name: IRO_Shield
+    Items:
+      - Index: 0
+        Item: Excelion_Shield
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Detale_Card 
+            Amount: 1
+          - Index: 1
+            Item: Weapon_Ore_3
+            Amount: 200
+          - Index: 2
+            Item: Weapon_Stone_3
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 1000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 1000
+          - Index: 5
+            Item: Scale_Of_Red_Dragon
+            Amount: 100
+      - Index: 1
+        Item: Bloody_Knight_Shield__
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Detale_Card 
+            Amount: 1
+          - Index: 1
+            Item: Weapon_Ore_4
+            Amount: 300
+          - Index: 2
+            Item: Weapon_Stone_4
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: Scale_Of_Red_Dragon
+            Amount: 250
+      - Index: 2
+        Item: Bloody_Knight_Shield
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Detale_Card 
+            Amount: 1
+          - Index: 1
+            Item: Weapon_Ore_3
+            Amount: 300
+          - Index: 2
+            Item: Weapon_Stone_3
+            Amount: 200
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: Scale_Of_Red_Dragon
+            Amount: 250
+      - Index: 3
+        Item: Bloody_Knight_Shield_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: Detale_Card 
+            Amount: 1
+          - Index: 1
+            Item: Weapon_Ore_4
+            Amount: 200
+          - Index: 2
+            Item: Weapon_Stone_4
+            Amount: 100
+          - Index: 3
+            Item: Zelunium
+            Amount: 3000
+          - Index: 4
+            Item: Shadowdecon
+            Amount: 3000
+          - Index: 5
+            Item: Scale_Of_Red_Dragon
+            Amount: 250            
+  - Name: Supreme_Stone1
+    Items:
+      - Index: 0
+        Item: Weapon_Stone_1
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: Weapon_Ore_1
+            Amount: 5
+      - Index: 1
+        Item: Armor_Stone_1
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: Armor_Ore_1
+            Amount: 5
+      - Index: 2
+        Item: Acc_Stone_1
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: Acc_Ore_1
+            Amount: 5
+      - Index: 3
+        Item: Weapon_Stone_2
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Weapon_Ore_2
+            Amount: 5
+      - Index: 4
+        Item: Armor_Stone_2
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Armor_Ore_2
+            Amount: 5
+      - Index: 5
+        Item: Acc_Stone_2
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Acc_Ore_2
+            Amount: 5
+      - Index: 6
+        Item: Weapon_Stone_3
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: Weapon_Ore_3
+            Amount: 5
+      - Index: 7
+        Item: Armor_Stone_3
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: Armor_Ore_3
+            Amount: 5
+      - Index: 8
+        Item: Acc_Stone_3
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: Acc_Ore_3
+            Amount: 5
+      - Index: 9
+        Item: Weapon_Stone_4
+        Zeny: 10000000
+        RequiredItems:
+          - Index: 0
+            Item: Weapon_Ore_4
+            Amount: 10
+      - Index: 10
+        Item: Armor_Stone_4
+        Zeny: 10000000
+        RequiredItems:
+          - Index: 0
+            Item: Armor_Ore_4
+            Amount: 10
+      - Index: 11
+        Item: Acc_Stone_4
+        Zeny: 10000000
+        RequiredItems:
+          - Index: 0
+            Item: Acc_Ore_4
+            Amount: 10
+  - Name: Supreme_Stone2
+    Items:
+      - Index: 0
+        Item: Weapon_Stone_2
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: Weapon_Stone_1
+            Amount: 3
+      - Index: 1
+        Item: Armor_Stone_2
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: Armor_Stone_1
+            Amount: 3
+      - Index: 2
+        Item: Acc_Stone_2
+        Zeny: 1000000
+        RequiredItems:
+          - Index: 0
+            Item: Acc_Stone_1
+            Amount: 3
+      - Index: 3
+        Item: Weapon_Stone_3
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Weapon_Stone_2
+            Amount: 30
+      - Index: 4
+        Item: Armor_Stone_3
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Armor_Stone_2
+            Amount: 30
+      - Index: 5
+        Item: Acc_Stone_3
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Acc_Stone_2
+            Amount: 30
+      - Index: 6
+        Item: Weapon_Stone_4
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: Weapon_Stone_3
+            Amount: 50
+      - Index: 7
+        Item: Armor_Stone_4
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: Armor_Stone_3
+            Amount: 50
+      - Index: 8
+        Item: Acc_Stone_4
+        Zeny: 5000000
+        RequiredItems:
+          - Index: 0
+            Item: Acc_Stone_3
+            Amount: 50
+  - Name: Supreme_Stone3
+    Items:
+      - Index: 0
+        Item: Weapon_Stone_1
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Shadowdecon
+            Amount: 20
+      - Index: 1
+        Item: Armor_Stone_1
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Shadowdecon
+            Amount: 20
+      - Index: 2
+        Item: Acc_Stone_1
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Shadowdecon
+            Amount: 20
+      - Index: 3
+        Item: Weapon_Stone_1
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Zelunium
+            Amount: 20
+      - Index: 4
+        Item: Armor_Stone_1
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Zelunium
+            Amount: 20
+      - Index: 5
+        Item: Acc_Stone_1
+        Zeny: 2000000
+        RequiredItems:
+          - Index: 0
+            Item: Zelunium
+            Amount: 20            
+  - Name: Olympus_Headgear
+    Items:
+      - Index: 0
+        Item: White_Fox_Bamboo_Hat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Thief
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 1
+        Item: Steamroller
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 2
+        Item: Wolf_Rayet
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Swordman
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 3
+        Item: Passion_Rabbit_Ribbon
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 4
+        Item: Inquisitor_Veil
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 5
+        Item: StripedRibbonHat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 6
+        Item: Flash_of_Lightning
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Swordman
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 7
+        Item: Wildcat_Knit_Cap_W
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Thief
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 8
+        Item: Chic_Peony
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Thief
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 9
+        Item: Two_tone_Cap
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Merchant
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 10
+        Item: Squirrel_Ear_Hat_W
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 11
+        Item: Wild_Beast
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 12
+        Item: Altair_Hat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 13
+        Item: Many_Flowers_Love
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Thief
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 14
+        Item: M_Plant_Hat_W
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Merchant
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 15
+        Item: Clockwise
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 16
+        Item: Marin_Pattern_Hat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 2000
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 17
+        Item: Soul_Mastery_Crown
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 2000
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 18
+        Item: Awaking_Bloom
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 2000
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 19
+        Item: Coroa_Monarca_BR
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 50
+          - Index: 1
+            Item: _goldcard
+            Amount: 25
+          - Index: 2
+            Item: _violetcard
+            Amount: 15
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 200
+      - Index: 20
+        Item: NostalgiaCherryBlossom
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 50
+          - Index: 1
+            Item: _goldcard
+            Amount: 25
+          - Index: 2
+            Item: _violetcard
+            Amount: 15
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 200
+      - Index: 21
+        Item: Purple_Cat_Ears_Beret
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 50
+          - Index: 1
+            Item: _goldcard
+            Amount: 25
+          - Index: 2
+            Item: _violetcard
+            Amount: 15
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 200
+      - Index: 22
+        Item: Cat_FF_Hat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 50
+          - Index: 1
+            Item: _goldcard
+            Amount: 25
+          - Index: 2
+            Item: _violetcard
+            Amount: 15
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 200
+      - Index: 23
+        Item: Cat_FF_Hat2
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 50
+          - Index: 1
+            Item: _goldcard
+            Amount: 25
+          - Index: 2
+            Item: _violetcard
+            Amount: 15
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 200
+      - Index: 24
+        Item: FullFaith_Crown_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 30
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 3000
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 400
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 400
+      - Index: 25
+        Item: Amistr_Beret
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 50
+          - Index: 1
+            Item: _goldcard
+            Amount: 25
+          - Index: 2
+            Item: _violetcard
+            Amount: 15
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 500
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 200
+      - Index: 26
+        Item: Wolf_Officer_Hat
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 300
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 300            
+  - Name: Olympus_Headgear_Middle
+    Items:
+      - Index: 0
+        Item: Old_Moroc_Acc
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 1
+        Item: Floating_Ball
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200 
+      - Index: 2
+        Item: Ear_OF_Spirit
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200 
+      - Index: 3
+        Item: Clown_Smiling_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 4
+        Item: Exiled_Ninja_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 5
+        Item: Karasu_TenguMask_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 6
+        Item: Ear_OF_Abyss
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 7
+        Item: SeraphimCoronet
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200            
+  - Name: Olympus_Headgear_Lower
+    Items:
+      - Index: 0
+        Item: Moroc_Slave_TW
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 1000
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 100
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 100
+      - Index: 1
+        Item: Red_Bat_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 1000
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 100
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 100
+      - Index: 2
+        Item: Book_of_Sorcery
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 100
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 100
+      - Index: 3
+        Item: Mob_Scarf
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 4
+        Item: Sacred_Lapel
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 5
+        Item: Sleep_RedSheep
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200
+      - Index: 6
+        Item: Feather_Of_Seraphim
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 200            
+  - Name: Olympus_Armor
+    Items:
+      - Index: 0
+        Item: Bougainvillea
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Particles_Of_Energy
+            Amount: 2000
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 1
+        Item: Hatred_Darkness
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Thief
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 2
+        Item: Howling_Tiger_Pajama
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 3
+        Item: Radiant_purify
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250 
+      - Index: 4
+        Item: Speculation
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 5
+        Item: Striped_Holy_Robe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 6
+        Item: Tirnanog
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 7
+        Item: World_All
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Merchant
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 8
+        Item: Saint_Knight_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Swordman
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 9
+        Item: Entwined_Armor
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Swordman
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 10
+        Item: Entwined_Robe
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 350
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 11
+        Item: Elemental_Possession
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 150
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 12
+        Item: lunar_eclipse_Armor_
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 13
+        Item: Armor_of_White_Thread
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 14
+        Item: Four_of_a_kind
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 15
+        Item: Amazing_Grace
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 16
+        Item: Assault_Suit
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 17
+        Item: Loud_Park
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250            
+  - Name: Olympus_Garment
+    Items:
+      - Index: 0
+        Item: Kyel_hyre_Ulti_TW
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 1
+        Item: Will_Ingrid_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 2
+        Item: Kings_Twin_Sword_BR
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 3
+        Item: Entwined_Manteau
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 150
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 4
+        Item: Entwined_Muffler
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 150
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 5
+        Item: Avareco
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 6
+        Item: Magic_Compression
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 7
+        Item: Mystical_Wing
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 400
+          - Index: 1
+            Item: _goldcard
+            Amount: 200
+          - Index: 2
+            Item: _violetcard
+            Amount: 100
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 500
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 500
+      - Index: 8
+        Item: Arabian_Manteau
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 300
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 300
+      - Index: 9
+        Item: Storm_Muffler
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 300
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 300
+      - Index: 10
+        Item: Performer_Manteau_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 100
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 250
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 500            
+  - Name: Olympus_Shoes
+    Items:
+      - Index: 0
+        Item: Knight_Shoes_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Swordman
+            Amount: 250
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 1
+        Item: Mecha_Greaves_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Merchant
+            Amount: 250
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 2
+        Item: Ranger_Shoes_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 250
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 3
+        Item: Ancient_Royal_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: Soul_Of_Swordman
+            Amount: 250
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 4
+        Item: Ancient_Sky_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 5
+        Item: Entwined_Boots
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 75
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 6
+        Item: Entwined_Shoes
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 75
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250            
+      - Index: 7
+        Item: Enforcer_Shoes
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 8
+        Item: End_of_the_World
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 9
+        Item: Fluffy_FishShoes_J
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 10
+        Item: Fifth_Element
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 11
+        Item: Shoes_Of_Punishment
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 12
+        Item: Scrap_Remodel_Shoes_TW
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 500
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 500
+      - Index: 13
+        Item: Scrap_Remodel_Shoes_LT
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 600
+          - Index: 1
+            Item: _goldcard
+            Amount: 300
+          - Index: 2
+            Item: _violetcard
+            Amount: 100
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 500
+      - Index: 14
+        Item: Mid_Knight_Shoes
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 75
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 15
+        Item: Starry_Sky_Twin_Prime
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 75
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 16
+        Item: Sniping_Shoes_J
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 250
+          - Index: 4
+            Item: Armor_Ore_3
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_3
+            Amount: 250
+      - Index: 17
+        Item: Kshatra_Vairya
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250
+      - Index: 18
+        Item: Mythical_Moonlight_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 50
+          - Index: 4
+            Item: Armor_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Armor_Stone_4
+            Amount: 250            
+  - Name: Olympus_Weapon
+    Items:
+      - Index: 0
+        Item: Kings_Double_Edge_A
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 300
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 300            
+  - Name: Olympus_Shield
+    Items:
+      - Index: 0
+        Item: Ancient_Prontera_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250
+      - Index: 1
+        Item: Kitten_Shield_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250
+      - Index: 2
+        Item: Alice_Pillow_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250
+      - Index: 3
+        Item: GEMS_DarkBlood
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250
+      - Index: 4
+        Item: GEMS_DarkBlood_LT
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 600
+          - Index: 1
+            Item: _goldcard
+            Amount: 300
+          - Index: 2
+            Item: _violetcard
+            Amount: 150
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 500
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 500
+      - Index: 5
+        Item: Fake_Alloy_Pot
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250
+      - Index: 6
+        Item: Fake_Alloy_Pot_LT
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 600
+          - Index: 1
+            Item: _goldcard
+            Amount: 300
+          - Index: 2
+            Item: _violetcard
+            Amount: 150
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 500
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 500
+      - Index: 7
+        Item: Apostate_Shield_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250
+      - Index: 8
+        Item: Hightech_Shield_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250
+      - Index: 9
+        Item: Shield_Of_Angel_TH
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Weapon_Ore_4
+            Amount: 250
+          - Index: 5
+            Item: Weapon_Stone_4
+            Amount: 250            
+  - Name: Olympus_Accessory
+    Items:
+      - Index: 0
+        Item: Chemical_R_Glove
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Merchant
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 1
+        Item: Cardinal_Ring
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 2
+        Item: Drop_of_Seven_Colors
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 3
+        Item: Duelist_GoldCoin
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 4
+        Item: Elemental_Jewel
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 5
+        Item: Establish
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 6
+        Item: Techi_Cat_Fluffy_Socks
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 7
+        Item: GokuiKaiden_Scroll
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 8
+        Item: Into_The_Abyss
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Thief
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 9
+        Item: Leviathan_Orb
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Swordman
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 10
+        Item: Lord_of_Elemental
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Magicion
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 11
+        Item: Petal_Tail_W
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Acolyte
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 12
+        Item: Power_Machine_Arm
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Merchant
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 13
+        Item: Ring_of_Artemis
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: Soul_Of_Archer
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 14
+        Item: White_Fox_Charm
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 15
+        Item: FiveProngedSeal_Array
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 16
+        Item: NightW_Heart_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_3
+            Amount: 200
+      - Index: 17
+        Item: Novice_Heart_US
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_3
+            Amount: 200
+      - Index: 18
+        Item: ProtectRingofKing
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_3
+            Amount: 200
+      - Index: 19
+        Item: Glittering_Cat_Choker
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_3
+            Amount: 200 
+      - Index: 20
+        Item: Sixth_Sense_Ring
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 100
+          - Index: 1
+            Item: _goldcard
+            Amount: 50
+          - Index: 2
+            Item: _violetcard
+            Amount: 25
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_3
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_3
+            Amount: 200
+      - Index: 21
+        Item: Geffenia_Magictool_Ice
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 400
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 400
+      - Index: 22
+        Item: Pure_Heart_TW
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 500
+      - Index: 23
+        Item: Infinity_Chip_MAX
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 500
+      - Index: 24
+        Item: Memento_MI_WH
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 500
+      - Index: 25
+        Item: Memento_MI_BO
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 500
+      - Index: 26
+        Item: Memento_ME_BO
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 500
+      - Index: 27
+        Item: Memento_ME_WH
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 300
+          - Index: 1
+            Item: _goldcard
+            Amount: 150
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 300
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 500
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 500
+      - Index: 28
+        Item: Traveler_Ring
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 29
+        Item: Ring_Of_Storm
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 30
+        Item: Emerald_Earring
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200
+      - Index: 31
+        Item: Sound_Amplifier
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 150
+          - Index: 1
+            Item: _goldcard
+            Amount: 75
+          - Index: 2
+            Item: _violetcard
+            Amount: 50
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 100
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 200
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 200            
+      - Index: 32
+        Item: Metal_Pick
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 200
+          - Index: 1
+            Item: _goldcard
+            Amount: 100
+          - Index: 2
+            Item: _violetcard
+            Amount: 75
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 150
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 300
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 300
+      - Index: 33
+        Item: Divine_Bell_TH
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 250
+          - Index: 1
+            Item: _goldcard
+            Amount: 125
+          - Index: 2
+            Item: _violetcard
+            Amount: 100
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 400
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 400 
+      - Index: 34
+        Item: Amulet_of_GenesisStone
+        Zeny: 0
+        RequiredItems:
+          - Index: 0
+            Item: _silvercard 
+            Amount: 250
+          - Index: 1
+            Item: _goldcard
+            Amount: 125
+          - Index: 2
+            Item: _violetcard
+            Amount: 100
+          - Index: 3
+            Item: VIP_Black_Coin
+            Amount: 200
+          - Index: 4
+            Item: Acc_Ore_4
+            Amount: 400
+          - Index: 5
+            Item: Acc_Stone_4
+            Amount: 400            

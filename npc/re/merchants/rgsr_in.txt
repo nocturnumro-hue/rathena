@@ -229,62 +229,62 @@ OnInit:
 	end;
 }
 
-rgsr_in,131,187,5	script	Ore Researcher#rg02	MD_ED_M_SCIENCE,{
-	mes "[Grid]";
-	mes "Come on.";
-	mes "It's a low-budget lab, so it's always like this.";
-	mes "My assistants and I refine the gemstones used in this lab. For a fee.";
-	next;
-	switch( select( "View the exchange list", "What are you exchanging?", "Quit" ) ) {
-	case 1:
-		mes "[Grid]";
-		mes "Let's see...";
-		mes "Now there are these things.";
-		next;
-		switch( select( "Gemstone refining", "Top ore exchange", "Buy additional ore", "Cancel" ) ) {
-		case 1:
-			mes "[Grid]";
-			mes "Gemstone refining.";
-			close2;
-			callshop("barter_rgsr_in_1");
-			end;
-		case 2:
-			mes "[Grid]";
-			mes "Top ore exchange.";
-			close2;
-			callshop("barter_rgsr_in_2");
-			end;
-		case 3:
-			mes "[Grid]";
-			mes "Don't have enough ore? Then there's something I'm specifically collecting...";
-			mes "Do you have a shadow decon?";
-			close2;
-			callshop("barter_rgsr_in_3");
-			end;
-		case 4:
-			mes "[Grid]";
-			mes "If you need anything, come again.";
-			close;
-		}
-		end;
-	case 2:
-		mes "[Grid]";
-		mes "As we see in our research, the materials are very rare. There are adventurers hired by our team, but the material is not comparable to the amount we need.";
-		mes "So when the adventurers came with the materials, they decided to provide the corresponding research value.";
-		next;
-		mes "[Grid]";
-		mes "Luckily, we do the research and adventurers who come to us provide materials to use our technology.";
-		mes "If you want to modify something you only need to bring the presented materials.";
-		next;
-		mes "[Grid]";
-		mes "You're an adventurer, so you know what that means?";
-		close;
-	case 3:
-		mes "[Grid]";
-		mes "If you need anything, come again.";
-		close;
-	}
-}
+//rgsr_in,131,187,5	script	Ore Researcher#rg02	MD_ED_M_SCIENCE,{
+//	mes "[Grid]";
+//	mes "Come on.";
+//	mes "It's a low-budget lab, so it's always like this.";
+//	mes "My assistants and I refine the gemstones used in this lab. For a fee.";
+//	next;
+//	switch( select( "View the exchange list", "What are you exchanging?", "Quit" ) ) {
+//	case 1:
+//		mes "[Grid]";
+//		mes "Let's see...";
+//		mes "Now there are these things.";
+//		next;
+//		switch( select( "Gemstone refining", "Top ore exchange", "Buy additional ore", "Cancel" ) ) {
+//		case 1:
+//			mes "[Grid]";
+//			mes "Gemstone refining.";
+//			close2;
+//			callshop("barter_rgsr_in_1");
+//			end;
+//		case 2:
+//			mes "[Grid]";
+//			mes "Top ore exchange.";
+//			close2;
+//			callshop("barter_rgsr_in_2");
+//			end;
+//		case 3:
+//			mes "[Grid]";
+//			mes "Don't have enough ore? Then there's something I'm specifically collecting...";
+//			mes "Do you have a shadow decon?";
+//			close2;
+//			callshop("barter_rgsr_in_3");
+//			end;
+//		case 4:
+//			mes "[Grid]";
+//			mes "If you need anything, come again.";
+//			close;
+//		}
+//		end;
+//	case 2:
+//		mes "[Grid]";
+//		mes "As we see in our research, the materials are very rare. There are adventurers hired by our team, but the material is not comparable to the amount we need.";
+//		mes "So when the adventurers came with the materials, they decided to provide the corresponding research value.";
+//		next;
+//		mes "[Grid]";
+//		mes "Luckily, we do the research and adventurers who come to us provide materials to use our technology.";
+//		mes "If you want to modify something you only need to bring the presented materials.";
+//		next;
+//		mes "[Grid]";
+//		mes "You're an adventurer, so you know what that means?";
+//		close;
+//	case 3:
+//		mes "[Grid]";
+//		mes "If you need anything, come again.";
+//		close;
+//	}
+//}
 
 rgsr_in,137,178,3	script	Accessories Researcher#rg02	MD_ED_M_SCIENCE,{
 	mes "[Champ]";

@@ -1,0 +1,207 @@
+//===== rAthena Script =======================================
+//= VIP Beauty Mercenary Master NPC
+//===== Description: =========================================
+//= Hire exclusive VIP Beauty Mercenaries
+//============================================================
+
+askald,12,104,5	script	VIP Mercenary Master	10583,{
+	
+	// Check level requirement
+	if (BaseLevel < 200) {
+		mes "[^FF1493VIP Mercenary Master^000000]";
+		mes "I'm sorry, but you're not strong enough yet!";
+		mes "^FF0000Only players Level 200 or above can hire VIP mercenaries.^000000";
+		mes " ";
+		mes "Come back when you're stronger!";
+		close;
+	}
+	
+	mes "[^FF1493VIP Mercenary Master^000000]";
+	mes "Welcome to VIP Mercenary Service!";
+	mes "I provide exclusive ^FF1493Beauty Mercenaries^000000!";
+	mes " ";
+	mes "^FF1493All mercenaries are Level 275 with 2B HP!^000000";
+	mes "^0000FFRequirement: Level 200 or above^000000";
+	next;
+	
+	mes "[^FF1493VIP Mercenary Master^000000]";
+	mes "Select rental duration:";
+	mes " ";
+	mes "^00FF006 Hours^000000 - Cost: ^FF660010 Proof of Donation^000000";
+	mes "^00FFFF3 Days^000000 - Cost: ^FF6600100 Proof of Donation^000000";
+	mes "^FF00007 Days^000000 - Cost: ^FF6600200 Proof of Donation^000000";
+	next;
+	
+	switch(select("^00FF006 Hours (10 POD)^000000:^00FFFF3 Days (100 POD)^000000:^FF00007 Days (200 POD)^000000:^808080Cancel^000000")) {
+		case 1:
+			set .@duration, 21600000; // 6 hours
+			set .@duration_text$, "6 hours";
+			set .@cost, 10;
+			break;
+		case 2:
+			set .@duration, 259200000; // 3 days
+			set .@duration_text$, "3 days";
+			set .@cost, 100;
+			break;
+		case 3:
+			set .@duration, 604800000; // 7 days
+			set .@duration_text$, "7 days";
+			set .@cost, 200;
+			break;
+		case 4:
+			mes "[^FF1493VIP Mercenary Master^000000]";
+			mes "Come back anytime!";
+			close;
+	}
+	
+	mes "[^FF1493VIP Mercenary Master^000000]";
+	mes "Select your ^FF1493Beauty Mercenary^000000:";
+	mes "Duration: ^00FF00" + .@duration_text$ + "^000000";
+	mes "Cost: ^FF6600" + .@cost + " Proof of Donation^000000";
+	mes " ";
+	mes "^FF0000[MELEE]^000000 = Melee Combat (Range 3)";
+	mes "^0000FF[RANGED]^000000 = Ranged Combat (Range 12)";
+	next;
+	
+	switch(select("^FF69B4Beauty Pope^000000 ^FF0000[MELEE]^000000 (Lv.275):^00CED1Beauty SiRen^000000 ^0000FF[RANGED]^000000 (Lv.275):^9370DBBeauty LiLith^000000 ^FF0000[MELEE]^000000 (Lv.275):^FF6600Olympus Hera^000000 ^0000FF[RANGED]^000000 (Lv.275):^FF6347Olympus EchidNa^000000 ^FF0000[MELEE]^000000 (Lv.275):^9932CCOlympus PuRiKu^000000 ^FF0000[MELEE]^000000 (Lv.275):^00FF7FOlympus Bacsojin^000000 ^0000FF[RANGED]^000000 (Lv.275):^808080Back^000000")) {
+		case 1:
+			set .@merc_id, 23140;
+			set .@merc_name$, "Beauty Pope";
+			set .@merc_level, 275;
+			set .@merc_color$, "^FF69B4";
+			set .@merc_hp$, "2,000,000,000";
+			set .@merc_atk$, "32,000";
+			set .@merc_range, 3;
+			set .@merc_skill$, "Auto Berserk, Kyrie Eleison Lv.10, Blessing Lv.10, Increase AGI Lv.10, Bash Lv.10, Bowling Bash Lv.10, Double Strafe Lv.10, Sharp Shooting Lv.10";
+			set .@merc_type$, "^FF0000[MELEE]^000000 Elite Combat/Support - Holy Warrior";
+			break;
+		case 2:
+			set .@merc_id, 23141;
+			set .@merc_name$, "Beauty SiRen";
+			set .@merc_level, 275;
+			set .@merc_color$, "^00CED1";
+			set .@merc_hp$, "2,000,000,000";
+			set .@merc_atk$, "32,000";
+			set .@merc_range, 12;
+			set .@merc_skill$, "Auto Berserk, Kyrie Eleison Lv.10, Blessing Lv.10, Increase AGI Lv.10, Bash Lv.10, Bowling Bash Lv.10, Double Strafe Lv.10, Sharp Shooting Lv.10";
+			set .@merc_type$, "^0000FF[RANGED]^000000 Elite Combat/Support - Water Maiden";
+			break;
+		case 3:
+			set .@merc_id, 23142;
+			set .@merc_name$, "Beauty LiLith";
+			set .@merc_level, 275;
+			set .@merc_color$, "^9370DB";
+			set .@merc_hp$, "2,000,000,000";
+			set .@merc_atk$, "32,000";
+			set .@merc_range, 3;
+			set .@merc_skill$, "Auto Berserk, Kyrie Eleison Lv.10, Blessing Lv.10, Increase AGI Lv.10, Bash Lv.10, Bowling Bash Lv.10, Double Strafe Lv.10, Sharp Shooting Lv.10";
+			set .@merc_type$, "^FF0000[MELEE]^000000 Elite Combat/Support - Dark Queen";
+			break;
+		case 4:
+			set .@merc_id, 23143;
+			set .@merc_name$, "Olympus Hera";
+			set .@merc_level, 275;
+			set .@merc_color$, "^FF6600";
+			set .@merc_hp$, "2,000,000,000";
+			set .@merc_atk$, "32,000";
+			set .@merc_range, 12;
+			set .@merc_skill$, "Auto Berserk, Kyrie Eleison Lv.10, Blessing Lv.10, Increase AGI Lv.10, Bash Lv.10, Bowling Bash Lv.10, Double Strafe Lv.10, Sharp Shooting Lv.10";
+			set .@merc_type$, "^0000FF[RANGED]^000000 Elite Combat/Support - Goddess of Olympus";
+			break;
+		case 5:
+			set .@merc_id, 23144;
+			set .@merc_name$, "Olympus EchidNa";
+			set .@merc_level, 275;
+			set .@merc_color$, "^FF6347";
+			set .@merc_hp$, "2,000,000,000";
+			set .@merc_atk$, "32,000";
+			set .@merc_range, 3;
+			set .@merc_skill$, "Auto Berserk, Kyrie Eleison Lv.10, Blessing Lv.10, Increase AGI Lv.10, Bash Lv.10, Bowling Bash Lv.10, Double Strafe Lv.10, Sharp Shooting Lv.10";
+			set .@merc_type$, "^FF0000[MELEE]^000000 Elite Combat/Support - Mother of Monsters";
+			break;
+		case 6:
+			set .@merc_id, 23145;
+			set .@merc_name$, "Olympus PuRiKu";
+			set .@merc_level, 275;
+			set .@merc_color$, "^9932CC";
+			set .@merc_hp$, "2,000,000,000";
+			set .@merc_atk$, "32,000";
+			set .@merc_range, 3;
+			set .@merc_skill$, "Auto Berserk, Kyrie Eleison Lv.10, Blessing Lv.10, Increase AGI Lv.10, Bash Lv.10, Bowling Bash Lv.10, Double Strafe Lv.10, Sharp Shooting Lv.10";
+			set .@merc_type$, "^FF0000[MELEE]^000000 Elite Combat/Support - Mystical Warrior";
+			break;
+		case 7:
+			set .@merc_id, 23146;
+			set .@merc_name$, "Olympus Bacsojin";
+			set .@merc_level, 275;
+			set .@merc_color$, "^00FF7F";
+			set .@merc_hp$, "2,000,000,000";
+			set .@merc_atk$, "32,000";
+			set .@merc_range, 12;
+			set .@merc_skill$, "Auto Berserk, Kyrie Eleison Lv.10, Blessing Lv.10, Increase AGI Lv.10, Bash Lv.10, Bowling Bash Lv.10, Double Strafe Lv.10, Sharp Shooting Lv.10";
+			set .@merc_type$, "^0000FF[RANGED]^000000 Elite Combat/Support - White Lady";
+			break;
+		case 8:
+			goto L_Start;
+	}
+	
+	mes "[^FF1493VIP Mercenary Master^000000]";
+	mes " ";
+	mes "Selected: " + .@merc_color$ + .@merc_name$ + "^000000";
+	mes " ";
+	mes "^FF1493Status Information^000000";
+	mes "Level: ^00FF00" + .@merc_level + "^000000";
+	mes "HP: ^FF0000" + .@merc_hp$ + "^000000";
+	mes "ATK: ^FF6600" + .@merc_atk$ + "^000000";
+	mes "Range: ^00FFFF" + .@merc_range + "^000000";
+	mes "Type: " + .@merc_type$ + "^000000";
+	mes " ";
+	mes "^FF1493Skills^000000";
+	mes "^00FFFF" + .@merc_skill$ + "^000000";
+	mes " ";
+	mes "^FF1493Service Details^000000";
+	mes "Duration: ^00FF00" + .@duration_text$ + "^000000";
+	mes "Cost: ^FF6600" + .@cost + " Proof of Donation^000000";
+	mes " ";
+	mes "Summon this mercenary?";
+	next;
+	
+	if (select("^00FF00Yes, Summon Now!^000000:^FF0000No, Choose Another^000000") == 2) {
+		goto L_Start;
+	}
+	
+	// Check if already have mercenary
+	if (getmercinfo(0) > 0) {
+		mes "[^FF1493VIP Mercenary Master^000000]";
+		mes "^FF0000You already have a mercenary!^000000";
+		mes "Please dismiss your current mercenary first.";
+		close;
+	}
+	
+	// Check POD requirement (Item ID: 7179)
+	if (countitem(7179) < .@cost) {
+		mes "[^FF1493VIP Mercenary Master^000000]";
+		mes "^FF0000You don't have enough Proof of Donation!^000000";
+		mes " ";
+		mes "Required: ^FF6600" + .@cost + " Proof of Donation^000000";
+		mes "You have: ^FF6600" + countitem(7179) + " Proof of Donation^000000";
+		close;
+	}
+	
+	// Delete POD
+	delitem 7179, .@cost;
+	
+	mes "[^FF1493VIP Mercenary Master^000000]";
+	mes "Summoning " + .@merc_color$ + .@merc_name$ + "^000000...";
+	mes " ";
+	mes "^00FF00" + .@cost + " Proof of Donation has been consumed.^000000";
+	mes "^FF1493Your VIP mercenary will serve you for " + .@duration_text$ + "!^000000";
+	close2;
+	
+	// Summon mercenary
+	mercenary_create .@merc_id, .@duration;
+	specialeffect2 EF_ANGEL2;
+	specialeffect2 EF_BLESSING;
+	announce "[ VIP Mercenary ] " + strcharinfo(0) + " has summoned " + .@merc_name$ + " (Level 275) for " + .@duration_text$ + "!", bc_self, 0xFF1493;
+	end;
+}

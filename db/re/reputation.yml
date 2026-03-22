@@ -54,6 +54,21 @@ Body:
     Variable: RepPointsIsgard
     Minimum: -3000
     Maximum: 3000
+  - Id: 5
+    Name: Episode20
+    Variable: RepPointsEpisode20
+    Minimum: -3000
+    Maximum: 3000
+  - Id: 6
+    Name: Deep 1st Floor Research
+    Variable: RepPointsDeep1
+    Minimum: -5000
+    Maximum: 5000
+  - Id: 9
+    Name: Deep 2st Floor Research
+    Variable: RepPointsDeep2
+    Minimum: -5000
+    Maximum: 5000
 
 Footer:
   Imports:

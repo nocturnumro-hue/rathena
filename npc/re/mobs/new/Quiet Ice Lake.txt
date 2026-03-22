@@ -1,0 +1,12 @@
+//===== rAthena Script =======================================
+//= QUIET ICE LAKE
+//============================================================
+
+ice2xlake	monster	Supreme Knight	30040,15
+ice2xlake	monster	Supreme Girls	30041,15
+ice2xlake	monster	Supreme Boys		30042,15
+ice2xlake	monster	Angel Prince	30043,15
+ice2xlake	monster	Angel Queen	30044,15
+ice2xlake	monster	Supreme Smith	30045,15
+
+ice2xlake	boss_monster	Chaos BeelZebub	30039,1,21600000,600000,0

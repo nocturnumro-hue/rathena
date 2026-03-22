@@ -1,0 +1,1948 @@
+//===== rAthena Script =======================================
+//= Bot Time Manager - Zeny Payment System + VIP (GMT+7)
+//===== By: ==================================================
+//= Enhanced with Vietnam Timezone (GMT+7)
+//===== Description: =========================================
+//= Pay with Zeny for bot time
+//= Get 4 hours free daily per account
+//= VIP Members get extra 4 hours bonus (8 hours total/day)
+//= Auto reset at midnight Vietnam time
+//============================================================
+
+-	script	bot_time_manager	-1,{
+
+OnInit:
+	.ZenyPerHour = 15000000;
+	.FreeHoursDaily = 4;
+	.VIPBonusHours = 4;
+	.VIPGroupID = 5;
+	.GMT_Offset = 7; // Vietnam GMT+7
+	
+	bindatcmd "boton", strnpcinfo(3)+"::OnBotOn", 0, 100;
+	bindatcmd "botoff", strnpcinfo(3)+"::OnBotOff", 0, 100;
+	bindatcmd "bottime", strnpcinfo(3)+"::OnCheckTime", 0, 100;
+	
+	initnpctimer;
+	end;
+
+OnBotOn:
+	if(#BOT_TIME <= 0){
+		dispbottom "No bot time remaining";
+		dispbottom "Visit Bot Time Manager";
+		dispbottom "Location: Prontera 143 179";
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			dispbottom "VIP: Get 8 hours FREE daily";
+		} else {
+			dispbottom "Get 4 hours FREE daily";
+		}
+		end;
+	}
+	
+	sc_end SC_AUTOATTACK;
+	goto(main_menu);
+
+OnBotOff:
+	if(!#BOT_ACTIVE){
+		dispbottom "Bot is not running";
+		end;
+	}
+	
+	// FIXED: Tính thời gian từ lần update cuối
+	.@current_time = gettimetick(2);
+	.@used = .@current_time - #BOT_LAST_UPDATE;
+	
+	if(.@used >= 1){
+		#BOT_TIME = (#BOT_TIME - .@used > 0) ? (#BOT_TIME - .@used) : 0;
+	}
+	
+	sc_end SC_AUTOATTACK;
+	#BOT_ACTIVE = 0;
+	#BOT_START_TIME = 0;
+	#BOT_LAST_UPDATE = 0;
+	
+	// Tính tổng thời gian đã dùng để hiển thị
+	.@total_used = .@current_time - #BOT_START_TIME;
+	.@uh = .@total_used / 3600;
+	.@um = (.@total_used % 3600) / 60;
+	.@rh = #BOT_TIME / 3600;
+	.@rm = (#BOT_TIME % 3600) / 60;
+	
+	dispbottom "Bot Stopped";
+	dispbottom "Session: " + .@uh + "h " + .@um + "m";
+	dispbottom "Remaining: " + .@rh + "h " + .@rm + "m";
+	end;
+
+OnCheckTime:
+	if(#BOT_TIME <= 0){
+		dispbottom "No bot time remaining";
+		dispbottom "Visit Bot Time Manager to buy time";
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			dispbottom "VIP: Claim 8 hours FREE daily";
+		} else {
+			dispbottom "Or claim your 4 hours FREE daily";
+		}
+		end;
+	}
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		dispbottom "VIP MEMBER";
+	}
+	dispbottom "Bot Time: " + .@d + "d " + .@h + "h " + .@m + "m";
+	
+	if(#BOT_ACTIVE){
+		dispbottom "Status: RUNNING";
+	} else {
+		dispbottom "Status: STOPPED";
+	}
+	end;
+
+main_menu:
+	mes "[Auto Attack Configuration]";
+	.@h = #BOT_TIME / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Bot Time: ^FF0000" + .@h + "h " + .@m + "m^000000";
+	
+	if(#BOT_ACTIVE){
+		mes "Status: ^008000RUNNING^000000";
+	} else {
+		mes "Status: STOPPED";
+	}
+	
+	mes " ";
+	mes "^0000FFActive Features^000000";
+	
+	if(#BOT_SMART_MOVE){
+		mes "^008000Smart Movement^000000";
+		mes "Range: " + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells";
+	}
+	
+	if(#BOT_KITING){
+		mes "^008000Kiting Mode^000000";
+	}
+	
+	if(#BOT_MULTI_TARGET){
+		mes "^00FF00Multi Target Attack^000000";
+		mes "Max Targets: " + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3);
+	}
+	
+	if(!#BOT_SMART_MOVE && !#BOT_KITING && !#BOT_MULTI_TARGET){
+		mes "No special features enabled";
+	}
+	
+	next;
+	
+	.@main_menu = select("Start Bot","Configuration","Smart AI Settings","Cancel");
+	
+	switch(.@main_menu){
+		case 1:
+			if(#BOT_TIME <= 0){
+				mes "[Bot Manager]";
+				mes "^FF0000No bot time remaining^000000";
+				close;
+			}
+			
+			.@duration = (#BOT_TIME > 86400) ? 86400000 : (#BOT_TIME * 1000);
+			
+			sc_start4 SC_AUTOATTACK, .@duration, 1, 0, 0, 0;
+			#BOT_ACTIVE = 1;
+			#BOT_START_TIME = gettimetick(2);
+			#BOT_LAST_UPDATE = gettimetick(2);
+			
+			dispbottom "Bot Started";
+			dispbottom "Time: " + .@h + "h " + .@m + "m";
+			if(#BOT_SMART_MOVE)
+				dispbottom "^00FF00SMART MOVE: ON^000000";
+			if(#BOT_KITING)
+				dispbottom "^00FF00KITING: ON^000000";
+			if(#BOT_MULTI_TARGET)
+				dispbottom "^00FF00MULTI TARGET: " + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3) + " targets^000000";
+			dispbottom "Use @botoff to stop";
+			close;
+			
+		case 2:
+			goto(config_menu);
+			
+		case 3:
+			goto(smart_ai_menu);
+			
+		case 4:
+			close;
+	}
+	end;
+
+smart_ai_menu:
+	clear;
+	mes "[Smart AI Settings]";
+	mes " ";
+	mes "^0000FFCurrent Configuration^000000";
+	mes " ";
+	
+	if(#BOT_SMART_MOVE){
+		mes "^008000ENABLED Smart Movement^000000";
+		mes "Range: " + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells";
+	} else {
+		mes "DISABLED Smart Movement";
+	}
+	
+	if(#BOT_KITING){
+		mes "^00FF00ENABLED Kiting Mode^000000";
+	} else {
+		mes "DISABLED Kiting Mode";
+	}
+	
+	if(#BOT_MULTI_TARGET){
+		mes "^00FF00ENABLED Multi Target^000000";
+		mes "Max Targets: " + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3);
+	} else {
+		mes "DISABLED Multi Target";
+	}
+	
+	mes " ";
+	next;
+	
+	.@smart_menu = select(
+		#BOT_SMART_MOVE ? "Disable Smart Movement" : "Enable Smart Movement",
+		"Movement Range Settings",
+		#BOT_KITING ? "Disable Kiting Mode" : "Enable Kiting Mode",
+		#BOT_MULTI_TARGET ? "Disable Multi Target" : "Enable Multi Target",
+		"Multi Target Settings",
+		"Back to Main Menu"
+	);
+	
+	switch(.@smart_menu){
+		case 1:
+			#BOT_SMART_MOVE = !#BOT_SMART_MOVE;
+			if(#BOT_SMART_MOVE){
+				setautoattack("11;1;" + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7));
+			} else {
+				setautoattack("11;0;0");
+			}
+			goto(smart_ai_menu);
+			
+		case 2:
+			goto(move_range_menu);
+			
+		case 3:
+			#BOT_KITING = !#BOT_KITING;
+			setautoattack("14;0;" + #BOT_KITING);
+			goto(smart_ai_menu);
+			
+		case 4:
+			#BOT_MULTI_TARGET = !#BOT_MULTI_TARGET;
+			setautoattack("17;0;" + #BOT_MULTI_TARGET);
+			goto(smart_ai_menu);
+			
+		case 5:
+			goto(multi_target_menu);
+			
+		case 6:
+			goto(main_menu);
+	}
+	end;
+
+move_range_menu:
+	clear;
+	mes "[Movement Range]";
+	mes " ";
+	mes "Current Range: ^FF0000" + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells^000000";
+	mes " ";
+	mes "^0000FFDescription^000000";
+	mes "Set maximum distance bot can";
+	mes "move from starting position";
+	mes " ";
+	mes "^0000FFRecommended Settings^000000";
+	mes "3-5 cells: Tank Melee classes";
+	mes "7-10 cells: Balanced setup";
+	mes "12-15 cells: Ranged DPS";
+	mes " ";
+	mes "^FF0000Important^000000";
+	mes "Smaller range = Stay closer";
+	mes "Larger range = More freedom";
+	mes " ";
+	next;
+	
+	mes "[Movement Range]";
+	mes "Enter range 3 to 20 cells";
+	mes " ";
+	mes "^FF0000Current: " + (#BOT_MOVE_RANGE > 0 ? #BOT_MOVE_RANGE : 7) + " cells^000000";
+	input .@range;
+	
+	if(.@range >= 3 && .@range <= 20){
+		#BOT_MOVE_RANGE = .@range;
+		setautoattack("12;1;" + .@range);
+		clear;
+		mes "[Movement Range]";
+		mes "^008000Success^000000";
+		mes " ";
+		mes "Range set to: ^FF0000" + .@range + " cells^000000";
+		mes " ";
+		mes "Bot will move within this range";
+		mes "from starting position";
+	} else {
+		clear;
+		mes "[Movement Range]";
+		mes "^FF0000Invalid range^000000";
+		mes " ";
+		mes "Please use value between";
+		mes "3 and 20 cells";
+	}
+	next;
+	goto(smart_ai_menu);
+
+multi_target_menu:
+	clear;
+	mes "[Multi Target Attack]";
+	mes " ";
+	
+	if(#BOT_MULTI_TARGET){
+		mes "Status: ^008000ENABLED^000000";
+		mes "Max Targets: ^FF0000" + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3) + "^000000";
+	} else {
+		mes "Status: DISABLED";
+	}
+	
+	mes " ";
+	mes "^0000FFDescription^000000";
+	mes "Attack multiple monsters at once";
+	mes "instead of focusing on one target";
+	mes " ";
+	mes "^0000FFRecommended Settings^000000";
+	mes "2-3 targets: Single target DPS";
+	mes "3-5 targets: AOE classes";
+	mes "5-8 targets: Wizard Sage";
+	mes " ";
+	next;
+	
+	clear;
+	mes "[Set Max Targets]";
+	mes " ";
+	mes "Current: ^FF0000" + (#BOT_MAX_TARGETS > 0 ? #BOT_MAX_TARGETS : 3) + " targets^000000";
+	mes " ";
+	mes "Enter max targets 2 to 10";
+	input .@max_targets;
+	
+	if(.@max_targets >= 2 && .@max_targets <= 10){
+		#BOT_MAX_TARGETS = .@max_targets;
+		if(#BOT_MULTI_TARGET)
+			setautoattack("17;1;" + .@max_targets);
+		clear;
+		mes "[Set Max Targets]";
+		mes "^008000Success^000000";
+		mes " ";
+		mes "Max targets set to: ^FF0000" + .@max_targets + "^000000";
+		mes " ";
+		mes "Bot will attack up to " + .@max_targets;
+		mes "monsters at the same time";
+	} else {
+		clear;
+		mes "[Set Max Targets]";
+		mes "^FF0000Invalid number^000000";
+		mes " ";
+		mes "Please use value between";
+		mes "2 and 10 targets";
+	}
+	next;
+	goto(smart_ai_menu);
+
+config_menu:
+	clear;
+	mes "[Auto Attack Configuration]";
+	mes "^0000FFChoose configuration^000000";
+	next;
+	
+	.@config_choice = select(
+		"Melee Attack",
+		"Regeneration",
+		"Attack Skills",
+		"Buff Skills",
+		"Buff Items",
+		"Teleport",
+		"Monsters Selection",
+		"Items Pickup",
+		"Reset All Settings",
+		"Back to Main Menu"
+	);
+	
+	switch(.@config_choice){
+		case 1: goto(melee_attack);
+		case 2: goto(regeneration_menu);
+		case 3: goto(attackskills_menu);
+		case 4: goto(buffskills_menu);
+		case 5: goto(buffitems_menu);
+		case 6: goto(teleport_menu);
+		case 7: goto(monsters_menu);
+		case 8: goto(pickupitems_menu);
+		case 9: goto(reset_all);
+		case 10: goto(main_menu);
+	}
+	end;
+
+melee_attack:
+	clear;
+	mes "[Melee Attack]";
+	mes " ";
+	mes "Current Status";
+	mes getautoattackstring(6,0);
+	mes " ";
+	next;
+	
+	.@melee_choice = select(
+		getautoattackint(6,0) ? "Enable Melee Attack" : "Disable Melee Attack",
+		"Back"
+	);
+	
+	if(.@melee_choice == 1){
+		if(getautoattackint(6,0))
+			setautoattack("6;0");
+		else
+			setautoattack("6;1");
+	}
+	goto(config_menu);
+
+regeneration_menu:
+	clear;
+	mes "[Regeneration Settings]";
+	mes "^0000FFChoose regeneration option^000000";
+	next;
+	
+	.@regen_choice = select(
+		"Auto-Heal Skills",
+		"HP SP Potions",
+		"Sit to Rest",
+		"Back"
+	);
+	
+	switch(.@regen_choice){
+		case 1: goto(heal_menu);
+		case 2: goto(potion_menu);
+		case 3: goto(sit_regen_menu);
+		case 4: goto(config_menu);
+	}
+	end;
+
+heal_menu:
+	clear;
+	
+	if(!getskilllv(28) && !getskilllv(2051) && !getskilllv(231)){
+		mes "[Auto-Heal]";
+		mes "^FF0000You dont have any heal skills^000000";
+		mes " ";
+		mes "Available heal skills";
+		mes "Heal ID 28";
+		mes "Highness Heal ID 2051";
+		mes "Potion Pitcher ID 231";
+		next;
+		goto(regeneration_menu);
+	}
+	
+	mes "[Auto-Heal]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(0,0);
+	mes " ";
+	next;
+	
+	.@heal_choice = select(
+		"Add Modify Heal Skill",
+		"Disable Heal Skill",
+		"Back"
+	);
+	
+	switch(.@heal_choice){
+		case 1:
+			clear;
+			mes "[Auto-Heal]";
+			mes "Available Skills";
+			if(getskilllv(28))
+				mes "^0000FF28 Heal Lv " + getskilllv(28) + "^000000";
+			if(getskilllv(2051))
+				mes "^0000FF2051 Highness Heal Lv " + getskilllv(2051) + "^000000";
+			if(getskilllv(231))
+				mes "^0000FF231 Potion Pitcher Lv " + getskilllv(231) + "^000000";
+			mes " ";
+			mes "Enter Skill ID";
+			input .@heal_skillid;
+			
+			if((.@heal_skillid != 28 && .@heal_skillid != 2051 && .@heal_skillid != 231) || !getskilllv(.@heal_skillid)){
+				mes " ";
+				mes "^FF0000Invalid skill^000000";
+				next;
+				goto(heal_menu);
+			}
+			
+			mes " ";
+			mes "Enter Skill Level 1 to " + getskilllv(.@heal_skillid);
+			input .@heal_skilllv;
+			
+			if(.@heal_skilllv < 1 || .@heal_skilllv > getskilllv(.@heal_skillid)){
+				mes " ";
+				mes "^FF0000Invalid level^000000";
+				next;
+				goto(heal_menu);
+			}
+			
+			mes " ";
+			mes "Use when HP below 5 to 90 percent";
+			input .@heal_minhpvalue;
+			
+			if(.@heal_minhpvalue < 5 || .@heal_minhpvalue > 90){
+				mes " ";
+				mes "^FF0000Invalid percentage^000000";
+				next;
+				goto(heal_menu);
+			}
+			
+			setautoattack("0;1;" + .@heal_skillid + ";" + .@heal_skilllv + ";" + .@heal_minhpvalue);
+			
+			mes " ";
+			mes "^00FF00Heal skill configured^000000";
+			next;
+			goto(heal_menu);
+			
+		case 2:
+			if(getautoattackint(0,0) == 0){
+				mes "[Auto-Heal]";
+				mes "^FF0000No active heal skill to disable^000000";
+				next;
+				goto(heal_menu);
+			}
+			
+			mes "[Auto-Heal]";
+			mes "Enter Skill ID to disable";
+			input .@heal_skillid;
+			
+			setautoattack("0;0;" + .@heal_skillid + ";0;0");
+			mes " ";
+			mes "^00FF00Heal skill disabled^000000";
+			next;
+			goto(heal_menu);
+			
+		case 3:
+			goto(regeneration_menu);
+	}
+	end;
+
+potion_menu:
+	clear;
+	mes "[HP SP Potions]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(1,0);
+	mes " ";
+	next;
+	
+	.@potion_choice = select(
+		"Add Modify Potion",
+		"Disable Potion",
+		"Back"
+	);
+	
+	switch(.@potion_choice){
+		case 1:
+			mes "[HP SP Potions]";
+			mes "Enter Item ID";
+			mes " ";
+			mes "Common potions";
+			mes "607 = Yggdrasil Berry%";
+			mes "608 = Yggdrasil Seed";
+			mes "504 = White Potion";
+			mes "505 = Blue Potion";
+			input .@potion_id;
+			
+			mes " ";
+			mes "Use when HP below percent";
+			mes "0 to disable or 5 to 90";
+			input .@potion_minhpvalue;
+			
+			if(.@potion_minhpvalue != 0 && (.@potion_minhpvalue < 5 || .@potion_minhpvalue > 90)){
+				mes "^FF0000Invalid HP percentage^000000";
+				next;
+				goto(potion_menu);
+			}
+			
+			mes " ";
+			mes "Use when SP below percent";
+			mes "0 to disable or 5 to 90";
+			input .@potion_minspvalue;
+			
+			if(.@potion_minspvalue != 0 && (.@potion_minspvalue < 5 || .@potion_minspvalue > 90)){
+				mes "^FF0000Invalid SP percentage^000000";
+				next;
+				goto(potion_menu);
+			}
+			
+			setautoattack("1;1;" + .@potion_id + ";" + .@potion_minhpvalue + ";" + .@potion_minspvalue);
+			mes " ";
+			mes "^00FF00Potion configured^000000";
+			next;
+			goto(potion_menu);
+			
+		case 2:
+			mes "[HP SP Potions]";
+			mes "Enter Item ID to disable";
+			input .@potion_id;
+			
+			setautoattack("1;0;" + .@potion_id + ";0;0");
+			mes " ";
+			mes "^00FF00Potion disabled^000000";
+			next;
+			goto(potion_menu);
+			
+		case 3:
+			goto(regeneration_menu);
+	}
+	end;
+
+sit_regen_menu:
+	clear;
+	mes "[Sit to Rest]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(2,0);
+	mes getautoattackstring(2,1);
+	mes getautoattackstring(2,2);
+	mes " ";
+	next;
+	
+	.@sit_choice = select(
+		getautoattackint(2,0) ? "Modify Settings" : "Enable Sit Regen",
+		getautoattackint(2,0) ? "Disable Sit Regen" : "Back",
+		"Back"
+	);
+	
+	if(.@sit_choice == 1){
+		mes "[Sit to Rest]";
+		mes "Sit when HP below percent";
+		mes "0 to disable or 5 to 90";
+		input .@sit_regen_minhpvalue;
+		
+		if(.@sit_regen_minhpvalue != 0 && (.@sit_regen_minhpvalue < 5 || .@sit_regen_minhpvalue > 90)){
+			mes "^FF0000Invalid value^000000";
+			next;
+			goto(sit_regen_menu);
+		}
+		
+		.@sit_regen_maxhpvalue = 0;
+		if(.@sit_regen_minhpvalue > 0){
+			mes " ";
+			mes "Stand when HP above percent";
+			mes "Must be greater than " + .@sit_regen_minhpvalue;
+			input .@sit_regen_maxhpvalue;
+			
+			if(.@sit_regen_maxhpvalue <= .@sit_regen_minhpvalue || .@sit_regen_maxhpvalue > 90){
+				mes "^FF0000Invalid value^000000";
+				next;
+				goto(sit_regen_menu);
+			}
+		}
+		
+		mes " ";
+		mes "Sit when SP below percent";
+		mes "0 to disable or 5 to 90";
+		input .@sit_regen_minspvalue;
+		
+		if(.@sit_regen_minspvalue != 0 && (.@sit_regen_minspvalue < 5 || .@sit_regen_minspvalue > 90)){
+			mes "^FF0000Invalid value^000000";
+			next;
+			goto(sit_regen_menu);
+		}
+		
+		.@sit_regen_maxspvalue = 0;
+		if(.@sit_regen_minspvalue > 0){
+			mes " ";
+			mes "Stand when SP above percent";
+			mes "Must be greater than " + .@sit_regen_minspvalue;
+			input .@sit_regen_maxspvalue;
+			
+			if(.@sit_regen_maxspvalue <= .@sit_regen_minspvalue || .@sit_regen_maxspvalue > 90){
+				mes "^FF0000Invalid value^000000";
+				next;
+				goto(sit_regen_menu);
+			}
+		}
+		
+		setautoattack("2;1;" + .@sit_regen_minhpvalue + ";" + .@sit_regen_maxhpvalue + ";" + .@sit_regen_minspvalue + ";" + .@sit_regen_maxspvalue);
+		mes " ";
+		mes "^00FF00Sit regen configured^000000";
+		next;
+	}
+	else if(.@sit_choice == 2 && getautoattackint(2,0)){
+		setautoattack("2;0;0;0;0;0");
+		mes "[Sit to Rest]";
+		mes "^00FF00Sit regen disabled^000000";
+		next;
+	}
+	
+	goto(regeneration_menu);
+
+attackskills_menu:
+	clear;
+	mes "[Attack Skills]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(4,0);
+	mes " ";
+	next;
+	
+	.@atk_choice = select(
+		"Add or Modify Attack Skill",
+		"Disable Attack Skill",
+		"Back"
+	);
+	
+	switch(.@atk_choice){
+		case 1:
+			clear;
+			mes "[Attack Skills]";
+			mes "^0000FFAvailable Attack Skills^000000";
+			mes " ";
+			mes getautoattackstring(4,-1);
+			mes " ";
+			mes getautoattackstring(4,-2);
+			mes " ";
+			next;
+			
+			mes "[Attack Skills]";
+			mes "Enter Skill ID";
+			input .@attack_skillid;
+			
+			if(!getskilllv(.@attack_skillid)){
+				clear;
+				mes "[Attack Skills]";
+				mes "^FF0000You don't have this skill^000000";
+				mes " ";
+				mes "Make sure you have learned it first";
+				next;
+				goto(attackskills_menu);
+			}
+			
+			clear;
+			mes "[Attack Skills]";
+			mes "Skill ID: ^0000FF" + .@attack_skillid + "^000000";
+			mes "Max Level: ^FF0000" + getskilllv(.@attack_skillid) + "^000000";
+			mes " ";
+			mes "Enter Skill Level 1 to " + getskilllv(.@attack_skillid);
+			input .@attack_skilllv;
+			
+			if(.@attack_skilllv < 1 || .@attack_skilllv > getskilllv(.@attack_skillid)){
+				clear;
+				mes "[Attack Skills]";
+				mes "^FF0000Invalid level^000000";
+				mes " ";
+				mes "Please use level between 1 and " + getskilllv(.@attack_skillid);
+				next;
+				goto(attackskills_menu);
+			}
+			
+			setautoattack("4;1;" + .@attack_skillid + ";" + .@attack_skilllv);
+			clear;
+			mes "[Attack Skills]";
+			mes "^008000SUCCESS^000000";
+			mes " ";
+			mes "Skill ID: ^0000FF" + .@attack_skillid + "^000000";
+			mes "Level: ^FF0000" + .@attack_skilllv + "^000000";
+			mes " ";
+			mes "Attack skill has been configured";
+			next;
+			goto(attackskills_menu);
+			
+		case 2:
+			if(getautoattackint(4,0) == 0){
+				clear;
+				mes "[Attack Skills]";
+				mes "^FF0000No active attack skill to disable^000000";
+				mes " ";
+				mes "Add some attack skills first";
+				next;
+				goto(attackskills_menu);
+			}
+			
+			clear;
+			mes "[Attack Skills]";
+			mes "^0000FFCurrent Active Skills^000000";
+			mes " ";
+			mes getautoattackstring(4,0);
+			mes " ";
+			next;
+			
+			mes "[Attack Skills]";
+			mes "Enter Skill ID to disable";
+			input .@attack_skillid;
+			
+			if(!getskilllv(.@attack_skillid)){
+				clear;
+				mes "[Attack Skills]";
+				mes "^FF0000You don't have this skill^000000";
+				next;
+				goto(attackskills_menu);
+			}
+			
+			setautoattack("4;0;" + .@attack_skillid + ";0");
+			clear;
+			mes "[Attack Skills]";
+			mes "^00FF00Attack skill disabled^000000";
+			next;
+			goto(attackskills_menu);
+			
+		case 3:
+			goto(config_menu);
+	}
+	end;
+
+buffskills_menu:
+	clear;
+	mes "[Buff Skills]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(3,0);
+	mes " ";
+	next;
+	
+	.@buff_choice = select(
+		"Add or Modify Buff Skill",
+		"Disable Buff Skill",
+		"Back"
+	);
+	
+	switch(.@buff_choice){
+		case 1:
+			clear;
+			mes "[Buff Skills]";
+			mes "^0000FFAvailable Buff Skills^000000";
+			mes " ";
+			mes getautoattackstring(3,-1);
+			mes " ";
+			mes getautoattackstring(3,-2);
+			mes " ";
+			next;
+			
+			mes "[Buff Skills]";
+			mes "Enter Skill ID";
+			input .@buff_skillid;
+			
+			if(!getskillinfoint(1,.@buff_skillid) || !getskilllv(.@buff_skillid)){
+				clear;
+				mes "[Buff Skills]";
+				mes "^FF0000Invalid buff skill^000000";
+				mes " ";
+				mes "Please choose a valid skill ID";
+				mes "from the available list";
+				next;
+				goto(buffskills_menu);
+			}
+			
+			clear;
+			mes "[Buff Skills]";
+			mes "Skill: ^0000FF" + getskillinfostring(0,.@buff_skillid) + "^000000";
+			mes "Max Level: ^FF0000" + getskilllv(.@buff_skillid) + "^000000";
+			mes " ";
+			mes "Enter Skill Level 1 to " + getskilllv(.@buff_skillid);
+			input .@buff_skilllv;
+			
+			if(.@buff_skilllv < 1 || .@buff_skilllv > getskilllv(.@buff_skillid)){
+				clear;
+				mes "[Buff Skills]";
+				mes "^FF0000Invalid level^000000";
+				mes " ";
+				mes "Please use level between 1 and " + getskilllv(.@buff_skillid);
+				next;
+				goto(buffskills_menu);
+			}
+			
+			setautoattack("3;1;" + .@buff_skillid + ";" + .@buff_skilllv);
+			clear;
+			mes "[Buff Skills]";
+			mes "^008000SUCCESS^000000";
+			mes " ";
+			mes "Skill: ^0000FF" + getskillinfostring(0,.@buff_skillid) + "^000000";
+			mes "Level: ^FF0000" + .@buff_skilllv + "^000000";
+			mes " ";
+			mes "Buff skill has been configured";
+			next;
+			goto(buffskills_menu);
+			
+		case 2:
+			if(getautoattackint(3,0) == 0){
+				clear;
+				mes "[Buff Skills]";
+				mes "^FF0000No active buff skill to disable^000000";
+				mes " ";
+				mes "Add some buff skills first";
+				next;
+				goto(buffskills_menu);
+			}
+			
+			clear;
+			mes "[Buff Skills]";
+			mes "^0000FFCurrent Active Skills^000000";
+			mes " ";
+			mes getautoattackstring(3,0);
+			mes " ";
+			next;
+			
+			mes "[Buff Skills]";
+			mes "Enter Skill ID to disable";
+			input .@buff_skillid;
+			
+			if(!getskillinfoint(1,.@buff_skillid)){
+				clear;
+				mes "[Buff Skills]";
+				mes "^FF0000Invalid skill^000000";
+				next;
+				goto(buffskills_menu);
+			}
+			
+			setautoattack("3;0;" + .@buff_skillid + ";0");
+			clear;
+			mes "[Buff Skills]";
+			mes "^00FF00Buff skill disabled^000000";
+			next;
+			goto(buffskills_menu);
+			
+		case 3:
+			goto(config_menu);
+	}
+	end;
+
+buffitems_menu:
+	clear;
+	mes "[Buff Items]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(5,656);
+	mes getautoattackstring(5,645);
+	mes getautoattackstring(5,657);
+	mes " ";
+	next;
+	
+	.@buffitem_choice = select(
+		"Add or Modify Buff Item",
+		"Disable Buff Item",
+		"Back"
+	);
+	
+	switch(.@buffitem_choice){
+		case 1:
+			mes "[Buff Items]";
+			mes "Available Buff Items";
+			mes "656 = Awakening Potion";
+			mes "645 = Concentration Potion";
+			mes "657 = Berserk Potion";
+			mes " ";
+			mes "Enter Item ID";
+			input .@buffitem_id;
+			
+			if(.@buffitem_id != 656 && .@buffitem_id != 645 && .@buffitem_id != 657){
+				mes " ";
+				mes "^FF0000Invalid item Use 656 645 or 657^000000";
+				next;
+				goto(buffitems_menu);
+			}
+			
+			mes " ";
+			mes "Delay between uses";
+			mes "5 to 3600 seconds";
+			input .@buffitem_delayvalue;
+			
+			if(.@buffitem_delayvalue < 5 || .@buffitem_delayvalue > 3600){
+				mes " ";
+				mes "^FF0000Invalid delay^000000";
+				next;
+				goto(buffitems_menu);
+			}
+			
+			setautoattack("5;1;" + .@buffitem_id + ";" + .@buffitem_delayvalue);
+			mes " ";
+			mes "^00FF00Buff item configured^000000";
+			next;
+			goto(buffitems_menu);
+			
+		case 2:
+			if(getautoattackint(5,0) == 0){
+				mes "[Buff Items]";
+				mes "^FF0000No active buff item to disable^000000";
+				next;
+				goto(buffitems_menu);
+			}
+			
+			mes "[Buff Items]";
+			mes "Enter Item ID to disable";
+			mes "656 645 or 657";
+			input .@buffitem_id;
+			
+			if(.@buffitem_id != 656 && .@buffitem_id != 645 && .@buffitem_id != 657){
+				mes " ";
+				mes "^FF0000Invalid item^000000";
+				next;
+				goto(buffitems_menu);
+			}
+			
+			setautoattack("5;0;" + .@buffitem_id + ";0");
+			mes " ";
+			mes "^00FF00Buff item disabled^000000";
+			next;
+			goto(buffitems_menu);
+			
+		case 3:
+			goto(config_menu);
+	}
+	end;
+
+teleport_menu:
+	clear;
+	mes "[Teleport Settings]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(7,0);
+	mes " ";
+	next;
+	
+	.@tp_choice = select(
+		getautoattackint(7,0) ? "Enable Teleport Skill" : "Disable Teleport Skill",
+		getautoattackint(7,1) ? "Enable Fly Wing" : "Disable Fly Wing",
+		"Set Emergency HP Percent",
+		"Set Teleport Delay",
+		"Back"
+	);
+	
+	switch(.@tp_choice){
+		case 1:
+			if(getautoattackint(7,0))
+				setautoattack("7;0;0");
+			else
+				setautoattack("7;0;1");
+			mes "[Teleport]";
+			mes "^008000Teleport skill " + (getautoattackint(7,0) ? "enabled" : "disabled") + "^000000";
+			next;
+			goto(teleport_menu);
+			
+		case 2:
+			if(getautoattackint(7,1))
+				setautoattack("7;1;0");
+			else
+				setautoattack("7;1;1");
+			mes "[Teleport]";
+			mes "^008000Fly Wing " + (getautoattackint(7,1) ? "enabled" : "disabled") + "^000000";
+			next;
+			goto(teleport_menu);
+			
+		case 3:
+			mes "[Teleport]";
+			mes "Emergency teleport when HP below";
+			mes "0 to disable or 5 to 90";
+			input .@teleport_minhpvalue;
+			
+			if(.@teleport_minhpvalue != 0 && (.@teleport_minhpvalue < 5 || .@teleport_minhpvalue > 90)){
+				mes " ";
+				mes "^FF0000Invalid value^000000";
+				next;
+				goto(teleport_menu);
+			}
+			
+			setautoattack("7;2;" + .@teleport_minhpvalue);
+			mes " ";
+			mes "^008000Emergency HP set to " + .@teleport_minhpvalue + " percent^000000";
+			next;
+			goto(teleport_menu);
+			
+		case 4:
+			mes "[Teleport]";
+			mes "Auto teleport delay in seconds";
+			mes "0 to disable or 2 to 600";
+			input .@teleport_delayvalue;
+			
+			if(.@teleport_delayvalue != 0 && (.@teleport_delayvalue < 2 || .@teleport_delayvalue > 600)){
+				mes " ";
+				mes "^FF0000Invalid value^000000";
+				next;
+				goto(teleport_menu);
+			}
+			
+			setautoattack("7;3;" + .@teleport_delayvalue);
+			mes " ";
+			mes "^008000Teleport delay set to " + .@teleport_delayvalue + " seconds^000000";
+			next;
+			goto(teleport_menu);
+			
+		case 5:
+			goto(config_menu);
+	}
+	end;
+
+monsters_menu:
+	clear;
+	mes "[Monsters Selection]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(8,0);
+	mes " ";
+	mes "Total Monsters: ^FF0000" + getautoattackint(8,1) + " of 20^000000";
+	mes " ";
+	next;
+	
+	.@mob_choice = select(
+		"Add Monster to List",
+		"Remove Monster from List",
+		"Clear All Monsters",
+		getautoattackint(8,0) ? "Ignore Aggressive Monsters" : "Attack Aggressive Monsters",
+		"Back"
+	);
+	
+	switch(.@mob_choice){
+		case 1:
+			if(getautoattackint(8,1) >= 20){
+				mes "[Monsters Selection]";
+				mes "^FF0000Monster list is full 20 of 20^000000";
+				mes "Remove some monsters first";
+				next;
+				goto(monsters_menu);
+			}
+			
+			mes "[Monsters Selection]";
+			mes "Enter Monster ID to add";
+			mes " ";
+			mes "Example: 1002 = Poring";
+			input .@mob_id;
+			
+			if(.@mob_id < 1){
+				mes " ";
+				mes "^FF0000Invalid Monster ID^000000";
+				next;
+				goto(monsters_menu);
+			}
+			
+			setautoattack("8;1;" + .@mob_id + ";" + getautoattackint(8,0));
+			mes " ";
+			mes "^008000Monster added to list^000000";
+			next;
+			goto(monsters_menu);
+			
+		case 2:
+			if(getautoattackint(8,1) == 0){
+				mes "[Monsters Selection]";
+				mes "^FF0000No monsters in list^000000";
+				next;
+				goto(monsters_menu);
+			}
+			
+			mes "[Monsters Selection]";
+			mes "Enter Monster ID to remove";
+			input .@mob_id;
+			
+			if(.@mob_id < 1){
+				mes " ";
+				mes "^FF0000Invalid Monster ID^000000";
+				next;
+				goto(monsters_menu);
+			}
+			
+			setautoattack("8;0;" + .@mob_id + ";" + getautoattackint(8,0));
+			mes " ";
+			mes "^008000Monster removed from list^000000";
+			next;
+			goto(monsters_menu);
+			
+		case 3:
+			setautoattack("8;-1;0;0");
+			mes "[Monsters Selection]";
+			mes "^008000All monsters cleared^000000";
+			next;
+			goto(monsters_menu);
+			
+		case 4:
+			if(getautoattackint(8,0))
+				setautoattack("8;0;0;0");
+			else
+				setautoattack("8;0;0;1");
+			mes "[Monsters Selection]";
+			mes "^008000Setting updated^000000";
+			next;
+			goto(monsters_menu);
+			
+		case 5:
+			goto(config_menu);
+	}
+	end;
+
+pickupitems_menu:
+	clear;
+	mes "[Items Pickup Selection]";
+	mes " ";
+	mes "Current Configuration";
+	mes getautoattackstring(9,0);
+	mes " ";
+	mes "Total Items: ^FF0000" + getautoattackint(9,1) + " of 20^000000";
+	mes " ";
+	next;
+	
+	.@pickup_choice = select(
+		"Loot or Fight Priority",
+		"Pickup Configuration",
+		"Add Item to List",
+		"Remove Item from List",
+		"Clear All Items",
+		"Back"
+	);
+	
+	switch(.@pickup_choice){
+		case 1:
+			.@current_prio = getautoattackint(9,3);
+			mes "[Pickup Priority]";
+			mes "Current: " + (.@current_prio ? "^00FF00LOOT PRIORITY^000000" : "FIGHT PRIORITY");
+			mes " ";
+			mes "Choose priority";
+			next;
+			
+			.@new_prio = select(
+				"Fight Priority Kill first",
+				"Loot Priority Pickup first"
+			) - 1;
+			
+			setautoattack("9;3;" + .@new_prio);
+			mes " ";
+			mes "^008000Priority updated^000000";
+			next;
+			goto(pickupitems_menu);
+			
+		case 2:
+			.@current_config = getautoattackint(9,2);
+			mes "[Pickup Configuration]";
+			mes "Current mode: ";
+			switch(.@current_config){
+				case 0: mes "^008000Pick up ALL items^000000"; break;
+				case 1: mes "^008000Pick ONLY listed items^000000"; break;
+				case 2: mes "^FF0000DO NOT pickup any items^000000"; break;
+			}
+			mes " ";
+			mes "Choose mode";
+			next;
+			
+			.@new_config = select(
+				"Pick up ALL items",
+				"Pick ONLY listed items",
+				"DO NOT pickup any items"
+			) - 1;
+			
+			setautoattack("9;2;" + .@new_config);
+			mes " ";
+			mes "^008000Pickup mode updated^000000";
+			next;
+			goto(pickupitems_menu);
+			
+		case 3:
+			if(getautoattackint(9,1) >= 20){
+				mes "[Items Pickup]";
+				mes "^FF0000Item list is full 20 of 20^000000";
+				mes "Remove some items first";
+				next;
+				goto(pickupitems_menu);
+			}
+			
+			mes "[Items Pickup]";
+			mes "Enter Item ID to add";
+			mes " ";
+			mes "Example: 909 = Jellopy";
+			input .@itempickup_id;
+			
+			if(.@itempickup_id < 1){
+				mes " ";
+				mes "^FF0000Invalid Item ID^000000";
+				next;
+				goto(pickupitems_menu);
+			}
+			
+			setautoattack("9;1;" + .@itempickup_id);
+			mes " ";
+			mes "^008000Item added to list^000000";
+			next;
+			goto(pickupitems_menu);
+			
+		case 4:
+			if(getautoattackint(9,1) == 0){
+				mes "[Items Pickup]";
+				mes "^FF0000No items in list^000000";
+				next;
+				goto(pickupitems_menu);
+			}
+			
+			mes "[Items Pickup]";
+			mes "Enter Item ID to remove";
+			input .@itempickup_id;
+			
+			if(.@itempickup_id < 1){
+				mes " ";
+				mes "^FF0000Invalid Item ID^000000";
+				next;
+				goto(pickupitems_menu);
+			}
+			
+			setautoattack("9;0;" + .@itempickup_id);
+			mes " ";
+			mes "^008000Item removed from list^000000";
+			next;
+			goto(pickupitems_menu);
+			
+		case 5:
+			setautoattack("9;-1;0");
+			mes "[Items Pickup]";
+			mes "^008000All items cleared^000000";
+			next;
+			goto(pickupitems_menu);
+			
+		case 6:
+			goto(config_menu);
+	}
+	end;
+
+reset_all:
+	clear;
+	mes "[Reset Settings]";
+	mes " ";
+	mes "^FF0000WARNING^000000";
+	mes "This will reset ALL bot settings";
+	mes " ";
+	mes "Smart AI settings";
+	mes "All skills configuration";
+	mes "Monsters selection";
+	mes "Items pickup";
+	mes "Everything";
+	mes " ";
+	mes "^FF0000Are you sure^000000";
+	mes " ";
+	next;
+	
+	if(select("Yes RESET ALL", "No cancel") == 1){
+		setautoattack("10;0");
+		#BOT_SMART_MOVE = 0;
+		#BOT_MOVE_RANGE = 7;
+		#BOT_KITING = 0;
+		#BOT_MULTI_TARGET = 0;
+		#BOT_MAX_TARGETS = 3;
+		
+		mes "[Reset Settings]";
+		mes "^008000All settings have been reset^000000";
+		mes " ";
+		mes "You can now reconfigure";
+		mes "everything from scratch";
+	} else {
+		mes "[Reset Settings]";
+		mes "Reset cancelled";
+	}
+	next;
+	goto(config_menu);
+
+OnTimer60000:
+	.@online = getunits(BL_PC, .@players);
+	
+	for(.@i = 0; .@i < .@online; .@i++){
+		if(attachrid(.@players[.@i])){
+			if(#BOT_ACTIVE && #BOT_TIME > 0){
+				// ✅ FIXED: Tính thời gian thực tế đã dùng
+				.@current_time = gettimetick(2);
+				.@elapsed = .@current_time - #BOT_LAST_UPDATE;
+				
+				// Chỉ trừ nếu đã qua ít nhất 1 giây
+				if(.@elapsed >= 1){
+					#BOT_TIME = (#BOT_TIME - .@elapsed > 0) ? (#BOT_TIME - .@elapsed) : 0;
+					#BOT_LAST_UPDATE = .@current_time;
+				}
+				
+				// Kiểm tra hết thời gian
+				if(#BOT_TIME <= 0){
+					#BOT_TIME = 0;
+					#BOT_ACTIVE = 0;
+					#BOT_START_TIME = 0;
+					#BOT_LAST_UPDATE = 0;
+					sc_end SC_AUTOATTACK;
+					
+					dispbottom "Bot time EXPIRED";
+					dispbottom "Bot has been stopped";
+					if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+						dispbottom "VIP: Claim 8 hours FREE daily";
+					} else {
+						dispbottom "Claim 4 hours FREE or buy more time";
+					}
+				}
+				// Cảnh báo thời gian sắp hết
+				else if(#BOT_TIME <= 300 && #BOT_TIME > 240){
+					dispbottom "Warning: Only " + (#BOT_TIME / 60) + " minutes remaining";
+				}
+				else if(#BOT_TIME <= 3600 && #BOT_TIME > 3540){
+					dispbottom "Notice: 1 hour of bot time remaining";
+				}
+			}
+		}
+	}
+	
+	initnpctimer;
+	end;
+
+OnPCLogoutEvent:
+	// ✅ FIXED: Chỉ cập nhật thời gian cuối cùng, không tính lại toàn bộ
+	if(#BOT_ACTIVE){
+		.@current_time = gettimetick(2);
+		.@elapsed = .@current_time - #BOT_LAST_UPDATE;
+		
+		if(.@elapsed >= 1){
+			#BOT_TIME = (#BOT_TIME - .@elapsed > 0) ? (#BOT_TIME - .@elapsed) : 0;
+		}
+		
+		sc_end SC_AUTOATTACK;
+		#BOT_ACTIVE = 0;
+		#BOT_START_TIME = 0;
+		#BOT_LAST_UPDATE = 0;
+	}
+	end;
+}
+
+// Function to get Vietnam time (GMT+7)
+function	script	F_GetVNTime	{
+	.@type = getarg(0); // 0=date (YYYYMMDD), 1=hour, 2=minute, 3=datetime string
+	.@offset = 7 * 3600; // GMT+7 offset in seconds
+	.@timestamp = gettimetick(2) + .@offset;
+	
+	.@year = 1970 + (.@timestamp / 31536000);
+	.@day_of_year = (.@timestamp % 31536000) / 86400;
+	
+	// Simple date calculation
+	.@month = 1;
+	.@day = .@day_of_year + 1;
+	
+	while(.@day > 31){
+		if(.@month == 2){
+			.@days_in_month = 28;
+			if(.@year % 4 == 0) .@days_in_month = 29;
+		}
+		else if(.@month == 4 || .@month == 6 || .@month == 9 || .@month == 11){
+			.@days_in_month = 30;
+		}
+		else{
+			.@days_in_month = 31;
+		}
+		
+		if(.@day > .@days_in_month){
+			.@day -= .@days_in_month;
+			.@month++;
+		}
+		else break;
+	}
+	
+	.@hour = (.@timestamp % 86400) / 3600;
+	.@minute = (.@timestamp % 3600) / 60;
+	.@second = .@timestamp % 60;
+	
+	switch(.@type){
+		case 0: return (.@year * 10000 + .@month * 100 + .@day); // YYYYMMDD
+		case 1: return .@hour;
+		case 2: return .@minute;
+		case 3: 
+			.@date$ = .@year + "/" + (.@month < 10 ? "0" : "") + .@month + "/" + (.@day < 10 ? "0" : "") + .@day;
+			.@time$ = (.@hour < 10 ? "0" : "") + .@hour + ":" + (.@minute < 10 ? "0" : "") + .@minute;
+			return .@date$ + " " + .@time$;
+	}
+	return 0;
+}
+
+// Function to format time remaining until reset
+function	script	F_TimeToReset	{
+	.@offset = 7 * 3600; // GMT+7
+	.@timestamp = gettimetick(2) + .@offset;
+	.@current_hour = (.@timestamp % 86400) / 3600;
+	.@current_minute = (.@timestamp % 3600) / 60;
+	
+	// Calculate seconds until midnight
+	.@seconds_today = (.@current_hour * 3600) + (.@current_minute * 60);
+	.@seconds_until_reset = 86400 - .@seconds_today;
+	
+	.@hours = .@seconds_until_reset / 3600;
+	.@minutes = (.@seconds_until_reset % 3600) / 60;
+	
+	return .@hours + "h " + .@minutes + "m";
+}
+
+prontera,143,179,5	script	Bot Time Manager	10368,{
+
+OnTalk:
+	mes "[Bot Time Manager]";
+	mes "Hello I manage bot time";
+	mes "^0000FFVietnam Time: " + callfunc("F_GetVNTime", 3) + "^000000";
+	mes " ";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^0000FFVIP MEMBER^000000";
+		mes " ";
+	}
+	
+	mes "^008000Payment: Zeny^000000";
+	mes "^FF00001 Hour = 15000000z^000000";
+	mes " ";
+	mes "^008000FREE Daily Time^000000";
+	mes "Normal: ^00FF004 Hours^000000";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "VIP Bonus: ^0000FF+4 Hours^000000";
+		mes "^0000FFTotal: 8 Hours per Day^000000";
+	}
+	
+	mes " ";
+	mes "Use @boton to start bot";
+	mes "Use @botoff to stop bot";
+	next;
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		.@menu = select(
+			"Claim FREE Daily Time 4h",
+			"Claim VIP Bonus 4h",
+			"Buy Bot Time Zeny",
+			"Check Remaining Time",
+			"Price List",
+			"How to use",
+			"Close"
+		);
+	} else {
+		.@menu = select(
+			"Claim FREE Daily Time 4h",
+			"Buy Bot Time Zeny",
+			"Check Remaining Time",
+			"Price List",
+			"How to use",
+			"Close"
+		);
+		if(.@menu >= 2) .@menu++;
+	}
+	
+	switch(.@menu){
+		case 1: goto ClaimFreeTime;
+		case 2: goto ClaimVIPBonus;
+		case 3: goto BuyTime;
+		case 4: goto CheckTime;
+		case 5: goto PriceList;
+		case 6: goto HowToUse;
+		case 7: close;
+	}
+	end;
+
+ClaimFreeTime:
+	mes "[Bot Time Manager]";
+	mes "^008000FREE DAILY TIME^000000";
+	mes " ";
+	
+	.@today = callfunc("F_GetVNTime", 0);
+	
+	if(#BOT_LAST_CLAIM_DATE == .@today){
+		mes "^FF0000You already claimed today^000000";
+		mes " ";
+		mes "Claimed at:";
+		mes "^FF0000" + #BOT_LAST_CLAIM_TIME$ + "^000000";
+		mes " ";
+		mes "^0000FFNext claim available in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+		mes " ";
+		
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			if(#BOT_VIP_CLAIM_DATE != .@today){
+				mes "^FFD700But you can still claim VIP Bonus^000000";
+			}
+		}
+		close;
+	}
+	
+	.@free_time = getvariableofnpc(.FreeHoursDaily, "bot_time_manager") * 3600;
+	#BOT_TIME = #BOT_TIME + .@free_time;
+	#BOT_LAST_CLAIM_DATE = .@today;
+	#BOT_LAST_CLAIM_TIME$ = callfunc("F_GetVNTime", 3);
+	
+	mes "^008000SUCCESS^000000";
+	mes " ";
+	mes "Received: ^00FF004 Hours FREE^000000";
+	mes "Claimed at: ^FF0000" + #BOT_LAST_CLAIM_TIME$ + "^000000";
+	mes " ";
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Total Time: ^FF0000" + .@d + "d " + .@h + "h " + .@m + "m^000000";
+	mes " ";
+	mes "^0000FFNext claim available in^000000";
+	mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+	mes " ";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		if(#BOT_VIP_CLAIM_DATE != .@today){
+			mes "^FFD700Dont forget to claim VIP Bonus^000000";
+			mes "^FFD700+4 Hours available^000000";
+		}
+	}
+	
+	mes "Use ^0000FF@boton^000000 to start bot";
+	
+	logmes "Claimed 4 hours free daily bot time at " + #BOT_LAST_CLAIM_TIME$;
+	
+	close;
+
+ClaimVIPBonus:
+	mes "[Bot Time Manager]";
+	mes "^FFD700VIP BONUS TIME^000000";
+	mes " ";
+	
+	if(getgroupid() < getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^FF0000This feature is for VIP Members only^000000";
+		mes " ";
+		mes "^FFD700Become a VIP to enjoy^000000";
+		mes "Extra 4 hours daily";
+		mes "Total 8 hours FREE per day";
+		mes "Priority support";
+		mes "Special features";
+		close;
+	}
+	
+	.@today = callfunc("F_GetVNTime", 0);
+	
+	if(#BOT_VIP_CLAIM_DATE == .@today){
+		mes "^FF0000You already claimed VIP bonus today^000000";
+		mes " ";
+		mes "Claimed at:";
+		mes "^FF0000" + #BOT_VIP_CLAIM_TIME$ + "^000000";
+		mes " ";
+		mes "^0000FFNext claim available in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+		close;
+	}
+	
+	.@vip_bonus = getvariableofnpc(.VIPBonusHours, "bot_time_manager") * 3600;
+	#BOT_TIME = #BOT_TIME + .@vip_bonus;
+	#BOT_VIP_CLAIM_DATE = .@today;
+	#BOT_VIP_CLAIM_TIME$ = callfunc("F_GetVNTime", 3);
+	
+	mes "^FFD700VIP BONUS CLAIMED^000000";
+	mes " ";
+	mes "Received: ^FFD7004 Hours VIP BONUS^000000";
+	mes "Claimed at: ^FFD700" + #BOT_VIP_CLAIM_TIME$ + "^000000";
+	mes " ";
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Total Time: ^FF0000" + .@d + "d " + .@h + "h " + .@m + "m^000000";
+	mes " ";
+	mes "^0000FFNext claim available in^000000";
+	mes "^FFD700" + callfunc("F_TimeToReset") + "^000000";
+	mes " ";
+	
+	if(#BOT_LAST_CLAIM_DATE != .@today){
+		mes "^008000 Dont forget normal daily claim^000000";
+		mes "^FF0000+4 Hours still available^000000";
+		mes " ";
+	}
+	
+	mes "^FFD700Thank you for being a VIP^000000";
+	mes "Use ^0000FF@boton^000000 to start bot";
+	
+	logmes "Claimed 4 hours VIP bonus bot time at " + #BOT_VIP_CLAIM_TIME$;
+	
+	close;
+
+BuyTime:
+	mes "[Bot Time Manager]";
+	mes "^008000 BUY BOT TIME^000000";
+	mes " ";
+	mes "Payment: ^FF0000Zeny^000000";
+	mes "Price: ^FF000015000000z per hour^000000";
+	mes " ";
+	mes "Select package";
+	next;
+	
+	.@pack = select(
+		"1 Hour 15M",
+		"3 Hours 45M",
+		"6 Hours 90M",
+		"12 Hours 180M",
+		"1 Day 360M",
+		"3 Days 1080M Sale 1000M",
+		"7 Days 2520M Sale 2000M",
+		"Custom Hours",
+		"Cancel"
+	);
+	
+	.@price_per_hour = getvariableofnpc(.ZenyPerHour, "bot_time_manager");
+	
+	switch(.@pack){
+		case 1: .@hours = 1; .@cost = 15000000; break;
+		case 2: .@hours = 3; .@cost = 45000000; break;
+		case 3: .@hours = 6; .@cost = 90000000; break;
+		case 4: .@hours = 12; .@cost = 180000000; break;
+		case 5: .@hours = 24; .@cost = 360000000; break;
+		case 6: .@hours = 72; .@cost = 1000000000; break;
+		case 7: .@hours = 168; .@cost = 2000000000; break;
+		case 8:
+			mes "[Bot Time Manager]";
+			mes "Enter number of hours 1 to 720";
+			input .@hours;
+			
+			if(.@hours < 1 || .@hours > 720){
+				mes " ";
+				mes "^FF0000Invalid Use 1 to 720 hours^000000";
+				close;
+			}
+			.@cost = .@hours * .@price_per_hour;
+			break;
+		case 9:
+			close;
+	}
+	
+	mes "[Bot Time Manager]";
+	mes "^00FF00CONFIRM PURCHASE^000000";
+	mes " ";
+	mes "Package: ^FF0000" + .@hours + " Hours^000000";
+	mes "Cost: ^FF0000" + callfunc("F_InsertComma", .@cost) + " Zeny^000000";
+	mes " ";
+	mes "Your Zeny: ^FF0000" + callfunc("F_InsertComma", Zeny) + "z^000000";
+	mes " ";
+	
+	if(Zeny < .@cost){
+		mes "^FF0000Not enough Zeny^000000";
+		mes " ";
+		mes "You need: ^FF0000" + callfunc("F_InsertComma", .@cost - Zeny) + "z more^000000";
+		close;
+	}
+	
+	mes "Confirm purchase";
+	next;
+	
+	if(select("Yes buy it", "No cancel") == 2){
+		mes "[Bot Time Manager]";
+		mes "Purchase cancelled";
+		close;
+	}
+	
+	Zeny -= .@cost;
+	
+	.@time_seconds = .@hours * 3600;
+	#BOT_TIME = #BOT_TIME + .@time_seconds;
+	
+	mes "[Bot Time Manager]";
+	mes "^00FF00PURCHASE SUCCESS^000000";
+	mes " ";
+	mes "Added: ^FF0000" + .@hours + " Hours^000000";
+	mes "Paid: ^FF0000" + callfunc("F_InsertComma", .@cost) + "z^000000";
+	mes "Time: ^0000FF" + callfunc("F_GetVNTime", 3) + "^000000";
+	mes " ";
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Total Time: ^FF0000" + .@d + "d " + .@h + "h " + .@m + "m^000000";
+	mes " ";
+	mes "Use ^0000FF@boton^000000 to start bot";
+	
+	logmes "Bought " + .@hours + " hours bot time for " + .@cost + " Zeny at " + callfunc("F_GetVNTime", 3);
+	
+	close;
+
+CheckTime:
+	mes "[Bot Time Manager]";
+	mes "^00FF00BOT TIME STATUS^000000";
+	mes "^0000FFVietnam Time: " + callfunc("F_GetVNTime", 3) + "^000000";
+	mes " ";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "Account: ^0000FFVIP MEMBER^000000";
+		mes " ";
+	}
+	
+	if(#BOT_TIME <= 0){
+		mes "^FF0000No time remaining^000000";
+		mes " ";
+		
+		.@today = callfunc("F_GetVNTime", 0);
+		
+		mes "^0000FFDaily Claims Status^000000";
+		if(#BOT_LAST_CLAIM_DATE == .@today){
+			mes "Normal: ^FF0000Claimed^000000";
+			mes "Time: " + #BOT_LAST_CLAIM_TIME$;
+		} else {
+			mes "Normal: ^00FF00Available 4h^000000";
+		}
+		
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			if(#BOT_VIP_CLAIM_DATE == .@today){
+				mes "VIP Bonus: ^FF0000Claimed^000000";
+				mes "Time: " + #BOT_VIP_CLAIM_TIME$;
+			} else {
+				mes "VIP Bonus: ^FFD700Available 4h^000000";
+			}
+		}
+		
+		mes " ";
+		if(#BOT_LAST_CLAIM_DATE != .@today || (#BOT_VIP_CLAIM_DATE != .@today && getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager"))){
+			mes "^0000FFNext reset in^000000";
+			mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+		}
+	} else {
+		.@d = #BOT_TIME / 86400;
+		.@h = (#BOT_TIME % 86400) / 3600;
+		.@m = (#BOT_TIME % 3600) / 60;
+		.@s = #BOT_TIME % 60;
+		
+		mes "Remaining Time";
+		mes "^FF0000" + .@d + " Days " + .@h + " Hours";
+		mes .@m + " Minutes " + .@s + " Seconds^000000";
+		
+		if(#BOT_ACTIVE){
+			mes " ";
+			mes "Status: ^008000RUNNING^000000";
+			mes "Use @botoff to stop";
+		} else {
+			mes " ";
+			mes "Status: STOPPED";
+			mes "Use @boton to start";
+		}
+		
+		mes " ";
+		
+		.@today = callfunc("F_GetVNTime", 0);
+		
+		mes "^0000FFDaily Claims^000000";
+		
+		if(#BOT_LAST_CLAIM_DATE == .@today){
+			mes "Normal: ^FF0000Claimed^000000";
+			mes "Time: " + #BOT_LAST_CLAIM_TIME$;
+		} else {
+			mes "Normal: ^00FF00Available 4h^000000";
+		}
+		
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			if(#BOT_VIP_CLAIM_DATE == .@today){
+				mes "VIP Bonus: ^FF0000Claimed^000000";
+				mes "Time: " + #BOT_VIP_CLAIM_TIME$;
+			} else {
+				mes "VIP Bonus: ^FFD700Available 4h^000000";
+			}
+		}
+		
+		mes " ";
+		mes "^0000FFNext reset in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+	}
+	
+	close;
+
+PriceList:
+	mes "[Bot Time Manager]";
+	mes "^00FF00PRICE LIST^000000";
+	mes " ";
+	mes "^FF00001 Hour = 15000000z^000000";
+	mes " ";
+	mes "^0000FFPackages^000000";
+	mes "1 Hour = 15M";
+	mes "3 Hours = 45M";
+	mes "6 Hours = 90M";
+	mes "12 Hours = 180M";
+	mes "1 Day 24h = 360M";
+	mes "3 Days 72h = ^00FF001000M Save 80M^000000";
+	mes "7 Days 168h = ^00FF002000M Save 520M^000000";
+	mes " ";
+	next;
+	mes "[Bot Time Manager]";
+	mes "^00FF00FREE TIME^000000";
+	mes " ";
+	mes "^0000FFNormal Users^000000";
+	mes "4 Hours daily FREE";
+	mes "Resets at midnight Vietnam time";
+	mes " ";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^FFD700VIP MEMBERS YOU^000000";
+		mes "4 Hours daily FREE";
+		mes "4 Hours VIP BONUS";
+		mes "^FFD700Total: 8 Hours per Day^000000";
+	} else {
+		mes "^FFD700VIP MEMBERS^000000";
+		mes "4 Hours daily FREE";
+		mes "4 Hours VIP BONUS";
+		mes "^0000FFTotal: 8 Hours per Day^000000";
+		mes " ";
+		mes "^FF0000Become VIP for double rewards^000000";
+	}
+	mes " ";
+	mes "Purchased time accumulates";
+	mes "No expiration";
+	mes " ";
+	mes "^0000FFCurrent Vietnam Time^000000";
+	mes "^FF0000" + callfunc("F_GetVNTime", 3) + "^000000";
+	close;
+
+HowToUse:
+	mes "[Bot Time Manager]";
+	mes "^00FF00HOW TO USE^000000";
+	mes " ";
+	mes "^0000FF1 Get Bot Time^000000";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^FFD700VIP: Claim 8 hours FREE daily^000000";
+		mes "4 hours normal claim";
+		mes "4 hours VIP bonus";
+	} else {
+		mes "Claim 4 hours FREE daily";
+	}
+	
+	mes "Or buy with Zeny 15M per hour";
+	mes " ";
+	mes "^FF0000Daily claims reset at midnight^000000";
+	mes "^FF0000Vietnam Time GMT+7^000000";
+	mes " ";
+	mes "^0000FF2 Configure Bot^000000";
+	mes "Use @boton command";
+	mes "Configure all settings";
+	mes "Set up Smart AI features";
+	mes " ";
+	next;
+	mes "[Bot Time Manager]";
+	mes "^0000FF3 Start Bot^000000";
+	mes "Choose Start Bot";
+	mes "Bot starts automatically";
+	mes "Time countdown begins";
+	mes " ";
+	mes "^0000FF4 Stop Bot^000000";
+	mes "Use @botoff command";
+	mes "Time automatically saved";
+	mes " ";
+	mes "^0000FF5 Check Status^000000";
+	mes "Use @bottime command";
+	mes "Or visit this NPC";
+	mes "See claim history and next reset";
+	mes " ";
+	next;
+	mes "[Bot Time Manager]";
+	mes "^FFD700SMART AI FEATURES^000000";
+	mes " ";
+	mes "Smart Movement";
+	mes "Intelligent pathfinding";
+	mes " ";
+	mes "Kiting Mode";
+	mes "Hit and run strategy";
+	mes " ";
+	mes "Multi Target";
+	mes "Attack multiple enemies";
+	mes " ";
+	mes "^FF0000Note^000000";
+	mes "Time never expires";
+	mes "Time accumulates";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^FFD700VIP: 8 hours FREE daily^000000";
+	} else {
+		mes "Claim 4h daily for FREE";
+	}
+	
+	mes " ";
+	mes "^0000FFTimezone Info^000000";
+	mes "All times use Vietnam GMT+7";
+	mes "Current: " + callfunc("F_GetVNTime", 3);
+	
+	close;
+}

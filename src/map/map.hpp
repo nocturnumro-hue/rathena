@@ -69,14 +69,14 @@ void map_msg_reload(void);
 #endif
 #define LOOTITEM_SIZE 10
 #define MAX_MOBSKILL 50		//Max 128, see mob skill_idx type if need this higher
-#define MAX_MOB_LIST_PER_MAP 128
-#define MAX_EVENTQUEUE 2
-#define MAX_EVENTTIMER 32
+#define MAX_MOB_LIST_PER_MAP 256
+#define MAX_EVENTQUEUE 64
+#define MAX_EVENTTIMER 64
 #define NATURAL_HEAL_INTERVAL 500
 #define MIN_FLOORITEM 2
 #define MAX_FLOORITEM START_ACCOUNT_NUM
 #define MAX_LEVEL 275
-#define MAX_DROP_PER_MAP 48
+#define MAX_DROP_PER_MAP 128
 #define MAX_IGNORE_LIST 20 	// official is 14
 #define MAX_VENDING 12
 #define MAX_MAP_SIZE 512*512 	// Wasn't there something like this already? Can't find it.. [Shinryo]
@@ -493,6 +493,7 @@ struct flooritem_data : public block_list {
 	t_tick first_get_tick,second_get_tick,third_get_tick;
 	struct item item;
 	uint16 mob_id; ///< ID of monster who dropped it. 0 for non-monster who dropped it.
+	int16 dropeffect; /// [royrdev] Drop Effect Item Floor
 };
 
 enum _sp {
@@ -695,6 +696,8 @@ enum e_mapflag : int16 {
 	MF_SPECIALPOPUP,
 	MF_NOMACROCHECKER,
 	MF_INVINCIBLE_TIME,
+	MF_NOLOOTNORMALMOB,
+	MF_NO_NPC_SELFDESTRUCTION_ON_ALL,
 	MF_MAX
 };
 
@@ -1175,7 +1178,7 @@ bool map_addnpc(int16 m,npc_data *);
 TIMER_FUNC(map_clearflooritem_timer);
 TIMER_FUNC(map_removemobs_timer);
 void map_clearflooritem(block_list* bl);
-int32 map_addflooritem(struct item *item, int32 amount, int16 m, int16 x, int16 y, int32 first_charid, int32 second_charid, int32 third_charid, int32 flags, uint16 mob_id, bool canShowEffect = false, enum directions dir = DIR_MAX, int32 type = BL_NUL);
+int32 map_addflooritem(struct item *item, int32 amount, int16 m, int16 x, int16 y, int32 first_charid, int32 second_charid, int32 third_charid, int32 flags, uint16 mob_id, bool canShowEffect = false, enum directions dir = DIR_MAX, int32 type = BL_NUL, int16 dropeffect = -1);
 
 // instances
 int32 map_addinstancemap(int32 src_m, int32 instance_id, bool no_mapflag);

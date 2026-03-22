@@ -1,0 +1,484 @@
+//===== rAthena Script =======================================
+//= Episode 20 Daily Quests (COMPLETE VERSION)
+//===== Description: =========================================
+//= Daily hunting quests for Episode 20 dungeons
+//= Uses 24h cooldown system per dungeon
+//= Dungeons: Root 1F, Root 2F, Deep Root Cave, Ice Canyon, Frozen Beach
+//= Rewards: Sacred Cat Whiskers + EP20 Reputation + EXP
+//= Features: Cancel quest with progress reset
+//= Boss quests (500+1): Double rewards
+//============================================================
+
+askald,65,155,1	script	Episode 20 Daily Quest	10455,{
+	
+	cutin "vr_rain01.png", 2;
+	
+	// Check Episode 20 completion
+	if (ep20_main < 62) {
+		mes "[Juncea]";
+		mes "You need to complete Episode 20 main quest first.";
+		mes " ";
+		mes "You can use ^0000FFEpisode 20 Clear Ticket^000000 at the Skip Quest NPC";
+		mes "or complete the main story manually.";
+		mes " ";
+		mes "^FF0000Current Progress: " + ep20_main + "/62^000000";
+		cutin "", 255;
+		close;
+	}
+	
+	// ============================================================
+	// CHECK & CLEAR EXPIRED COOLDOWNS FIRST
+	// ============================================================
+	
+	if (checkquest(70277, PLAYTIME) == 2) erasequest 70277; // Root 1F
+	if (checkquest(70279, PLAYTIME) == 2) erasequest 70279; // Root 2F
+	if (checkquest(70281, PLAYTIME) == 2) erasequest 70281; // Deep Root Cave
+	if (checkquest(70283, PLAYTIME) == 2) erasequest 70283; // Ice Canyon East
+	if (checkquest(70285, PLAYTIME) == 2) erasequest 70285; // Frozen Beach
+	
+	// ============================================================
+	// CHECK IF QUEST COMPLETED - GIVE REWARDS
+	// ============================================================
+	
+	// Snake God Root 1F - Quest 70276
+	if (checkquest(70276, HUNTING) == 2) {
+		if (checkquest(70277, PLAYTIME) >= 0) {
+			mes "[Juncea]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70276;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Juncea]";
+		mes "Excellent work! You've cleared Snake God Root 1F.";
+		mes "Here is your reward!";
+		cutin "vr_rain02.png", 2;
+		next;
+		
+		getitem 1001217, 3; // Sacred Cat Whiskers x3
+		getexp 8000000000, 2000000000; // Base: 8B, Job: 2B
+		
+		.@rep_id = 5;
+		if (get_reputation_points(.@rep_id) < 10000) {
+			add_reputation_points(.@rep_id, 5);
+			dispbottom "You gained 5 Episode 20 Reputation!";
+		}
+		
+		erasequest 70276;
+		setquest 70277;
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Juncea]";
+		mes "Rewards received!";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		cutin "", 255;
+		close;
+	}
+	
+	// Snake God Root 2F - Quest 70278
+	if (checkquest(70278, HUNTING) == 2) {
+		if (checkquest(70279, PLAYTIME) >= 0) {
+			mes "[Juncea]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70278;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Juncea]";
+		mes "Excellent work! You've cleared Snake God Root 2F.";
+		mes "Here is your reward!";
+		cutin "vr_rain02.png", 2;
+		next;
+		
+		getitem 1001217, 3;
+		getexp 8000000000, 2000000000;
+		
+		.@rep_id = 5;
+		if (get_reputation_points(.@rep_id) < 10000) {
+			add_reputation_points(.@rep_id, 5);
+			dispbottom "You gained 5 Episode 20 Reputation!";
+		}
+		
+		erasequest 70278;
+		setquest 70279;
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Juncea]";
+		mes "Rewards received!";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Deep Root Cave - Quest 70280 (DOUBLE REWARDS)
+	if (checkquest(70280, HUNTING) == 2) {
+		if (checkquest(70281, PLAYTIME) >= 0) {
+			mes "[Juncea]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70280;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Juncea]";
+		mes "Amazing! You've cleared the Deep Root Cave!";
+		mes "That's no easy feat. Here is your reward!";
+		cutin "vr_rain03.png", 2;
+		next;
+		
+		getitem 1001217, 10; // Sacred Cat Whiskers x10 (DOUBLED from 5)
+		getexp 24000000000, 6000000000; // Base: 24B, Job: 6B (DOUBLED)
+		
+		.@rep_id = 5;
+		if (get_reputation_points(.@rep_id) < 10000) {
+			add_reputation_points(.@rep_id, 20); // DOUBLED from 10
+			dispbottom "You gained 20 Episode 20 Reputation!";
+		}
+		
+		erasequest 70280;
+		setquest 70281;
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Juncea]";
+		mes "^00FF00DOUBLE REWARDS for Boss Quest!^000000";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Ancient Ice Canyon East - Quest 70282 (DOUBLE REWARDS)
+	if (checkquest(70282, HUNTING) == 2) {
+		if (checkquest(70283, PLAYTIME) >= 0) {
+			mes "[Juncea]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70282;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Juncea]";
+		mes "Incredible! You've conquered the Ancient Ice Canyon East!";
+		mes "The Fallen Angel stood no chance against you!";
+		cutin "vr_rain03.png", 2;
+		next;
+		
+		getitem 1001217, 10; // Sacred Cat Whiskers x10 (DOUBLED)
+		getexp 24000000000, 6000000000; // Base: 24B, Job: 6B (DOUBLED)
+		
+		.@rep_id = 5;
+		if (get_reputation_points(.@rep_id) < 10000) {
+			add_reputation_points(.@rep_id, 20); // DOUBLED
+			dispbottom "You gained 20 Episode 20 Reputation!";
+		}
+		
+		erasequest 70282;
+		setquest 70283;
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Juncea]";
+		mes "^00FF00DOUBLE REWARDS for Boss Quest!^000000";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// Frozen Scale Beach - Quest 70284 (DOUBLE REWARDS)
+	if (checkquest(70284, HUNTING) == 2) {
+		if (checkquest(70285, PLAYTIME) >= 0) {
+			mes "[Juncea]";
+			mes "You've already claimed this reward.";
+			mes "Please wait 24 hours before taking this quest again.";
+			erasequest 70284;
+			cutin "", 255;
+			close;
+		}
+		
+		mes "[Juncea]";
+		mes "Outstanding! You've cleared the Frozen Scale Beach!";
+		mes "The Snow Angel has been defeated!";
+		cutin "vr_rain03.png", 2;
+		next;
+		
+		getitem 1001217, 10; // Sacred Cat Whiskers x10 (DOUBLED)
+		getexp 24000000000, 6000000000; // Base: 24B, Job: 6B (DOUBLED)
+		
+		.@rep_id = 5;
+		if (get_reputation_points(.@rep_id) < 10000) {
+			add_reputation_points(.@rep_id, 20); // DOUBLED
+			dispbottom "You gained 20 Episode 20 Reputation!";
+		}
+		
+		erasequest 70284;
+		setquest 70285;
+		specialeffect2 EF_LEVELUP;
+		
+		mes "[Juncea]";
+		mes "^00FF00DOUBLE REWARDS for Boss Quest!^000000";
+		mes "^FF0000This dungeon is now on 24-hour cooldown.^000000";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+	
+	.@activeQuest = 0;
+	
+	if (checkquest(70276, HUNTING) == 1) .@activeQuest = 1; // Root 1F
+	if (checkquest(70278, HUNTING) == 1) .@activeQuest = 2; // Root 2F
+	if (checkquest(70280, HUNTING) == 1) .@activeQuest = 3; // Deep Root Cave
+	if (checkquest(70282, HUNTING) == 1) .@activeQuest = 4; // Ice Canyon East
+	if (checkquest(70284, HUNTING) == 1) .@activeQuest = 5; // Frozen Beach
+	
+	if (.@activeQuest > 0) {
+		mes "[Juncea]";
+		mes "You already have an active quest:";
+		switch(.@activeQuest) {
+			case 1: 
+				mes "^0000FFSnake God Root 1F^000000";
+				.@questId = 70276;
+				.@questName$ = "Snake God Root 1F";
+				break;
+			case 2: 
+				mes "^00FF00Snake God Root 2F^000000";
+				.@questId = 70278;
+				.@questName$ = "Snake God Root 2F";
+				break;
+			case 3: 
+				mes "^FF0000Deep Root Cave^000000";
+				.@questId = 70280;
+				.@questName$ = "Deep Root Cave";
+				break;
+			case 4:
+				mes "^FF6600Ancient Ice Canyon East^000000";
+				.@questId = 70282;
+				.@questName$ = "Ancient Ice Canyon East";
+				break;
+			case 5:
+				mes "^00FFFFFrozen Scale Beach^000000";
+				.@questId = 70284;
+				.@questName$ = "Frozen Scale Beach";
+				break;
+		}
+		mes " ";
+		mes "Complete it to claim your rewards!";
+		next;
+		
+		// Cancel Quest option
+		mes "[Juncea]";
+		mes "Do you want to cancel this quest?";
+		mes " ";
+		mes "^FF0000WARNING:^000000";
+		mes "Canceling will reset all your progress!";
+		next;
+		
+		if (select("Continue Quest:^FF0000Cancel Quest^000000") == 2) {
+			mes "[Juncea]";
+			mes "Are you sure you want to cancel?";
+			mes " ";
+			mes "Quest: ^FF6600" + .@questName$ + "^000000";
+			mes "^FF0000All progress will be lost!^000000";
+			next;
+			
+			if (select("No, keep the quest:^FF0000Yes, cancel it^000000") == 2) {
+				erasequest .@questId;
+				specialeffect2 EF_CHAINCOMBO;
+				
+				mes "[Juncea]";
+				mes "Quest canceled. Your progress has been reset.";
+				cutin "", 255;
+				close;
+			}
+		}
+		
+		mes "[Juncea]";
+		mes "Good luck with your hunt!";
+		cutin "", 255;
+		close;
+	}
+
+	// ============================================================
+	// CHECK COOLDOWNS
+	// ============================================================
+	
+	.@root1Cooldown = (checkquest(70277, PLAYTIME) >= 0);
+	.@root2Cooldown = (checkquest(70279, PLAYTIME) >= 0);
+	.@deepRootCooldown = (checkquest(70281, PLAYTIME) >= 0);
+	.@iceCanyonCooldown = (checkquest(70283, PLAYTIME) >= 0);
+	.@frozenBeachCooldown = (checkquest(70285, PLAYTIME) >= 0);
+	
+	// Count available quests
+	.@available = 0;
+	if (!.@root1Cooldown) .@available++;
+	if (!.@root2Cooldown) .@available++;
+	if (!.@deepRootCooldown) .@available++;
+	if (!.@iceCanyonCooldown) .@available++;
+	if (!.@frozenBeachCooldown) .@available++;
+
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+
+	mes "[Juncea]";
+	mes "Welcome adventurer!";
+	mes "I have daily hunting quests for Episode 20 dungeons.";
+	mes " ";
+	mes "^00FF00Available Quests: " + .@available + "/5^000000";
+	next;
+	
+	if (.@available == 0) {
+		mes "[Juncea]";
+		mes "All quests are currently on cooldown.";
+		mes "Each quest has a 24-hour cooldown after completion.";
+		mes " ";
+		mes "^FF0000Come back later!^000000";
+		cutin "", 255;
+		close;
+	}
+	
+	switch(select("View Available Quests:Quest Information:Cancel")) {
+		case 1:
+			break;
+			
+		case 2:
+			mes "[Juncea]";
+			mes "^FFFFFFQuest Details:^000000";
+			mes " ";
+			mes "^0000FF[Snake God Root 1F]^000000";
+			mes "Hunt: 200 monsters | Map: jor_root1";
+			mes "Rewards: 3 Whiskers + 5 Rep + 8B/2B EXP";
+			mes " ";
+			mes "^00FF00[Snake God Root 2F]^000000";
+			mes "Hunt: 200 monsters | Map: jor_root2";
+			mes "Rewards: 3 Whiskers + 5 Rep + 8B/2B EXP";
+			next;
+			mes "[Juncea]";
+			mes "^FF0000[Deep Root Cave]^000000";
+			mes "Hunt: 500 monsters + 1 Boss";
+			mes "Map: jor_root3";
+			mes "Rewards: ^00FF0010 Whiskers + 20 Rep^000000";
+			mes "         ^00FF00+ 24B/6B EXP (DOUBLE!)^000000";
+			mes " ";
+			mes "^FF6600[Ancient Ice Canyon East]^000000";
+			mes "Hunt: 500 monsters + 1 Boss";
+			mes "Map: jor_back5";
+			mes "Rewards: ^00FF0010 Whiskers + 20 Rep^000000";
+			mes "         ^00FF00+ 24B/6B EXP (DOUBLE!)^000000";
+			next;
+			mes "[Juncea]";
+			mes "^00FFFF[Frozen Scale Beach]^000000";
+			mes "Hunt: 500 monsters + 1 Boss";
+			mes "Map: jor_back4";
+			mes "Rewards: ^00FF0010 Whiskers + 20 Rep^000000";
+			mes "         ^00FF00+ 24B/6B EXP (DOUBLE!)^000000";
+			mes " ";
+			mes "^FF0000Cooldown: 24 hours per dungeon^000000";
+			mes "^00FF00Boss Quests give DOUBLE rewards!^000000";
+			cutin "", 255;
+			close;
+			
+		case 3:
+			mes "[Juncea]";
+			mes "Come back anytime!";
+			cutin "", 255;
+			close;
+	}
+	
+	// ============================================================
+	// QUEST SELECTION
+	// ============================================================
+	
+	mes "[Juncea]";
+	mes "Which dungeon would you like to hunt in?";
+	mes " ";
+	mes "^00FF00Green = Available^000000";
+	mes "^FF0000Red = On Cooldown^000000";
+	next;
+	
+	// Build dynamic menu
+	setarray .@questIds[0], 70276, 70278, 70280, 70282, 70284;
+	setarray .@questNames$[0], 
+		"Snake God Root 1F", 
+		"Snake God Root 2F", 
+		"Deep Root Cave", 
+		"Ancient Ice Canyon East",
+		"Frozen Scale Beach";
+	setarray .@questColors$[0], "^0000FF", "^00FF00", "^FF0000", "^FF6600", "^00FFFF";
+	setarray .@questCounts[0], 200, 200, 500, 500, 500;
+	setarray .@cooldowns[0], 
+		.@root1Cooldown, 
+		.@root2Cooldown, 
+		.@deepRootCooldown,
+		.@iceCanyonCooldown,
+		.@frozenBeachCooldown;
+	
+	.@menu$ = "";
+	for (.@i = 0; .@i < 5; .@i++) {
+		if (.@cooldowns[.@i]) {
+			.@menu$ += .@questColors$[.@i] + .@questNames$[.@i] + " ^FF0000(Cooldown)^000000:";
+		} else {
+			.@menu$ += .@questColors$[.@i] + .@questNames$[.@i] + " ^00FF00(Available)^000000:";
+		}
+	}
+	.@menu$ += "Cancel";
+	
+	.@choice = select(.@menu$) - 1;
+	
+	if (.@choice == 5) {
+		mes "[Juncea]";
+		mes "Come back anytime!";
+		cutin "", 255;
+		close;
+	}
+	
+	// Check if selected quest is on cooldown
+	if (.@cooldowns[.@choice]) {
+		mes "[Juncea]";
+		mes "This quest is on cooldown.";
+		mes "Please wait 24 hours after completing it.";
+		cutin "", 255;
+		close;
+	}
+	
+	// Accept quest
+	mes "[Juncea]";
+	mes "You have selected:";
+	mes .@questColors$[.@choice] + .@questNames$[.@choice] + "^000000";
+	mes " ";
+	mes "Hunt ^FF6600" + .@questCounts[.@choice] + " monsters^000000";
+	
+	// Show boss requirement for quests 3, 4, 5
+	if (.@choice >= 2) {
+		mes "+ ^FF0000Kill 1 Boss^000000";
+		mes " ";
+		mes "^00FF00DOUBLE REWARDS for Boss Quest!^000000";
+	}
+	next;
+	
+	if (select("Accept Quest:Cancel") == 2) {
+		mes "[Juncea]";
+		mes "Come back when you're ready!";
+		cutin "", 255;
+		close;
+	}
+	
+	mes "[Juncea]";
+	mes "Good luck, adventurer!";
+	mes "Return when you've completed the hunt.";
+	mes " ";
+	mes "^0000FFTip: You can cancel the quest anytime.^000000";
+	mes "^FF0000Warning: Canceling resets your progress!^000000";
+	setquest .@questIds[.@choice];
+	
+	specialeffect2 EF_STEAL;
+	
+	cutin "", 255;
+	close;
+}

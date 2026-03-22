@@ -1,0 +1,332 @@
+//===== rAthena Script =======================================
+//= Glast Heim Monster Hunt Quest - Map 1@gol1
+//===== Description: =========================================
+//= Daily Quest: Kill 1000 monsters in 1@gol1
+//= Weekly Quest: Kill 5000 monsters in 1@gol1
+//= Independent variables for easy adding new maps
+//============================================================
+
+1@gol1,197,46,4	script	Monster Hunter#gol1	4_M_ROGUE,{
+	// Variables for THIS map only - prefix GOL1_
+	.@daily_delay = #GOL1_Daily_Delay - gettimetick(2);
+	.@weekly_delay = #GOL1_Weekly_Delay - gettimetick(2);
+	
+	mes "[^0080FFMonster Hunter^000000]";
+	mes "I'm looking for brave warriors to hunt monsters in the ^FF0000Cursed Glast Heim^000000!";
+	mes " ";
+	mes "^008000Current Location: 1@gol1^000000";
+	next;
+	
+	switch(select("^008000Daily Quest (1000 monsters)^000000:^0080FFWeekly Quest (5000 monsters)^000000:^FF0000Check Progress^000000:^00FF00Claim Rewards^000000:Info:Cancel")) {
+		case 1: // Daily Quest
+			if (.@daily_delay > 0) {
+				mes "[^0080FFMonster Hunter^000000]";
+				mes "^FF0000You already completed the daily quest!^000000";
+				mes "Come back in ^FF0000" + callfunc("F_InsertTime", .@daily_delay) + "^000000";
+				close;
+			}
+			if (GOL1_Daily_Active) {
+				mes "[^0080FFMonster Hunter^000000]";
+				mes "You already have an active daily quest!";
+				mes "Progress: ^0080FF" + GOL1_Daily_Count + "^000000/^FF00001000^000000";
+				close;
+			}
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "^008000Daily Quest: Kill 1000 monsters^000000";
+			mes "^0080FFMap: 1@gol1^000000";
+			mes " ";
+			mes "^00FF00Reward:^000000";
+			mes "^FF0000- 100x^000000 Somatology Research Document";
+			mes "^FF0000- 100x^000000 Somatology Experimental Fragment";
+			mes "^0080FF- Base EXP:^000000 134,289,250";
+			mes "^0080FF- Job EXP:^000000 94,002,475";
+			mes "^008000- Warp to Boss Area after completion^000000";
+			mes " ";
+			mes "Do you accept?";
+			next;
+			if (select("^008000Yes^000000:^FF0000No^000000") == 2) {
+				mes "[^0080FFMonster Hunter^000000]";
+				mes "Come back when you're ready!";
+				close;
+			}
+			GOL1_Daily_Active = 1;
+			GOL1_Daily_Count = 0;
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "^008000Quest accepted! Good luck!^000000";
+			mes "Kill any monsters in ^FF00001@gol1^000000 map.";
+			close2;
+			warp "1@gol1", 65, 274;
+			end;
+			
+		case 2: // Weekly Quest
+			// Check if Daily Quest completed at least once
+			if (#GOL1_Daily_Completed < 1) {
+				mes "[^0080FFMonster Hunter^000000]";
+				mes "^FF0000You must complete the Daily Quest at least once before unlocking the Weekly Quest!^000000";
+				close;
+			}
+			
+			if (.@weekly_delay > 0) {
+				mes "[^0080FFMonster Hunter^000000]";
+				mes "^FF0000You already completed the weekly quest!^000000";
+				mes "Come back in ^FF0000" + callfunc("F_InsertTime", .@weekly_delay) + "^000000";
+				close;
+			}
+			if (GOL1_Weekly_Active) {
+				mes "[^0080FFMonster Hunter^000000]";
+				mes "You already have an active weekly quest!";
+				mes "Progress: ^0080FF" + GOL1_Weekly_Count + "^000000/^FF00005000^000000";
+				close;
+			}
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "^FF8000Weekly Quest: Kill 5000 monsters^000000";
+			mes "^0080FFMap: 1@gol1^000000";
+			mes " ";
+			mes "^00FF00Reward:^000000";
+			mes "^FF0000- 700x^000000 Somatology Research Document";
+			mes "^FF0000- 700x^000000 Somatology Experimental Fragment";
+			mes "^0080FF- Base EXP:^000000 940,024,750";
+			mes "^0080FF- Job EXP:^000000 658,017,325";
+			mes "^008000- Warp to Boss Area after completion^000000";
+			mes " ";
+			mes "Do you accept?";
+			next;
+			if (select("^008000Yes^000000:^FF0000No^000000") == 2) {
+				mes "[^0080FFMonster Hunter^000000]";
+				mes "Come back when you're ready!";
+				close;
+			}
+			GOL1_Weekly_Active = 1;
+			GOL1_Weekly_Count = 0;
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "^008000Quest accepted! Good luck!^000000";
+			mes "Kill any monsters in ^FF00001@gol1^000000 map.";
+			close2;
+			warp "1@gol1", 65, 274;
+			end;
+			
+		case 3: // Check Progress
+			mes "[^0080FFMonster Hunter^000000]";
+			if (!GOL1_Daily_Active && !GOL1_Weekly_Active) {
+				mes "^FF0000You don't have any active quests.^000000";
+				close;
+			}
+			if (GOL1_Daily_Active) {
+				mes "^0080FF=== Daily Quest ===^000000";
+				mes "Progress: ^008000" + GOL1_Daily_Count + "^000000/^FF00001000^000000 (^0080FF" + (GOL1_Daily_Count * 100 / 1000) + "%^000000)";
+				if (GOL1_Daily_Count >= 1000)
+					mes "^00FF00[COMPLETED]^000000";
+			}
+			if (GOL1_Weekly_Active) {
+				mes " ";
+				mes "^FF8000=== Weekly Quest ===^000000";
+				mes "Progress: ^008000" + GOL1_Weekly_Count + "^000000/^FF00005000^000000 (^0080FF" + (GOL1_Weekly_Count * 100 / 5000) + "%^000000)";
+				if (GOL1_Weekly_Count >= 5000)
+					mes "^00FF00[COMPLETED]^000000";
+			}
+			close;
+			
+		case 4: // Claim Rewards
+			.@claimed = 0;
+			
+			// Daily Reward
+			if (GOL1_Daily_Active && GOL1_Daily_Count >= 1000) {
+				if (checkweight(25786, 100) && checkweight(25787, 100)) {
+					getitem 25786, 100; // Somatology Research Document
+					getitem 25787, 100; // Somatology Experimental Fragment
+					getexp 134289250, 94002475;
+					GOL1_Daily_Active = 0;
+					GOL1_Daily_Count = 0;
+					#GOL1_Daily_Delay = gettimetick(2) + 86400; // 1 day
+					#GOL1_Daily_Completed++;
+					.@claimed++;
+					announce "[ QUEST ] " + strcharinfo(0) + " has completed Daily Monster Hunt Quest (1@gol1)!", bc_all, 0x00FF00;
+					
+					// Warp to Boss Area
+					mes "[^0080FFMonster Hunter^000000]";
+					mes "^00FF00Congratulations!^000000";
+					mes "Warping you to the ^FF0000Boss Area^000000...";
+					close2;
+					warp "1@gol2", 49, 25;
+					end;
+				} else {
+					mes "[^0080FFMonster Hunter^000000]";
+					mes "^FF0000Your inventory is too heavy!^000000";
+					close;
+				}
+			}
+			
+			// Weekly Reward
+			if (GOL1_Weekly_Active && GOL1_Weekly_Count >= 5000) {
+				if (checkweight(25786, 700) && checkweight(25787, 700)) {
+					getitem 25786, 700;
+					getitem 25787, 700;
+					getexp 940024750, 658017325;
+					GOL1_Weekly_Active = 0;
+					GOL1_Weekly_Count = 0;
+					#GOL1_Weekly_Delay = gettimetick(2) + 604800; // 7 days
+					.@claimed++;
+					announce "[ QUEST ] " + strcharinfo(0) + " has completed Weekly Monster Hunt Quest (1@gol1)!", bc_all, 0xFF8000;
+					
+					// Warp to Boss Area
+					mes "[^0080FFMonster Hunter^000000]";
+					mes "^00FF00Congratulations!^000000";
+					mes "Warping you to the ^FF0000Boss Area^000000...";
+					close2;
+					warp "1@gol2", 49, 25;
+					end;
+				} else {
+					mes "[^0080FFMonster Hunter^000000]";
+					mes "^FF0000Your inventory is too heavy!^000000";
+					close;
+				}
+			}
+			
+			mes "[^0080FFMonster Hunter^000000]";
+			if (.@claimed) {
+				mes "^00FF00Congratulations!^000000 You've claimed your rewards!";
+				mes "Total quests completed: ^0080FF" + .@claimed + "^000000";
+			} else {
+				mes "^FF0000You don't have any completed quests to claim.^000000";
+			}
+			close;
+			
+		case 5: // Info
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "^0080FF=== Daily Quest ===^000000";
+			mes "^008000Kill 1000 monsters in 1@gol1^000000";
+			mes " ";
+			mes "^00FF00Reward:^000000";
+			mes "^FF0000-^000000 100x Somatology Research Document";
+			mes "^FF0000-^000000 100x Somatology Experimental Fragment";
+			mes "^0080FF-^000000 Base EXP: 134,289,250";
+			mes "^0080FF-^000000 Job EXP: 94,002,475";
+			mes "^008000-^000000 Warp to Boss Area (1@gol2)";
+			mes " ";
+			mes "^FF0000Cooldown: 24 hours^000000";
+			next;
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "^FF8000=== Weekly Quest ===^000000";
+			mes "^008000Kill 5000 monsters in 1@gol1^000000";
+			mes "^FF0000Requirement: Complete Daily Quest first^000000";
+			mes " ";
+			mes "^00FF00Reward:^000000";
+			mes "^FF0000-^000000 700x Somatology Research Document";
+			mes "^FF0000-^000000 700x Somatology Experimental Fragment";
+			mes "^0080FF-^000000 Base EXP: 940,024,750";
+			mes "^0080FF-^000000 Job EXP: 658,017,325";
+			mes "^008000-^000000 Warp to Boss Area (1@gol2)";
+			mes " ";
+			mes "^FF0000Cooldown: 7 days (168 hours)^000000";
+			next;
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "^00FF00=== Target Monsters ===^000000";
+			mes "^0080FF-^000000 Rekenber Guard";
+			mes "^0080FF-^000000 Regenschirm Scientist";
+			mes "^0080FF-^000000 Senior Rekenber";
+			close;
+			
+		case 6: // Cancel
+			mes "[^0080FFMonster Hunter^000000]";
+			mes "See you later!";
+			close;
+	}
+
+OnInit:
+	waitingroom "Quest Instance",0;
+	end;
+}
+
+// ============================================
+// Monster Kill Tracker - 1@gol1
+// ============================================
+-	script	GOL1_Monster_Tracker	FAKE_NPC,{
+OnInit:
+	setmapflag "1@gol1", mf_loadevent;
+	end;
+
+OnNPCKillEvent:
+	// Check map
+	if (strcharinfo(3) != "1@gol1") end;
+	
+	// Check monster ID
+	// Rekenber Guard (20542), Regenschirm Scientist (20543), Senior Rekenber (20541)
+	if (killedrid != 20542 && killedrid != 20543 && killedrid != 20541)
+		end;
+	
+	// Count for daily quest
+	if (GOL1_Daily_Active && GOL1_Daily_Count < 1000) {
+		GOL1_Daily_Count++;
+		if (GOL1_Daily_Count >= 1000) {
+			dispbottom "===================================";
+			dispbottom "Daily Quest Completed!";
+			dispbottom "Talk to Monster Hunter to claim rewards.";
+			dispbottom "===================================";
+		} else if (GOL1_Daily_Count % 10 == 0) {
+			dispbottom "Daily Quest: " + GOL1_Daily_Count + "/1000 (" + (GOL1_Daily_Count * 100 / 1000) + "%)";
+		}
+	}
+	
+	// Count for weekly quest
+	if (GOL1_Weekly_Active && GOL1_Weekly_Count < 5000) {
+		GOL1_Weekly_Count++;
+		if (GOL1_Weekly_Count >= 5000) {
+			dispbottom "===================================";
+			dispbottom "Weekly Quest Completed!";
+			dispbottom "Talk to Monster Hunter to claim rewards.";
+			dispbottom "===================================";
+		} else if (GOL1_Weekly_Count % 50 == 0) {
+			dispbottom "Weekly Quest: " + GOL1_Weekly_Count + "/5000 (" + (GOL1_Weekly_Count * 100 / 5000) + "%)";
+		}
+	}
+	end;
+}
+
+// ============================================
+// Time Display Function
+// ============================================
+function	script	F_InsertTime	{
+	.@time = getarg(0);
+	.@days = .@time / 86400;
+	.@hours = (.@time % 86400) / 3600;
+	.@mins = (.@time % 3600) / 60;
+	.@secs = .@time % 60;
+	
+	.@str$ = "";
+	if (.@days) .@str$ += .@days + " day" + ((.@days > 1) ? "s " : " ");
+	if (.@hours) .@str$ += .@hours + " hour" + ((.@hours > 1) ? "s " : " ");
+	if (.@mins) .@str$ += .@mins + " min" + ((.@mins > 1) ? "s " : " ");
+	if (.@secs && !.@days) .@str$ += .@secs + " sec" + ((.@secs > 1) ? "s" : "");
+	
+	return .@str$;
+}
+
+/*
+==============================================
+HOW TO ADD NEW MAPS:
+==============================================
+
+1. Copy this entire script
+2. Replace all instances:
+   - GOL1_ → NEWMAP_
+   - 1@gol1 → your_new_map
+   - Monster Hunter#gol1 → Monster Hunter#newmap
+   - GOL1_Monster_Tracker → NEWMAP_Monster_Tracker
+
+3. Update coordinates:
+   - NPC position: 1@gol1,197,46,4
+   - Warp position: warp "1@gol1", 65, 274
+   - Boss warp: warp "1@gol2", 49, 25
+
+4. Update monster IDs in OnNPCKillEvent
+
+5. Update rewards (items, exp)
+
+Example for new map:
+   GOL1_Daily_Active → GLHE_Daily_Active
+   #GOL1_Daily_Delay → #GLHE_Daily_Delay
+   GOL1_Daily_Count → GLHE_Daily_Count
+   
+This ensures each map has completely independent variables!
+==============================================
+*/

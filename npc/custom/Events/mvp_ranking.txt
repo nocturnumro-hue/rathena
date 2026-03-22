@@ -1,0 +1,870 @@
+//=============================================================================
+// MVP LADDER SYSTEM
+//=============================================================================
+// Version: 5.0 (One-Time Claim Fix + Full Rewrite)
+//=============================================================================
+// DATABASE SETUP
+// -----------------------------------------------------------------------
+// For a NEW server / fresh VPS, run ALL steps below in order.
+// For an existing server upgrading from v4.x, run only Step 3.
+// -----------------------------------------------------------------------
+//
+// STEP 1 - Create mvpladder table
+//
+// CREATE TABLE IF NOT EXISTS `mvpladder` (
+//   `id`      int(11)          NOT NULL AUTO_INCREMENT,
+//   `char_id` int(11) unsigned NOT NULL DEFAULT '0',
+//   `mob_id`  INT              NOT NULL,
+//   `kills`   INT              DEFAULT 0,
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `unique_char_mob` (`char_id`, `mob_id`),
+//   INDEX (`char_id`),
+//   INDEX (`mob_id`),
+//   INDEX (`kills`)
+// ) ENGINE=InnoDB AUTO_INCREMENT=1;
+//
+// -----------------------------------------------------------------------
+//
+// STEP 2 - Create mvp_weekly_rewards table
+//          (UNIQUE KEY is already included - prevents duplicate rewards)
+//
+// CREATE TABLE IF NOT EXISTS `mvp_weekly_rewards` (
+//   `id`        int(11)          NOT NULL AUTO_INCREMENT,
+//   `char_id`   int(11) unsigned NOT NULL,
+//   `rank`      TINYINT          NOT NULL,
+//   `kills`     INT              NOT NULL,
+//   `claimed`   TINYINT          DEFAULT 0,
+//   `week_date` DATE             NOT NULL,
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `unique_weekly_rank` (`char_id`, `week_date`, `rank`),
+//   INDEX (`char_id`),
+//   INDEX (`claimed`)
+// ) ENGINE=InnoDB AUTO_INCREMENT=1;
+//
+// -----------------------------------------------------------------------
+//
+// STEP 3 - Only needed if upgrading from v4.x (table already exists)
+//          Skip this step if you ran STEP 2 above on a fresh server.
+//
+// ALTER TABLE `mvp_weekly_rewards`
+// ADD UNIQUE KEY `unique_weekly_rank` (`char_id`, `week_date`, `rank`);
+//
+// -----------------------------------------------------------------------
+//=============================================================================
+
+-	script	MVPLadder	FAKE_NPC,{
+
+OnInit:
+	//--- General Settings ---
+	.map_killannounce  = 1;
+	.killannounce      = 1;
+	.gmnokill          = 100;
+	.showtotal         = 20;
+	.showpage          = 10;
+	.showstatue        = 3;
+	.fix_custom_sprite = false;
+
+	//--- MVP Bonus System ---
+	$@mvp_bonus_enable = 1;
+	$@mvp_broadcast    = 1;
+
+	// Base Tier (MVP Lv < 100)
+	setarray $@mvp_bonus_base_id[0],    14232, 7615, 7227, 7179;
+	setarray $@mvp_bonus_base_qty[0],   1,     1,    5,    1;
+	setarray $@mvp_bonus_base_rate[0],  1500,  1500, 1000, 500;
+
+	// Enhanced Tier (MVP Lv 100-199)
+	setarray $@mvp_bonus_mid_id[0],     14232, 7615, 7227, 7179;
+	setarray $@mvp_bonus_mid_qty[0],    1,     1,    5,    1;
+	setarray $@mvp_bonus_mid_rate[0],   3000,  3000, 2000, 1000;
+
+	// Premium Tier (MVP Lv 200+)
+	setarray $@mvp_bonus_high_id[0],    14232, 7615, 7227, 7179;
+	setarray $@mvp_bonus_high_qty[0],   1,     1,    10,   2;
+	setarray $@mvp_bonus_high_rate[0],  5000,  5000, 5000, 1500;
+
+	setarray $@mvp_bonus_name$[0],
+		"Yggdrasil Berry Box",
+		"MVP Voucher",
+		"TCG Card",
+		"Proof of Donation";
+
+	$@mvp_bonus_count = getarraysize($@mvp_bonus_base_id);
+
+	//--- Weekly Reward Items (Rank 1, 2, 3) ---
+	$@weekly_reward_enable = 1;
+	setarray $@weekly_reward_id[0],  7179, 7179, 7179;
+	setarray $@weekly_reward_qty[0], 10,   5,    3;
+
+	//--- Internal ---
+	$@last_check_date$ = "";
+
+	initnpctimer;
+	end;
+
+//=============================================================================
+// TIMER: Every 5 minutes - update statues + check weekly reset
+//=============================================================================
+OnTimer300000:
+	callfunc "F_UpdateStatues";
+	callfunc "F_CheckWeeklyReset";
+	stopnpctimer;
+	initnpctimer;
+	end;
+
+//=============================================================================
+// MVP KILL EVENT
+//=============================================================================
+OnNPCKillEvent:
+	// Only process MVP mobs
+	if (getmonsterinfo(killedrid, MOB_MVPEXP) <= 0) end;
+
+	// Record kill in database
+	query_sql("INSERT INTO mvpladder (char_id, mob_id, kills) "
+	        + "VALUES ('" + getcharid(0) + "', '" + killedrid + "', 1) "
+	        + "ON DUPLICATE KEY UPDATE kills = kills + 1");
+
+	// Get player total kills this week
+	query_sql("SELECT SUM(kills) FROM mvpladder WHERE char_id = '" + getcharid(0) + "'",
+	          .@total_kills);
+
+	// Get MVP info
+	.@mvp_name$   = getmonsterinfo(killedrid, MOB_NAME);
+	.@player_name$ = strcharinfo(0);
+	.@mvp_level   = getmonsterinfo(killedrid, MOB_LV);
+
+	// Determine tier and color
+	if (.@mvp_level >= 200) {
+		.@tier_name$  = "PREMIUM TIER";
+		.@tier_color  = 0xDA70D6;
+	} else if (.@mvp_level >= 100) {
+		.@tier_name$  = "ENHANCED TIER";
+		.@tier_color  = 0xFF6600;
+	} else {
+		.@tier_name$  = "BASE TIER";
+		.@tier_color  = 0x00FF00;
+	}
+
+	// Announce
+	announce "================================================", bc_all, .@tier_color;
+	announce "MVP KILL - " + .@tier_name$,                      bc_all, .@tier_color;
+	announce .@player_name$ + " defeated " + .@mvp_name$ + " (Lv " + .@mvp_level + ")", bc_all, .@tier_color;
+	announce "Total MVP Kills This Week: " + .@total_kills,     bc_all, .@tier_color;
+	announce "================================================", bc_all, .@tier_color;
+
+	// Give bonus rewards
+	if ($@mvp_bonus_enable == 1) {
+		callfunc "F_GiveMVPBonus", .@mvp_level, .@player_name$, .@tier_color;
+	}
+	end;
+
+//=============================================================================
+// WEEKLY RESET
+//=============================================================================
+OnWeeklyReset:
+	if ($@weekly_reward_enable == 0) end;
+
+	announce "[ Weekly MVP ] Calculating top hunters...", bc_all, 0x00FF00;
+
+	// Get top 3 players
+	query_sql("SELECT t1.char_id, t2.name, SUM(t1.kills) as total_kills "
+	        + "FROM mvpladder t1 "
+	        + "INNER JOIN `char` t2 ON t1.char_id = t2.char_id "
+	        + "GROUP BY t1.char_id "
+	        + "ORDER BY total_kills DESC LIMIT 3",
+	          .@cid, .@name$, .@kills);
+	.@nb = getarraysize(.@cid);
+
+	if (.@nb == 0) {
+		announce "[ Weekly MVP ] No MVP kills this week.", bc_all, 0x00FF00;
+		announce "[ Weekly MVP ] New week begins! Good luck!", bc_all, 0x00FF00;
+		query_sql("TRUNCATE TABLE mvpladder");
+		end;
+	}
+
+	// Build week date string
+	.@week_date$ = gettime(DT_YEAR) + "-"
+	             + sprintf("%02d", gettime(DT_MONTH)) + "-"
+	             + sprintf("%02d", gettime(DT_DAYOFMONTH));
+
+	// Save rewards - INSERT IGNORE prevents duplicate entries
+	for (.@i = 0; .@i < .@nb && .@i < 3; .@i++) {
+		query_sql("INSERT IGNORE INTO mvp_weekly_rewards "
+		        + "(char_id, rank, kills, claimed, week_date) "
+		        + "VALUES ('" + .@cid[.@i] + "', '" + (.@i + 1) + "', '"
+		        + .@kills[.@i] + "', 0, '" + .@week_date$ + "')");
+
+		announce "[ Weekly MVP ] Rank #" + (.@i + 1) + " - " + .@name$[.@i]
+		       + " can claim " + getitemname($@weekly_reward_id[.@i])
+		       + " x" + $@weekly_reward_qty[.@i]
+		       + "! (" + .@kills[.@i] + " kills)", bc_all, 0x00FF00;
+	}
+
+	// Reset the ladder
+	announce "[ Weekly MVP ] Resetting kills for new week...", bc_all, 0x00FF00;
+	query_sql("TRUNCATE TABLE mvpladder");
+	announce "[ Weekly MVP ] New week begins! Good luck hunters!", bc_all, 0x00FF00;
+	end;
+
+//=============================================================================
+// GM TEST RESET
+//=============================================================================
+OnTestReset:
+	announce "[ TEST MODE ] Manual Weekly Reset triggered by GM!", bc_all, 0xFF0000;
+	donpcevent strnpcinfo(0) + "::OnWeeklyReset";
+	end;
+}
+
+//=============================================================================
+// FUNCTION: Update Top 3 Statues
+//=============================================================================
+function	script	F_UpdateStatues	{
+	query_sql("SELECT `char`.char_id, `char`.name, `char`.guild_id, `char`.class, "
+	        + "`char`.sex, `char`.hair, `char`.hair_color, `char`.clothes_color, "
+	        + "`char`.body, `char`.head_top, `char`.head_mid, `char`.head_bottom, `char`.robe, "
+	        + "SUM(mvpladder.kills) as orderKills "
+	        + "FROM `char` RIGHT JOIN mvpladder ON `char`.char_id = mvpladder.char_id "
+	        + "GROUP BY `char`.char_id ORDER BY orderKills DESC "
+	        + "LIMIT " + getvariableofnpc(.showstatue, "MVPLadder"),
+	          .@cid, .@name$, .@guild_id, .@class, .@sex$, .@hair,
+	          .@hair_color, .@clothes_color, .@body, .@head_top,
+	          .@head_mid, .@head_bottom, .@robe, .@kills);
+	.@nb = getarraysize(.@cid);
+
+	// Optional: clear head accessories before applying new ones
+	if (getvariableofnpc(.fix_custom_sprite, "MVPLadder")) {
+		for (.@i = 0; .@i < .@nb; .@i++) {
+			.@sid = getelementofarray(getvariableofnpc(.statue, "MVPLadder"), .@i + 1);
+			setunitdata .@sid, UNPC_HEADTOP,    0;
+			setunitdata .@sid, UNPC_HEADMIDDLE, 0;
+			setunitdata .@sid, UNPC_HEADBOTTOM, 0;
+			setunitdata .@sid, UNPC_ROBE,       0;
+		}
+	}
+
+	// Update statues with player appearance
+	for (.@i = 0; .@i < .@nb; .@i++) {
+		.@sid = getelementofarray(getvariableofnpc(.statue, "MVPLadder"), .@i + 1);
+		setunitdata .@sid, UNPC_CLASS,      .@class[.@i];
+		setunitdata .@sid, UNPC_SEX,        (.@sex$[.@i] == "F") ? SEX_FEMALE : SEX_MALE;
+		setunitdata .@sid, UNPC_HAIRSTYLE,  .@hair[.@i];
+		setunitdata .@sid, UNPC_HAIRCOLOR,  .@hair_color[.@i];
+		setunitdata .@sid, UNPC_CLOTHCOLOR, .@clothes_color[.@i];
+		setunitdata .@sid, UNPC_BODY2,      .@body[.@i];
+		setunitdata .@sid, UNPC_HEADTOP,    .@head_top[.@i];
+		setunitdata .@sid, UNPC_HEADMIDDLE, .@head_mid[.@i];
+		setunitdata .@sid, UNPC_HEADBOTTOM, .@head_bottom[.@i];
+		setunitdata .@sid, UNPC_ROBE,       .@robe[.@i];
+
+		setnpcdisplay "mvp_ladder_statue#" + (.@i + 1), .@name$[.@i];
+
+		set getvariableofnpc(.statue_name$[.@i + 1],  "MVPLadder"), .@name$[.@i];
+		set getvariableofnpc(.statue_guild$[.@i + 1], "MVPLadder"), getguildname(.@guild_id[.@i]);
+		set getvariableofnpc(.statue_kills[.@i + 1],  "MVPLadder"), .@kills[.@i];
+	}
+
+	// Hide unused statue slots
+	for (.@i = .@nb; .@i < getvariableofnpc(.showstatue, "MVPLadder"); .@i++) {
+		.@sid = getelementofarray(getvariableofnpc(.statue, "MVPLadder"), .@i + 1);
+		setunitdata .@sid, UNPC_CLASS, HIDDEN_WARP_NPC;
+	}
+
+	return;
+}
+
+//=============================================================================
+// FUNCTION: Check Weekly Reset (runs every 5 min)
+//=============================================================================
+function	script	F_CheckWeeklyReset	{
+	.@today$ = gettime(DT_YEAR) + "-"
+	         + sprintf("%02d", gettime(DT_MONTH)) + "-"
+	         + sprintf("%02d", gettime(DT_DAYOFMONTH));
+
+	// Only proceed if date has changed
+	if ($@last_check_date$ == .@today$) return;
+	$@last_check_date$ = .@today$;
+
+	// Only reset on Sunday (0 = Sunday)
+	if (gettime(DT_DAYOFWEEK) != 0) return;
+
+	// Check if reset already happened today (rank 1 row exists for today)
+	query_sql("SELECT COUNT(*) FROM mvp_weekly_rewards "
+	        + "WHERE week_date = '" + .@today$ + "' AND rank = 1",
+	          .@already_reset);
+
+	if (.@already_reset == 0) {
+		donpcevent "MVPLadder::OnWeeklyReset";
+	}
+
+	return;
+}
+
+//=============================================================================
+// FUNCTION: Give MVP Bonus Rewards on kill
+//=============================================================================
+function	script	F_GiveMVPBonus	{
+	.@mvp_level    = getarg(0);
+	.@player_name$ = getarg(1);
+	.@tier_color   = getarg(2);
+
+	.@rewards_received = 0;
+	.@reward_msg$      = "";
+
+	for (.@i = 0; .@i < $@mvp_bonus_count; .@i++) {
+		// Pick correct tier arrays
+		if (.@mvp_level >= 200) {
+			.@item_id  = $@mvp_bonus_high_id[.@i];
+			.@item_qty = $@mvp_bonus_high_qty[.@i];
+			.@rate     = $@mvp_bonus_high_rate[.@i];
+		} else if (.@mvp_level >= 100) {
+			.@item_id  = $@mvp_bonus_mid_id[.@i];
+			.@item_qty = $@mvp_bonus_mid_qty[.@i];
+			.@rate     = $@mvp_bonus_mid_rate[.@i];
+		} else {
+			.@item_id  = $@mvp_bonus_base_id[.@i];
+			.@item_qty = $@mvp_bonus_base_qty[.@i];
+			.@rate     = $@mvp_bonus_base_rate[.@i];
+		}
+
+		// Roll
+		if (rand(1, 10000) > .@rate) continue;
+
+		// Weight check
+		if (checkweight(.@item_id, .@item_qty) == 0) {
+			dispbottom "WARNING: Inventory too heavy for " + $@mvp_bonus_name$[.@i] + "!";
+			continue;
+		}
+
+		getitem .@item_id, .@item_qty;
+		.@rewards_received++;
+
+		if (.@reward_msg$ != "") .@reward_msg$ += ", ";
+		.@reward_msg$ += $@mvp_bonus_name$[.@i];
+		if (.@item_qty > 1) .@reward_msg$ += " x" + .@item_qty;
+
+		dispbottom "[ MVP BONUS ] You received " + $@mvp_bonus_name$[.@i] + " x" + .@item_qty;
+	}
+
+	// Server-wide announcement
+	if (.@rewards_received > 0 && $@mvp_broadcast == 1) {
+		announce "[ MVP BONUS ] " + .@player_name$ + " received: " + .@reward_msg$, bc_all | bc_blue;
+	}
+
+	return;
+}
+
+//=============================================================================
+// FUNCTION: Claim Weekly Reward (ONE TIME ONLY)
+//=============================================================================
+function	script	F_ClaimReward	{
+	.@reward_id   = getarg(0);
+	.@reward_rank = getarg(1);
+
+	// ── STEP 1: Mark as claimed FIRST before giving any item ──
+	// WHERE claimed = 0 ensures this only succeeds once.
+	// If the player already claimed, affected rows = 0 and we stop.
+	query_sql("UPDATE mvp_weekly_rewards SET claimed = 1 "
+	        + "WHERE id = " + .@reward_id + " AND claimed = 0",
+	          .@affected);
+
+	if (.@affected == 0) {
+		emotion e_swt2;
+		mes "^FF0000This reward has already been claimed!^000000";
+		mes "Each reward can only be collected once.";
+		close;
+	}
+
+	// ── STEP 2: Get item config ──
+	.@item_id  = $@weekly_reward_id[.@reward_rank - 1];
+	.@item_qty = $@weekly_reward_qty[.@reward_rank - 1];
+
+	if (.@item_id <= 0 || .@item_qty <= 0) {
+		// Rollback: invalid config
+		query_sql("UPDATE mvp_weekly_rewards SET claimed = 0 WHERE id = " + .@reward_id);
+		mes "^FF0000ERROR: Reward configuration is invalid.^000000";
+		mes "Please contact a GM.";
+		close;
+	}
+
+	// ── STEP 3: Check carry weight ──
+	if (checkweight(.@item_id, .@item_qty) == 0) {
+		// Rollback: let player try again after clearing inventory
+		query_sql("UPDATE mvp_weekly_rewards SET claimed = 0 WHERE id = " + .@reward_id);
+		emotion e_swt2;
+		mes "^FF0000Your inventory is too heavy!^000000";
+		mes "Please free up some space and try again.";
+		close;
+	}
+
+	// ── STEP 4: Give the item ──
+	getitem .@item_id, .@item_qty;
+
+	emotion e_kis;
+	mes "^00FF00Reward Claimed!^000000";
+	mes " ";
+	mes "You received:";
+	mes "^FF6600" + getitemname(.@item_id) + " x" + .@item_qty + "^000000";
+	return;
+}
+
+//=============================================================================
+// FUNCTION: Show Top MVP Killers
+//=============================================================================
+function	script	F_ShowTopKillers	{
+	query_sql("SELECT t1.char_id, SUM(t1.kills) as orderKills, t2.name "
+	        + "FROM mvpladder t1 "
+	        + "INNER JOIN `char` t2 ON t1.char_id = t2.char_id "
+	        + "GROUP BY t1.char_id ORDER BY orderKills DESC "
+	        + "LIMIT " + getvariableofnpc(.showtotal, "MVPLadder"),
+	          .@cid, .@kills, .@name$);
+	.@nb = getarraysize(.@cid);
+
+	if (!.@nb) {
+		mes "The ladder is currently empty.";
+		next;
+		return;
+	}
+
+	for (.@j = 0; .@j < .@nb; .@j += getvariableofnpc(.showpage, "MVPLadder")) {
+		mes "^0099FFTOP MVP KILLERS^000000";
+		mes " ";
+		for (.@i = .@j; .@i < (.@j + getvariableofnpc(.showpage, "MVPLadder")) && .@i < .@nb; .@i++) {
+			mes "^0000FF" + (.@i + 1) + ".^000000 ^00FF00" + .@name$[.@i] + "^000000";
+			mes "   ^FF6600Total Kills: ^FF0000" + .@kills[.@i] + "^000000";
+		}
+		if (.@j + getvariableofnpc(.showpage, "MVPLadder") < .@nb) next;
+	}
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: Show Bonus Info
+//=============================================================================
+function	script	F_ShowBonusInfo	{
+	mes "^0099FFMVP Level-Based Bonus System^000000";
+	mes " ";
+	mes "Rewards scale automatically";
+	mes "based on the MVP's level!";
+	next;
+
+	mes "^0099FFBASE TIER (Lv < 100)^000000";
+	mes "^FF6600Berry Box x1^000000 (15%)";
+	mes "^FF6600MVP Voucher x1^000000 (15%)";
+	mes "^FF6600TCG Card x5^000000 (10%)";
+	mes "^FF6600Proof of Donation x1^000000 (5%)";
+	next;
+
+	mes "^FF6600ENHANCED TIER (Lv 100-199)^000000";
+	mes "^00FF00All rates doubled!^000000";
+	mes "^FF6600Berry Box x1^000000 (30%)";
+	mes "^FF6600MVP Voucher x1^000000 (30%)";
+	mes "^FF6600TCG Card x5^000000 (20%)";
+	mes "^FF6600Proof of Donation x1^000000 (10%)";
+	next;
+
+	mes "^8B00FFPREMIUM TIER (Lv 200+)^000000";
+	mes "^FF6600Berry Box x1^000000 (50%)";
+	mes "^FF6600MVP Voucher x1^000000 (50%)";
+	mes "^FF6600TCG Card x10^000000 (50%)";
+	mes "^FF6600Proof of Donation x2^000000 (15%)";
+	next;
+
+	mes "System Status: " + (($@mvp_bonus_enable == 1) ? "^00FF00Active^000000" : "^FF0000Inactive^000000");
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: Show Weekly Ranking
+//=============================================================================
+function	script	F_ShowWeeklyRanking	{
+	mes "^0099FFWeekly MVP Ranking^000000";
+	mes " ";
+	mes "Every Sunday, the top 3 MVP";
+	mes "hunters receive special rewards!";
+	next;
+
+	mes "^00FF00Weekly Rewards:^000000";
+	mes "^0000FF#1^000000 - ^FF6600" + getitemname($@weekly_reward_id[0]) + " x" + $@weekly_reward_qty[0] + "^000000";
+	mes "^0000FF#2^000000 - ^FF6600" + getitemname($@weekly_reward_id[1]) + " x" + $@weekly_reward_qty[1] + "^000000";
+	mes "^0000FF#3^000000 - ^FF6600" + getitemname($@weekly_reward_id[2]) + " x" + $@weekly_reward_qty[2] + "^000000";
+	next;
+
+	query_sql("SELECT t1.char_id, t2.name, SUM(t1.kills) as total_kills "
+	        + "FROM mvpladder t1 "
+	        + "INNER JOIN `char` t2 ON t1.char_id = t2.char_id "
+	        + "GROUP BY t1.char_id ORDER BY total_kills DESC LIMIT 3",
+	          .@cid, .@name$, .@kills);
+	.@nb = getarraysize(.@cid);
+
+	mes "^0099FFCurrent Top 3 This Week:^000000";
+	mes " ";
+	if (!.@nb) {
+		mes "No kills recorded yet this week.";
+	} else {
+		for (.@i = 0; .@i < .@nb; .@i++) {
+			mes "^0000FF#" + (.@i + 1) + "^000000 ^00FF00" + .@name$[.@i] + "^000000";
+			mes "   ^FF6600Kills: ^FF0000" + .@kills[.@i] + "^000000";
+		}
+	}
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: Show Own MVP Stats
+//=============================================================================
+function	script	F_ShowOwnInfo	{
+	query_sql("SELECT mob_id, kills FROM mvpladder "
+	        + "WHERE char_id = " + getcharid(0) + " ORDER BY kills DESC",
+	          .@mobid, .@kills);
+	.@nb = getarraysize(.@mobid);
+
+	if (!.@nb) {
+		mes "You haven't killed any MVP this week.";
+		next;
+		return;
+	}
+
+	.@total = 0;
+	for (.@j = 0; .@j < .@nb; .@j += getvariableofnpc(.showpage, "MVPLadder")) {
+		mes "^0099FFYOUR MVP KILLS THIS WEEK^000000";
+		mes " ";
+		for (.@i = .@j; .@i < (.@j + getvariableofnpc(.showpage, "MVPLadder")) && .@i < .@nb; .@i++) {
+			mes "^0000FF" + (.@i + 1) + ".^000000 ^00FF00" + getmonsterinfo(.@mobid[.@i], MOB_NAME) + "^000000";
+			mes "   ^FF6600Killed ^FF0000" + .@kills[.@i] + "^FF6600 time(s)^000000";
+			.@total += .@kills[.@i];
+		}
+		if (.@j + getvariableofnpc(.showpage, "MVPLadder") < .@nb) next;
+	}
+	next;
+
+	mes "^0099FFWeekly Total:^000000 ^FF0000" + .@total + "^000000 kills";
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: GM - Trigger Reset
+//=============================================================================
+function	script	F_GM_TriggerReset	{
+	mes "^FF0000Trigger Weekly Reset?^000000";
+	mes "This will:";
+	mes "^0099FF1.^000000 Save top 3 rewards to database";
+	mes "^0099FF2.^000000 Reset all MVP kill counts";
+	mes "^0099FF3.^000000 Start a new week";
+	next;
+
+	if (select("^00FF00Yes, Reset Now^000000:^FF0000Cancel^000000") == 1) {
+		donpcevent "MVPLadder::OnTestReset";
+		mes "^00FF00Reset has been triggered!^000000";
+	} else {
+		mes "Reset cancelled.";
+	}
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: GM - Add Test Kills
+//=============================================================================
+function	script	F_GM_AddKills	{
+	mes "Select an MVP to add test kills:";
+	.@choice = select(
+		"^0099FFBaphomet (Lv 81)^000000",
+		"^FF6600Valkyrie Randgris (Lv 141)^000000",
+		"^8B00FFWounded Morocc (Lv 250)^000000",
+		"^FF0000Cancel^000000"
+	);
+
+	if (.@choice == 4) {
+		mes "Cancelled.";
+		next;
+		return;
+	}
+
+	if (.@choice == 1)      .@mvp_id = 1039;
+	else if (.@choice == 2) .@mvp_id = 1751;
+	else                    .@mvp_id = 1917;
+
+	mes "How many kills to add? (1-9999)";
+	input .@kills, 1, 9999;
+
+	query_sql("INSERT INTO mvpladder (char_id, mob_id, kills) "
+	        + "VALUES ('" + getcharid(0) + "', '" + .@mvp_id + "', '" + .@kills + "') "
+	        + "ON DUPLICATE KEY UPDATE kills = kills + " + .@kills);
+
+	mes "^00FF00Done!^000000";
+	mes "Added ^FF0000" + .@kills + "^000000 kills for";
+	mes "^FF6600" + getmonsterinfo(.@mvp_id, MOB_NAME) + "^000000";
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: GM - Clear Own Unclaimed Rewards
+//=============================================================================
+function	script	F_GM_ClearRewards	{
+	mes "^FF0000Clear all your unclaimed rewards?^000000";
+	mes "This action cannot be undone!";
+	next;
+
+	if (select("^FF0000Yes, Clear^000000:^0099FFCancel^000000") == 1) {
+		query_sql("DELETE FROM mvp_weekly_rewards "
+		        + "WHERE char_id = " + getcharid(0) + " AND claimed = 0");
+		mes "^00FF00All unclaimed rewards cleared.^000000";
+	} else {
+		mes "Cancelled.";
+	}
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: GM - View Reward History
+//=============================================================================
+function	script	F_GM_RewardHistory	{
+	query_sql("SELECT id, rank, kills, week_date, claimed FROM mvp_weekly_rewards "
+	        + "WHERE char_id = " + getcharid(0) + " ORDER BY week_date DESC LIMIT 5",
+	          .@id, .@rank, .@kills, .@date$, .@claimed);
+	.@nb = getarraysize(.@id);
+
+	mes "^0099FFYour Last 5 Reward Records^000000";
+	mes " ";
+	if (!.@nb) {
+		mes "No reward history found.";
+	} else {
+		for (.@i = 0; .@i < .@nb; .@i++) {
+			mes "^0099FFWeek:^000000 "  + .@date$[.@i];
+			mes "^0099FFRank:^000000 ^FF6600#" + .@rank[.@i] + "^000000 (^FF0000" + .@kills[.@i] + "^000000 kills)";
+			mes "^0099FFStatus:^000000 " + ((.@claimed[.@i] == 0) ? "^FF0000Unclaimed^000000" : "^00FF00Claimed^000000");
+			mes " ";
+		}
+	}
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: GM - Toggle Bonus System
+//=============================================================================
+function	script	F_GM_ToggleBonus	{
+	mes "^0099FFBonus System Status:^000000 "
+	  + (($@mvp_bonus_enable == 1) ? "^00FF00Enabled^000000" : "^FF0000Disabled^000000");
+	mes " ";
+	mes "Toggle the bonus system?";
+	next;
+
+	if (select("^00FF00Yes^000000:^FF0000No^000000") == 1) {
+		$@mvp_bonus_enable = ($@mvp_bonus_enable == 1) ? 0 : 1;
+		mes "Bonus system is now: "
+		  + (($@mvp_bonus_enable == 1) ? "^00FF00ENABLED^000000" : "^FF0000DISABLED^000000");
+		announce "[ System ] MVP Bonus system "
+		       + (($@mvp_bonus_enable == 1) ? "ENABLED" : "DISABLED")
+		       + " by GM.", bc_all, 0xFF0000;
+	} else {
+		mes "No changes made.";
+	}
+	next;
+	return;
+}
+
+//=============================================================================
+// FUNCTION: GM - View Current Rates
+//=============================================================================
+function	script	F_GM_ViewRates	{
+	mes "^0099FFCurrent Bonus Reward Rates^000000";
+	mes " ";
+	mes "^0099FFBASE TIER (Lv < 100)^000000";
+	mes "^FF6600Berry Box:^000000 "   + ($@mvp_bonus_base_rate[0] / 100) + "%";
+	mes "^FF6600MVP Voucher:^000000 " + ($@mvp_bonus_base_rate[1] / 100) + "%";
+	mes "^FF6600TCG Card:^000000 "    + ($@mvp_bonus_base_rate[2] / 100) + "%";
+	mes "^FF6600PoD:^000000 "         + ($@mvp_bonus_base_rate[3] / 100) + "%";
+	next;
+
+	mes "^FF6600ENHANCED TIER (Lv 100-199)^000000";
+	mes "^FF6600Berry Box:^000000 "   + ($@mvp_bonus_mid_rate[0] / 100) + "%";
+	mes "^FF6600MVP Voucher:^000000 " + ($@mvp_bonus_mid_rate[1] / 100) + "%";
+	mes "^FF6600TCG Card:^000000 "    + ($@mvp_bonus_mid_rate[2] / 100) + "%";
+	mes "^FF6600PoD:^000000 "         + ($@mvp_bonus_mid_rate[3] / 100) + "%";
+	next;
+
+	mes "^8B00FFPREMIUM TIER (Lv 200+)^000000";
+	mes "^FF6600Berry Box:^000000 "           + ($@mvp_bonus_high_rate[0] / 100) + "%";
+	mes "^FF6600MVP Voucher:^000000 "         + ($@mvp_bonus_high_rate[1] / 100) + "% ^00FF00(FOCUS)^000000";
+	mes "^FF6600TCG Card x10:^000000 "        + ($@mvp_bonus_high_rate[2] / 100) + "%";
+	mes "^FF6600Proof of Donation x2:^000000 " + ($@mvp_bonus_high_rate[3] / 100) + "%";
+	next;
+	return;
+}
+
+//=============================================================================
+// NPC: MVP Ladder Manager
+//=============================================================================
+askald,134,163,5	script	MVP Ladder Manager	10458,{
+	.@npcname$ = "MVP Ladder Manager";
+	.@is_gm    = (getgmlevel() >= 80);
+
+	// Check for unclaimed weekly reward
+	query_sql("SELECT id, rank, kills, week_date FROM mvp_weekly_rewards "
+	        + "WHERE char_id = " + getcharid(0) + " AND claimed = 0 "
+	        + "ORDER BY week_date DESC LIMIT 1",
+	          .@reward_id, .@reward_rank, .@reward_kills, .@reward_date$);
+	.@has_reward = getarraysize(.@reward_id);
+
+	// If there is an unclaimed reward, show it first
+	if (.@has_reward > 0) {
+		emotion e_omg;
+		mes "[" + .@npcname$ + "]";
+		mes "^FF6600CONGRATULATIONS!^000000";
+		mes " ";
+		mes "You ranked ^00FF00#" + .@reward_rank + "^000000";
+		mes "in last week's MVP Ranking!";
+		mes " ";
+		mes "^0000FFWeek:^000000 "        + .@reward_date$;
+		mes "^0000FFTotal Kills:^000000 ^FF0000" + .@reward_kills + "^000000";
+		mes " ";
+		mes "^00FF00Claim your reward now?^000000";
+		next;
+
+		.@menu = select(
+			"^00FF00Claim Reward^000000",
+			"^8B00FFClaim Later^000000",
+			"^0099FFGo to Main Menu^000000"
+			+ (.@is_gm ? ":^FF0000[GM] Admin Panel^000000" : "")
+		);
+
+		if (.@menu == 1) {
+			mes "[" + .@npcname$ + "]";
+			callfunc "F_ClaimReward", .@reward_id, .@reward_rank;
+			close;
+		} else if (.@menu == 2) {
+			mes "[" + .@npcname$ + "]";
+			mes "Alright! Your reward will be here";
+			mes "whenever you are ready.";
+			close;
+		} else if (.@menu == 4 && .@is_gm) {
+			goto GM_AdminPanel;
+		}
+		// menu == 3 falls through to MainMenu
+	}
+
+	// Main Menu
+	MainMenu:
+	while (1) {
+		mes "[" + .@npcname$ + "]";
+		mes "^0099FFWelcome,^000000 " + strcharinfo(0) + "!";
+		mes "What would you like to do?";
+		next;
+
+		.@menu$ = "^0099FFTop MVP Killers^000000"
+		        + ":^8B00FFMVP Bonus Info^000000"
+		        + ":^00FF00Weekly Ranking^000000"
+		        + ":^FF6600My MVP Stats^000000";
+		if (.@is_gm) .@menu$ += ":^FF0000[GM] Admin Panel^000000";
+		.@menu$ += ":^808080Exit^000000";
+
+		.@choice = select(.@menu$);
+
+		switch (.@choice) {
+			case 1: callfunc "F_ShowTopKillers";    break;
+			case 2: callfunc "F_ShowBonusInfo";     break;
+			case 3: callfunc "F_ShowWeeklyRanking"; break;
+			case 4: callfunc "F_ShowOwnInfo";       break;
+			case 5:
+				if (.@is_gm) goto GM_AdminPanel;
+				else close;
+				break;
+			case 6: close;
+		}
+	}
+
+	// GM Admin Panel
+	GM_AdminPanel:
+	while (1) {
+		mes "[" + .@npcname$ + "]";
+		mes "^FF0000GM ADMIN PANEL^000000";
+		next;
+
+		switch (select(
+			"^00FF00Trigger Weekly Reset^000000",
+			"^0099FFAdd Test Kills^000000",
+			"^FF6600Clear My Unclaimed Rewards^000000",
+			"^8B00FFReward History^000000",
+			"^00BFFFToggle Bonus System^000000",
+			"^0000FFView Current Rates^000000",
+			"^808080Back to Main Menu^000000"
+		)) {
+			case 1: callfunc "F_GM_TriggerReset";  break;
+			case 2: callfunc "F_GM_AddKills";       break;
+			case 3: callfunc "F_GM_ClearRewards";   break;
+			case 4: callfunc "F_GM_RewardHistory";  break;
+			case 5: callfunc "F_GM_ToggleBonus";    break;
+			case 6: callfunc "F_GM_ViewRates";      break;
+			case 7: goto MainMenu;
+		}
+	}
+}
+
+//=============================================================================
+// STATUE NPCs
+//=============================================================================
+-	script	mvp_ladder_statue	FAKE_NPC,{
+	.@id = getelementofarray(getvariableofnpc(.npcgid, "MVPLadder"), getnpcid(0));
+	mes "^996600[ TOP " + .@id + " ]^000000";
+	mes "^006699Name:^000000 "  + getelementofarray(getvariableofnpc(.statue_name$,  "MVPLadder"), .@id);
+
+	.@guild$ = getelementofarray(getvariableofnpc(.statue_guild$, "MVPLadder"), .@id);
+	mes "^00AAAAGuild:^000000 " + ((.@guild$ == "null" || .@guild$ == "") ? "^AAAAAANone^000000" : .@guild$);
+
+	mes "^00AA00MVP Kills:^000000 " + getelementofarray(getvariableofnpc(.statue_kills, "MVPLadder"), .@id);
+	close;
+
+OnInit:
+	.@id = strnpcinfo(2);
+	set getvariableofnpc(.statue[.@id],       "MVPLadder"), getnpcid(0);
+	set getvariableofnpc(.npcgid[getnpcid(0)], "MVPLadder"), .@id;
+	end;
+}
+
+askald,148,151,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#1	1_F_MARIA
+askald,143,153,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#2	1_F_MARIA
+askald,153,153,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#3	1_F_MARIA
+
+//=============================================================================
+// STATUE LABELS
+//=============================================================================
+askald,148,151,5	script	#top1	HIDDEN_WARP_NPC,{
+OnInit:
+	initnpctimer;
+	end;
+OnTimer1000:
+	showscript("Top-1 MVP Killer");
+	setnpctimer 0;
+	end;
+}
+
+askald,143,153,5	script	#top2	HIDDEN_WARP_NPC,{
+OnInit:
+	initnpctimer;
+	end;
+OnTimer1000:
+	showscript("Top-2 MVP Killer");
+	setnpctimer 0;
+	end;
+}
+
+askald,153,153,5	script	#top3	HIDDEN_WARP_NPC,{
+OnInit:
+	initnpctimer;
+	end;
+OnTimer1000:
+	showscript("Top-3 MVP Killer");
+	setnpctimer 0;
+	end;
+}
+
+//=============================================================================
+// END OF SCRIPT - MVP LADDER v5.0
+//=============================================================================

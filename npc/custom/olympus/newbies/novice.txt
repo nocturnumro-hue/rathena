@@ -1,0 +1,369 @@
+// Usage: player_mbase(map, x, y, name, class, gender, hairstyle, hair_color, weapon, shield, hgtop, hgmid, hglow, option, cloth_color, mob_behavior, event);
+// @loadnpc npc/custom/manuel_npc/newbies/novice.txt
+
+-	script	PlayerMbaseNovice	-,{
+    
+    OnInit:
+        // Common parameters (stored as NPC variables)
+    	.map_name$ = "prt_fild08";
+    	
+    	setarray .mob_names$[0], "NoobMaster", "LaggyAlex", "MissClick", "OopsIDied", "PunchFirst", "WrongBuild", "AFKAgain", "PotatoAim", "FreeKill", "WhyMe", "Oppsie", "CantFindNPC", "NeedBuffs", "LootStealer", "LagSwitch", "GlassCannon", "RageQuitter", "Disconnected", "HealMe", "NoPots", "BadConnection", "PingHigh", "KeyboardTurner", "MouseClicker", "LevelOne", "Novice4Ever", "TradePls", "WarpPls", "TankFloor", "CarryMe", "BuffPls", "Grind247", "SellItems", "NeedZeny", "TooExpensive", "KafraPlz", "PortalMage", "FollowMe", "WhatsThis", "ClickBait", "PvpOnly", "FarmBot", "AutoAttack", "SkillSpam", "KilledByPoring", "MisreadSkill", "OutOfRange", "TooSlow", "OneShot", "JustLogging", "GgEz";
+		setarray .job_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .gender[0], rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1);
+		setarray .hairstyle[0], rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42);
+		setarray .haircolor[0], rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8);
+		setarray .weapon_id[0], 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201;
+		setarray .shield_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hgtop_id[0], rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000);
+		setarray .hgmid_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hglow_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .options[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .clothcolor[0], rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5);
+		setarray .mob_behavior[0], 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183;
+    	
+    	announce "Player monster base is summoned at " + .map_name$ + "!", bc_all;
+        
+        for (.@i = 0; .@i < 51; .@i++) {
+        	player_mbase(.map_name$, 0, 0, .mob_names$[.@i], .job_id[.@i], .gender[.@i], .hairstyle[.@i], .haircolor[.@i], .weapon_id[.@i], .shield_id[.@i], .hgtop_id[.@i], .hgmid_id[.@i], .hglow_id[.@i], .options[.@i], .clothcolor[.@i], .mob_behavior[.@i], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@i);
+        }
+    	
+    	// Respawn logic if the above AI is killed
+		// Redirecting repetitive logic to a subroutine, passing the index (0-30)
+		OnPlayerMbaseKilled0: callsub Respawn, 0; end;
+		OnPlayerMbaseKilled1: callsub Respawn, 1; end;
+		OnPlayerMbaseKilled2: callsub Respawn, 2; end;
+		OnPlayerMbaseKilled3: callsub Respawn, 3; end;
+		OnPlayerMbaseKilled4: callsub Respawn, 4; end;
+		OnPlayerMbaseKilled5: callsub Respawn, 5; end;
+		OnPlayerMbaseKilled6: callsub Respawn, 6; end;
+		OnPlayerMbaseKilled7: callsub Respawn, 7; end;
+		OnPlayerMbaseKilled8: callsub Respawn, 8; end;
+		OnPlayerMbaseKilled9: callsub Respawn, 9; end;
+		OnPlayerMbaseKilled10: callsub Respawn, 10; end;
+		OnPlayerMbaseKilled11: callsub Respawn, 11; end;
+		OnPlayerMbaseKilled12: callsub Respawn, 12; end;
+		OnPlayerMbaseKilled13: callsub Respawn, 13; end;
+		OnPlayerMbaseKilled14: callsub Respawn, 14; end;
+		OnPlayerMbaseKilled15: callsub Respawn, 15; end;
+		OnPlayerMbaseKilled16: callsub Respawn, 16; end;
+		OnPlayerMbaseKilled17: callsub Respawn, 17; end;
+		OnPlayerMbaseKilled18: callsub Respawn, 18; end;
+		OnPlayerMbaseKilled19: callsub Respawn, 19; end;
+		OnPlayerMbaseKilled20: callsub Respawn, 20; end;
+		OnPlayerMbaseKilled21: callsub Respawn, 21; end;
+		OnPlayerMbaseKilled22: callsub Respawn, 22; end;
+		OnPlayerMbaseKilled23: callsub Respawn, 23; end;
+		OnPlayerMbaseKilled24: callsub Respawn, 24; end;
+		OnPlayerMbaseKilled25: callsub Respawn, 25; end;
+		OnPlayerMbaseKilled26: callsub Respawn, 26; end;
+		OnPlayerMbaseKilled27: callsub Respawn, 27; end;
+		OnPlayerMbaseKilled28: callsub Respawn, 28; end;
+		OnPlayerMbaseKilled29: callsub Respawn, 29; end;
+		OnPlayerMbaseKilled30: callsub Respawn, 30; end;
+		OnPlayerMbaseKilled31: callsub Respawn, 31; end;
+		OnPlayerMbaseKilled32: callsub Respawn, 32; end;
+		OnPlayerMbaseKilled33: callsub Respawn, 33; end;
+		OnPlayerMbaseKilled34: callsub Respawn, 34; end;
+		OnPlayerMbaseKilled35: callsub Respawn, 35; end;
+		OnPlayerMbaseKilled36: callsub Respawn, 36; end;
+		OnPlayerMbaseKilled37: callsub Respawn, 37; end;
+		OnPlayerMbaseKilled38: callsub Respawn, 38; end;
+		OnPlayerMbaseKilled39: callsub Respawn, 39; end;
+		OnPlayerMbaseKilled40: callsub Respawn, 40; end;
+		OnPlayerMbaseKilled41: callsub Respawn, 41; end;
+		OnPlayerMbaseKilled42: callsub Respawn, 42; end;
+		OnPlayerMbaseKilled43: callsub Respawn, 43; end;
+		OnPlayerMbaseKilled44: callsub Respawn, 44; end;
+		OnPlayerMbaseKilled45: callsub Respawn, 45; end;
+		OnPlayerMbaseKilled46: callsub Respawn, 46; end;
+		OnPlayerMbaseKilled47: callsub Respawn, 47; end;
+		OnPlayerMbaseKilled48: callsub Respawn, 48; end;
+		OnPlayerMbaseKilled49: callsub Respawn, 49; end;
+		OnPlayerMbaseKilled50: callsub Respawn, 50; end;
+    	
+    	Respawn:
+			.@index = getarg(0);
+			// announce "Player monster base " + .mob_names$[.@index] + " is killed!", bc_all;
+			sleep 5000;
+			// Respawn the monster base. The GID is returned but not stored persistently.
+			player_mbase(.map_name$, 0, 0, .mob_names$[.@index], .job_id[.@index], .gender[.@index], .hairstyle[.@index], .haircolor[.@index], .weapon_id[.@index], .shield_id[.@index], .hgtop_id[.@index], .hgmid_id[.@index], .hglow_id[.@index], .options[.@index], .clothcolor[.@index], .mob_behavior[.@index], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@index);
+			// announce "Player monster base  " + .mob_names$[.@index] + " is spawned", bc_all;
+		return;
+}
+
+
+
+
+
+
+-	script	PlayerMbaseNovice2	-,{
+    
+    OnInit:
+        // Common parameters (stored as NPC variables)
+    	.map_name$ = "prt_fild06";
+    	
+        setarray .mob_names$[0], "NoobMaster", "LaggyAlex", "MissClick", "OopsIDied", "PunchFirst", "WrongBuild", "AFKAgain", "PotatoAim", "FreeKill", "WhyMe", "Oppsie", "CantFindNPC", "NeedBuffs", "LootStealer", "LagSwitch", "GlassCannon", "RageQuitter", "Disconnected", "HealMe", "NoPots", "BadConnection", "PingHigh", "KeyboardTurner", "MouseClicker", "LevelOne", "Novice4Ever", "TradePls", "WarpPls", "TankFloor", "CarryMe", "BuffPls", "Grind247", "SellItems", "NeedZeny", "TooExpensive", "KafraPlz", "PortalMage", "FollowMe", "WhatsThis", "ClickBait", "PvpOnly", "FarmBot", "AutoAttack", "SkillSpam", "KilledByPoring", "MisreadSkill", "OutOfRange", "TooSlow", "OneShot", "JustLogging", "GgEz";
+		setarray .job_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .gender[0], rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1);
+		setarray .hairstyle[0], rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42);
+		setarray .haircolor[0], rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8);
+		setarray .weapon_id[0], 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201;
+		setarray .shield_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hgtop_id[0], rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000);
+		setarray .hgmid_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hglow_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .options[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .clothcolor[0], rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5);
+		setarray .mob_behavior[0], 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183;
+    	
+    	announce "Player monster base is summoned at " + .map_name$ + "!", bc_all;
+        
+        for (.@i = 0; .@i < 51; .@i++) {
+        	player_mbase(.map_name$, 0, 0, .mob_names$[.@i], .job_id[.@i], .gender[.@i], .hairstyle[.@i], .haircolor[.@i], .weapon_id[.@i], .shield_id[.@i], .hgtop_id[.@i], .hgmid_id[.@i], .hglow_id[.@i], .options[.@i], .clothcolor[.@i], .mob_behavior[.@i], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@i);
+        }
+    	
+    	// Respawn logic if the above AI is killed
+		// Redirecting repetitive logic to a subroutine, passing the index (0-30)
+		OnPlayerMbaseKilled0: callsub Respawn, 0; end;
+		OnPlayerMbaseKilled1: callsub Respawn, 1; end;
+		OnPlayerMbaseKilled2: callsub Respawn, 2; end;
+		OnPlayerMbaseKilled3: callsub Respawn, 3; end;
+		OnPlayerMbaseKilled4: callsub Respawn, 4; end;
+		OnPlayerMbaseKilled5: callsub Respawn, 5; end;
+		OnPlayerMbaseKilled6: callsub Respawn, 6; end;
+		OnPlayerMbaseKilled7: callsub Respawn, 7; end;
+		OnPlayerMbaseKilled8: callsub Respawn, 8; end;
+		OnPlayerMbaseKilled9: callsub Respawn, 9; end;
+		OnPlayerMbaseKilled10: callsub Respawn, 10; end;
+		OnPlayerMbaseKilled11: callsub Respawn, 11; end;
+		OnPlayerMbaseKilled12: callsub Respawn, 12; end;
+		OnPlayerMbaseKilled13: callsub Respawn, 13; end;
+		OnPlayerMbaseKilled14: callsub Respawn, 14; end;
+		OnPlayerMbaseKilled15: callsub Respawn, 15; end;
+		OnPlayerMbaseKilled16: callsub Respawn, 16; end;
+		OnPlayerMbaseKilled17: callsub Respawn, 17; end;
+		OnPlayerMbaseKilled18: callsub Respawn, 18; end;
+		OnPlayerMbaseKilled19: callsub Respawn, 19; end;
+		OnPlayerMbaseKilled20: callsub Respawn, 20; end;
+		OnPlayerMbaseKilled21: callsub Respawn, 21; end;
+		OnPlayerMbaseKilled22: callsub Respawn, 22; end;
+		OnPlayerMbaseKilled23: callsub Respawn, 23; end;
+		OnPlayerMbaseKilled24: callsub Respawn, 24; end;
+		OnPlayerMbaseKilled25: callsub Respawn, 25; end;
+		OnPlayerMbaseKilled26: callsub Respawn, 26; end;
+		OnPlayerMbaseKilled27: callsub Respawn, 27; end;
+		OnPlayerMbaseKilled28: callsub Respawn, 28; end;
+		OnPlayerMbaseKilled29: callsub Respawn, 29; end;
+		OnPlayerMbaseKilled30: callsub Respawn, 30; end;
+		OnPlayerMbaseKilled31: callsub Respawn, 31; end;
+		OnPlayerMbaseKilled32: callsub Respawn, 32; end;
+		OnPlayerMbaseKilled33: callsub Respawn, 33; end;
+		OnPlayerMbaseKilled34: callsub Respawn, 34; end;
+		OnPlayerMbaseKilled35: callsub Respawn, 35; end;
+		OnPlayerMbaseKilled36: callsub Respawn, 36; end;
+		OnPlayerMbaseKilled37: callsub Respawn, 37; end;
+		OnPlayerMbaseKilled38: callsub Respawn, 38; end;
+		OnPlayerMbaseKilled39: callsub Respawn, 39; end;
+		OnPlayerMbaseKilled40: callsub Respawn, 40; end;
+		OnPlayerMbaseKilled41: callsub Respawn, 41; end;
+		OnPlayerMbaseKilled42: callsub Respawn, 42; end;
+		OnPlayerMbaseKilled43: callsub Respawn, 43; end;
+		OnPlayerMbaseKilled44: callsub Respawn, 44; end;
+		OnPlayerMbaseKilled45: callsub Respawn, 45; end;
+		OnPlayerMbaseKilled46: callsub Respawn, 46; end;
+		OnPlayerMbaseKilled47: callsub Respawn, 47; end;
+		OnPlayerMbaseKilled48: callsub Respawn, 48; end;
+		OnPlayerMbaseKilled49: callsub Respawn, 49; end;
+		OnPlayerMbaseKilled50: callsub Respawn, 50; end;
+    	
+    	Respawn:
+			.@index = getarg(0);
+			// announce "Player monster base " + .mob_names$[.@index] + " is killed!", bc_all;
+			sleep 5000;
+			// Respawn the monster base. The GID is returned but not stored persistently.
+			player_mbase(.map_name$, 0, 0, .mob_names$[.@index], .job_id[.@index], .gender[.@index], .hairstyle[.@index], .haircolor[.@index], .weapon_id[.@index], .shield_id[.@index], .hgtop_id[.@index], .hgmid_id[.@index], .hglow_id[.@index], .options[.@index], .clothcolor[.@index], .mob_behavior[.@index], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@index);
+			// announce "Player monster base  " + .mob_names$[.@index] + " is spawned", bc_all;
+		return;
+}
+
+
+-	script	PlayerMbaseNovice3	-,{
+    
+    OnInit:
+        // Common parameters (stored as NPC variables)
+    	.map_name$ = "moc_fild12";
+    	
+        setarray .mob_names$[0], "NoobMaster", "LaggyAlex", "MissClick", "OopsIDied", "PunchFirst", "WrongBuild", "AFKAgain", "PotatoAim", "FreeKill", "WhyMe", "Oppsie", "CantFindNPC", "NeedBuffs", "LootStealer", "LagSwitch", "GlassCannon", "RageQuitter", "Disconnected", "HealMe", "NoPots", "BadConnection", "PingHigh", "KeyboardTurner", "MouseClicker", "LevelOne", "Novice4Ever", "TradePls", "WarpPls", "TankFloor", "CarryMe", "BuffPls", "Grind247", "SellItems", "NeedZeny", "TooExpensive", "KafraPlz", "PortalMage", "FollowMe", "WhatsThis", "ClickBait", "PvpOnly", "FarmBot", "AutoAttack", "SkillSpam", "KilledByPoring", "MisreadSkill", "OutOfRange", "TooSlow", "OneShot", "JustLogging", "GgEz";
+		setarray .job_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .gender[0], rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1);
+		setarray .hairstyle[0], rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42);
+		setarray .haircolor[0], rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8);
+		setarray .weapon_id[0], 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201;
+		setarray .shield_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hgtop_id[0], rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000);
+		setarray .hgmid_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hglow_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .options[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .clothcolor[0], rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5);
+		setarray .mob_behavior[0], 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183;
+    	
+    	announce "Player monster base is summoned at " + .map_name$ + "!", bc_all;
+        
+        for (.@i = 0; .@i < 51; .@i++) {
+        	player_mbase(.map_name$, 0, 0, .mob_names$[.@i], .job_id[.@i], .gender[.@i], .hairstyle[.@i], .haircolor[.@i], .weapon_id[.@i], .shield_id[.@i], .hgtop_id[.@i], .hgmid_id[.@i], .hglow_id[.@i], .options[.@i], .clothcolor[.@i], .mob_behavior[.@i], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@i);
+        }
+    	
+    	// Respawn logic if the above AI is killed
+		// Redirecting repetitive logic to a subroutine, passing the index (0-30)
+		OnPlayerMbaseKilled0: callsub Respawn, 0; end;
+		OnPlayerMbaseKilled1: callsub Respawn, 1; end;
+		OnPlayerMbaseKilled2: callsub Respawn, 2; end;
+		OnPlayerMbaseKilled3: callsub Respawn, 3; end;
+		OnPlayerMbaseKilled4: callsub Respawn, 4; end;
+		OnPlayerMbaseKilled5: callsub Respawn, 5; end;
+		OnPlayerMbaseKilled6: callsub Respawn, 6; end;
+		OnPlayerMbaseKilled7: callsub Respawn, 7; end;
+		OnPlayerMbaseKilled8: callsub Respawn, 8; end;
+		OnPlayerMbaseKilled9: callsub Respawn, 9; end;
+		OnPlayerMbaseKilled10: callsub Respawn, 10; end;
+		OnPlayerMbaseKilled11: callsub Respawn, 11; end;
+		OnPlayerMbaseKilled12: callsub Respawn, 12; end;
+		OnPlayerMbaseKilled13: callsub Respawn, 13; end;
+		OnPlayerMbaseKilled14: callsub Respawn, 14; end;
+		OnPlayerMbaseKilled15: callsub Respawn, 15; end;
+		OnPlayerMbaseKilled16: callsub Respawn, 16; end;
+		OnPlayerMbaseKilled17: callsub Respawn, 17; end;
+		OnPlayerMbaseKilled18: callsub Respawn, 18; end;
+		OnPlayerMbaseKilled19: callsub Respawn, 19; end;
+		OnPlayerMbaseKilled20: callsub Respawn, 20; end;
+		OnPlayerMbaseKilled21: callsub Respawn, 21; end;
+		OnPlayerMbaseKilled22: callsub Respawn, 22; end;
+		OnPlayerMbaseKilled23: callsub Respawn, 23; end;
+		OnPlayerMbaseKilled24: callsub Respawn, 24; end;
+		OnPlayerMbaseKilled25: callsub Respawn, 25; end;
+		OnPlayerMbaseKilled26: callsub Respawn, 26; end;
+		OnPlayerMbaseKilled27: callsub Respawn, 27; end;
+		OnPlayerMbaseKilled28: callsub Respawn, 28; end;
+		OnPlayerMbaseKilled29: callsub Respawn, 29; end;
+		OnPlayerMbaseKilled30: callsub Respawn, 30; end;
+		OnPlayerMbaseKilled31: callsub Respawn, 31; end;
+		OnPlayerMbaseKilled32: callsub Respawn, 32; end;
+		OnPlayerMbaseKilled33: callsub Respawn, 33; end;
+		OnPlayerMbaseKilled34: callsub Respawn, 34; end;
+		OnPlayerMbaseKilled35: callsub Respawn, 35; end;
+		OnPlayerMbaseKilled36: callsub Respawn, 36; end;
+		OnPlayerMbaseKilled37: callsub Respawn, 37; end;
+		OnPlayerMbaseKilled38: callsub Respawn, 38; end;
+		OnPlayerMbaseKilled39: callsub Respawn, 39; end;
+		OnPlayerMbaseKilled40: callsub Respawn, 40; end;
+		OnPlayerMbaseKilled41: callsub Respawn, 41; end;
+		OnPlayerMbaseKilled42: callsub Respawn, 42; end;
+		OnPlayerMbaseKilled43: callsub Respawn, 43; end;
+		OnPlayerMbaseKilled44: callsub Respawn, 44; end;
+		OnPlayerMbaseKilled45: callsub Respawn, 45; end;
+		OnPlayerMbaseKilled46: callsub Respawn, 46; end;
+		OnPlayerMbaseKilled47: callsub Respawn, 47; end;
+		OnPlayerMbaseKilled48: callsub Respawn, 48; end;
+		OnPlayerMbaseKilled49: callsub Respawn, 49; end;
+		OnPlayerMbaseKilled50: callsub Respawn, 50; end;
+    	
+    	Respawn:
+			.@index = getarg(0);
+			// announce "Player monster base " + .mob_names$[.@index] + " is killed!", bc_all;
+			sleep 5000;
+			// Respawn the monster base. The GID is returned but not stored persistently.
+			player_mbase(.map_name$, 0, 0, .mob_names$[.@index], .job_id[.@index], .gender[.@index], .hairstyle[.@index], .haircolor[.@index], .weapon_id[.@index], .shield_id[.@index], .hgtop_id[.@index], .hgmid_id[.@index], .hglow_id[.@index], .options[.@index], .clothcolor[.@index], .mob_behavior[.@index], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@index);
+			// announce "Player monster base  " + .mob_names$[.@index] + " is spawned", bc_all;
+		return;
+}
+
+
+-	script	PlayerMbaseNovice4	-,{
+    
+    OnInit:
+        // Common parameters (stored as NPC variables)
+    	.map_name$ = "prontera";
+    	
+        setarray .mob_names$[0], "President Green", "|| MAX ||", "EZAOR", "Easterlings", "Yamamoto", "WrongBuild", "AFKAgain", "PotatoAim", "FreeKill", "WhyMe", "Oppsie", "CantFindNPC", "NeedBuffs", "LootStealer", "LagSwitch", "GlassCannon", "RageQuitter", "Disconnected", "HealMe", "NoPots", "BadConnection", "PingHigh", "KeyboardTurner", "MouseClicker", "LevelOne", "Novice4Ever", "TradePls", "WarpPls", "TankFloor", "CarryMe", "BuffPls", "Grind247", "SellItems", "NeedZeny", "TooExpensive", "KafraPlz", "PortalMage", "FollowMe", "WhatsThis", "ClickBait", "PvpOnly", "FarmBot", "AutoAttack", "SkillSpam", "KilledByPoring", "MisreadSkill", "OutOfRange", "TooSlow", "OneShot", "JustLogging", "GgEz";
+		setarray .job_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4;
+		setarray .gender[0], rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1), rand(0,1);
+		setarray .hairstyle[0], rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42), rand(0,42);
+		setarray .haircolor[0], rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8), rand(0,8);
+		setarray .weapon_id[0], 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201, 1201;
+		setarray .shield_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hgtop_id[0], rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000), rand(20,1000);
+		setarray .hgmid_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .hglow_id[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .options[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+		setarray .clothcolor[0], rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5), rand(0,5);
+		setarray .mob_behavior[0], 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183, 1183;
+    	
+    	announce "Player monster base is summoned at " + .map_name$ + "!", bc_all;
+        
+        for (.@i = 0; .@i < 51; .@i++) {
+        	player_mbase(.map_name$, 0, 0, .mob_names$[.@i], .job_id[.@i], .gender[.@i], .hairstyle[.@i], .haircolor[.@i], .weapon_id[.@i], .shield_id[.@i], .hgtop_id[.@i], .hgmid_id[.@i], .hglow_id[.@i], .options[.@i], .clothcolor[.@i], .mob_behavior[.@i], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@i);
+        }
+    	
+    	// Respawn logic if the above AI is killed
+		// Redirecting repetitive logic to a subroutine, passing the index (0-30)
+		OnPlayerMbaseKilled0: callsub Respawn, 0; end;
+		OnPlayerMbaseKilled1: callsub Respawn, 1; end;
+		OnPlayerMbaseKilled2: callsub Respawn, 2; end;
+		OnPlayerMbaseKilled3: callsub Respawn, 3; end;
+		OnPlayerMbaseKilled4: callsub Respawn, 4; end;
+		OnPlayerMbaseKilled5: callsub Respawn, 5; end;
+		OnPlayerMbaseKilled6: callsub Respawn, 6; end;
+		OnPlayerMbaseKilled7: callsub Respawn, 7; end;
+		OnPlayerMbaseKilled8: callsub Respawn, 8; end;
+		OnPlayerMbaseKilled9: callsub Respawn, 9; end;
+		OnPlayerMbaseKilled10: callsub Respawn, 10; end;
+		OnPlayerMbaseKilled11: callsub Respawn, 11; end;
+		OnPlayerMbaseKilled12: callsub Respawn, 12; end;
+		OnPlayerMbaseKilled13: callsub Respawn, 13; end;
+		OnPlayerMbaseKilled14: callsub Respawn, 14; end;
+		OnPlayerMbaseKilled15: callsub Respawn, 15; end;
+		OnPlayerMbaseKilled16: callsub Respawn, 16; end;
+		OnPlayerMbaseKilled17: callsub Respawn, 17; end;
+		OnPlayerMbaseKilled18: callsub Respawn, 18; end;
+		OnPlayerMbaseKilled19: callsub Respawn, 19; end;
+		OnPlayerMbaseKilled20: callsub Respawn, 20; end;
+		OnPlayerMbaseKilled21: callsub Respawn, 21; end;
+		OnPlayerMbaseKilled22: callsub Respawn, 22; end;
+		OnPlayerMbaseKilled23: callsub Respawn, 23; end;
+		OnPlayerMbaseKilled24: callsub Respawn, 24; end;
+		OnPlayerMbaseKilled25: callsub Respawn, 25; end;
+		OnPlayerMbaseKilled26: callsub Respawn, 26; end;
+		OnPlayerMbaseKilled27: callsub Respawn, 27; end;
+		OnPlayerMbaseKilled28: callsub Respawn, 28; end;
+		OnPlayerMbaseKilled29: callsub Respawn, 29; end;
+		OnPlayerMbaseKilled30: callsub Respawn, 30; end;
+		OnPlayerMbaseKilled31: callsub Respawn, 31; end;
+		OnPlayerMbaseKilled32: callsub Respawn, 32; end;
+		OnPlayerMbaseKilled33: callsub Respawn, 33; end;
+		OnPlayerMbaseKilled34: callsub Respawn, 34; end;
+		OnPlayerMbaseKilled35: callsub Respawn, 35; end;
+		OnPlayerMbaseKilled36: callsub Respawn, 36; end;
+		OnPlayerMbaseKilled37: callsub Respawn, 37; end;
+		OnPlayerMbaseKilled38: callsub Respawn, 38; end;
+		OnPlayerMbaseKilled39: callsub Respawn, 39; end;
+		OnPlayerMbaseKilled40: callsub Respawn, 40; end;
+		OnPlayerMbaseKilled41: callsub Respawn, 41; end;
+		OnPlayerMbaseKilled42: callsub Respawn, 42; end;
+		OnPlayerMbaseKilled43: callsub Respawn, 43; end;
+		OnPlayerMbaseKilled44: callsub Respawn, 44; end;
+		OnPlayerMbaseKilled45: callsub Respawn, 45; end;
+		OnPlayerMbaseKilled46: callsub Respawn, 46; end;
+		OnPlayerMbaseKilled47: callsub Respawn, 47; end;
+		OnPlayerMbaseKilled48: callsub Respawn, 48; end;
+		OnPlayerMbaseKilled49: callsub Respawn, 49; end;
+		OnPlayerMbaseKilled50: callsub Respawn, 50; end;
+    	
+    	Respawn:
+			.@index = getarg(0);
+			// announce "Player monster base " + .mob_names$[.@index] + " is killed!", bc_all;
+			sleep 5000;
+			// Respawn the monster base. The GID is returned but not stored persistently.
+			player_mbase(.map_name$, 0, 0, .mob_names$[.@index], .job_id[.@index], .gender[.@index], .hairstyle[.@index], .haircolor[.@index], .weapon_id[.@index], .shield_id[.@index], .hgtop_id[.@index], .hgmid_id[.@index], .hglow_id[.@index], .options[.@index], .clothcolor[.@index], .mob_behavior[.@index], strnpcinfo(0)+"::OnPlayerMbaseKilled" + .@index);
+			// announce "Player monster base  " + .mob_names$[.@index] + " is spawned", bc_all;
+		return;
+}

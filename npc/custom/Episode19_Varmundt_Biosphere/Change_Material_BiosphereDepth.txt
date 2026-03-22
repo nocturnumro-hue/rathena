@@ -1,0 +1,146 @@
+ba_in01,299,118,4	script	Exchange Material	10545,{
+	mes "[Ellie]";
+	mes "Welcome! I can help you convert materials to rarer ones.";
+	mes " ";
+	mes "What type of Depth material would you like to convert?";
+	next;
+	
+	setarray .@type$[0], "Flame", "Earth", "Ice", "Storm", "Soul", "Purification", "Corruption", "Poison";
+	.@typeChoice = select(.@type$[0], .@type$[1], .@type$[2], .@type$[3], .@type$[4], .@type$[5], .@type$[6], .@type$[7], "Cancel") - 1;
+	
+	if (.@typeChoice == 8) close;
+	
+	.@type = .@type$[.@typeChoice];
+	
+	// Define item IDs for each type
+	if (.@typeChoice == 0) { // Flame
+		.@energy = 1001290; .@crystal = 1001298; .@rune = 1001306; .@essence = 1001314;
+	} else if (.@typeChoice == 1) { // Earth
+		.@energy = 1001291; .@crystal = 1001299; .@rune = 1001307; .@essence = 1001315;
+	} else if (.@typeChoice == 2) { // Ice
+		.@energy = 1001292; .@crystal = 1001300; .@rune = 1001308; .@essence = 1001316;
+	} else if (.@typeChoice == 3) { // Storm
+		.@energy = 1001293; .@crystal = 1001301; .@rune = 1001309; .@essence = 1001317;
+	} else if (.@typeChoice == 4) { // Soul
+		.@energy = 1001294; .@crystal = 1001302; .@rune = 1001310; .@essence = 1001318;
+	} else if (.@typeChoice == 5) { // Purification
+		.@energy = 1001295; .@crystal = 1001303; .@rune = 1001311; .@essence = 1001319;
+	} else if (.@typeChoice == 6) { // Corruption
+		.@energy = 1001296; .@crystal = 1001304; .@rune = 1001312; .@essence = 1001320;
+	} else if (.@typeChoice == 7) { // Poison
+		.@energy = 1001297; .@crystal = 1001305; .@rune = 1001313; .@essence = 1001321;
+	}
+	
+	mes "[Ellie]";
+	mes "Depth " + .@type + " conversion options:";
+	mes " ";
+	mes "What would you like to convert?";
+	next;
+	
+	setarray .@menu$[0], "Energy to Crystal", "Crystal to Rune", "Rune to Essence", "Cancel";
+	.@choice = select(.@menu$[0], .@menu$[1], .@menu$[2], .@menu$[3]);
+	
+	if (.@choice == 1) {
+		// Energy to Crystal: 10x Energy + 30,000 zenies = 1 Crystal
+		mes "[Ellie]";
+		mes "Fuse Energy conversion:";
+		mes "10x Depth " + .@type + " Energy (" + .@energy + ")";
+		mes "+ 30,000 zenies";
+		mes "= 1x Depth " + .@type + " Crystal (" + .@crystal + ")";
+		mes " ";
+		mes "Would you like to proceed?";
+		next;
+		
+		if (select("Yes", "No") == 2) close;
+		
+		if (countitem(.@energy) < 10) {
+			mes "[Ellie]";
+			mes "You don't have enough Depth " + .@type + " Energy!";
+			close;
+		}
+		if (Zeny < 30000) {
+			mes "[Ellie]";
+			mes "You don't have enough zenies!";
+			close;
+		}
+		
+		delitem .@energy, 10;
+		Zeny -= 30000;
+		getitem .@crystal, 1;
+		
+		mes "[Ellie]";
+		mes "Conversion successful!";
+		mes "You received 1x Depth " + .@type + " Crystal.";
+		close;
+	}
+	
+	if (.@choice == 2) {
+		// Crystal to Rune: 5x Crystal + 50,000 zenies = 1 Rune
+		mes "[Ellie]";
+		mes "Fuse Crystal conversion:";
+		mes "5x Depth " + .@type + " Crystal (" + .@crystal + ")";
+		mes "+ 50,000 zenies";
+		mes "= 1x Depth " + .@type + " Rune (" + .@rune + ")";
+		mes " ";
+		mes "Would you like to proceed?";
+		next;
+		
+		if (select("Yes", "No") == 2) close;
+		
+		if (countitem(.@crystal) < 5) {
+			mes "[Ellie]";
+			mes "You don't have enough Depth " + .@type + " Crystal!";
+			close;
+		}
+		if (Zeny < 50000) {
+			mes "[Ellie]";
+			mes "You don't have enough zenies!";
+			close;
+		}
+		
+		delitem .@crystal, 5;
+		Zeny -= 50000;
+		getitem .@rune, 1;
+		
+		mes "[Ellie]";
+		mes "Conversion successful!";
+		mes "You received 1x Depth " + .@type + " Rune.";
+		close;
+	}
+	
+	if (.@choice == 3) {
+		// Rune to Essence: 10x Rune + 100,000 zenies = 1 Essence
+		mes "[Ellie]";
+		mes "Fuse Rune conversion:";
+		mes "10x Depth " + .@type + " Rune (" + .@rune + ")";
+		mes "+ 100,000 zenies";
+		mes "= 1x Depth " + .@type + " Essence (" + .@essence + ")";
+		mes " ";
+		mes "Would you like to proceed?";
+		next;
+		
+		if (select("Yes", "No") == 2) close;
+		
+		if (countitem(.@rune) < 10) {
+			mes "[Ellie]";
+			mes "You don't have enough Depth " + .@type + " Rune!";
+			close;
+		}
+		if (Zeny < 100000) {
+			mes "[Ellie]";
+			mes "You don't have enough zenies!";
+			close;
+		}
+		
+		delitem .@rune, 10;
+		Zeny -= 100000;
+		getitem .@essence, 1;
+		
+		mes "[Ellie]";
+		mes "Conversion successful!";
+		mes "You received 1x Depth " + .@type + " Essence.";
+		close;
+	}
+	
+	close;
+}

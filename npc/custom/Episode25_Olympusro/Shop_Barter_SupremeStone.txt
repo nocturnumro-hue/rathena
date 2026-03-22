@@ -1,0 +1,38 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC Exchange Supreme Stone
+// @reloadnpcfile npc/custom/Episode25_Olympusro/Shop_Barter_SupremeStone.txt
+// ============================================
+askald,20,150,5	script	Exchange Supreme Stone	23140,{
+	mes "[Exchange Supreme Stone]";
+	mes "WellCome Exchange Material!";
+	mes "Please select Shop Type:";
+	next;
+	
+	switch(select("Exchange Ore To Stone:Exchange Low To High:Exchange Shadowdecon:Exit")) {
+		case 1:
+			mes "[Exchange Ore To Stone]";
+			mes "Open Exchange..";
+			close2;
+			callshop "Supreme_Stone1";
+			end;
+		case 2:
+			mes "[Exchange Low To High]";
+			mes "Open Exchange..";
+			close2;
+			callshop "Supreme_Stone2";
+			end;
+		case 3:
+			mes "[Exchange Shadowdecon/Zelunium]";
+			mes "Open Exchange..";
+			close2;
+			callshop "Supreme_Stone3";
+			end;
+		case 4:
+			mes "[Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

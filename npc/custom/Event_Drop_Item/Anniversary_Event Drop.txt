@@ -1,0 +1,145 @@
+//===== rAthena Script =======================================
+//= ANNIVERSARY & EVENT DROP SYSTEM
+//===== Description: =========================================
+//= 1. 20th Anniversary Coin Drop (Daily Limit: 500)
+//= 2. Happy New Year Event Words Drop (Ultra Rare)
+//= 3. YEAR Letters Drop (Ultra Rare)
+//===== Items Required: ======================================
+//= 1001009:          20th Anniversary Coin
+//= 1230007:          Event Word - Happy
+//= 1230008:          Event Word - Awesome
+//= 1230009:          Event Word - Prosperity
+//= 1230010:          Event Word - Peace
+//= 1230011:          Event Word - Year
+//= 1230012:          Event Word - New
+//= 1230013:          Event Word - Excitement
+//= 1230014:          Event Word - Wish  (LEGENDARY - 1 in 1,000,000)
+//= 1230015:          Letter Y
+//= 1230016:          Letter E
+//= 1230017:          Letter A
+//= 1230018:          Letter R  (NEARLY IMPOSSIBLE - 1 in 10,000)
+//===== Installation: ========================================
+//= Save as: npc/custom/anniversary_event_drop.txt
+//= Add to scripts_custom.conf:
+//=   npc: npc/custom/anniversary_event_drop.txt
+//= Reload: @reloadscript or restart server
+//============================================================
+
+//===== ANNIVERSARY & EVENT DROP SYSTEM =====
+-	script	AnniversaryEventDrop	-1,{
+OnInit:
+	.daily_limit = 500; // Maximum 500 Anniversary Coins per day
+	end;
+
+OnNPCKillEvent:
+	// Get mob level ONCE for all calculations
+	.@mob_level = getmonsterinfo(killedrid, MOB_LV);
+
+	// ============================================
+	// SYSTEM 1: 20TH ANNIVERSARY COIN DROP
+	// Daily limit: 500 coins per account
+	// Progressive rates based on monster level
+	// ============================================
+
+	// Check for new day to reset counter
+	.@today = gettime(DT_YYYYMMDD);
+	if (#Anniversary_LastCheck != .@today) {
+		#Anniversary_CoinCount = 0;
+		#Anniversary_LastCheck = .@today;
+	}
+
+	// Only drop if under daily limit
+	if (#Anniversary_CoinCount < .daily_limit) {
+		// Level <100:  1% (100/10000)
+		// Level 100-149: 2% (200/10000)
+		// Level 150+: 3% + 1% per 50 levels (300+/10000)
+		if (.@mob_level < 100) {
+			.@anniv_rate = 100;
+		}
+		else if (.@mob_level < 150) {
+			.@anniv_rate = 200;
+		}
+		else {
+			.@extra  = .@mob_level - 150;
+			.@bonus  = (.@extra / 50) * 100;
+			.@anniv_rate = 300 + .@bonus;
+		}
+
+		if (rand(1, 10000) <= .@anniv_rate) {
+			getitem 1001009, 1;
+			#Anniversary_CoinCount++;
+			announce "[" + strcharinfo(0) + "] obtained 20th Anniversary Coin!", bc_self, 0xFFD700;
+
+			if (#Anniversary_CoinCount >= .daily_limit) {
+				dispbottom "Daily limit reached! You have obtained maximum 500 Anniversary Coins today.";
+			}
+		}
+	}
+
+	// ============================================
+	// SYSTEM 2: HAPPY NEW YEAR EVENT WORDS
+	// EXTREMELY RARE RATES - Wish is LEGENDARY
+	// NO DAILY LIMIT - NO ANNOUNCEMENTS (except Wish)
+	// ============================================
+	.@word_roll = rand(1, 1000000);
+
+	// Happy       - 0.500% (1    - 5000)
+	if (.@word_roll <= 5000) {
+		getitem 1230007, 1;
+	}
+	// Awesome     - 0.450% (5001 - 9500)
+	else if (.@word_roll <= 9500) {
+		getitem 1230008, 1;
+	}
+	// Prosperity  - 0.350% (9501 - 13000)
+	else if (.@word_roll <= 13000) {
+		getitem 1230009, 1;
+	}
+	// Peace       - 0.250% (13001 - 15500)
+	else if (.@word_roll <= 15500) {
+		getitem 1230010, 1;
+	}
+	// Year        - 0.150% (15501 - 17000)
+	else if (.@word_roll <= 17000) {
+		getitem 1230011, 1;
+	}
+	// New         - 0.100% (17001 - 18000)
+	else if (.@word_roll <= 18000) {
+		getitem 1230012, 1;
+	}
+	// Excitement  - 0.050% (18001 - 18500)
+	else if (.@word_roll <= 18500) {
+		getitem 1230013, 1;
+	}
+	// Wish        - 0.001% (18501) - LEGENDARY! 1 in 1,000,000 chance!
+	else if (.@word_roll <= 18501) {
+		getitem 1230014, 1;
+		announce "[" + strcharinfo(0) + "] obtained [Wish] event word! [LEGENDARY DROP]", bc_all, 0xFF0000;
+	}
+
+	// ============================================
+	// SYSTEM 3: YEAR LETTERS (Y-E-A-R)
+	// EXTREMELY RARE RATES - R is NEARLY IMPOSSIBLE
+	// NO DAILY LIMIT - NO ANNOUNCEMENTS
+	// ============================================
+	.@letter_roll = rand(1, 100000);
+
+	// Y - 0.400% (1   - 400)
+	if (.@letter_roll <= 400) {
+		getitem 1230015, 1;
+	}
+	// E - 0.300% (401 - 700)
+	else if (.@letter_roll <= 700) {
+		getitem 1230016, 1;
+	}
+	// A - 0.200% (701 - 900)
+	else if (.@letter_roll <= 900) {
+		getitem 1230017, 1;
+	}
+	// R - 0.010% (901 - 910) - NEARLY IMPOSSIBLE! 1 in 10,000 chance!
+	else if (.@letter_roll <= 910) {
+		getitem 1230018, 1;
+	}
+
+	end;
+}

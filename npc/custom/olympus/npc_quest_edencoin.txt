@@ -1,0 +1,336 @@
+//===== rAthena Script =======================================
+//= Eden Quest Board - Monster Hunting (Lv.1-200)
+//===== Description: =========================================
+//= Hunting quests based on player level (1-200)
+//= Quest IDs: 70289-70300 (12 quests total)
+//============================================================
+
+prontera,164,166,4	script	Eden Quest Board	4_F_KAFRA7,{
+	
+	// ============================================================
+	// CHECK COMPLETED QUESTS - GIVE REWARDS
+	// ============================================================
+	for (.@i = 0; .@i < getarraysize(.QuestID); .@i++) {
+		if (checkquest(.QuestID[.@i], HUNTING) == 2) {
+			mes "[Eden Quest Board]";
+			mes "^00FF00Congratulations!^000000";
+			mes "You have completed:";
+			mes "^0000FF" + .QuestTitle$[.@i] + "^000000";
+			next;
+			
+			// Check weight
+			if (!checkweight(25223, .RewardCoins[.@i])) {
+				mes "[Eden Quest Board]";
+				mes "Your inventory is too heavy!";
+				close;
+			}
+			
+			// Calculate EXP based on player level
+			.@base_exp = callfunc("F_EdenCalcExp", BaseLevel);
+			.@job_exp = (.@base_exp * 70) / 100;
+			
+			// Show rewards
+			mes "[Eden Quest Board]";
+			mes "^00FF00===== QUEST REWARDS =====^000000";
+			mes " ";
+			mes "^FF6600Eden Coins:^000000 " + .RewardCoins[.@i];
+			mes "^FF6600Base EXP:^000000 " + F_InsertComma(.@base_exp);
+			mes "^FF6600Job EXP:^000000 " + F_InsertComma(.@job_exp);
+			mes " ";
+			mes "^00FF00========================^000000";
+			next;
+			
+			// Give rewards
+			getitem 25223, .RewardCoins[.@i];
+			getexp .@base_exp, .@job_exp;
+			erasequest .QuestID[.@i];
+			
+			announce strcharinfo(0) + " has completed " + .QuestTitle$[.@i] + "!", bc_all, 0x00FF00;
+			
+			mes "[Eden Quest Board]";
+			mes "^00FF00Rewards delivered!^000000";
+			mes "Feel free to take another quest!";
+			close;
+		}
+	}
+	
+	// ============================================================
+	// CHECK ACTIVE QUEST
+	// ============================================================
+	.@activeQuest = -1;
+	for (.@i = 0; .@i < getarraysize(.QuestID); .@i++) {
+		.@status = checkquest(.QuestID[.@i], HUNTING);
+		if (.@status == 0 || .@status == 1) {
+			.@activeQuest = .@i;
+			break;
+		}
+	}
+	
+	if (.@activeQuest >= 0) {
+		mes "[Eden Quest Board]";
+		mes "You have an active quest:";
+		mes "^00FF00" + .QuestTitle$[.@activeQuest] + "^000000";
+		mes " ";
+		mes "What would you like to do?";
+		next;
+		
+		switch(select("Warp to Hunting Ground:Cancel Quest:Close")) {
+			case 1:
+				mes "[Eden Quest Board]";
+				mes "Warping you to the hunting ground...";
+				close2;
+				warp .TargetWarp$[.@activeQuest], 0, 0;
+				end;
+				
+			case 2:
+				mes "[Eden Quest Board]";
+				mes "^FF0000Are you sure you want to cancel?^000000";
+				mes "You will lose all progress!";
+				next;
+				
+				if (select("Yes, cancel it:No, keep it") == 1) {
+					erasequest .QuestID[.@activeQuest];
+					mes "[Eden Quest Board]";
+					mes "Quest cancelled.";
+					close;
+				}
+				mes "[Eden Quest Board]";
+				mes "Quest kept. Good luck!";
+				close;
+				
+			case 3:
+				close;
+		}
+	}
+	
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+	mes "[Eden Quest Board]";
+	mes "Welcome adventurer!";
+	mes "Hunt monsters and earn Eden Coins!";
+	mes " ";
+	mes "Your Level: ^0000FF" + BaseLevel + "^000000";
+	next;
+	
+	switch(select("View Available Quests:Quest Information:Cancel")) {
+		case 1:
+			break;
+			
+		case 2:
+			mes "[Eden Quest Board]";
+			mes "^00FF00===== QUEST INFORMATION =====^000000";
+			mes " ";
+			mes "Hunt monsters in your level range";
+			mes "and earn Eden Coins + EXP!";
+			mes " ";
+			mes "You can take quests repeatedly.";
+			mes "No cooldown between quests!";
+			next;
+			
+			mes "[Eden Quest Board]";
+			mes "^00FF00===== REWARD SYSTEM =====^000000";
+			mes " ";
+			mes "Level 1-99: 5 levels worth of EXP";
+			mes "Level 100+: 3 levels worth of EXP";
+			mes "Job EXP: 70% of Base EXP";
+			mes " ";
+			mes "Eden Coins: 10-75 per quest";
+			close;
+			
+		case 3:
+			close;
+	}
+	
+	// ============================================================
+	// SHOW QUEST LIST
+	// ============================================================
+	mes "[Eden Quest Board]";
+	mes "^00FF00===== AVAILABLE QUESTS =====^000000";
+	mes " ";
+	mes "Select a quest:";
+	next;
+	
+	setarray .@menu$[0],
+		"Poring (Lv 1-10) - 10 kills",
+		"Ant Egg (Lv 10-20) - 20 kills",
+		"Soldier Skeleton (Lv 20-40) - 30 kills",
+		"Orc Zombie (Lv 40-60) - 40 kills",
+		"Mi Gao (Lv 60-80) - 50 kills",
+		"Anubis (Lv 80-100) - 60 kills",
+		"Illusion of Moonlight (Lv 100-119) - 100 kills",
+		"Illusion of Vampire (Lv 120-139) - 200 kills",
+		"Illusion of Teddy Bear (Lv 140-149) - 200 kills",
+		"Illusion of Abyss (Lv 150-159) - 300 kills",
+		"Illusion of Twins (Lv 160-179) - 300 kills",
+		"Illusion of Labyrinth (Lv 180-200) - 300 kills",
+		"Cancel";
+	
+	.@menu = select(implode(.@menu$, ":"));
+	
+	if (.@menu == 13) {
+		close;
+	}
+	
+	// ============================================================
+	// QUEST SELECTION
+	// ============================================================
+	.@idx = .@menu - 1;
+	
+	// Check level requirement
+	if (BaseLevel < .MinLevel[.@idx] || BaseLevel > .MaxLevel[.@idx]) {
+		mes "[Eden Quest Board]";
+		mes "^FF0000Level Restriction!^000000";
+		mes " ";
+		mes "This quest requires:";
+		mes "Level ^00FF00" + .MinLevel[.@idx] + "^000000 to ^00FF00" + .MaxLevel[.@idx] + "^000000";
+		mes " ";
+		mes "Your Level: ^FF0000" + BaseLevel + "^000000";
+		close;
+	}
+	
+	// Calculate EXP
+	.@base_exp = callfunc("F_EdenCalcExp", BaseLevel);
+	.@job_exp = (.@base_exp * 70) / 100;
+	
+	// ============================================================
+	// QUEST CONFIRMATION
+	// ============================================================
+	mes "[Eden Quest Board]";
+	mes "^00FF00" + .QuestTitle$[.@idx] + "^000000";
+	mes " ";
+	mes "^0000FFHunting Location:^000000";
+	mes .TargetMap$[.@idx];
+	mes " ";
+	mes "^FF0000Hunt " + .TargetKills[.@idx] + " monsters^000000";
+	mes " ";
+	mes "^FF6600Rewards:^000000";
+	mes "- " + .RewardCoins[.@idx] + " Eden Coins";
+	mes "- " + F_InsertComma(.@base_exp) + " Base EXP";
+	mes "- " + F_InsertComma(.@job_exp) + " Job EXP";
+	next;
+	
+	mes "[Eden Quest Board]";
+	mes "Would you like to accept this quest?";
+	next;
+	
+	switch(select("Yes, warp me!:Yes, I'll go myself:Cancel")) {
+		case 1:
+			mes "[Eden Quest Board]";
+			mes "Good luck, adventurer!";
+			setquest .QuestID[.@idx];
+			close2;
+			warp .TargetWarp$[.@idx], 0, 0;
+			end;
+			
+		case 2:
+			mes "[Eden Quest Board]";
+			mes "Good luck, adventurer!";
+			setquest .QuestID[.@idx];
+			close;
+			
+		case 3:
+			close;
+	}
+
+OnInit:
+	// Quest IDs
+	setarray .QuestID[0], 70289, 70290, 70291, 70292, 70293, 70294, 70295, 70296, 70297, 70298, 70299, 70300;
+	
+	// Quest Titles
+	setarray .QuestTitle$[0],
+		"Poring Extermination",
+		"Ant Egg Collection",
+		"Skeleton Warriors",
+		"Orc Zombie Cleanup",
+		"Mi Gao Extermination",
+		"Anubis Guardian Trial",
+		"Illusion of Moonlight",
+		"Illusion of Vampire",
+		"Illusion of Teddy Bear",
+		"Illusion of Abyss",
+		"Illusion of Twins",
+		"Illusion of Labyrinth";
+	
+	// Target kills
+	setarray .TargetKills[0], 10, 20, 30, 40, 50, 60, 100, 200, 200, 300, 300, 300;
+	
+	// Level requirements
+	setarray .MinLevel[0], 1, 10, 20, 40, 60, 80, 100, 120, 140, 150, 160, 180;
+	setarray .MaxLevel[0], 10, 20, 40, 60, 80, 100, 119, 139, 149, 159, 179, 200;
+	
+	// Map display names
+	setarray .TargetMap$[0],
+		"Prontera Field 8",
+		"Anthell F1",
+		"Payon Dungeon F2",
+		"Orc Dungeon F1",
+		"Louyang Field",
+		"Sphinx Dungeon F4",
+		"Illusion of Moonlight",
+		"Illusion of Vampire",
+		"Illusion of Teddy Bear",
+		"Illusion of Abyss",
+		"Illusion of Twins",
+		"Illusion of Labyrinth";
+	
+	// Warp map names
+	setarray .TargetWarp$[0],
+		"prt_fild08",
+		"anthell01",
+		"pay_dun02",
+		"orcsdun01",
+		"lou_fild01",
+		"in_sphinx4",
+		"pay_d03_i",
+		"gef_d01_i",
+		"ein_d02_i",
+		"tur_d04_i",
+		"ant_d02_i",
+		"prt_mz03_i";
+	
+	// Eden Coin Rewards
+	setarray .RewardCoins[0], 10, 15, 20, 25, 30, 40, 50, 60, 60, 75, 75, 75;
+	end;
+}
+
+// ============================================================
+// HELPER FUNCTION - CALCULATE EXP FOR MULTIPLE LEVELS
+// ============================================================
+function	script	F_EdenCalcExp	{
+	.@current_level = getarg(0);
+	
+	// Determine how many levels worth of EXP to give
+	if (.@current_level < 100) {
+		.@level_count = 5; // 5 levels worth for below 100
+	} else {
+		.@level_count = 3; // 3 levels worth for 100+
+	}
+	
+	.@total_exp = 0;
+	
+	// Calculate total EXP needed for multiple levels
+	for (.@i = 0; .@i < .@level_count; .@i++) {
+		.@check_level = .@current_level + .@i;
+		
+		// Use nextbaseexp approximation
+		if (.@check_level >= 250) {
+			// For level 250+, use a large fixed value per level
+			.@total_exp += 10000000000; // 10 billion per level
+		} else {
+			// For lower levels, we need to calculate based on level
+			// This is an approximation since we can't easily get nextbaseexp for other levels
+			.@level_exp = nextbaseexp;
+			
+			// Scale based on level difference
+			if (.@i > 0) {
+				// Each level is roughly 10-20% more than previous
+				.@level_exp = .@level_exp * (100 + (.@i * 15)) / 100;
+			}
+			
+			.@total_exp += .@level_exp;
+		}
+	}
+	
+	return .@total_exp;
+}

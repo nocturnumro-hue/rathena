@@ -1,0 +1,13 @@
+//==================================================
+// Ancient Temple Akhet
+//==================================================
+moc_akhet,0,0	monster	MEDJED	22395,45,5000
+moc_akhet,0,0	monster	CP MEDJED	22396,35,5000
+moc_akhet,0,0	monster	MEDJAY	22396,45,5000
+moc_akhet,0,0	monster	CP MEDJAY	22398,35,5000
+moc_akhet,0,0	monster	OPHOIS	22399,45,5000
+moc_akhet,0,0	monster	CP OPHOIS	22403,35,5000
+moc_akhet,0,0	monster	HEKA	22401,45,5000
+moc_akhet,0,0	monster	CP HEKA	22402,35,5000
+
+moc_akhet,191,316	boss_monster	GUIDE OF DEAD	22404,1,10800000,600000,0

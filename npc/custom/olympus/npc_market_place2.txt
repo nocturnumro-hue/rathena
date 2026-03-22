@@ -1,0 +1,838 @@
+//===== rAthena Script =======================================
+//= NPC Market System - Cash Points & Items Version
+//===== By ===================================================
+//= Enhanced Multi-Currency Market with Claim System
+//===== Version ==============================================
+//= @reloadnpcfile npc/custom/olympus/npc_market_place.txt
+/*
+========================================
+STEP 1: Create Market Listings Table
+========================================
+
+CREATE TABLE IF NOT EXISTS `market_listings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `char_id` int(11) NOT NULL,
+  `char_name` varchar(30) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `currency_type` varchar(20) NOT NULL,
+  `price` bigint(20) NOT NULL,
+  `price_item_id` int(11) DEFAULT 0,
+  `refine` tinyint(4) DEFAULT 0,
+  `card0` int(11) DEFAULT 0,
+  `card1` int(11) DEFAULT 0,
+  `card2` int(11) DEFAULT 0,
+  `card3` int(11) DEFAULT 0,
+  `date_added` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `char_id` (`char_id`),
+  KEY `currency_type` (`currency_type`),
+  KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+========================================
+STEP 2: Create Market Sales History Table
+========================================
+
+CREATE TABLE IF NOT EXISTS `market_sold_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `char_id` int(11) NOT NULL,
+  `char_name` varchar(30) NOT NULL,
+  `item_sold_id` int(11) NOT NULL,
+  `item_sold_amount` int(11) NOT NULL,
+  `currency_type` varchar(20) NOT NULL,
+  `earned_amount` bigint(20) NOT NULL,
+  `earned_item_id` int(11) DEFAULT 0,
+  `buyer_name` varchar(30) NOT NULL,
+  `date_sold` datetime DEFAULT CURRENT_TIMESTAMP,
+  `claimed` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `char_id` (`char_id`),
+  KEY `claimed` (`claimed`),
+  KEY `date_sold` (`date_sold`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+*/
+//============================================================
+
+askald,131,135,4	script	Premium Market	10036,{
+
+query_sql "SELECT COUNT(*) FROM `market_sold_history` WHERE `char_id` = '"+getcharid(0)+"' AND `claimed` = 0", .@unclaimed_count;
+
+mes .npc_name$;
+mes "Welcome to the ^FF6600Premium Market^000000!";
+mes "Trade items using ^0055FFCash Points^000000 or ^00FF00Special Items^000000!";
+
+if(.@unclaimed_count > 0) {
+	mes "^00FF00>>> You have " + .@unclaimed_count + " unclaimed earnings! <<<^000000";
+}
+
+mes "^FF0000Market Tax: " + .market_tax + "%^000000";
+mes "^FF0000Listing Fee: " + .market_list_fee + " Cash Points^000000";
+next;
+
+switch(select("- Browse Market:- Sell Items:- My Listings:- Claim Earnings:- Help:- Close")) {
+	case 1: goto Market_Browse;
+	case 2: goto Market_Sell;
+	case 3: goto Market_MyListings;
+	case 4: goto Market_Claim;
+	case 5: goto Market_Help;
+	case 6: close;
+}
+
+Market_Help:
+mes .npc_name$;
+mes "^FF6600=== Premium Market Help ===^000000";
+mes "^00FFFFCurrency Types:^000000";
+mes "1. ^0055FFCash Points^000000 - Premium currency";
+mes "2. ^00FF00Special Items^000000 - Trade for rare items";
+mes "^00FFFFAccepted Trade Items:^000000";
+for(set .@i, 0; .@i < getarraysize(.trade_items); set .@i, .@i + 1) {
+	mes "- " + getitemname(.trade_items[.@i]);
+}
+mes "^FF0000Fees:^000000";
+mes "- Market Tax: " + .market_tax + "%";
+mes "- Listing Fee: " + .market_list_fee + " Cash Points";
+mes "^FFD700Important:^000000";
+mes "Return to this NPC and select";
+mes "^00FF00Claim Earnings^000000 to receive your payment!";
+next;
+// [BUG FIX #8] Return to main menu, not Market_Browse
+// Using close and relying on player to re-open is cleaner, but a direct restart is better UX
+mes .npc_name$;
+mes "^FF6600=== Main Menu ===^000000";
+mes "What would you like to do?";
+next;
+switch(select("- Browse Market:- Sell Items:- My Listings:- Claim Earnings:- Close")) {
+	case 1: goto Market_Browse;
+	case 2: goto Market_Sell;
+	case 3: goto Market_MyListings;
+	case 4: goto Market_Claim;
+	case 5: close;
+}
+
+//========== CLAIM EARNINGS ==========
+Market_Claim:
+query_sql "SELECT `id`, `item_sold_id`, `item_sold_amount`, `currency_type`, `earned_amount`, `earned_item_id`, `buyer_name`, `date_sold` FROM `market_sold_history` WHERE `char_id` = '"+getcharid(0)+"' AND `claimed` = 0 ORDER BY `date_sold` DESC LIMIT 20", .@sold_id, .@sold_itemid, .@sold_amount, .@currency$, .@earned, .@earned_itemid, .@buyer$, .@date$;
+
+if(getarraysize(.@sold_id) == 0) {
+	mes .npc_name$;
+	mes "^FF6600=== Claim Earnings ===^000000";
+	mes "^FF0000No earnings to claim!^000000";
+	close;
+}
+
+mes .npc_name$;
+mes "^FF6600=== Claim Earnings ===^000000";
+mes "You have ^00FF00" + getarraysize(.@sold_id) + "^000000 sales to claim!";
+next;
+
+switch(select("- Claim All:- Claim Individual:- View Details:- Back")) {
+	case 1: goto Claim_All;
+	case 2: goto Claim_Individual;
+	case 3: goto View_Claim_Details;
+	case 4: close;
+}
+
+Claim_All:
+set .@total_cp, 0;
+deletearray .@item_earnings;
+deletearray .@item_earnings_amount;
+
+for(set .@i, 0; .@i < getarraysize(.@sold_id); set .@i, .@i + 1) {
+	if(.@currency$[.@i] == "cashpoint") {
+		set .@total_cp, .@total_cp + .@earned[.@i];
+	} else {
+		set .@found, 0;
+		for(set .@j, 0; .@j < getarraysize(.@item_earnings); set .@j, .@j + 1) {
+			if(.@item_earnings[.@j] == .@earned_itemid[.@i]) {
+				set .@item_earnings_amount[.@j], .@item_earnings_amount[.@j] + .@earned[.@i];
+				set .@found, 1;
+				break;
+			}
+		}
+		if(.@found == 0) {
+			set .@item_earnings[getarraysize(.@item_earnings)], .@earned_itemid[.@i];
+			set .@item_earnings_amount[getarraysize(.@item_earnings_amount)], .@earned[.@i];
+		}
+	}
+}
+
+mes .npc_name$;
+mes "^FF6600=== Claim All Summary ===^000000";
+
+if(.@total_cp > 0) {
+	mes "Cash Points: ^0055FF" + callfunc("F_MarketFormatNum", .@total_cp) + " CP^000000";
+}
+
+if(getarraysize(.@item_earnings) > 0) {
+	mes "^00FFFFItems:^000000";
+	for(set .@i, 0; .@i < getarraysize(.@item_earnings); set .@i, .@i + 1) {
+		mes "- " + getitemname(.@item_earnings[.@i]) + " x" + .@item_earnings_amount[.@i];
+	}
+}
+
+// [BUG FIX #3 & #6] Check ALL item weights BEFORE showing confirm,
+// so if any item fails weight check, we warn which one and stop cleanly.
+// CP is always claimable regardless of weight - only block item earnings.
+set .@weight_fail, 0;
+for(set .@i, 0; .@i < getarraysize(.@item_earnings); set .@i, .@i + 1) {
+	if(checkweight(.@item_earnings[.@i], .@item_earnings_amount[.@i]) == 0) {
+		set .@weight_fail, 1;
+		mes "^FF0000Cannot claim: " + getitemname(.@item_earnings[.@i]) + " - inventory too heavy!^000000";
+	}
+}
+
+if(.@weight_fail) {
+	mes "^FFD700Please free up inventory space.^000000";
+	mes "You can still use ^00FF00Claim Individual^000000 to claim Cash Points only.";
+	close;
+}
+
+mes "Claim all earnings?";
+if(select("- Yes, Claim All:- Cancel") == 2) goto Market_Claim;
+
+// Give CP first (always safe)
+if(.@total_cp > 0) {
+	set #CASHPOINTS, #CASHPOINTS + .@total_cp;
+}
+
+// Give items (weight already verified above)
+for(set .@i, 0; .@i < getarraysize(.@item_earnings); set .@i, .@i + 1) {
+	getitem .@item_earnings[.@i], .@item_earnings_amount[.@i];
+}
+
+query_sql "UPDATE `market_sold_history` SET `claimed` = 1 WHERE `char_id` = '"+getcharid(0)+"' AND `claimed` = 0";
+
+mes .npc_name$;
+mes "^00FF00Successfully claimed all earnings!^000000";
+
+if(.@total_cp > 0) {
+	mes "Received: ^0055FF+" + callfunc("F_MarketFormatNum", .@total_cp) + " Cash Points^000000";
+	mes "Your CP: ^0055FF" + callfunc("F_MarketFormatNum", #CASHPOINTS) + "^000000";
+}
+
+if(getarraysize(.@item_earnings) > 0) {
+	mes "^00FFFFReceived Items:^000000";
+	for(set .@i, 0; .@i < getarraysize(.@item_earnings); set .@i, .@i + 1) {
+		mes "- " + getitemname(.@item_earnings[.@i]) + " x" + .@item_earnings_amount[.@i];
+	}
+}
+close;
+
+Claim_Individual:
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@sold_id); set .@i, .@i + 1) {
+	if(.@currency$[.@i] == "cashpoint") {
+		set .@earn_txt$, "^0055FF+" + callfunc("F_MarketFormatNum", .@earned[.@i]) + " CP^000000";
+	} else {
+		set .@earn_txt$, "^00FF00+" + callfunc("F_MarketFormatNum", .@earned[.@i]) + " " + getitemname(.@earned_itemid[.@i]) + "^000000";
+	}
+	set .@menu$, .@menu$ + "- " + getitemname(.@sold_itemid[.@i]) + " x" + .@sold_amount[.@i] + " " + .@earn_txt$ + ":";
+}
+set .@menu$, .@menu$ + "- Back";
+
+set .@select, select(.@menu$) - 1;
+if(.@select >= getarraysize(.@sold_id)) goto Market_Claim;
+
+mes .npc_name$;
+mes "^FF6600=== Claim Details ===^000000";
+mes "Item Sold: ^777777" + getitemname(.@sold_itemid[.@select]) + " x" + .@sold_amount[.@select] + "^000000";
+mes "Buyer: ^777777" + .@buyer$[.@select] + "^000000";
+mes "Date: ^777777" + .@date$[.@select] + "^000000";
+
+if(.@currency$[.@select] == "cashpoint") {
+	mes "You will receive: ^0055FF" + callfunc("F_MarketFormatNum", .@earned[.@select]) + " Cash Points^000000";
+} else {
+	mes "You will receive: ^00FF00" + callfunc("F_MarketFormatNum", .@earned[.@select]) + " " + getitemname(.@earned_itemid[.@select]) + "^000000";
+}
+
+mes "Claim this earning?";
+if(select("- Yes, Claim:- Cancel") == 2) goto Claim_Individual;
+
+if(.@currency$[.@select] == "item") {
+	if(checkweight(.@earned_itemid[.@select], .@earned[.@select]) == 0) {
+		mes .npc_name$;
+		mes "^FF0000Inventory too heavy!^000000";
+		close;
+	}
+}
+
+if(.@currency$[.@select] == "cashpoint") {
+	set #CASHPOINTS, #CASHPOINTS + .@earned[.@select];
+	mes .npc_name$;
+	mes "^00FF00Claimed successfully!^000000";
+	mes "Received: ^0055FF+" + callfunc("F_MarketFormatNum", .@earned[.@select]) + " Cash Points^000000";
+	mes "Your CP: ^0055FF" + callfunc("F_MarketFormatNum", #CASHPOINTS) + "^000000";
+} else {
+	getitem .@earned_itemid[.@select], .@earned[.@select];
+	mes .npc_name$;
+	mes "^00FF00Claimed successfully!^000000";
+	mes "Received: ^00FF00" + callfunc("F_MarketFormatNum", .@earned[.@select]) + " " + getitemname(.@earned_itemid[.@select]) + "^000000";
+}
+
+query_sql "UPDATE `market_sold_history` SET `claimed` = 1 WHERE `id` = '"+.@sold_id[.@select]+"'";
+close;
+
+View_Claim_Details:
+mes .npc_name$;
+mes "^FF6600=== Earnings Details ===^000000";
+
+set .@total_cp, 0;
+deletearray .@item_summary;
+deletearray .@item_summary_amount;
+
+for(set .@i, 0; .@i < getarraysize(.@sold_id); set .@i, .@i + 1) {
+	mes "^777777[" + (.@i+1) + "]^000000 " + getitemname(.@sold_itemid[.@i]) + " x" + .@sold_amount[.@i];
+	mes "    Buyer: " + .@buyer$[.@i];
+	
+	if(.@currency$[.@i] == "cashpoint") {
+		mes "    ^0055FFEarned: +" + callfunc("F_MarketFormatNum", .@earned[.@i]) + " CP^000000";
+		set .@total_cp, .@total_cp + .@earned[.@i];
+	} else {
+		mes "    ^00FF00Earned: +" + callfunc("F_MarketFormatNum", .@earned[.@i]) + " " + getitemname(.@earned_itemid[.@i]) + "^000000";
+		
+		set .@found, 0;
+		for(set .@j, 0; .@j < getarraysize(.@item_summary); set .@j, .@j + 1) {
+			if(.@item_summary[.@j] == .@earned_itemid[.@i]) {
+				set .@item_summary_amount[.@j], .@item_summary_amount[.@j] + .@earned[.@i];
+				set .@found, 1;
+				break;
+			}
+		}
+		if(.@found == 0) {
+			set .@item_summary[getarraysize(.@item_summary)], .@earned_itemid[.@i];
+			set .@item_summary_amount[getarraysize(.@item_summary_amount)], .@earned[.@i];
+		}
+	}
+}
+
+mes "^FFD700=== Total Summary ===^000000";
+if(.@total_cp > 0) {
+	mes "Total Cash Points: ^0055FF" + callfunc("F_MarketFormatNum", .@total_cp) + " CP^000000";
+}
+
+if(getarraysize(.@item_summary) > 0) {
+	mes "^00FFFFTotal Items:^000000";
+	for(set .@i, 0; .@i < getarraysize(.@item_summary); set .@i, .@i + 1) {
+		mes "- " + getitemname(.@item_summary[.@i]) + " x" + .@item_summary_amount[.@i];
+	}
+}
+
+next;
+goto Market_Claim;
+
+//========== BROWSE MARKET ==========
+Market_Browse:
+mes .npc_name$;
+mes "^FF6600=== Browse Market ===^000000";
+mes "Filter by currency:";
+next;
+
+set .@filter, select("- All Listings:- Cash Points Only:- Item Trade Only:- Back") - 1;
+if(.@filter == 3) close;
+
+set .@sql$, "SELECT `id`, `char_name`, `item_id`, `amount`, `price`, `currency_type`, `price_item_id`, `refine`, `card0`, `card1`, `card2`, `card3` FROM `market_listings`";
+
+if(.@filter == 1)
+	set .@sql$, .@sql$ + " WHERE `currency_type` = 'cashpoint'";
+else if(.@filter == 2)
+	set .@sql$, .@sql$ + " WHERE `currency_type` = 'item'";
+
+set .@sql$, .@sql$ + " ORDER BY `date_added` DESC LIMIT 50";
+
+query_sql .@sql$, .@id, .@seller$, .@itemid, .@amount, .@price, .@currency$, .@price_itemid, .@refine, .@card0, .@card1, .@card2, .@card3;
+
+if(getarraysize(.@id) == 0) {
+	mes .npc_name$;
+	mes "^FF6600=== Market Listings ===^000000";
+	mes "^FF0000No items for sale!^000000";
+	close;
+}
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@id) && .@i < 20; set .@i, .@i + 1) {
+	set .@itemname$, getitemname(.@itemid[.@i]);
+	set .@refine_txt$, (.@refine[.@i] > 0) ? "+" + .@refine[.@i] + " " : "";
+	
+	if(.@currency$[.@i] == "cashpoint") {
+		set .@price_txt$, "^0055FF" + callfunc("F_MarketFormatNum", .@price[.@i]) + " CP^000000";
+	} else {
+		set .@price_txt$, "^00FF00" + callfunc("F_MarketFormatNum", .@price[.@i]) + " " + getitemname(.@price_itemid[.@i]) + "^000000";
+	}
+	
+	set .@menu$, .@menu$ + "- " + .@refine_txt$ + .@itemname$ + " x" + .@amount[.@i] + " [" + .@price_txt$ + "] ^777777" + .@seller$[.@i] + "^000000:";
+}
+
+set .@menu$, .@menu$ + "- Back";
+
+set .@select, select(.@menu$) - 1;
+if(.@select >= getarraysize(.@id) || .@select >= 20) goto Market_Browse;
+
+mes .npc_name$;
+mes "^FF6600=== Item Details ===^000000";
+mes "Item: " + getitemname(.@itemid[.@select]);
+
+if(.@refine[.@select] > 0) mes "Refine: ^00FF00+" + .@refine[.@select] + "^000000";
+mes "Amount: ^00FF00" + .@amount[.@select] + "^000000";
+
+if(.@currency$[.@select] == "cashpoint") {
+	mes "Price: ^0055FF" + callfunc("F_MarketFormatNum", .@price[.@select]) + " Cash Points^000000";
+} else {
+	mes "Price: ^00FF00" + callfunc("F_MarketFormatNum", .@price[.@select]) + " " + getitemname(.@price_itemid[.@select]) + "^000000";
+}
+
+mes "Seller: ^777777" + .@seller$[.@select] + "^000000";
+
+if(.@card0[.@select] > 0 || .@card1[.@select] > 0 || .@card2[.@select] > 0 || .@card3[.@select] > 0) {
+	mes "^00FFFFCards:^000000";
+	if(.@card0[.@select] > 0) mes "- " + getitemname(.@card0[.@select]);
+	if(.@card1[.@select] > 0) mes "- " + getitemname(.@card1[.@select]);
+	if(.@card2[.@select] > 0) mes "- " + getitemname(.@card2[.@select]);
+	if(.@card3[.@select] > 0) mes "- " + getitemname(.@card3[.@select]);
+}
+
+next;
+
+if(select("- Buy:- Cancel") == 2) goto Market_Browse;
+
+// [BUG FIX #1 & #2] Re-query listing to prevent race condition and get fresh seller data
+query_sql "SELECT `id`, `char_id`, `char_name`, `item_id`, `amount`, `price`, `currency_type`, `price_item_id`, `refine`, `card0`, `card1`, `card2`, `card3` FROM `market_listings` WHERE `id` = '"+.@id[.@select]+"' LIMIT 1", .@chk_id, .@chk_charid, .@chk_seller$, .@chk_itemid, .@chk_amount, .@chk_price, .@chk_currency$, .@chk_price_itemid, .@chk_refine, .@chk_card0, .@chk_card1, .@chk_card2, .@chk_card3;
+
+if(getarraysize(.@chk_id) == 0) {
+	mes .npc_name$;
+	mes "^FF0000This item was already sold!^000000";
+	mes "Please browse the market again.";
+	close;
+}
+
+// [BUG FIX #2] Using index [0] correctly on re-queried array
+if(.@chk_charid[0] == getcharid(0)) {
+	mes .npc_name$;
+	mes "^FF0000You cannot buy your own item!^000000";
+	close;
+}
+
+if(.@chk_currency$[0] == "cashpoint") {
+	if(#CASHPOINTS < .@chk_price[0]) {
+		mes .npc_name$;
+		mes "^FF0000Not enough Cash Points!^000000";
+		mes "You need: ^0055FF" + callfunc("F_MarketFormatNum", .@chk_price[0]) + " CP^000000";
+		mes "You have: ^0055FF" + callfunc("F_MarketFormatNum", #CASHPOINTS) + " CP^000000";
+		close;
+	}
+} else {
+	// [BUG FIX #7] Use .@chk_price_itemid[0] for correct item name display
+	if(countitem(.@chk_price_itemid[0]) < .@chk_price[0]) {
+		mes .npc_name$;
+		mes "^FF0000Not enough items!^000000";
+		mes "You need: ^00FF00" + .@chk_price[0] + " " + getitemname(.@chk_price_itemid[0]) + "^000000";
+		mes "You have: ^00FF00" + countitem(.@chk_price_itemid[0]) + "^000000";
+		close;
+	}
+}
+
+// [BUG FIX #4] Check weight before delitem/deducting payment
+if(checkweight(.@chk_itemid[0], .@chk_amount[0]) == 0) {
+	mes .npc_name$;
+	mes "^FF0000Inventory too heavy!^000000";
+	close;
+}
+
+set .@tax, .@chk_price[0] * .market_tax / 100;
+set .@profit, .@chk_price[0] - .@tax;
+
+// Deduct payment
+if(.@chk_currency$[0] == "cashpoint") {
+	set #CASHPOINTS, #CASHPOINTS - .@chk_price[0];
+} else {
+	delitem .@chk_price_itemid[0], .@chk_price[0];
+}
+
+// Give item with full refine and card data
+getitem2 .@chk_itemid[0], .@chk_amount[0], 1, .@chk_refine[0], 0, .@chk_card0[0], .@chk_card1[0], .@chk_card2[0], .@chk_card3[0];
+
+query_sql "INSERT INTO `market_sold_history` (`char_id`, `char_name`, `item_sold_id`, `item_sold_amount`, `currency_type`, `earned_amount`, `earned_item_id`, `buyer_name`) VALUES ('"+.@chk_charid[0]+"', '"+escape_sql(.@chk_seller$[0])+"', '"+.@chk_itemid[0]+"', '"+.@chk_amount[0]+"', '"+.@chk_currency$[0]+"', '"+.@profit+"', '"+.@chk_price_itemid[0]+"', '"+escape_sql(strcharinfo(0))+"')";
+
+query_sql "DELETE FROM `market_listings` WHERE `id` = '"+.@chk_id[0]+"'";
+
+mes .npc_name$;
+mes "^00FF00Purchase successful!^000000";
+
+if(.@chk_currency$[0] == "cashpoint") {
+	mes "Paid: ^0055FF-" + callfunc("F_MarketFormatNum", .@chk_price[0]) + " Cash Points^000000";
+	mes "Seller will receive: ^0055FF" + callfunc("F_MarketFormatNum", .@profit) + " CP^000000";
+	mes "Market tax: ^FF0000" + callfunc("F_MarketFormatNum", .@tax) + " CP^000000";
+	announce "[Premium Market] " + strcharinfo(0) + " bought " + getitemname(.@chk_itemid[0]) + " from " + .@chk_seller$[0], bc_all, 0x00AAFF;
+} else {
+	mes "Paid: ^00FF00-" + callfunc("F_MarketFormatNum", .@chk_price[0]) + " " + getitemname(.@chk_price_itemid[0]) + "^000000";
+	mes "Seller will receive: ^00FF00" + callfunc("F_MarketFormatNum", .@profit) + " " + getitemname(.@chk_price_itemid[0]) + "^000000";
+	mes "Market tax: ^FF0000" + callfunc("F_MarketFormatNum", .@tax) + " " + getitemname(.@chk_price_itemid[0]) + "^000000";
+	announce "[Premium Market] " + strcharinfo(0) + " bought " + getitemname(.@chk_itemid[0]) + " from " + .@chk_seller$[0], bc_all, 0x00FF00;
+}
+
+mes "^FFD700Seller needs to return to NPC to claim earnings!^000000";
+close;
+
+//========== SELL ITEMS ==========
+Market_Sell:
+mes .npc_name$;
+mes "^FF6600=== Sell Items ===^000000";
+mes "List items from your inventory.";
+mes "^FF0000Market Tax: " + .market_tax + "%^000000";
+mes "^FF0000Listing Fee: " + .market_list_fee + " Cash Points^000000";
+mes "Your Cash Points: ^0055FF" + callfunc("F_MarketFormatNum", #CASHPOINTS) + "^000000";
+next;
+
+if(#CASHPOINTS < .market_list_fee) {
+	mes .npc_name$;
+	mes "^FF0000Not enough Cash Points for listing fee!^000000";
+	close;
+}
+
+query_sql "SELECT COUNT(*) FROM `market_listings` WHERE `char_id` = '"+getcharid(0)+"'", .@my_listings;
+if(.@my_listings >= .max_market_listings) {
+	mes .npc_name$;
+	mes "^FF0000You have reached the maximum of " + .max_market_listings + " listings!^000000";
+	mes "Remove some items first.";
+	close;
+}
+
+mes .npc_name$;
+mes "^FF6600=== Enter Item ID ===^000000";
+mes "Enter the Item ID you want to sell:";
+mes "(Type 0 to cancel)";
+next;
+
+input .@sell_itemid;
+if(.@sell_itemid == 0) close;
+
+if(.@sell_itemid < 1) {
+	mes .npc_name$;
+	mes "^FF0000Invalid Item ID!^000000";
+	close;
+}
+
+if(getitemname(.@sell_itemid) == "null" || getitemname(.@sell_itemid) == "") {
+	mes .npc_name$;
+	mes "^FF0000Item ID " + .@sell_itemid + " does not exist!^000000";
+	close;
+}
+
+set .@have, countitem(.@sell_itemid);
+if(.@have == 0) {
+	mes .npc_name$;
+	mes "^FF0000You don't have this item!^000000";
+	mes "Item: " + getitemname(.@sell_itemid);
+	close;
+}
+
+mes .npc_name$;
+mes "^FF6600=== Sell Item ===^000000";
+mes "Item: ^00FF00" + getitemname(.@sell_itemid) + "^000000";
+mes "You have: ^00FF00" + .@have + "^000000";
+mes "How many to sell?";
+mes "(1 - " + .@have + ", or 0 to cancel)";
+next;
+
+input .@sell_amount;
+if(.@sell_amount == 0) close;
+
+if(.@sell_amount < 1 || .@sell_amount > .@have) {
+	mes .npc_name$;
+	mes "^FF0000Invalid amount!^000000";
+	close;
+}
+
+mes .npc_name$;
+mes "^FF6600=== Choose Currency ===^000000";
+mes "What currency do you want to accept?";
+next;
+
+set .@currency_choice, select("- Cash Points:- Special Items:- Cancel") - 1;
+if(.@currency_choice == 2) close;
+
+if(.@currency_choice == 0) {
+	set .@currency_type$, "cashpoint";
+	
+	// Label for re-entering CP price
+	Market_Sell_CP_Price:
+	mes .npc_name$;
+	mes "^FF6600=== Set Price (Cash Points) ===^000000";
+	mes "Item: ^00FF00" + getitemname(.@sell_itemid) + "^000000";
+	mes "Amount: ^00FF00" + .@sell_amount + "^000000";
+	mes "Enter price in ^0055FFCash Points^000000:";
+	mes "(Min: 1, Max: 999,999)";
+	mes "(Enter 0 to cancel)";
+	next;
+	
+	input .@sell_price;
+	if(.@sell_price == 0) close;
+	
+	if(.@sell_price < 1 || .@sell_price > 999999) {
+		mes .npc_name$;
+		mes "^FF0000Invalid price!^000000";
+		close;
+	}
+	
+	set .@price_itemid, 0;
+	set .@price_display$, callfunc("F_MarketFormatNum", .@sell_price) + " Cash Points";
+	
+} else {
+	set .@currency_type$, "item";
+	
+	mes .npc_name$;
+	mes "^FF6600=== Choose Trade Item ===^000000";
+	mes "Select which item you want to receive:";
+	next;
+	
+	deletearray .@trade_menu$;
+	for(set .@i, 0; .@i < getarraysize(.trade_items); set .@i, .@i + 1)
+		set .@trade_menu$, .@trade_menu$ + "- " + getitemname(.trade_items[.@i]) + ":";
+	set .@trade_menu$, .@trade_menu$ + "- Cancel";
+	
+	set .@item_choice, select(.@trade_menu$) - 1;
+	if(.@item_choice >= getarraysize(.trade_items)) close;
+	
+	set .@price_itemid, .trade_items[.@item_choice];
+	
+	// Label for re-entering item trade price
+	Market_Sell_Item_Price:
+	mes .npc_name$;
+	mes "^FF6600=== Set Price (Items) ===^000000";
+	mes "Item: ^00FF00" + getitemname(.@sell_itemid) + "^000000";
+	mes "Amount: ^00FF00" + .@sell_amount + "^000000";
+	mes "Trade for: ^00FF00" + getitemname(.@price_itemid) + "^000000";
+	mes "How many " + getitemname(.@price_itemid) + "?";
+	mes "(Enter 0 to cancel)";
+	next;
+	
+	input .@sell_price;
+	if(.@sell_price == 0) close;
+	
+	if(.@sell_price < 1) {
+		mes .npc_name$;
+		mes "^FF0000Invalid amount!^000000";
+		close;
+	}
+	
+	set .@price_display$, callfunc("F_MarketFormatNum", .@sell_price) + " " + getitemname(.@price_itemid);
+}
+
+set .@tax, .@sell_price * .market_tax / 100;
+set .@profit, .@sell_price - .@tax;
+
+mes .npc_name$;
+mes "^FF6600=== Listing Summary ===^000000";
+mes "Item: ^00FF00" + getitemname(.@sell_itemid) + "^000000";
+mes "Amount: ^00FF00" + .@sell_amount + "^000000";
+mes "Selling Price: ^FFD700" + .@price_display$ + "^000000";
+mes "^FF0000Fees:^000000";
+
+if(.@currency_type$ == "cashpoint") {
+	mes "- Market Tax (" + .market_tax + "%): ^FF0000-" + callfunc("F_MarketFormatNum", .@tax) + " CP^000000";
+	mes "- Listing Fee: ^FF0000-" + .market_list_fee + " CP^000000";
+	mes "^00FF00You will receive: " + callfunc("F_MarketFormatNum", .@profit) + " CP^000000";
+} else {
+	mes "- Market Tax (" + .market_tax + "%): ^FF0000-" + callfunc("F_MarketFormatNum", .@tax) + " " + getitemname(.@price_itemid) + "^000000";
+	mes "- Listing Fee: ^FF0000-" + .market_list_fee + " CP^000000";
+	mes "^00FF00You will receive: " + callfunc("F_MarketFormatNum", .@profit) + " " + getitemname(.@price_itemid) + "^000000";
+}
+
+mes "^FFD700Remember to come back and claim your earnings!^000000";
+mes "Confirm listing?";
+next;
+
+set .@sell_confirm, select("- Yes, List Item:- No, Re-enter Price:- Cancel");
+
+if(.@sell_confirm == 3) {
+	mes .npc_name$;
+	mes "Listing cancelled.";
+	close;
+}
+
+// Re-enter price without restarting entire flow
+if(.@sell_confirm == 2) {
+	if(.@currency_type$ == "cashpoint") goto Market_Sell_CP_Price;
+	else goto Market_Sell_Item_Price;
+}
+
+// Final safety checks before taking item and CP
+if(#CASHPOINTS < .market_list_fee) {
+	mes .npc_name$;
+	mes "^FF0000Not enough Cash Points for listing fee!^000000";
+	close;
+}
+
+if(countitem(.@sell_itemid) < .@sell_amount) {
+	mes .npc_name$;
+	mes "^FF0000You don't have enough items!^000000";
+	close;
+}
+
+getinventorylist;
+set .@inv_index, -1;
+for(set .@i, 0; .@i < @inventorylist_count; set .@i, .@i + 1) {
+	if(@inventorylist_id[.@i] == .@sell_itemid) {
+		set .@inv_index, .@i;
+		break;
+	}
+}
+
+if(.@inv_index == -1) {
+	mes .npc_name$;
+	mes "^FF0000Item not found in inventory!^000000";
+	close;
+}
+
+set .@refine, @inventorylist_refine[.@inv_index];
+set .@card0, @inventorylist_card1[.@inv_index];
+set .@card1, @inventorylist_card2[.@inv_index];
+set .@card2, @inventorylist_card3[.@inv_index];
+set .@card3, @inventorylist_card4[.@inv_index];
+
+delitem .@sell_itemid, .@sell_amount;
+set #CASHPOINTS, #CASHPOINTS - .market_list_fee;
+
+query_sql "INSERT INTO `market_listings` (`char_id`, `char_name`, `item_id`, `amount`, `currency_type`, `price`, `price_item_id`, `refine`, `card0`, `card1`, `card2`, `card3`) VALUES ('"+getcharid(0)+"', '"+escape_sql(strcharinfo(0))+"', '"+.@sell_itemid+"', '"+.@sell_amount+"', '"+.@currency_type$+"', '"+.@sell_price+"', '"+.@price_itemid+"', '"+.@refine+"', '"+.@card0+"', '"+.@card1+"', '"+.@card2+"', '"+.@card3+"')";
+
+mes .npc_name$;
+mes "^00FF00Item listed successfully!^000000";
+mes "Selling Price: ^FFD700" + .@price_display$ + "^000000";
+
+if(.@currency_type$ == "cashpoint") {
+	mes "You will receive: ^00FF00" + callfunc("F_MarketFormatNum", .@profit) + " Cash Points^000000";
+} else {
+	mes "You will receive: ^00FF00" + callfunc("F_MarketFormatNum", .@profit) + " " + getitemname(.@price_itemid) + "^000000";
+}
+
+mes "^FFD700Don't forget to return and claim your earnings when sold!^000000";
+close;
+
+//========== MY LISTINGS ==========
+Market_MyListings:
+query_sql "SELECT `id`, `item_id`, `amount`, `price`, `currency_type`, `price_item_id`, `date_added`, `refine`, `card0`, `card1`, `card2`, `card3` FROM `market_listings` WHERE `char_id` = '"+getcharid(0)+"' ORDER BY `date_added` DESC", .@id, .@itemid, .@amount, .@price, .@currency$, .@price_itemid, .@date$, .@refine, .@card0, .@card1, .@card2, .@card3;
+
+mes .npc_name$;
+mes "^FF6600=== My Listings ===^000000";
+mes "Total: ^00FF00" + getarraysize(.@id) + "/" + .max_market_listings + "^000000";
+
+if(getarraysize(.@id) == 0) {
+	mes "^FF0000No active listings!^000000";
+	close;
+}
+
+deletearray .@menu$;
+for(set .@i, 0; .@i < getarraysize(.@id); set .@i, .@i + 1) {
+	if(.@currency$[.@i] == "cashpoint") {
+		set .@price_txt$, callfunc("F_MarketFormatNum", .@price[.@i]) + " CP";
+	} else {
+		set .@price_txt$, callfunc("F_MarketFormatNum", .@price[.@i]) + " " + getitemname(.@price_itemid[.@i]);
+	}
+	set .@refine_txt$, (.@refine[.@i] > 0) ? "+" + .@refine[.@i] + " " : "";
+	set .@menu$, .@menu$ + "- " + .@refine_txt$ + getitemname(.@itemid[.@i]) + " x" + .@amount[.@i] + " [" + .@price_txt$ + "]:";
+}
+set .@menu$, .@menu$ + "- Back";
+
+set .@select, select(.@menu$) - 1;
+if(.@select == getarraysize(.@id)) close;
+
+mes .npc_name$;
+mes "Item: ^00FF00" + getitemname(.@itemid[.@select]) + "^000000";
+
+if(.@refine[.@select] > 0) {
+	mes "Refine: ^00FF00+" + .@refine[.@select] + "^000000";
+}
+
+mes "Amount: ^00FF00" + .@amount[.@select] + "^000000";
+
+if(.@currency$[.@select] == "cashpoint") {
+	mes "Price: ^0055FF" + callfunc("F_MarketFormatNum", .@price[.@select]) + " Cash Points^000000";
+} else {
+	mes "Price: ^00FF00" + callfunc("F_MarketFormatNum", .@price[.@select]) + " " + getitemname(.@price_itemid[.@select]) + "^000000";
+}
+
+if(.@card0[.@select] > 0 || .@card1[.@select] > 0 || .@card2[.@select] > 0 || .@card3[.@select] > 0) {
+	mes "^00FFFFCards:^000000";
+	if(.@card0[.@select] > 0) mes "- " + getitemname(.@card0[.@select]);
+	if(.@card1[.@select] > 0) mes "- " + getitemname(.@card1[.@select]);
+	if(.@card2[.@select] > 0) mes "- " + getitemname(.@card2[.@select]);
+	if(.@card3[.@select] > 0) mes "- " + getitemname(.@card3[.@select]);
+}
+
+mes "Listed: ^777777" + .@date$[.@select] + "^000000";
+mes "Remove listing?";
+mes "(Item will be returned with all refine & cards)";
+if(select("- Yes, Remove:- Cancel") == 2) goto Market_MyListings;
+
+// Check weight before returning item
+if(checkweight(.@itemid[.@select], .@amount[.@select]) == 0) {
+	mes .npc_name$;
+	mes "^FF0000Cannot return item - inventory too heavy!^000000";
+	mes "Please free up some weight and try again.";
+	close;
+}
+
+// Use getitem2 to restore refine + cards correctly
+getitem2 .@itemid[.@select], .@amount[.@select], 1, .@refine[.@select], 0, .@card0[.@select], .@card1[.@select], .@card2[.@select], .@card3[.@select];
+
+query_sql "DELETE FROM `market_listings` WHERE `id` = '"+.@id[.@select]+"'";
+
+mes .npc_name$;
+mes "^00FF00Listing removed!^000000";
+mes "Item returned to inventory with all properties.";
+
+if(.@refine[.@select] > 0) {
+	mes "Returned: ^00FF00+" + .@refine[.@select] + " " + getitemname(.@itemid[.@select]) + " x" + .@amount[.@select] + "^000000";
+} else {
+	mes "Returned: ^00FF00" + getitemname(.@itemid[.@select]) + " x" + .@amount[.@select] + "^000000";
+}
+
+close;
+
+//============================================================
+OnInit:
+	set .npc_name$, "^FF6600[Premium Market]^000000";
+	
+	set .market_tax, 5;            // 5% tax on sales
+	set .market_list_fee, 100;     // 100 Cash Points listing fee
+	set .max_market_listings, 10;  // Max 10 listings per player
+	
+	// Accepted trade items (item ID list)
+	setarray .trade_items[0],
+		7227,
+		7615,
+		7179,
+		7000,
+		6417,
+		1000274,
+		1001258;
+}
+
+//============================================================
+//= NUMBER FORMATTING FUNCTION
+//============================================================
+function	script	F_MarketFormatNum	{
+	set .@num, getarg(0);
+	set .@str$, "" + .@num;
+	set .@len, getstrlen(.@str$);
+	
+	if(.@len <= 3) return .@str$;
+	
+	set .@result$, "";
+	set .@count, 0;
+	
+	for(set .@i, .@len - 1; .@i >= 0; set .@i, .@i - 1) {
+		if(.@count == 3) {
+			set .@result$, "," + .@result$;
+			set .@count, 0;
+		}
+		set .@result$, charat(.@str$, .@i) + .@result$;
+		set .@count, .@count + 1;
+	}
+	
+	return .@result$;
+}
+//============================================================
+//= END OF SCRIPT
+//============================================================

@@ -1,73 +1,222 @@
 //===== rAthena Script ======================================= 
-//= Find the Mushroom
+//= Find the Mushroom (Auto Timer + Manual Start + 10min Limit)
 //===== By: ================================================== 
-//= Mysterious
+//= Original: Mysterious / Edited: Euphy / Enhanced: Nam Edit
 //===== Current Version: ===================================== 
-//= 3.6a
+//= 4.1 (Auto Timer + 10min Limit + Custom Maps)
 //===== Compatible With: ===================================== 
 //= rAthena Project
 //===== Description: ========================================= 
-//= Find the Mushroom - random amount of Mushrooms spawns in random maps.
-//= Players need to find these mushrooms and kill them to gain prizes!
-//===== Additional Comments: =================================
-//= 3.0 Fully Functional with Rewritten script. [Mysterious]
-//= 3.6a Slightly edited. [Euphy]
-//============================================================ 
+//= Auto spawns every 1 hour OR GM can manually start anytime
+//= Random Mushrooms spawn in custom maps
+//= Players must find and kill them for rewards
+//= Auto ends after 10 minutes if mushrooms not all killed
+//============================================================
 
 prontera,142,228,6	script	Find the Mushroom	1084,{
-	mes "[ Find The Mushroom ]";
+	mes "[ ^FF0000Find The Mushroom^000000 ]";
+	mes " ";
+	
 	if (.status == 1) {
-		.@count = mobcount( .event_map$, strnpcinfo(0) + "::OnMobKilled" );
+		.@count = mobcount(.event_map$, strnpcinfo(0) + "::OnMobKilled");
 		if (.@count > 0) {
-			mes "There are " + .@count + " Mushrooms left in " + .event_map$ + "!";
-			mes "Find and kill the mushrooms to gain " + getitemname(.prize) + "!";
+			mes "^00FF00Event is currently active!^000000";
+			mes " ";
+			mes "^FFD700Location:^000000 " + .map_name$ + " (" + .event_map$ + ")";
+			mes "^FFD700Mushrooms Left:^000000 " + .@count + " / " + .total_spawn;
+			mes "^FFD700Reward:^000000 " + getitemname(.prize) + " x" + .amount;
+			mes " ";
+			mes "^0000FFHurry up and find them!^000000";
 			close;
 		}
 		.event_map$ = "";
+		.map_name$ = "";
 		.status = 0;
-		mes "All the mushrooms are killed?";
+		mes "^FF0000All Mushrooms have been eliminated!^000000";
+		mes "Event has ended.";
+		close;
 	}
-	mes "There is no event at the moment!";
-	if (.status || getgmlevel() < .GM) close;
-	mes "Start the event?";
+	
+	mes "^FF0000No event is currently running.^000000";
+	mes " ";
+	mes "^00FF00Next auto event:^000000";
+	mes "Every 1 hour from server start";
+	
+	if (getgmlevel() < .GM) close;
+	
+	mes " ";
+	mes "^FFD700[GM Control Panel]^000000";
+	mes "Do you want to start the event manually?";
 	next;
-	if (select("- No:- Yes") == 1) close;
-	donpcevent strnpcinfo(0) + "::OnMinute10";
-	mes "[ Find The Mushroom ]";
-	mes "Event started!";
+	
+	if (select("^FF0000No, Cancel^000000:^00FF00Yes, Start Event!^000000") == 1) close;
+	
+	if (.status) {
+		mes "[ ^FF0000Find The Mushroom^000000 ]";
+		mes "^FF0000Event is already running!^000000";
+		close;
+	}
+	
+	donpcevent strnpcinfo(0) + "::OnStartEvent";
+	mes "[ ^FF0000Find The Mushroom^000000 ]";
+	mes "^00FF00Event has been started manually!^000000";
 	close;
 
+//-------------------------------------------------------------
 OnInit:
-	.prize = 512;	// Reward item ID
-	.amount = 10;	// Reward item amount
-	.GM = 60;		// GM level required to access NPC
-	setarray .maps_list$[0],"izlude","geffen","morocc","prontera"; // Possible maps
+	// Configuration
+	.prize = 7227;      // Reward item ID (TCG Card)
+	.amount = 5;        // Reward amount per Mushroom
+	.GM = 60;           // GM level required for manual start
+	.min_spawn = 5;     // Minimum Mushrooms
+	.max_spawn = 10;    // Maximum Mushrooms
+	.event_duration = 600000; // Event duration in ms (10 minutes = 600000)
+	
+	// Event maps (mapname, display name)
+	setarray .maps_list$[0],
+		"prontera", "Prontera",
+		"the_fair", "The Fair",
+		"byako", "Byako",
+		"skycity", "Sky City",
+		"league", "Legend",
+		"askald", "Askald";
+	
+	.status = 0;
+	.total_spawn = 0;
+	
+	// Start auto timer for hourly events
+	initnpctimer;
+	startnpctimer;
 	end;
 
-OnMinute10:	// Start time (every hour)
-	if (.status) end;
+//-------------------------------------------------------------
+// Auto Event Timer - Every 1 hour (3600000 ms)
+OnTimer3600000:
+	if (.status == 0) {
+		donpcevent strnpcinfo(0) + "::OnStartEvent";
+	}
+	initnpctimer;
+	startnpctimer;
+	end;
+
+//-------------------------------------------------------------
+OnStartEvent:
+	if (.status) end; // Prevent double start
+	
 	.status = 1;
-	.@spawn = rand(1,10);	// How many Mushrooms should spawn?
-	.event_map$ = .maps_list$[ rand(getarraysize(.maps_list$)) ];
+	.@spawn = rand(.min_spawn, .max_spawn); // Random number of Mushrooms
+	.total_spawn = .@spawn;
+	
+	// Select random map
+	.@map_index = rand(getarraysize(.maps_list$) / 2) * 2;
+	.event_map$ = .maps_list$[.@map_index];
+	.map_name$ = .maps_list$[.@map_index + 1];
+	
 	.@label$ = strnpcinfo(0) + "::OnMobKilled";
+	
+	// Clear any existing Mushrooms
 	killmonster .event_map$, .@label$;
-	monster .event_map$,0,0,"Please don't kill me!",1084,.@spawn, .@label$;
-	announce "Find the Mushroom : Total of " + .@spawn + " Mushrooms have been spawned in " + .event_map$ + "!",0;
-	sleep 2500;
-	announce "Find the Mushroom : Every Mushroom you kill will give you " + getitemname(.prize) + "!",0;
+	
+	// Spawn Mushrooms
+	monster .event_map$, 0, 0, "Please don't kill me!", 1084, .@spawn, .@label$;
+	
+	// Announcements
+	announce "==============================================", bc_all, 0xFFD700;
+	announce "[ Find the Mushroom Event Started! ]", bc_all, 0xFF0000;
+	announce "==============================================", bc_all, 0xFFD700;
+	sleep 1500;
+	announce "Location: " + .map_name$ + " (" + .event_map$ + ")", bc_all, 0x00FF00;
+	sleep 1500;
+	announce "Total Mushrooms: " + .@spawn, bc_all, 0x00FFFF;
+	sleep 1500;
+	announce "Reward: " + getitemname(.prize) + " x" + .amount + " per Mushroom!", bc_all, 0xFFD700;
+	sleep 1500;
+	announce "Time Limit: 10 minutes!", bc_all, 0xFFFF00;
+	sleep 1500;
+	announce "Find and kill them all! Good luck!", bc_all, 0xFF69B4;
+	announce "==============================================", bc_all, 0xFFD700;
+	
+	// Start 10 minute countdown timer
+	donpcevent strnpcinfo(0) + "::OnEventTimer";
 	end;
 
+//-------------------------------------------------------------
+// Event Duration Timer (10 minutes)
+OnEventTimer:
+	if (.status == 0) end; // Event already ended
+	
+	sleep .event_duration; // Wait 10 minutes
+	
+	// Check if event is still running
+	if (.status == 1) {
+		.@left = mobcount(.event_map$, strnpcinfo(0) + "::OnMobKilled");
+		
+		if (.@left > 0) {
+			// Time's up - Kill remaining mushrooms
+			killmonster .event_map$, strnpcinfo(0) + "::OnMobKilled";
+			
+			announce "==============================================", bc_all, 0xFFD700;
+			announce "[ Find the Mushroom Event - Time's Up! ]", bc_all, 0xFF0000;
+			announce "Event has ended after 10 minutes!", bc_all, 0xFFFF00;
+			announce .@left + " Mushroom(s) in " + .map_name$ + " escaped!", bc_all, 0x00FFFF;
+			announce "Better luck next time!", bc_all, 0xFF69B4;
+			announce "==============================================", bc_all, 0xFFD700;
+			
+			.status = 0;
+			.event_map$ = "";
+			.map_name$ = "";
+			.total_spawn = 0;
+		}
+	}
+	end;
+
+//-------------------------------------------------------------
 OnMobKilled:
-	if (playerattached() == 0)
-		end;
+	if (!getcharid(3)) end; // No player attached
+	
+	// Give reward
 	getitem .prize, .amount;
-	.@spawn = mobcount( .event_map$, strnpcinfo(0) + "::OnMobKilled" );
-	if (.@spawn > 0)
-		announce "[ " + strcharinfo(0) + " ] has killed a Mushroom. There are now " + .@spawn + " Mushroom(s) left.",bc_map;
-	else {
-		announce "The Find the Mushroom Event has ended. All the Mushrooms have been killed.",0;
+	
+	// Visual effect
+	specialeffect2 EF_MVP;
+	
+	// Check remaining Mushrooms
+	.@left = mobcount(.event_map$, strnpcinfo(0) + "::OnMobKilled");
+	
+	if (.@left > 0) {
+		// Still Mushrooms remaining
+		announce "[ " + strcharinfo(0) + " ] killed a Mushroom in " + .map_name$ + "! (" + .@left + " / " + .total_spawn + " remaining)", bc_all, 0xFFD700;
+	} else {
+		// All Mushrooms killed - Event ended
+		announce "==============================================", bc_all, 0xFFD700;
+		announce "[ Find the Mushroom Event Completed! ]", bc_all, 0x00FF00;
+		announce "All Mushrooms in " + .map_name$ + " have been eliminated!", bc_all, 0x00FFFF;
+		announce "Congratulations to all participants!", bc_all, 0xFF69B4;
+		announce "==============================================", bc_all, 0xFFD700;
+		
 		.status = 0;
 		.event_map$ = "";
+		.map_name$ = "";
+		.total_spawn = 0;
+	}
+	end;
+
+//-------------------------------------------------------------
+// GM Commands (Optional)
+OnCommandStart:
+	if (getgmlevel() < .GM) end;
+	donpcevent strnpcinfo(0) + "::OnStartEvent";
+	end;
+
+OnCommandStop:
+	if (getgmlevel() < .GM) end;
+	if (.status) {
+		killmonster .event_map$, strnpcinfo(0) + "::OnMobKilled";
+		announce "Find the Mushroom Event has been stopped by GM!", bc_all, 0xFF0000;
+		.status = 0;
+		.event_map$ = "";
+		.map_name$ = "";
+		.total_spawn = 0;
 	}
 	end;
 }

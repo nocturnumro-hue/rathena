@@ -1,0 +1,316 @@
+// ============================================
+// NPC Enchant Weapons (Simple)
+// ============================================
+askald,159,103,2	script	Thanatos Enchant Weapons	10191,{
+	mes "[Thanatos Enchant Weapons]";
+	mes "Welcome to Thanatos Enchant Weapons!";
+	mes "Please select enchant type:";
+	next;
+	
+	switch(select("Brilliant Light UI:Sinful UI:Upgrade Enchant:Exit")) {
+		case 1:
+			mes "[Brilliant Light Enchant]";
+			mes "Opening Brilliant Light Enchant UI...";
+			close2;
+			item_enchant(65);
+			end;
+			
+		case 2:
+			mes "[Sinful Enchant]";
+			mes "Opening Sinful Enchant UI...";
+			close2;
+			item_enchant(66);
+			end;
+		case 3:
+	// UPGRADE ENCHANT SYSTEM - WEAPON VERSION (DUAL ENCHANT)
+	mes "[Weapon Enchant Upgrade]";
+	mes "Welcome to Weapon Enchant Upgrade System!";
+	mes " ";
+	mes "^0000FFThis system upgrades BOTH enchants simultaneously:^000000";
+	mes "^00FF00=== MAGIC 1 ==^000000";
+	mes "- Sharp Lv1 => Lv5";
+	mes "- After Attack Lv1 => Lv5";
+	mes "- Hit Plus Lv1 => Lv5";
+	mes "- Caster Lv1 => Lv5";
+	mes "^00FF00=== MAGIC 2 ==^000000";
+	mes "- Expert Archer Lv1 => Lv5";
+	mes "- Expert Fighter Lv1 => Lv5";
+	mes "- Expert Magician Lv1 => Lv5";
+	next;
+	
+	// Check if player has valid weapon equipped
+	if (!getequipid(EQI_HAND_R)) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "Please equip a valid weapon first!";
+		close;
+	}
+	
+	.@equip_slot = EQI_HAND_R;
+	.@equip_id = getequipid(.@equip_slot);
+	
+	// Check if weapon is valid
+	.@is_valid = 0;
+	switch(.@equip_id) {
+		// Demonic Series
+		case 560036: case 540053: case 540054: case 640036: case 540059:
+		case 550093: case 610044: case 510091: case 500062: case 700066:
+		case 570036: case 580037: case 830025: case 840020: case 810026:
+		case 800026: case 820020: case 500065: case 1341: case 650033:
+		case 600041: case 500072: case 550115: case 102073: case 590045:
+		// Holy Series
+		case 550088: case 650034: case 630027: case 530045: case 550116:
+		case 610045: case 700065: case 500063: case 510092: case 570037:
+		case 580038: case 830026: case 840021: case 810027: case 800027:
+		case 820021: case 500066: case 620022: case 540055: case 640037:
+		case 540060: case 550094:
+			.@is_valid = 1;
+			break;
+	}
+	
+	if (!.@is_valid) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "^FF0000This weapon cannot be upgraded here!^000000";
+		mes "Only Demonic and Holy series weapons are allowed.";
+		close;
+	}
+	
+	.@equip_refine = getequiprefinerycnt(.@equip_slot);
+	
+	setarray .@card[0],
+		getequipcardid(.@equip_slot, 0),
+		getequipcardid(.@equip_slot, 1),
+		getequipcardid(.@equip_slot, 2),
+		getequipcardid(.@equip_slot, 3);
+	
+	// Define enchant arrays (Item IDs for level 1-5)
+	// MAGIC 1 Series
+	setarray .@sharp[0], 4818, 4819, 4820, 4821, 4822;
+	setarray .@after_attack[0], 4869, 4870, 4871, 4872, 4873;
+	setarray .@hit_plus[0], 311395, 311396, 311397, 311398, 311399;
+	setarray .@caster[0], 311400, 311401, 311402, 311403, 311404;
+	
+	// MAGIC 2 Series
+	setarray .@expert_archer[0], 4832, 4833, 4834, 4835, 4836;
+	setarray .@expert_fighter[0], 311384, 311385, 311386, 311387, 311388;
+	setarray .@expert_magician[0], 311389, 311390, 311391, 311392, 311393;
+	
+	// Find both enchants (Magic 1 and Magic 2)
+	.@magic1_found = 0;
+	.@magic2_found = 0;
+	.@magic1_level = 0;
+	.@magic2_level = 0;
+	.@magic1_type = -1;
+	.@magic2_type = -1;
+	.@magic1_slot = -1;
+	.@magic2_slot = -1;
+	
+	// Loop through all 4 card slots
+	for (.@slot = 0; .@slot < 4; .@slot++) {
+		.@current_enchant = .@card[.@slot];
+		
+		// Check all enchant types
+		for (.@i = 0; .@i < 5; .@i++) {
+			// MAGIC 1 enchants
+			if (.@current_enchant == .@sharp[.@i]) {
+				.@magic1_found = 1;
+				.@magic1_level = .@i + 1;
+				.@magic1_type = 0;
+				.@magic1_slot = .@slot;
+				break;
+			}
+			if (.@current_enchant == .@after_attack[.@i]) {
+				.@magic1_found = 1;
+				.@magic1_level = .@i + 1;
+				.@magic1_type = 1;
+				.@magic1_slot = .@slot;
+				break;
+			}
+			if (.@current_enchant == .@hit_plus[.@i]) {
+				.@magic1_found = 1;
+				.@magic1_level = .@i + 1;
+				.@magic1_type = 2;
+				.@magic1_slot = .@slot;
+				break;
+			}
+			if (.@current_enchant == .@caster[.@i]) {
+				.@magic1_found = 1;
+				.@magic1_level = .@i + 1;
+				.@magic1_type = 3;
+				.@magic1_slot = .@slot;
+				break;
+			}
+			
+			// MAGIC 2 enchants
+			if (.@current_enchant == .@expert_archer[.@i]) {
+				.@magic2_found = 1;
+				.@magic2_level = .@i + 1;
+				.@magic2_type = 4;
+				.@magic2_slot = .@slot;
+				break;
+			}
+			if (.@current_enchant == .@expert_fighter[.@i]) {
+				.@magic2_found = 1;
+				.@magic2_level = .@i + 1;
+				.@magic2_type = 5;
+				.@magic2_slot = .@slot;
+				break;
+			}
+			if (.@current_enchant == .@expert_magician[.@i]) {
+				.@magic2_found = 1;
+				.@magic2_level = .@i + 1;
+				.@magic2_type = 6;
+				.@magic2_slot = .@slot;
+				break;
+			}
+		}
+	}
+	
+	// Validate both enchants found
+	if (!.@magic1_found || !.@magic2_found) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "^FF0000Missing enchantments!^000000";
+		mes " ";
+		mes "Requirements:";
+		mes "- Weapon must have ONE Magic 1 enchant";
+		mes "- Weapon must have ONE Magic 2 enchant";
+		mes "- Both enchants must be present to upgrade";
+		close;
+	}
+	
+	// Check if both enchants are same level
+	if (.@magic1_level != .@magic2_level) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "^FF0000Enchant levels don't match!^000000";
+		mes " ";
+		mes "Current levels:";
+		mes "- Magic 1: Level " + .@magic1_level;
+		mes "- Magic 2: Level " + .@magic2_level;
+		mes " ";
+		mes "Both enchants must be same level to upgrade together.";
+		close;
+	}
+	
+	// Check if already max level
+	if (.@magic1_level >= 5) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "^00FF00Your enchants are already at MAX level!^000000";
+		close;
+	}
+	
+	.@current_level = .@magic1_level;
+	.@next_level = .@current_level + 1;
+	
+	// Calculate costs based on level
+	.@upgrade_cost = 30 + ((.@current_level - 1) * 15); // 30, 45, 60, 75
+	.@ticket_cost = .@current_level; // 1, 2, 3, 4
+	.@essence_cost = 0;
+	if (.@current_level >= 2) .@essence_cost = .@current_level - 1; // 0, 1, 2, 3
+	
+	// Get enchant names
+	switch(.@magic1_type) {
+		case 0: .@magic1_name$ = "Sharp"; break;
+		case 1: .@magic1_name$ = "After Attack"; break;
+		case 2: .@magic1_name$ = "Hit Plus"; break;
+		case 3: .@magic1_name$ = "Caster"; break;
+	}
+	
+	switch(.@magic2_type) {
+		case 4: .@magic2_name$ = "Expert Archer"; break;
+		case 5: .@magic2_name$ = "Expert Fighter"; break;
+		case 6: .@magic2_name$ = "Expert Magician"; break;
+	}
+	
+	mes "[Weapon Enchant Upgrade]";
+	mes "^0000FFCurrent Enchants (Lv" + .@current_level + "):^000000";
+	mes "- Magic 1: " + .@magic1_name$;
+	mes "- Magic 2: " + .@magic2_name$;
+	mes " ";
+	mes "^00FF00Upgrade to Level " + .@next_level + ":^000000";
+	mes "- Magic 1: " + .@magic1_name$ + " Lv" + .@next_level;
+	mes "- Magic 2: " + .@magic2_name$ + " Lv" + .@next_level;
+	mes " ";
+	mes "^FF0000Cost:^000000";
+	mes "- Fate Fragment: " + .@upgrade_cost;
+	mes "- Sin Fragment: " + .@upgrade_cost;
+	mes "- Enchant Ticket: " + .@ticket_cost;
+	if (.@essence_cost > 0) mes "- M Dimension Essence: " + .@essence_cost;
+	next;
+	
+	if (select("Cancel:Upgrade Both Enchants") == 1) close;
+	
+	// Item IDs for materials
+	.@fate_frag = 1000263; // Fate_Fragment
+	.@sin_frag = 1000257;  // Sin_Fragment
+	.@enchant_ticket = 1000874; // Enchant_Ticket
+	.@dimension_essence = 7925; // M_Dimension_Essence
+	
+	// Check materials
+	if (countitem(.@fate_frag) < .@upgrade_cost || countitem(.@sin_frag) < .@upgrade_cost) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "^FF0000Not enough Fragments!^000000";
+		close;
+	}
+	
+	if (countitem(.@enchant_ticket) < .@ticket_cost) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "^FF0000Not enough Enchant Tickets!^000000";
+		close;
+	}
+	
+	if (.@essence_cost > 0 && countitem(.@dimension_essence) < .@essence_cost) {
+		mes "[Weapon Enchant Upgrade]";
+		mes "^FF0000Not enough M Dimension Essence!^000000";
+		close;
+	}
+	
+	// Consume materials
+	delitem .@fate_frag, .@upgrade_cost;
+	delitem .@sin_frag, .@upgrade_cost;
+	delitem .@enchant_ticket, .@ticket_cost;
+	if (.@essence_cost > 0) delitem .@dimension_essence, .@essence_cost;
+	
+	// Get new enchant IDs for Magic 1
+	switch(.@magic1_type) {
+		case 0: .@new_magic1 = .@sharp[.@next_level - 1]; break;
+		case 1: .@new_magic1 = .@after_attack[.@next_level - 1]; break;
+		case 2: .@new_magic1 = .@hit_plus[.@next_level - 1]; break;
+		case 3: .@new_magic1 = .@caster[.@next_level - 1]; break;
+	}
+	
+	// Get new enchant IDs for Magic 2
+	switch(.@magic2_type) {
+		case 4: .@new_magic2 = .@expert_archer[.@next_level - 1]; break;
+		case 5: .@new_magic2 = .@expert_fighter[.@next_level - 1]; break;
+		case 6: .@new_magic2 = .@expert_magician[.@next_level - 1]; break;
+	}
+	
+	// Update both enchants
+	.@card[.@magic1_slot] = .@new_magic1;
+	.@card[.@magic2_slot] = .@new_magic2;
+	
+	// If reached max level, move to last 2 slots
+	if (.@next_level == 5) {
+		// Clear old slots if not already in last 2 slots
+		if (.@magic1_slot < 2) .@card[.@magic1_slot] = 0;
+		if (.@magic2_slot < 2) .@card[.@magic2_slot] = 0;
+		// Put max enchants in last 2 slots
+		.@card[2] = .@new_magic1;
+		.@card[3] = .@new_magic2;
+	}
+	
+	delequip .@equip_slot;
+	specialeffect2 EF_REPAIRWEAPON;
+	
+	mes "[Weapon Enchant Upgrade]";
+	mes "^00FF00Upgrade successful!^000000";
+	mes " ";
+	mes "^0000FFYour enchants are now Level " + .@next_level + ":^000000";
+	mes "- " + .@magic1_name$ + " Lv" + .@next_level;
+	mes "- " + .@magic2_name$ + " Lv" + .@next_level;
+	getitem2 .@equip_id, 1, 1, .@equip_refine, 0, .@card[0], .@card[1], .@card[2], .@card[3];
+	equip .@equip_id;
+	close;
+	}
+	end;
+}	
+	

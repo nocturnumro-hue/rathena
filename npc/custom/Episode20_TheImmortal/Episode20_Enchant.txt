@@ -1,0 +1,99 @@
+// ============================================
+// Episode 20 ENCHANT NPC
+// ============================================
+askald,71,138,1	script	Episode20 Enchant	10536,{
+	cutin "ep20_lasgand01.png",2;
+	mes "^0000FFWelcome to Episode 20 Glacier Enchant System!^000000";
+	mes "I can enchant the following Item:";
+	mes "^0088FF=>Glacier Armors^000000";
+	mes "^0088FF=>Glacier Garments^000000";
+	mes "^9900FF=>Glacier Footgear^000000";
+	mes "^9900FF=>Glacier Guard^000000";
+	mes "^00CC00=>Snow Flower Accessories (Right)^000000";
+	mes "^00CC00=>Snow Flower Accessories (Left)^000000";	
+	mes "^FF0000=>Dim Glacier Armors^000000";
+	mes "^FF0000=>Dim Glacier Garments^000000";
+	mes "^FF0000=>Dim Glacier Footgear^000000";
+	mes "^FF0000=>Isgard Crowns^000000";
+	next;
+	
+	switch(select("^0088FFGlacier Armors^000000:^0088FFGlacier Garments^000000:^9900FFGlacier Footgear^000000:^9900FFGlacier Guard^000000:^00CC00Glacier Accessories (Right)^000000:^00CC00Glacier Accessories (Left)^000000:^FF0000Dim Glacier Armors^000000:^FF0000Dim Glacier Garments^000000:^FF0000Dim Glacier Footgear^000000:^FF0000Isgard Crowns^000000:Exit")) {
+		case 1:
+			// Glacier Armors - TABLE 89
+			cutin "ep20_lasgand02.png",2;
+			item_enchant(89);
+			cutin "",255;
+			close;
+			
+		case 2:
+			// Glacier Garments - TABLE 90
+			cutin "ep20_lasgand02.png",2;
+			item_enchant(90);
+			cutin "",255;
+			close;
+			
+		case 3:
+			// Glacier Footgear - TABLE 91
+			cutin "ep20_lasgand03.png",2;
+			item_enchant(91);
+			cutin "",255;
+			close;
+			
+		case 4:
+			// Glacier Guard - TABLE 92
+			cutin "ep20_lasgand03.png",2;
+			item_enchant(92);
+			cutin "",255;
+			close;
+			
+		case 5:
+			// Glacier Accessories (Right) - TABLE 93
+			cutin "ep20_lasgand04.png",2;
+			item_enchant(93);
+			cutin "",255;
+			close;
+			
+		case 6:
+			// Glacier Accessories (Left) - TABLE 94
+			cutin "ep20_lasgand04.png",2;
+			item_enchant(94);
+			cutin "",255;
+			close;
+			
+		case 7:
+			// Dim Glacier Armors - TABLE 95
+			cutin "ep20_lasgand05.png",2;
+			item_enchant(95);
+			cutin "",255;
+			close;
+			
+		case 8:
+			// Dim Glacier Garments - TABLE 96
+			cutin "ep20_lasgand05.png",2;
+			item_enchant(96);
+			cutin "",255;
+			close;
+			
+		case 9:
+			// Dim Glacier Footgear - TABLE 97
+			cutin "ep20_lasgand05.png",2;
+			item_enchant(97);
+			cutin "",255;
+			close;
+			
+		case 10:
+			// Isgard Crowns - TABLE 98
+			cutin "ep20_lasgand05.png",2;
+			item_enchant(98);
+			cutin "",255;
+			close;
+			
+		case 11:
+			cutin "ep20_lasgand01.png",2;
+			mes "[Weapon Enchanter]";
+			mes "Have a nice day!";
+			mes "Come back anytime!";
+			cutin "",255;
+			close;
+	}
+}

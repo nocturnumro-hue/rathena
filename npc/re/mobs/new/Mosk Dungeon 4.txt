@@ -1,0 +1,11 @@
+//===== rAthena Script =======================================
+//= Magma Dungeon 4
+//============================================================
+
+mosk_dun04	monster	Baby Woodie	30034,55
+mosk_dun04	monster	Baby Domovoi	30035,55
+mosk_dun04	monster	Baby Hino		30036,55
+mosk_dun04	monster	Baby Phylla	30037,55
+mosk_dun04	monster	Mavka	1884,37,5000
+
+mosk_dun04	boss_monster	Chaos BeelZebub	30039,1,21600000,600000,0

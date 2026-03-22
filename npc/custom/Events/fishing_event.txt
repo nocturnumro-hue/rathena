@@ -1,0 +1,497 @@
+//===== rAthena Script =======================================
+//= Fishing Event
+//===== By: ==================================================
+//= Manuel Sintos (Fixed & Optimized)
+//===== Current Version: =====================================
+//= 1.6
+//===== Description: =========================================
+//= Fishing event with bait requirement and point system
+//===== Additional Comments: =================================
+//= 1.6 Modified to only work in Askald map
+// @reloadnpcfile npc/custom/Events/fishing_event.txt
+
+//FISHING SPOTS - ASKALD ONLY
+//SPOT 1
+askald,225,170,3	script	Fishing Spot	10065,{
+	// Fishing Equipment Item IDs (Only 4 items)
+	// 1. Fishing Rod (5855)
+	// 2. Fishing Boots (2443)
+	// 3. Fishing Muffler (2550)
+	// 4. Small Fishing Rod (2764) - Weapon (Required to fish)
+	
+	// Bait Item ID
+	// 5. Bait (6781) - Consumable (Required, consumes 1 per fishing)
+	
+	// Fish Item IDs (6770-6782, excluding 6781 which is bait)
+	// Common Fish (1 point): 6771, 6772, 6773, 6775, 6778
+	// Uncommon Fish (3 points): 6774, 6776, 6777, 6779, 6780
+	// Rare Fish (5 points): 6770, 6782
+
+	set .@char_id, getcharid(0);
+
+	// Check if player has Small Fishing Rod equipped (REQUIRED)
+	if (!isequipped(2764)) {
+		mes "[Fishing Spot]";
+		mes "You need to equip a ^0000FFSmall Fishing Rod^000000 to fish here.";
+		close;
+	}
+
+	// Check if player has Bait (REQUIRED)
+	if (countitem(6781) < 1) {
+		mes "[Fishing Spot]";
+		mes "You need at least 1 ^0000FFBait^000000 to fish.";
+		close;
+	}
+
+	// Check if player is already fishing
+	if (#isFishing) {
+		dispbottom "[Fishing]: You're currently fishing! Please wait until it's done.";
+		end;
+	}
+
+	// Calculate casting time based on equipped items (base: 9 seconds)
+	set .@cast_time, 9;
+	
+	if (isequipped(2764)) set .@cast_time, .@cast_time - 3; // Small Fishing Rod: -3s
+	if (isequipped(2443)) set .@cast_time, .@cast_time - 2; // Fishing Boots: -2s
+	if (isequipped(2550)) set .@cast_time, .@cast_time - 2; // Fishing Muffler: -2s
+	if (isequipped(5855)) set .@cast_time, .@cast_time - 3; // Fishing Rod: -3s
+	
+	// Minimum cast time is 1 second
+	if (.@cast_time < 1) set .@cast_time, 1;
+
+	// Start fishing process
+	dispbottom "[Fishing]: Throwing bait!";
+	progressbar "ffffff", .@cast_time;
+
+	// Lock player movement and set fishing flag
+	set #isFishing, 1;
+	pcblockmove .@char_id, 1;
+
+	dispbottom "[Fishing]: You're fishing!";
+
+	// Visual and sound effects
+	specialeffect EF_BUBBLE, AREA, "Fishing Spot";
+	soundeffect "splash_water.wav", 0;
+
+	// Fishing animation sequence
+	cutin "2013_summer_prt_1", 1;
+	sleep2 500;
+	cutin "2013_summer_prt_1", 255;
+	
+	cutin "2013_summer_prt_2", 1;
+	sleep2 800;
+	cutin "2013_summer_prt_2", 255;
+	
+	cutin "2013_summer_prt_3", 1;
+	sleep2 800;
+	cutin "2013_summer_prt_3", 255;
+	
+	cutin "2013_summer_prt_4", 1;
+	sleep2 800;
+	cutin "2013_summer_prt_4", 255;
+
+	// Random catch calculation (0-99)
+	set .@rand, rand(100);
+
+	// Catch logic with different rarities
+	if (.@rand < 70) {
+		// Common fish - 70% chance (1 point each)
+		setarray .@common[0], 6771, 6772, 6773, 6775, 6778;
+		set .@catch_id, .@common[rand(getarraysize(.@common))];
+		cutin "2013_summer_prt_5", 1;
+		getitem .@catch_id, 1;
+		dispbottom "[Fishing]: You caught a " + getitemname(.@catch_id) + "! (Worth 1 point)";
+	} else if (.@rand < 85) {
+		// Uncommon fish - 15% chance (3 points each)
+		setarray .@uncommon[0], 6774, 6776, 6777, 6779, 6780;
+		set .@catch_id, .@uncommon[rand(getarraysize(.@uncommon))];
+		cutin "2013_summer_prt_5", 1;
+		getitem .@catch_id, 1;
+		dispbottom "[Fishing]: You caught an UNCOMMON " + getitemname(.@catch_id) + "! (Worth 3 points)";
+	} else if (.@rand < 95) {
+		// Rare fish - 10% chance (5 points each)
+		setarray .@rare[0], 6770, 6782;
+		set .@catch_id, .@rare[rand(getarraysize(.@rare))];
+		cutin "2013_summer_prt_5", 1;
+		getitem .@catch_id, 1;
+		dispbottom "[Fishing]: You caught a RARE " + getitemname(.@catch_id) + "! (Worth 5 points)";
+		announce "[Fishing Event]: " + strcharinfo(0) + " caught a RARE " + getitemname(.@catch_id) + "!", bc_all;
+	} else {
+		// Nothing - 5% chance
+		cutin "2013_summer_prt_6", 1;
+		specialeffect2 EF_SUI_EXPLOSION;
+		dispbottom "[Fishing]: The fish got away! Better luck next time.";
+	}
+
+	// Consume 1 Bait after fishing
+	delitem 6781, 1;
+
+	// Play catch sound effect
+	soundeffect "catched_fish.wav", 0;
+
+	sleep2 800;
+	cutin "", 255;
+
+	// Reset fishing state
+	set #isFishing, 0;
+	pcblockmove .@char_id, 0;
+	dispbottom "[Fishing]: You finished fishing!";
+	end;
+}
+
+// Duplicate Fishing Spot NPCs - ASKALD ONLY
+askald,225,160,3	duplicate(Fishing Spot)	Fishing Spot#fs2	10065
+askald,225,150,3	duplicate(Fishing Spot)	Fishing Spot#fs3	10065
+askald,225,140,3	duplicate(Fishing Spot)	Fishing Spot#fs4	10065
+askald,225,120,3	duplicate(Fishing Spot)	Fishing Spot#fs5	10065
+askald,225,110,3	duplicate(Fishing Spot)	Fishing Spot#fs6	10065
+askald,225,100,3	duplicate(Fishing Spot)	Fishing Spot#fs7	10065
+askald,220,170,3	duplicate(Fishing Spot)	Fishing Spot#fs8	10065
+askald,220,160,3	duplicate(Fishing Spot)	Fishing Spot#fs9	10065
+askald,220,150,3	duplicate(Fishing Spot)	Fishing Spot#fs10	10065
+askald,220,140,3	duplicate(Fishing Spot)	Fishing Spot#fs11	10065
+askald,220,120,3	duplicate(Fishing Spot)	Fishing Spot#fs12	10065
+askald,220,110,3	duplicate(Fishing Spot)	Fishing Spot#fs13	10065
+askald,220,100,3	duplicate(Fishing Spot)	Fishing Spot#fs14	10065
+//SPOT 2
+askald,225,90,3	duplicate(Fishing Spot)	Fishing Spot#fs15	10065
+askald,225,80,3	duplicate(Fishing Spot)	Fishing Spot#fs16	10065
+askald,225,70,3	duplicate(Fishing Spot)	Fishing Spot#fs17	10065
+askald,225,60,3	duplicate(Fishing Spot)	Fishing Spot#fs18	10065
+askald,220,90,3	duplicate(Fishing Spot)	Fishing Spot#fs19	10065
+askald,220,80,3	duplicate(Fishing Spot)	Fishing Spot#fs20	10065
+askald,220,70,3	duplicate(Fishing Spot)	Fishing Spot#fs21	10065
+askald,220,60,3	duplicate(Fishing Spot)	Fishing Spot#fs22	10065
+
+// Fishing Equipment Seller NPC - ASKALD ONLY
+askald,200,80,5	script	Fishing Items Seller	843,{
+	// Check if player is fishing
+	if (#isFishing) {
+		dispbottom "[Fishing Items Seller]: You're currently fishing! Please wait until it's done.";
+		end;
+	}
+
+	mes "[Fishing Items Seller]";
+	mes "Welcome! I sell fishing equipment.";
+	mes "What would you like to buy?";
+	next;
+
+	callshop "FishingEquipShop", 1;
+	end;
+}
+
+// Fishing Equipment Shop (4 items + Bait)
+-	shop	FishingEquipShop	-1,5855:320000000,2443:250000000,2550:250000000,2764:200000000,6781:500
+
+// Fish Trader NPC - ASKALD ONLY
+askald,200,70,5	script	Fish Trader	842,{
+	// Check if player is fishing
+	if (#isFishing) {
+		dispbottom "[Fish Trader]: You're currently fishing! Please wait until it's done.";
+		end;
+	}
+
+	mes "[Fish Trader]";
+	mes "Hello! I buy fish and give you ^FF0000Fishing Points^000000.";
+	mes "^0000FFYour Current Points: ^FF0000" + #FishingPoints + "^000000";
+	mes "^008800Common Fish^000000 = 1 point";
+	mes "^FF9900Uncommon Fish^000000 = 3 points";
+	mes "^FF0000Rare Fish^000000 = 5 points";
+	next;
+
+	switch(select("Trade Fish for Points:Trade ALL Fish at Once:Point Shop:Cancel")) {
+		case 1:
+			mes "[Fish Trader]";
+			mes "Which fish do you want to trade?";
+			next;
+
+			switch(select("Common Fish (1pt):Uncommon Fish (3pts):Rare Fish (5pts):Cancel")) {
+				case 1: // Common Fish
+					mes "[Fish Trader]";
+					mes "Select which common fish to trade:";
+					next;
+					switch(select(getitemname(6771)+":"+getitemname(6772)+":"+getitemname(6773)+":"+getitemname(6775)+":"+getitemname(6778)+":Cancel")) {
+						case 1: set .@fish_id, 6771; set .@points, 1; break;
+						case 2: set .@fish_id, 6772; set .@points, 1; break;
+						case 3: set .@fish_id, 6773; set .@points, 1; break;
+						case 4: set .@fish_id, 6775; set .@points, 1; break;
+						case 5: set .@fish_id, 6778; set .@points, 1; break;
+						case 6: close;
+					}
+					break;
+
+				case 2: // Uncommon Fish
+					mes "[Fish Trader]";
+					mes "Select which uncommon fish to trade:";
+					next;
+					switch(select(getitemname(6774)+":"+getitemname(6776)+":"+getitemname(6777)+":"+getitemname(6779)+":"+getitemname(6780)+":Cancel")) {
+						case 1: set .@fish_id, 6774; set .@points, 3; break;
+						case 2: set .@fish_id, 6776; set .@points, 3; break;
+						case 3: set .@fish_id, 6777; set .@points, 3; break;
+						case 4: set .@fish_id, 6779; set .@points, 3; break;
+						case 5: set .@fish_id, 6780; set .@points, 3; break;
+						case 6: close;
+					}
+					break;
+
+				case 3: // Rare Fish
+					mes "[Fish Trader]";
+					mes "Select which rare fish to trade:";
+					next;
+					switch(select(getitemname(6770)+":"+getitemname(6782)+":Cancel")) {
+						case 1: set .@fish_id, 6770; set .@points, 5; break;
+						case 2: set .@fish_id, 6782; set .@points, 5; break;
+						case 3: close;
+					}
+					break;
+
+				case 4:
+					close;
+			}
+
+			// Check if player has the fish
+			if (countitem(.@fish_id) < 1) {
+				mes "[Fish Trader]";
+				mes "You don't have any " + getitemname(.@fish_id) + ".";
+				close;
+			}
+
+			// Ask how many to trade
+			mes "[Fish Trader]";
+			mes "How many " + getitemname(.@fish_id) + " do you want to trade?";
+			mes "You have: ^FF0000" + countitem(.@fish_id) + "^000000";
+			mes "Each gives: ^0000FF" + .@points + "^000000 points";
+			next;
+
+			input .@amount, 0, countitem(.@fish_id);
+
+			if (.@amount < 1) {
+				mes "[Fish Trader]";
+				mes "Trade canceled.";
+				close;
+			}
+
+			// Confirm trade
+			set .@total_points, .@amount * .@points;
+			mes "[Fish Trader]";
+			mes "Trade ^FF0000" + .@amount + "x " + getitemname(.@fish_id) + "^000000";
+			mes "for ^0000FF" + .@total_points + " Fishing Points^000000?";
+			next;
+
+			if (select("Yes:No") == 2) {
+				mes "[Fish Trader]";
+				mes "Trade canceled.";
+				close;
+			}
+
+			// Execute trade
+			delitem .@fish_id, .@amount;
+			set #FishingPoints, #FishingPoints + .@total_points;
+
+			mes "[Fish Trader]";
+			mes "Trade successful!";
+			mes "You received ^0000FF" + .@total_points + " Fishing Points^000000!";
+			mes " ";
+			mes "^0000FFTotal Points: ^FF0000" + #FishingPoints + "^000000";
+			close;
+
+		case 2: // Trade ALL Fish at Once
+			mes "[Fish Trader]";
+			mes "I will trade ALL fish in your inventory for points!";
+			mes " ";
+			mes "^FF0000This will exchange ALL your fish at once.^000000";
+			next;
+
+			// Count all fish
+			set .@total_points, 0;
+			set .@total_fish, 0;
+
+			// Common Fish (1 point each)
+			setarray .@common[0], 6771, 6772, 6773, 6775, 6778;
+			for (set .@i, 0; .@i < getarraysize(.@common); set .@i, .@i + 1) {
+				set .@count, countitem(.@common[.@i]);
+				if (.@count > 0) {
+					set .@total_points, .@total_points + (.@count * 1);
+					set .@total_fish, .@total_fish + .@count;
+				}
+			}
+
+			// Uncommon Fish (3 points each)
+			setarray .@uncommon[0], 6774, 6776, 6777, 6779, 6780;
+			for (set .@i, 0; .@i < getarraysize(.@uncommon); set .@i, .@i + 1) {
+				set .@count, countitem(.@uncommon[.@i]);
+				if (.@count > 0) {
+					set .@total_points, .@total_points + (.@count * 3);
+					set .@total_fish, .@total_fish + .@count;
+				}
+			}
+
+			// Rare Fish (5 points each)
+			setarray .@rare[0], 6770, 6782;
+			for (set .@i, 0; .@i < getarraysize(.@rare); set .@i, .@i + 1) {
+				set .@count, countitem(.@rare[.@i]);
+				if (.@count > 0) {
+					set .@total_points, .@total_points + (.@count * 5);
+					set .@total_fish, .@total_fish + .@count;
+				}
+			}
+
+			// Check if player has any fish
+			if (.@total_fish < 1) {
+				mes "[Fish Trader]";
+				mes "You don't have any fish to trade.";
+				close;
+			}
+
+			// Show summary
+			mes "[Fish Trader]";
+			mes "^0000FFTotal Fish: ^FF0000" + .@total_fish + "^000000";
+			mes "^0000FFTotal Points: ^FF0000" + .@total_points + "^000000";
+			mes " ";
+			mes "Do you want to trade all your fish?";
+			next;
+
+			if (select("Yes, trade all!:No, cancel") == 2) {
+				mes "[Fish Trader]";
+				mes "Trade canceled.";
+				close;
+			}
+
+			// Delete all fish and give points
+			// Common Fish
+			for (set .@i, 0; .@i < getarraysize(.@common); set .@i, .@i + 1) {
+				set .@count, countitem(.@common[.@i]);
+				if (.@count > 0) delitem .@common[.@i], .@count;
+			}
+
+			// Uncommon Fish
+			for (set .@i, 0; .@i < getarraysize(.@uncommon); set .@i, .@i + 1) {
+				set .@count, countitem(.@uncommon[.@i]);
+				if (.@count > 0) delitem .@uncommon[.@i], .@count;
+			}
+
+			// Rare Fish
+			for (set .@i, 0; .@i < getarraysize(.@rare); set .@i, .@i + 1) {
+				set .@count, countitem(.@rare[.@i]);
+				if (.@count > 0) delitem .@rare[.@i], .@count;
+			}
+
+			// Add points
+			set #FishingPoints, #FishingPoints + .@total_points;
+
+			mes "[Fish Trader]";
+			mes "^00FF00Trade Successful!^000000";
+			mes " ";
+			mes "Traded: ^FF0000" + .@total_fish + " fish^000000";
+			mes "Received: ^0000FF" + .@total_points + " Fishing Points^000000";
+			mes " ";
+			mes "^0000FFTotal Points: ^FF0000" + #FishingPoints + "^000000";
+			close;
+
+		case 3: // Point Shop
+			mes "[Fish Trader]";
+			mes "Welcome to the Fishing Point Shop!";
+			mes " ";
+			mes "^0000FFYour Points: ^FF0000" + #FishingPoints + "^000000";
+			close2;
+			callshop "fishing_point_shop", 1;
+			npcshopattach "fishing_point_shop";
+			end;
+
+		case 4: // Cancel
+			close;
+	}
+
+OnBuyItem:
+	// Process purchase using Fishing Points instead of Zeny
+	for(set .@i, 0; .@i < getarraysize(@bought_nameid); set .@i, .@i + 1) {
+		set .@item_id, @bought_nameid[.@i];
+		set .@quantity, @bought_quantity[.@i];
+		
+		// Get price from table
+		set .@price, 0;
+		switch(.@item_id) {
+			case 16394: set .@price, 100; break;    // HD Oridecon
+			case 16396: set .@price, 100; break;    // HD Elunium
+			case 6635:  set .@price, 50; break;     // Blacksmith's Blessing
+			case 15138: set .@price, 200; break;    // Aegir Armor
+			case 20756: set .@price, 200; break;    // Aegir Manteau
+			case 22059: set .@price, 200; break;    // Aegir Shoes
+			case 20349: set .@price, 300; break;    // Costume Flying Galapago
+			case 20279: set .@price, 300; break;    // Costume Cheering Whistle
+			case 20294: set .@price, 300; break;    // Costume Savage Babe
+			case 20301: set .@price, 300; break;    // Costume Savage Babe Golden
+			case 20298: set .@price, 300; break;    // Costume Happy Lunatic
+			case 20312: set .@price, 300; break;    // Costume Baron
+			case 31054: set .@price, 300; break;    // Costume Sting Hat
+			case 20281: set .@price, 300; break;    // Costume Kindergarten
+			case 31090: set .@price, 300; break;    // Costume Angelring
+			case 31055: set .@price, 300; break;    // Costume Poring Soap Pipe
+			case 22621: set .@price, 10; break;     // Squid
+		}
+		
+		set .@totalcost, .@price * .@quantity;
+		
+		// Check Fishing Points
+		if(#FishingPoints < .@totalcost) {
+			mes "[Fish Trader]";
+			mes "^FF0000Sorry! You don't have enough Fishing Points.^000000";
+			mes " ";
+			mes "Item: " + getitemname(.@item_id);
+			mes "Quantity: " + .@quantity;
+			mes "Required: ^FF0000" + .@totalcost + " Points^000000";
+			mes "You have: ^0000FF" + #FishingPoints + " Points^000000";
+			close;
+		}
+		
+		// Check weight
+		if(checkweight(.@item_id, .@quantity) == 0) {
+			mes "[Fish Trader]";
+			mes "^FF0000You don't have enough inventory space or weight capacity!^000000";
+			mes "Please free up some space first.";
+			close;
+		}
+		
+		// Deduct Fishing Points and give item
+		set #FishingPoints, #FishingPoints - .@totalcost;
+		getitem .@item_id, .@quantity;
+		
+		mes "[Fish Trader]";
+		mes "^00FF00Purchase Successful!^000000";
+		mes " ";
+		mes "Bought: ^0000FF" + .@quantity + "x " + getitemname(.@item_id) + "^000000";
+		mes "Spent: ^FF0000" + .@totalcost + " points^000000";
+		mes " ";
+		mes "^0000FFRemaining Points: ^FF0000" + #FishingPoints + "^000000";
+	}
+	close;
+}
+
+// Shop definition
+-	shop	fishing_point_shop	-1,16394:100,16396:100,6635:50,15138:200,20756:200,22059:200,20349:300,20279:300,20294:300,20301:300,20298:300,20312:300,31054:300,20281:300,31090:300,31055:300,22621:10
+
+// Join Fishing Command - Warps to ASKALD only
+-	script	joinFishing	FAKE_NPC,{
+	OnInit:
+		bindatcmd "joinfishing", strnpcinfo(0) + "::OnFishing";
+	end;
+
+	OnFishing:
+		// Warp player to Askald fishing location
+		warp "askald", 210, 156;
+		dispbottom "[Fishing Event]: Welcome to Askald Fishing Spot!";
+	end;
+}
+
+// Clear fishing flag on login (safety)
+-	script	FishingLoginEvent	FAKE_NPC,{
+	OnPCLoginEvent:
+		set #isFishing, 0;
+	end;
+}
+// Duplicate Fish Trader NPC in Askald
+askald,200,150,5	duplicate(Fish Trader)	Fish Trader#aska1	850
+
+// Duplicate Fishing Items Seller NPC in Askald
+askald,200,160,5	duplicate(Fishing Items Seller)	Fishing Items Seller#ask1	578

@@ -1,0 +1,88 @@
+// ============================================
+// VARMUNDT ARMOR ENCHANT NPC
+// ============================================
+askald,20,125,5	script	Enchant UI Olympusro	22485,{
+	mes "^0000FFWelcome to Aurelian Armor Enchant System!^000000";
+	mes "I can enchant the following armors:";
+	mes "^FF0000=>Aurelian Mage MATK^000000";
+	mes "^0088FF=>Aurelian Warrior ATK^000000";
+	mes "^9900FF=>Aurelian Assassin CRIT(Unfinished)^000000";
+	mes "^00CC00=>Aurelian Royal TANK(Unfinished)^000000";
+	next;
+	
+	switch(select("^FF0000Aurelian Mage MATK^000000:^0088FFAurelian Warrior ATK^000000:^9900FFAurelian Assassin CRIT(Unfinished)^000000:^00CC00Aurelian Royal TANK(Unfinished)^000000:Exit")) {
+		case 1:
+			// Aurelian Mage MATK - TABLE 166
+			item_enchant(166);
+			close;
+			
+		case 2:
+			// Aurelian Warrior ATK - TABLE 165
+			item_enchant(165);
+			close;
+			
+		case 3:
+			// Aurelian Assassin CRIT - TABLE 167
+			item_enchant(167);
+			close;
+			
+		case 4:
+			// Aurelian Royal TANK - TABLE 168
+			item_enchant(168);
+			close;
+			
+		case 5:
+			mes "[Armor Enchanter]";
+			mes "Have a nice day!";
+			mes "Come back anytime!";
+			close;
+	}
+}
+askald,20,135,5	script	Enchant UI Weapon	22487,{
+	mes "[Aurelian Enchant System]";
+	mes "The Aurelian Armor Enchant System will be coming soon to the server!";
+	mes "Please stay tuned and check back later.";
+	close;
+}
+askald,20,145,5	script	Enchant UI IRO_JRO	10038,{
+	mes "^0000FF[IRO/JRO Enchant System]^000000";
+	mes "Please select the equipment type you want to enchant:";
+	next;
+	
+	switch(select("[1][Headgear]:[2][Armor/Shoes/Garment]:[3][Accessory]:[4][Weapon]:Cancel")) {
+		case 1:
+			// [1][Headgear]
+			close2;
+			item_enchant(168);
+			close;
+						
+		case 2:
+			// [2][Armor/Shoes/Garment]
+			close2;
+			item_enchant(167);
+			end;			
+
+		case 3:
+			// [3][Accessory]
+			mes "[Enchant System]";
+			mes "Shoes enchant coming soon!";
+			close;
+			
+		case 4:
+			// [4][Weapon]
+			mes "[Enchant System]";
+			mes "Garment enchant coming soon!";
+			close;
+			
+		case 5:
+			// Accessory - TABLE xxx (bạn thêm sau)
+			mes "[Enchant System]";
+			mes "Accessory enchant coming soon!";
+			close;
+			
+		case 6:
+			mes "[Enchant System]";
+			mes "Come back anytime!";
+			close;
+	}
+}

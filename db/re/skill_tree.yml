@@ -8644,10 +8644,23 @@ Body:
       - Name: SS_FOUR_CHARM
         MaxLevel: 1
         Requires:
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
           - Name: KO_KAIHOU
             Level: 1
           - Name: SS_SHINKIROU
             Level: 1
+<<<<<<< Updated upstream
+=======
+=======
+          - Name: KO_ZENKAI
+            Level: 1
+          - Name: SS_SHINKIROU
+            Level: 1            
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   - Job: Shiranui
     Inherit:
       Novice: true
@@ -8754,7 +8767,20 @@ Body:
       - Name: SS_FOUR_CHARM
         MaxLevel: 1
         Requires:
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
           - Name: KO_KAIHOU
             Level: 1
           - Name: SS_SHINKIROU
             Level: 1
+<<<<<<< Updated upstream
+=======
+=======
+          - Name: KO_ZENKAI
+            Level: 1
+          - Name: SS_SHINKIROU
+            Level: 1            
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes

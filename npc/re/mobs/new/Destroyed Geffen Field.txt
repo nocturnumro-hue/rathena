@@ -1,0 +1,13 @@
+//==================================================
+// hem_fild - Destroyed Geffen Field (Extreme Difficulty)
+// Level 212-214 High Density (200+ mobs)
+//==================================================
+
+hem_fild	monster	Wangnuni	22451,115
+hem_fild	monster	Contaminated Silk Frog	22452,125
+hem_fild	monster	Contaminated Silk Snail	22453,135
+
+hem_fild	monster	Immortal Meat Cleaver	22460,35
+hem_fild	monster	Immortal Hatred Scythe	22461,45
+hem_fild	monster	Immortal Plow	22462,55
+

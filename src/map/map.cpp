@@ -2004,7 +2004,7 @@ bool map_nearby_freecell(int16 m, int16 &x, int16 &y, int32 type, int32 flag)
  * @param type: types of block the item should not stack on
  * @return 0:failure, x:item_gid [MIN_FLOORITEM;MAX_FLOORITEM]==[2;START_ACCOUNT_NUM]
  *------------------------------------------*/
-int32 map_addflooritem(struct item *item, int32 amount, int16 m, int16 x, int16 y, int32 first_charid, int32 second_charid, int32 third_charid, int32 flags, uint16 mob_id, bool canShowEffect, enum directions dir, int32 type)
+int32 map_addflooritem(struct item *item, int32 amount, int16 m, int16 x, int16 y, int32 first_charid, int32 second_charid, int32 third_charid, int32 flags, uint16 mob_id, bool canShowEffect, enum directions dir, int32 type, int16 dropeffect)
 {
 	flooritem_data *fitem = nullptr;
 
@@ -2059,7 +2059,8 @@ int32 map_addflooritem(struct item *item, int32 amount, int16 m, int16 x, int16 
 		fitem->third_get_tick = fitem->second_get_tick + battle_config.item_third_get_time;
 	}
 	fitem->mob_id = mob_id;
-
+	fitem->dropeffect = dropeffect;
+	
 	memcpy(&fitem->item,item,sizeof(*item));
 	fitem->item.amount = amount;
 	fitem->subx = rnd_value(1, 4) * 3;
@@ -5448,6 +5449,11 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_buyingstore();
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
+
+	if(battle_config.feature_autoattack_move_min > battle_config.feature_autoattack_move_max){
+		ShowError("feature_autoattack_move_min > feature_autoattack_move_max, forcing to 1 \n");
+		battle_config.feature_autoattack_move_min = 1;
+	}
 
 	if (battle_config.pk_mode)
 		ShowNotice("Server is running on '" CL_WHITE "PK Mode" CL_RESET "'.\n");

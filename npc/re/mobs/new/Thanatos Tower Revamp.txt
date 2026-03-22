@@ -1,0 +1,42 @@
+//==================================================
+// tha_t09 - Thanatos Tower - Floor 9
+//==================================================
+tha_t09,0,0,0,0	monster	Void Mimic	20779,5,5000
+tha_t09,0,0,0,0	monster	Book of Death	20780,5,5000
+tha_t09,0,0,0,0	monster	Eldest	20781,5,5000
+tha_t09,0,0,0,0	monster	Crow Duke	20782,10,5000
+tha_t09,0,0,0,0	monster	Crow Baron	20783,15,5000
+tha_t09,0,0,0,0	monster	Void Mimic	20779,15,5000
+tha_t09,0,0,0,0	monster	Book of Death	20780,15,5000
+
+//==================================================
+// tha_t10 - Thanatos Tower - Floor 10
+//==================================================
+tha_t10,0,0,0,0	monster	Eldest	20781,13,5000
+tha_t10,0,0,0,0	monster	Empathizer	20773,5,5000
+tha_t10,0,0,0,0	monster	Happiness Giver	20774,5,5000
+tha_t10,0,0,0,0	monster	Empathizer	20773,14,5000
+tha_t10,0,0,0,0	monster	Happiness Giver	20774,14,5000
+tha_t10,0,0,0,0	monster	Pray Giver	20844,15,5000
+tha_t10,0,0,0,0	monster	Smile Giver	20845,15,5000
+
+//==================================================
+// tha_t11 - Thanatos Tower - Floor 11
+//==================================================
+tha_t11,0,0,0,0	monster	Empathizer	20773,14,5000
+tha_t11,0,0,0,0	monster	Happiness Giver	20774,14,5000
+tha_t11,0,0,0,0	monster	Pray Giver	20844,15,5000
+tha_t11,0,0,0,0	monster	Smile Giver	20845,15,5000
+tha_t11,0,0,0,0	monster	Resentment of Thanatos	20777,2,5000
+tha_t11,0,0,0,0	monster	Horror of Thanatos	20776,2,5000
+tha_t11,0,0,0,0	monster	Void Mimic	20779,3,5000
+tha_t11,0,0,0,0	monster	Book of Death	20780,3,5000
+
+//==================================================
+// tha_t12 - Thanatos Tower - Floor 12
+//==================================================
+tha_t12,0,0,0,0	monster	Anger of Thanatos	20775,13,5000
+tha_t12,0,0,0,0	monster	Horror of Thanatos	20776,15,5000
+tha_t12,0,0,0,0	monster	Regret of Thanatos	20778,15,5000
+tha_t12,0,0,0,0	monster	Resentment of Thanatos	20777,14,5000
+tha_t12,0,0,0,0	monster	Book of Death	20780,3,5000

@@ -1,0 +1,73 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC SHOPS Barter Class IRO JRO
+// ============================================
+askald,20,140,5	script	Olympusro Class	30024,{
+	mes "[Legacy Olympusro 4Th Class]";
+	mes "WellCome Class Olympusro Shop!";
+	mes "Please select Shop Type:";
+	next;
+	
+	switch(select("[1][Headgear - Upper]:[2][Headgear - Middle]:[3][Headgear - Lower]:[4][Armor]:[5][Weapon]:[6][Shield]:[7][Garment]:[8][Shoes]:[9][Accessory]:[-Exit-]")) {
+		case 1:
+			mes "[Headgear - Upper]";
+			mes "Open Headgear Upper Shop..";
+			close2;
+			callshop "Olympus_Headgear";
+			end;
+		case 2:
+			mes "[Headgear - Middle]";
+			mes "Open Headgear Middle Shop..";
+			close2;
+			callshop "Olympus_Headgear_Middle";
+			end;
+		case 3:
+			mes "[Headgear - Lower]";
+			mes "Open Headgear Lower Shop..";
+			close2;
+			callshop "Olympus_Headgear_Lower";
+			end;			
+		case 4:
+			mes "[Armor]";
+			mes "Open Armor Shop..";
+			close2;
+			callshop "Olympus_Armor";
+			end;
+		case 5:
+			mes "[Weapon]";
+			mes "Open Weapon Shop..";
+			close2;
+			callshop "Olympus_Weapon";
+			end;
+		case 6:
+			mes "[Shield]";
+			mes "Open Shield Shop..";
+			close2;
+			callshop "Olympus_Shield";
+			end;
+		case 7:
+			mes "[Garment]";
+			mes "Open Garment Shop..";
+			close2;
+			callshop "Olympus_Garment";
+			end;
+		case 8:
+			mes "[Shoes]";
+			mes "Open Shoes Shop..";
+			close2;
+			callshop "Olympus_Shoes";
+			end;
+		case 9:
+			mes "[Accessory]";
+			mes "Open Accessory Shop..";
+			close2;
+			callshop "Olympus_Accessory";
+			end;
+		case 10:
+			mes "[Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

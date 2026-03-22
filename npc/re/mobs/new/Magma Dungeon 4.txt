@@ -1,0 +1,11 @@
+//===== rAthena Script =======================================
+//= Magma Dungeon 4
+//============================================================
+
+mag_dun03_	monster	Soul Dark Knight	30029,55
+mag_dun03_	monster	Soul Flame Knight	30030,55
+mag_dun03_	monster	Soul Ice Knight		30031,55
+mag_dun03_	monster	Soul Light Knight	30032,55
+mag_dun03_	monster	Soul Stone Knight	30033,55
+
+mag_dun03_	boss_monster	Chaos Fire Fox	30038,1,21600000,600000,0

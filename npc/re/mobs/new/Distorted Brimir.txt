@@ -1,0 +1,25 @@
+//==================================================
+// uknw_ruin - Distorted Brimir - 1st Floor (Extreme Difficulty)
+// Level 220-277 High Density (200+ mobs)
+//==================================================
+
+uknw_ruin	monster	Nyaz	22463,85
+uknw_ruin	monster	Shadow Warden	22464,85
+uknw_ruin	monster	Tulip	22465,105
+uknw_ruin	monster	Calendula	22466,115
+uknw_ruin	monster	Scabiosa	22467,125
+
+uknw_ruin	boss_monster	--Transcendental Himelmes--	23002,1,21600000,600000,0
+
+//==================================================
+// uknw_ruin2 - Distorted Brimir - 2st Floor (Extreme Difficulty)
+// Level 222-265 High Density (200+ mobs)
+//==================================================
+
+uknw_ruin2	monster	Nyaz	22463,85
+uknw_ruin2	monster	Shadow Warden	22464,85
+uknw_ruin2	monster	Lobelia	22468,105
+uknw_ruin2	monster	Myosotis	22469,115
+uknw_ruin2	monster	Anemone	22470,125
+
+uknw_ruin2	boss_monster	--Glutton--	22495,1,21600000,600000,0

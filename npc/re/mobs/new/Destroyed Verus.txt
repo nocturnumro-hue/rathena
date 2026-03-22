@@ -1,0 +1,17 @@
+//==================================================
+// ch1_gfn03 - Destroyed Verus (Extreme Difficulty)
+// Level 213-215 (200+ mobs)
+//==================================================
+
+hem_dun01	monster	Dimik Encroached Graft	22454,60
+hem_dun01	monster	Dimik Encroached Trace	22455,60
+hem_dun01	monster	Dimik Encroached Zephyr	22456,20
+hem_dun01	monster	Dimik Encroached Torrent	22457,20
+hem_dun01	monster	Dimik Encroached Fossil	22458,20
+hem_dun01	monster	Dimik Encroached Ember	22459,20
+hem_dun01	monster	Immortal Meat Cleaver	22460,15
+hem_dun01	monster	Immortal Hatred Scythe	22461,15
+hem_dun01	monster	Immortal Plow	22462,15
+
+
+// Total: 220 monsters

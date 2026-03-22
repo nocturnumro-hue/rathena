@@ -1,0 +1,434 @@
+//===== rAthena Script =======================================
+//= Happy New Year Event 2026
+//===== By: ==================================================
+//= OlympusRo Asia
+//===== Description: =========================================
+//= Players collect 8 special items and submit them
+//= Top 3 fastest players are recorded and rewarded by Admin
+//= Items: Happy, Awesome, Prosperity, Peace, Year, New, Excitement, Wish
+//============================================================
+
+-	script	HappyNewYear2026	FAKE_NPC,{
+OnInit:
+	end;
+}
+
+askald,132,120,4	script	Happy New Year 2026	4_F_OPERATION,{
+	
+	// ============================================================
+	// ADMIN MENU (Level 99+)
+	// ============================================================
+	
+	if (getgmlevel() >= 99) {
+		mes "[Happy New Year Event]";
+		mes "^FF0000[ADMIN MODE]^000000";
+		mes " ";
+		mes "You have admin access!";
+		next;
+		
+		switch(select("^FF0000[Admin] Reset All Data^000000", "^FF6600[Admin] Give All Items^000000", "^0088FF[Player Mode] Continue Normal^000000")) {
+			case 1:
+				// Reset all data
+				mes "[Happy New Year Event]";
+				mes "^FF0000WARNING!^000000";
+				mes "This will delete ALL event data:";
+				mes "- All rankings (Top 3)";
+				mes "- All participant records";
+				mes "- All IP records";
+				mes " ";
+				mes "Are you sure?";
+				next;
+				
+				if (select("^FF0000Yes, RESET EVERYTHING^000000", "Cancel") == 2) {
+					mes "[Happy New Year Event]";
+					mes "Reset cancelled.";
+					close;
+				}
+				
+				// Clear all data
+				cleararray $NewYear_AccountIDs[0], 0, getarraysize($NewYear_AccountIDs);
+				cleararray $NewYear_IPs$[0], "", getarraysize($NewYear_IPs$);
+				$NewYear_Top1$ = "";
+				$NewYear_Top1_Time$ = "";
+				$NewYear_Top2$ = "";
+				$NewYear_Top2_Time$ = "";
+				$NewYear_Top3$ = "";
+				$NewYear_Top3_Time$ = "";
+				
+				mes "[Happy New Year Event]";
+				mes "^008800All data has been reset!^000000";
+				announce "[Happy New Year Event] Admin has reset the event!", bc_all, 0xFF0000;
+				close;
+				
+			case 2:
+				// Give all items
+				mes "[Happy New Year Event]";
+				mes "Giving you all 8 event items...";
+				
+				getitem 1230007, 1; // Happy
+				getitem 1230008, 1; // Awesome
+				getitem 1230009, 1; // Prosperity
+				getitem 1230010, 1; // Peace
+				getitem 1230011, 1; // Year
+				getitem 1230012, 1; // New
+				getitem 1230013, 1; // Excitement
+				getitem 1230014, 1; // Wish
+				
+				mes "^008800Done! You now have all 8 items.^000000";
+				close;
+				
+			case 3:
+				// Continue to normal player mode
+				break;
+		}
+	}
+	
+	// ============================================================
+	// MULTI-LAYER SECURITY CHECK
+	// ============================================================
+	
+	// Get player identifiers
+	.@playerIP$ = getcharip();
+	.@accountID = getcharid(CHAR_ID_ACCOUNT);
+	.@hasSubmitted = 0;
+	
+	// Layer 1: Check if this Account ID already submitted
+	for (.@i = 0; .@i < getarraysize($NewYear_AccountIDs); .@i++) {
+		if ($NewYear_AccountIDs[.@i] == .@accountID) {
+			.@hasSubmitted = 1;
+			break;
+		}
+	}
+	
+	// Layer 2: Check if this IP already submitted (only if account check passed)
+	if (.@hasSubmitted == 0) {
+		for (.@i = 0; .@i < getarraysize($NewYear_IPs$); .@i++) {
+			if ($NewYear_IPs$[.@i] == .@playerIP$) {
+				.@hasSubmitted = 1;
+				break;
+			}
+		}
+	}
+	
+	// ============================================================
+	// MAIN MENU
+	// ============================================================
+	
+	mes "[Happy New Year Event]";
+	mes "^FF6600Happy New Year 2026!^000000";
+	mes " ";
+	
+	if (.@hasSubmitted == 1) {
+		mes "^FFAAAAYou have already submitted your items!^000000";
+		mes " ";
+		mes "You can still view the rankings.";
+		next;
+		
+		switch(select("View Top 3 Rankings", "Event Information", "Cancel")) {
+			case 1:
+				goto L_Rankings;
+			case 2:
+				goto L_Info;
+			case 3:
+				mes "[Happy New Year Event]";
+				mes "Happy New Year! Come back anytime!";
+				close;
+		}
+	} else {
+		mes "Collect all ^0088008 special words^000000 and bring them to me!";
+		mes " ";
+		mes "^FF6600The TOP 3 FASTEST players will receive special rewards from our Admin!^000000";
+		next;
+		
+		switch(select("Submit Event Items", "View Top 3 Rankings", "Event Information", "Cancel")) {
+			case 1:
+				goto L_Submit;
+			case 2:
+				goto L_Rankings;
+			case 3:
+				goto L_Info;
+			case 4:
+				mes "[Happy New Year Event]";
+				mes "Happy New Year! Come back anytime!";
+				close;
+		}
+	}
+	
+	// ============================================================
+	// SUBMIT EVENT ITEMS
+	// ============================================================
+	
+L_Submit:
+	// Double check if already submitted (security)
+	if (.@hasSubmitted == 1) {
+		mes "[Happy New Year Event]";
+		mes "^FF0000You have already submitted!^000000";
+		close;
+	}
+	
+	mes "[Happy New Year Event]";
+	mes "To complete the event, you need ^FF0000ALL 8 items^000000:";
+	mes " ";
+	mes "1. ^0000FFHappy^000000";
+	mes "2. ^FF6600Awesome^000000";
+	mes "3. ^008800Prosperity^000000";
+	mes "4. ^FF6600Peace^000000";
+	next;
+	mes "[Happy New Year Event]";
+	mes "5. ^0000FFYear^000000";
+	mes "6. ^FF6600New^000000";
+	mes "7. ^008800Excitement^000000";
+	mes "8. ^FF0000Wish^000000";
+	next;
+	
+	// Check if player has all items
+	.@hasAll = 1;
+	.@missing$ = "";
+	
+	setarray .@itemIds[0], 1230007, 1230008, 1230009, 1230010, 1230011, 1230012, 1230013, 1230014;
+	setarray .@itemNames$[0], "Happy", "Awesome", "Prosperity", "Peace", "Year", "New", "Excitement", "Wish";
+	setarray .@itemColors$[0], "^0000FF", "^FF6600", "^008800", "^FF6600", "^0000FF", "^FF6600", "^008800", "^FF0000";
+	
+	for (.@i = 0; .@i < 8; .@i++) {
+		if (countitem(.@itemIds[.@i]) < 1) {
+			.@hasAll = 0;
+			.@missing$ = .@missing$ + .@itemColors$[.@i] + "- " + .@itemNames$[.@i] + "^000000" + "\n";
+		}
+	}
+	
+	if (.@hasAll == 0) {
+		mes "[Happy New Year Event]";
+		mes "Sorry, you don't have all the required items!";
+		mes " ";
+		mes "^FF0000You are missing:^000000";
+		mes .@missing$;
+		mes " ";
+		mes "Keep searching and come back when you have all 8 items!";
+		close;
+	}
+	
+	// Player has all items - Confirm submission
+	mes "[Happy New Year Event]";
+	mes "^008800Excellent! You have all 8 items!^000000";
+	mes " ";
+	mes "^FF0000WARNING:^000000";
+	mes "- All 8 items will be removed";
+	mes "- You can only submit ONCE";
+	mes "- Your name and time will be recorded";
+	mes " ";
+	mes "^FF6600Do you want to submit now?^000000";
+	next;
+	
+	if (select("^008800Yes, submit now!^000000", "^FF0000Cancel^000000") == 2) {
+		mes "[Happy New Year Event]";
+		mes "Come back when you're ready!";
+		close;
+	}
+	
+	// Delete all items
+	for (.@i = 0; .@i < 8; .@i++) {
+		delitem .@itemIds[.@i], 1;
+	}
+	
+	// Save Account ID to prevent multi-character abuse
+	.@accountIndex = getarraysize($NewYear_AccountIDs);
+	$NewYear_AccountIDs[.@accountIndex] = .@accountID;
+	
+	// Save IP address to prevent multi-account abuse
+	.@ipIndex = getarraysize($NewYear_IPs$);
+	$NewYear_IPs$[.@ipIndex] = .@playerIP$;
+	
+	// ============================================================
+	// USE F_GetVNTime FUNCTION (Same as Bot Time Manager)
+	// ============================================================
+	.@dateTime$ = callfunc("F_GetVNTime", 3);
+	
+	// Get submission order number
+	.@submitOrder = getarraysize($NewYear_AccountIDs);
+	
+	// Check if player qualifies for Top 3
+	.@playerRank = 0;
+	
+	// Check existing rankings
+	if ($NewYear_Top1$ == "") {
+		// First place
+		$NewYear_Top1$ = strcharinfo(PC_NAME);
+		$NewYear_Top1_Time$ = .@dateTime$;
+		.@playerRank = 1;
+		announce "[Happy New Year Event] " + strcharinfo(PC_NAME) + " is the FIRST to complete the event!", bc_all, 0xFF6600;
+	}
+	else if ($NewYear_Top2$ == "") {
+		// Second place
+		$NewYear_Top2$ = strcharinfo(PC_NAME);
+		$NewYear_Top2_Time$ = .@dateTime$;
+		.@playerRank = 2;
+		announce "[Happy New Year Event] " + strcharinfo(PC_NAME) + " achieved 2nd place!", bc_all, 0x0000FF;
+	}
+	else if ($NewYear_Top3$ == "") {
+		// Third place
+		$NewYear_Top3$ = strcharinfo(PC_NAME);
+		$NewYear_Top3_Time$ = .@dateTime$;
+		.@playerRank = 3;
+		announce "[Happy New Year Event] " + strcharinfo(PC_NAME) + " achieved 3rd place!", bc_all, 0x008800;
+	}
+	else {
+		// Not in top 3
+		announce "[Happy New Year Event] " + strcharinfo(PC_NAME) + " completed the event!", bc_self, 0xFF6600;
+	}
+	
+	// Success message
+	specialeffect2 EF_LIGHTSPHERE;
+	
+	mes "[Happy New Year Event]";
+	mes "^008800Congratulations!^000000";
+	mes " ";
+	mes "Your submission has been recorded!";
+	mes "Player: ^FF6600" + strcharinfo(PC_NAME) + "^000000";
+	mes "Date/Time: ^0000FF" + .@dateTime$ + "^000000";
+	mes "Submission Order: #" + .@submitOrder;
+	mes " ";
+	
+	if (.@playerRank > 0) {
+		mes "^FF6600You are ranked #" + .@playerRank + "!^000000";
+		mes "^008800Wait for the Admin to give you your reward!^000000";
+		specialeffect2 EF_ANGEL2;
+	} else {
+		mes "The Top 3 positions are already filled.";
+		mes "Thank you for participating!";
+	}
+	next;
+	
+	// Always show rankings after submission
+	mes "[Happy New Year Event]";
+	mes "^FF6600CURRENT TOP 3 RANKINGS^000000";
+	mes "===================================";
+	mes " ";
+	mes "^FF66001st Place:^000000";
+	mes "^0000FF" + $NewYear_Top1$ + "^000000";
+	mes "Time: ^008800" + $NewYear_Top1_Time$ + "^000000";
+	mes " ";
+	
+	if ($NewYear_Top2$ != "") {
+		mes "^0000FF2nd Place:^000000";
+		mes "^0000FF" + $NewYear_Top2$ + "^000000";
+		mes "Time: ^008800" + $NewYear_Top2_Time$ + "^000000";
+		mes " ";
+	} else {
+		mes "^8888882nd Place: (Empty)^000000";
+		mes " ";
+	}
+	
+	if ($NewYear_Top3$ != "") {
+		mes "^0088003rd Place:^000000";
+		mes "^008800" + $NewYear_Top3$ + "^000000";
+		mes "Time: ^008800" + $NewYear_Top3_Time$ + "^000000";
+	} else {
+		mes "^8888883rd Place: (Empty)^000000";
+	}
+	
+	mes " ";
+	mes "===================================";
+	mes "Total participants: " + getarraysize($NewYear_AccountIDs);
+	close;
+	
+	// ============================================================
+	// VIEW RANKINGS
+	// ============================================================
+	
+L_Rankings:
+	mes "[Happy New Year Event]";
+	mes "^FF6600TOP 3 FASTEST PLAYERS^000000";
+	mes "===================================";
+	if ($NewYear_Top1$ == "") {
+		mes "No one has completed the event yet!";
+		mes " ";
+		mes "Be the first to collect all 8 items!";
+		close;
+	}
+	
+	// Display Top 1
+	mes "^FF66001st Place:^000000";
+	mes "^0000FF" + $NewYear_Top1$ + "^000000";
+	mes "Time: ^008800" + $NewYear_Top1_Time$ + "^000000";
+	mes " ";
+	
+	// Display Top 2
+	if ($NewYear_Top2$ != "") {
+		mes "^0000FF2nd Place:^000000";
+		mes "^0000FF" + $NewYear_Top2$ + "^000000";
+		mes "Time: ^008800" + $NewYear_Top2_Time$ + "^000000";
+		mes " ";
+	} else {
+		mes "^8888882nd Place: (Empty)^000000";
+		mes " ";
+	}
+	
+	// Display Top 3
+	if ($NewYear_Top3$ != "") {
+		mes "^0088003rd Place:^000000";
+		mes "^008800" + $NewYear_Top3$ + "^000000";
+		mes "Time: ^008800" + $NewYear_Top3_Time$ + "^000000";
+	} else {
+		mes "^8888883rd Place: (Empty)^000000";
+	}
+	
+	mes " ";
+	mes "===================================";
+	mes " ";
+	mes "Total participants: " + getarraysize($NewYear_AccountIDs);
+	close;
+	
+	// ============================================================
+	// EVENT INFORMATION
+	// ============================================================
+	
+L_Info:
+	mes "[Happy New Year Event]";
+	mes "^008800Event Information^000000";
+	mes "===================================";
+	mes "^FF6600Objective:^000000";
+	mes "Collect all 8 special words and submit them to this NPC.";
+	next;
+	
+	mes "[Happy New Year Event]";
+	mes "^FF6600Required Items (8 total):^000000";
+	mes "1. ^0000FFHappy^000000 (ID: 1230007)";
+	mes "2. ^FF6600Awesome^000000 (ID: 1230008)";
+	mes "3. ^008800Prosperity^000000 (ID: 1230009)";
+	mes "4. ^FF6600Peace^000000 (ID: 1230010)";
+	next;
+	
+	mes "[Happy New Year Event]";
+	mes "5. ^0000FFYear^000000 (ID: 1230011)";
+	mes "6. ^FF6600New^000000 (ID: 1230012)";
+	mes "7. ^008800Excitement^000000 (ID: 1230013)";
+	mes "8. ^FF0000Wish^000000 (ID: 1230014)";
+	next;
+	
+	mes "[Happy New Year Event]";
+	mes "^FF6600Rewards:^000000";
+	mes "The TOP 3 FASTEST players to submit all 8 items will be recorded and will receive special rewards from the Admin!";
+	mes "^FF0000Important Rules:^000000";
+	mes "- Each ACCOUNT can only submit ONCE";
+	mes "- Each IP ADDRESS can only submit ONCE";
+	mes "- All 8 items will be consumed";
+	mes "- Your submission time is recorded";
+	mes "- Only Top 3 get rewards from Admin";
+	next;
+	
+	mes "[Happy New Year Event]";
+	mes "^FF0000Anti-Cheat Protection:^000000";
+	mes "- Account ID tracking: ACTIVE";
+	mes "- IP address tracking: ACTIVE";
+	mes "Any attempt to bypass will be detected.";
+	next;
+	
+	mes "[Happy New Year Event]";
+	mes "^008800Tips:^000000";
+	mes "- Collect all items before submitting";
+	mes "- Speed matters - be fast!";
+	mes "- Check rankings anytime";
+	mes "Total participants: ^FF6600" + getarraysize($NewYear_AccountIDs) + "^000000";
+	mes "^FF6600Good luck and Happy New Year 2026!^000000";
+	close;
+}

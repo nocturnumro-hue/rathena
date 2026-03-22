@@ -1,0 +1,29 @@
+//===== rAthena Script =======================================
+//= Maintown (Askald) <=> Prontera
+//===== By: ==================================================
+//= OlympusRo Asia
+//============================================================
+//=Maintown (Askald) <=> Uknown Maps
+askald,241,128,0	warp2	askald_to_prontera	1,1,silk_lair,250,49
+//=Uknown Maps <=> Maintown
+silk_lair,246,53,0	warp2	prontera_to_askald	1,1,askald,234,127
+
+//=Silk Lair Internal Warps
+silk_lair,373,136,0	warp2	silklair_warp1	1,1,silk_lair,198,210
+silk_lair,203,217,0	warp2	silklair_warp2	1,1,silk_lair,369,130
+
+//= ch1_geffen <=> hem_fild
+ch1_geffen,217,119,0	warp2	ch1_geffen_to_hemfild	1,1,hem_fild,35,190
+hem_fild,30,191,0	warp2	hemfild_to_ch1_geffen	1,1,ch1_geffen,212,120
+
+//= hem_fild <=> ch1_gfn03
+hem_fild,341,188,0	warp2	hemfild_to_ch1_gfn03	1,1,ch1_gfn03,145,33
+ch1_gfn03,145,26,0	warp2	ch1_gfn03_to_hemfild	1,1,hem_fild,334,188
+
+//= hem_fild <=> ch1_gfn01
+hem_fild,216,38,0	warp2	hemfild_to_ch1_gfn01	1,1,ch1_gfn01,53,167
+ch1_gfn01,60,167,0	warp2	ch1_gfn01_to_hemfild	1,1,hem_fild,216,32
+
+//= hem_dun02 <=> hem_dun01
+hem_dun02,56,167,0	warp2	hem_dun02_to_hem_dun01	1,1,hem_dun01,19,87
+hem_dun01,12,81,0	warp2	hem_dun01_to_hem_dun02	1,1,hem_dun02,60,167

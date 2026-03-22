@@ -1,0 +1,118 @@
+//===== rAthena Script =======================================
+//= NPC Tracker System (Custom Server NPCs)
+//===== Description: =========================================
+//= Display list of all important NPCs on the server
+//= Can warp to NPCs when clicked
+//= Command: @npc
+//===== Author: ==============================================
+//= Custom NPC System
+//============================================================
+
+-	script	npc_tracker	FAKE_NPC,{
+OnInit:
+	bindatcmd "npc","npc_tracker::OnShowNPCs",0,99;
+	
+	setarray .npc_name$[0],
+		"Gramps",
+		"Varmundt's Biosphere",
+		"Varmundt's Biosphere Depth",
+		"Episode 17.2 Equipment",
+		"Episode 19 Equipment",
+		"Episode 20 Equipment",
+		"Job Dealer",
+		"Premium Black Coin Shop",
+		"Thanatos Revamp",
+		"Pet Groomer",
+		"Shop Varmundt's Biosphere",
+		"Helm Of Faith and Vivatus Shop",
+		"Abyss Lake Shop",
+		"Halloween Event Shop",
+		"Happy New Year Shop",
+		"Christmas Shop",
+		"Shop Weapon Eda Biolab",
+		"VIP Mercenary",
+		"Ultimate Mercenary",
+		"VIP Enchant",
+		"Costume Enchant",
+		"Grade Enhancement",
+		"Rebirth",
+		"Donation Reward",
+		"Refine Room",
+		"Card Remove",
+		"Casino Machine",
+		"Poring Hell",
+		"Sader Dimension";
+	
+	setarray .npc_category[0],
+		4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 3, 3;
+	
+	setarray .npc_map$[0],
+		"askald", "ba_in01", "ba_in01", "askald", "askald", "askald", "askald", "askald", "askald", "prontera", "ba_in01", "askald", "askald", "askald", "askald", "askald", "askald", "askald", "askald", "prontera", "askald", "prontera", "prontera", "askald", "prt_in", "prt_in", "askald", "askald", "askald";
+	
+	setarray .npc_x[0],
+		122, 307, 296, 100, 60, 60, 102, 153, 154, 218, 366, 17, 17, 24, 31, 40, 14, 116, 109, 160, 41, 50, 182, 155, 59, 28, 37, 152, 152;
+	
+	setarray .npc_y[0],
+		101, 45, 109, 110, 110, 145, 147, 137, 112, 208, 49, 219, 219, 60, 60, 60, 200, 102, 101, 231, 201, 290, 201, 130, 62, 68, 83, 142, 142;
+	
+	end;
+
+OnShowNPCs:
+	while(1) {
+		.@menu$ = "^8B4513[ Shop NPCs ]^000000:";
+		.@menu$ += "^0000FF[ Service NPCs ]^000000:";
+		.@menu$ += "^FF6600[ Event NPCs ]^000000:";
+		.@menu$ += "^8B008B[ Quest NPCs ]^000000:";
+		.@menu$ += "^008000[ Utility NPCs ]^000000:";
+		.@menu$ += "^CC0000Exit^000000";
+		
+		.@page = select(.@menu$);
+		
+		if (.@page == 6) {
+			close;
+		}
+		
+		.@npc_total = getarraysize(.npc_name$);
+		.@menu$ = "";
+		.@count = 0;
+		
+		deletearray .@temp_index[0], 128;
+		
+		.@page_rank = 1;
+		
+		for (.@i = 0; .@i < .@npc_total; .@i++) {
+			if (.npc_category[.@i] == .@page) {
+				if (.@page_rank < 10) {
+					.@num$ = "0" + .@page_rank;
+				} else {
+					.@num$ = "" + .@page_rank;
+				}
+				
+				.@menu_line$ = "^000080- NPC #" + .@num$ + "         ^FF1493Name             ^9932CC[ " + .npc_name$[.@i] + " ]^000000";
+				.@menu$ += .@menu_line$ + ":";
+				
+				.@temp_index[.@count] = .@i;
+				.@count++;
+				.@page_rank++;
+			}
+		}
+		
+		if (.@count == 0) {
+			mes "^FF0000No NPCs found in this category.^000000";
+			close;
+		}
+		
+		.@menu$ += "^CC0000Back to Category Selection^000000";
+		
+		.@choice = select(.@menu$) - 1;
+		
+		if (.@choice == .@count) {
+			continue;
+		}
+		
+		.@npc_index = .@temp_index[.@choice];
+		
+		warp .npc_map$[.@npc_index], .npc_x[.@npc_index], .npc_y[.@npc_index];
+		end;
+	}
+}

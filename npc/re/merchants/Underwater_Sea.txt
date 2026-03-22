@@ -1,0 +1,68 @@
+//===== rAthena Script =======================================
+//= Underwater Sea Barter NPC
+//===== Description: =========================================
+//- Barter system for Underwater Sea content
+//===== Changelogs: ==========================================
+//= 1.0 First version. [Nam]
+//============================================================
+
+// Main NPC for Barter
+lasa_sea,27,145,3	script	Aqua Merchant#sea	22164,{
+	cutin "vr_rain01.png",2;
+	mes "[Aqua Merchant]";
+	mes "Welcome to the Underwater Sea!";
+	mes "I have materials and weapons from the deep ocean.";
+	mes "What would you like to see?";
+	next;
+	switch(select(
+		"Exchange materials (Underwater Sea)",
+		"Exchange weapons (Underwater Sea Weapon)",
+		"Exchange Shoes (Underwater Sea Shoes)",		
+		"Enchant Underwater weapons and Shoes",
+		"Cancel")) {
+		
+	case 1:
+		cutin "vr_rain01.png",2;
+		mes "[Aqua Merchant]";
+		mes "Here are the materials from the Underwater Sea.";
+		close2;
+		cutin "",255;
+		callshop "Underwater_Sea";
+		end;
+		
+	case 2:
+		cutin "vr_rain02.png",2;
+		mes "[Aqua Merchant]";
+		mes "These are weapons from the depths of the ocean.";
+		close2;
+		cutin "",255;
+		callshop "Underwater_Sea_Weapon";
+		end;
+
+	case 3:
+		cutin "vr_rain03.png",2;
+		mes "[Aqua Merchant]";
+		mes "These are weapons from the depths of the ocean.";
+		close2;
+		cutin "",255;
+		callshop "Underwater_Sea_Shoes";
+		end;
+		
+	case 4:
+		cutin "vr_rain03.png",2;
+		mes "[Aqua Merchant]";
+		mes "May the ocean's power strengthen your equipment!";
+		close2;
+		cutin "",255;
+		item_enchant(64);
+		end;
+		
+	case 5:
+		cutin "vr_rain03.png",2;
+		mes "[Aqua Merchant]";
+		mes "Come back anytime!";
+		close2;
+		cutin "",255;
+		end;
+	}
+}

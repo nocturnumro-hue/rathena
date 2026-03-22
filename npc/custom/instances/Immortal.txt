@@ -1,0 +1,445 @@
+//===== rAthena Script =======================================
+//= Episode 20: Immortals (Multiple Treasures Version)
+//===== Description: ========================================= 
+//= Progressive boss instance with multiple treasure spawns
+//= Boss 21979 -> 3x Treasure 22004 -> Boss 21981 -> 5x Treasure 22005 -> Exit
+//============================================================
+//===== Entry Portal at Askald =====
+askald,67,243,1	script	Immortal Portal#askald	21979,{
+	// Check weight
+	if(checkweight(1201,1) == 0){
+		cutin "ep20_lasgand_god02.png", 2;
+		mes "^FF0000[Immortal Portal]^000000";
+		mes "^008800You're carrying too much stuff. Put some away first.^000000";
+		close3;
+	}
+	
+	// Check level requirement
+	if (BaseLevel < 215) {
+		cutin "ep20_lasgand_god02.png.png", 2;
+		mes "^FF0000[Immortal Portal]^000000";
+		mes "You need at least ^0000FFlevel 215^000000 to enter.";
+		close3;
+	}
+	
+	// Check 12h cooldown (43200 seconds = 12 hours)
+	if(Immortal_Cooldown > 0) {
+		.@current_time = gettimetick(2);
+		.@time_diff = Immortal_Cooldown - .@current_time;
+		
+		// If cooldown expired, reset it
+		if(.@time_diff <= 0) {
+			set Immortal_Cooldown, 0;
+		} else {
+			// Calculate remaining time
+			.@hours = .@time_diff / 3600;
+			.@minutes = (.@time_diff % 3600) / 60;
+			.@seconds = .@time_diff % 60;
+			
+			cutin "ep20_lasgand_god02.png.png", 2;
+			mes "^FF0000[Immortal Portal]^000000";
+			mes "^ff0000You need to rest before entering again!^000000";
+			mes " ";
+			mes "^00BFFFTime Remaining:^000000";
+			mes "^ff0000" + .@hours + " hours " + .@minutes + " minutes " + .@seconds + " seconds^000000";
+			next;
+			
+			cutin "ep20_lasgand_god01.png", 2;
+			mes "^FF0000[Immortal Portal]^000000";
+			mes "I can reset your cooldown for a price...";
+			mes " ";
+			mes "^FF0000Reset Cost:^000000";
+			mes "^0000FF- 100,000,000 Zeny^000000";
+			mes "^0000FF- 200 TCG Card^000000";
+			next;
+			
+			if(select("Cancel:Reset Cooldown (100M Zeny + 200 TCG)") == 1) {
+				cutin "",255;
+				close;
+			}
+			
+			// Check Zeny
+			if (Zeny < 100000000) {
+				cutin "ep20_lasgand_god02.png", 2;
+				mes "^FF0000[Immortal Portal]^000000";
+				mes "^FF0000Not enough Zeny!^000000";
+				mes " ";
+				mes "Required: ^0000FF100,000,000 Zeny^000000";
+				mes "You have: ^FF0000" + Zeny + " Zeny^000000";
+				close3;
+			}
+			
+			// Check TCG
+			if (countitem(7227) < 200) {
+				cutin "ep20_lasgand_god02.png", 2;
+				mes "^FF0000[Immortal Portal]^000000";
+				mes "^FF0000Not enough TCG Card!^000000";
+				mes " ";
+				mes "Required: ^0000FF200 TCG^000000";
+				mes "You have: ^FF0000" + countitem(7227) + " TCG^000000";
+				close3;
+			}
+			
+			// Take payment
+			set Zeny, Zeny - 100000000;
+			delitem 7227, 200;
+			set Immortal_Cooldown, 0;
+			
+			cutin "ep20_lasgand_god01.png", 2;
+			mes "^FF0000[Immortal Portal]^000000";
+			mes "^00FF00Cooldown has been reset!^000000";
+			mes "You may enter the Immortal Realm again.";
+			close3;
+		}
+	}
+	
+	// Check party
+	.@party_id = getcharid(1);
+	if(!.@party_id){
+		cutin "ep20_lasgand_god02.png", 2;
+		mes "^FF0000[Immortal Portal]^000000";
+		mes "You need to be in a party to enter.";
+		close3;
+	}
+	
+	cutin "ep20_lasgand_god01.png", 2;
+	mes "^FF0000[Immortal Portal]^000000";
+	mes "Welcome, " + strcharinfo(0) + "!";
+	mes "Are you ready to face the Immortal challenge?";
+	next;
+	
+	cutin "ep20_lasgand_god02.png", 2;
+	mes "^FF0000[Immortal Portal]^000000";
+	mes "^FF8800This instance contains:^000000";
+	mes "- First Boss (Lasgand)";
+	mes "- ^0000FF3x Treasure Chests^000000";
+	mes "- Second Boss (Lasgand the Destroyer)";
+	mes "- ^FF8800 5x Legendary Treasures^000000";
+	next;
+	
+	cutin "ep20_lasgand_god01.png", 2;
+	.@md_name$ = "Immortal";
+	if(select("Cancel", (is_party_leader() ? "Create Instance" : ""), "Enter Instance") == 1) {
+		mes "^FF0000[Immortal Portal]^000000";
+		mes "Come back when you're ready!";
+		close3;
+	}
+	
+	if (@menu == 2) {
+		// Create instance (party leader only)
+		if(instance_create(.@md_name$) == -3) {
+			mes "^FF0000[System]^000000";
+			mes "Instance already exists for your party!";
+			close3;
+		}
+		mes "^0000FF[System]^000000";
+		mes "Instance created successfully!";
+		mes "Use 'Enter Instance' to enter.";
+		close3;
+	}
+	
+	if (@menu == 3 || @menu == 2) {
+		// Enter instance
+		mes "^0000FF[System]^000000";
+		mes "Preparing the Immortal Realm...";
+		close2;
+		cutin "", 255;
+		
+		if(instance_enter(.@md_name$) == IE_OK){
+			// Set cooldown when entering (12 hours = 43200 seconds)
+			set Immortal_Cooldown, gettimetick(2) + 43200;
+			end;
+		} else {
+			mes "^FF0000[System]^000000";
+			mes "Failed to enter instance!";
+			mes "Make sure the instance is created first.";
+			close;
+		}
+	}
+	
+	cutin "",255;
+	end;
+}
+
+//===== Instance Initialization =====
+1@twbs,1,1,0	script	#immortal_control	-1,{
+	end;
+
+OnInstanceInit:
+	// Initialize variables
+	set 'stage, 1;
+	set 'map$, instance_mapname("1@twbs");
+	set 'treasure1_killed, 0;
+	set 'treasure2_killed, 0;
+	
+	// Enable first boss spawn NPC
+	enablenpc instance_npcname("Lasgand#first_boss");
+	
+	// Disable exit NPC initially
+	disablenpc instance_npcname("Reward Master#immortal");
+	end;
+
+//===== Boss 1 Spawn Handler =====
+OnSpawnBoss1:
+	// Spawn first boss
+	set 'boss1_gid, monster('map$, 93, 76, "Lasgand", 21979, 1, instance_npcname("#immortal_control") + "::OnFirstBossDead");
+	
+	// Apply stats
+	if ('boss1_gid > 0) {
+		setunitdata 'boss1_gid, UMOB_MAXHP, 50000000;
+		setunitdata 'boss1_gid, UMOB_HP, 50000000;
+		setunitdata 'boss1_gid, UMOB_ATK, 5000;
+		setunitdata 'boss1_gid, UMOB_MATK, 8000;
+		setunitdata 'boss1_gid, UMOB_DEF, 600;
+		setunitdata 'boss1_gid, UMOB_MDEF, 350;
+		
+		// Apply buffs
+		unitskilluseid 'boss1_gid, "AL_BLESSING", 10;
+		unitskilluseid 'boss1_gid, "AL_INCAGI", 10;
+	}
+	end;
+
+//===== Boss 2 Spawn Handler =====
+OnSpawnBoss2:
+	// Spawn second boss
+	set 'boss2_gid, monster('map$, 93, 76, "Lasgand the Destroyer", 21981, 1, instance_npcname("#immortal_control") + "::OnSecondBossDead");
+	
+	// Apply stats
+	if ('boss2_gid > 0) {
+		setunitdata 'boss2_gid, UMOB_MAXHP, 100000000;
+		setunitdata 'boss2_gid, UMOB_HP, 100000000;
+		setunitdata 'boss2_gid, UMOB_ATK, 10000;
+		setunitdata 'boss2_gid, UMOB_MATK, 15000;
+		setunitdata 'boss2_gid, UMOB_DEF, 850;
+		setunitdata 'boss2_gid, UMOB_MDEF, 500;
+		
+		// Apply buffs
+		unitskilluseid 'boss2_gid, "AL_BLESSING", 10;
+		unitskilluseid 'boss2_gid, "AL_INCAGI", 10;
+	}
+	end;
+
+//===== STAGE 1: First Boss Death Event =====
+OnFirstBossDead:
+	if ('stage != 1) end;
+	
+	set 'stage, 2;
+	set 'treasure1_killed, 0;
+	
+	announce "VICTORY! THE FIRST LASGAND HAS BEEN DEFEATED!", bc_all | bc_blue, 0x008800, FW_NORMAL, 20;
+	
+	// Wait for players to collect drops
+	sleep 3000;
+	
+	// Announce first treasure wave
+	announce "3 TREASURE CHESTS HAVE APPEARED!", bc_all | bc_blue, 0x0000FF, FW_NORMAL, 18;
+	
+	sleep 500;
+	
+	// Spawn 3 treasure chests in a triangle formation
+	monster 'map$, 93, 76, "Treasure Chest", 22004, 1, instance_npcname("#immortal_control") + "::OnFirstTreasureDead";
+	monster 'map$, 90, 73, "Treasure Chest", 22004, 1, instance_npcname("#immortal_control") + "::OnFirstTreasureDead";
+	monster 'map$, 96, 73, "Treasure Chest", 22004, 1, instance_npcname("#immortal_control") + "::OnFirstTreasureDead";
+	
+	announce "DEFEAT ALL TREASURE CHESTS TO CONTINUE!", bc_all | bc_blue, 0xFF8800, FW_NORMAL, 16;
+	end;
+
+//===== STAGE 2: First Treasure Death Event =====
+OnFirstTreasureDead:
+	if ('stage != 2) end;
+	
+	set 'treasure1_killed, 'treasure1_killed + 1;
+	
+	announce "TREASURE CHEST DEFEATED! (" + 'treasure1_killed + "/3)", bc_all | bc_blue, 0x008800, FW_NORMAL, 16;
+	
+	// Check if all 3 treasures are defeated
+	if ('treasure1_killed >= 3) {
+		set 'stage, 3;
+		
+		announce "ALL TREASURE CHESTS HAVE BEEN CLAIMED!", bc_all | bc_blue, 0x008800, FW_NORMAL, 18;
+		
+		// Wait for players to collect drops
+		sleep 3000;
+		
+		// Announce second boss countdown
+		announce "A MORE POWERFUL ENEMY APPROACHES!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+		
+		sleep 2000;
+		announce "THE SECOND BOSS SPAWNS IN 30 SECONDS!", bc_all | bc_blue, 0xFF8800, FW_NORMAL, 18;
+		
+		// 30 second countdown
+		sleep 20000;
+		announce "SECOND BOSS SPAWNING IN 10 SECONDS!", bc_all | bc_blue, 0xFF8800, FW_NORMAL, 18;
+		
+		sleep 5000;
+		announce "5 SECONDS!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 22;
+		
+		sleep 5000;
+		announce "LASGAND THE DESTROYER HAS ARRIVED!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+		
+		// Spawn second boss
+		donpcevent instance_npcname("#immortal_control") + "::OnSpawnBoss2";
+	}
+	end;
+
+//===== STAGE 3: Second Boss Death Event =====
+OnSecondBossDead:
+	if ('stage != 3) end;
+	
+	set 'stage, 4;
+	set 'treasure2_killed, 0;
+	
+	announce "INCREDIBLE! LASGAND THE DESTROYER HAS FALLEN!", bc_all | bc_blue, 0xFF0000, FW_NORMAL, 20;
+	
+	// Wait for players to collect drops
+	sleep 3000;
+	
+	// Announce legendary treasure wave
+	announce "5 LEGENDARY TREASURE VAULTS HAVE MATERIALIZED!", bc_all | bc_blue, 0x0000FF, FW_NORMAL, 18;
+	
+	sleep 500;
+	
+	// Spawn 5 legendary treasures in a pentagon formation
+	monster 'map$, 93, 76, "Legendary Treasure", 22005, 1, instance_npcname("#immortal_control") + "::OnSecondTreasureDead";
+	monster 'map$, 88, 76, "Legendary Treasure", 22005, 1, instance_npcname("#immortal_control") + "::OnSecondTreasureDead";
+	monster 'map$, 98, 76, "Legendary Treasure", 22005, 1, instance_npcname("#immortal_control") + "::OnSecondTreasureDead";
+	monster 'map$, 90, 71, "Legendary Treasure", 22005, 1, instance_npcname("#immortal_control") + "::OnSecondTreasureDead";
+	monster 'map$, 96, 71, "Legendary Treasure", 22005, 1, instance_npcname("#immortal_control") + "::OnSecondTreasureDead";
+	
+	announce "CLAIM YOUR ULTIMATE REWARDS!", bc_all | bc_blue, 0xFF8800, FW_NORMAL, 18;
+	end;
+
+//===== STAGE 4: Second Treasure Death Event =====
+OnSecondTreasureDead:
+	if ('stage != 4) end;
+	
+	set 'treasure2_killed, 'treasure2_killed + 1;
+	
+	announce "LEGENDARY TREASURE DEFEATED! (" + 'treasure2_killed + "/5)", bc_all | bc_blue, 0xFF8800, FW_NORMAL, 16;
+	
+	// Check if all 5 legendary treasures are defeated
+	if ('treasure2_killed >= 5) {
+		set 'stage, 5;
+		
+		announce "ALL LEGENDARY TREASURES HAVE BEEN CLAIMED!", bc_all | bc_blue, 0xFF8800, FW_NORMAL, 18;
+		
+		// Wait for players to collect drops
+		sleep 3000;
+		
+		// Completion announcement
+		announce "=== INSTANCE COMPLETED ===", bc_all | bc_blue, 0x008800, FW_NORMAL, 22;
+		announce "SPEAK WITH THE REWARD MASTER TO EXIT!", bc_all | bc_blue, 0xFF8800, FW_NORMAL, 18;
+		
+		// Enable exit NPC
+		enablenpc instance_npcname("Reward Master#immortal");
+	}
+	end;
+}
+
+//===== First Boss Spawn NPC =====
+1@twbs,93,76,4	script	Lasgand#first_boss	21979,{
+	if ('stage > 1) {
+		mes "^FF0000[Lasgand]^000000";
+		mes "You have already begun your journey.";
+		close;
+	}
+	
+	cutin "ep20_lasgand_god01.png", 2;
+	mes "^FF0000[Lasgand]^000000";
+	mes "So... you dare enter my domain?";
+	next;
+	
+	cutin "ep20_lasgand_god02.png", 2;
+	mes "^FF0000[Lasgand]^000000";
+	mes "Foolish mortal!";
+	mes "You shall witness true power!";
+	next;
+	
+	cutin "ep20_lasgand_god01.png", 2;
+	mes "^FF0000[Lasgand]^000000";
+	mes "PREPARE FOR BATTLE!";
+	close2;
+	cutin "", 255;
+	
+	// Disable NPC after talking
+	disablenpc instance_npcname("Lasgand#first_boss");
+	
+	// Announce boss spawn
+	announce "LASGAND: YOU WILL REGRET THIS INTRUSION!", bc_all | bc_blue, 0x008800, FW_NORMAL, 18;
+	
+	// Spawn boss directly
+	set 'map$, instance_mapname("1@twbs");
+	set 'boss1_gid, monster('map$, 93, 76, "Lasgand", 21979, 1, instance_npcname("#immortal_control") + "::OnFirstBossDead");
+	
+	// Apply stats
+	sleep 100;
+	if ('boss1_gid > 0) {
+		setunitdata 'boss1_gid, UMOB_MAXHP, 50000000;
+		setunitdata 'boss1_gid, UMOB_HP, 50000000;
+		setunitdata 'boss1_gid, UMOB_ATK, 5000;
+		setunitdata 'boss1_gid, UMOB_MATK, 8000;
+		setunitdata 'boss1_gid, UMOB_DEF, 600;
+		setunitdata 'boss1_gid, UMOB_MDEF, 350;
+		
+		// Apply buffs
+		unitskilluseid 'boss1_gid, "AL_BLESSING", 10;
+		unitskilluseid 'boss1_gid, "AL_INCAGI", 10;
+	}
+	end;
+
+OnInstanceInit:
+	// Start with NPC enabled
+	enablenpc instance_npcname("Lasgand#first_boss");
+	end;
+}
+
+//===== Reward & Exit NPC =====
+1@twbs,93,80,4	script	Reward Master#immortal	21979,{
+	if ('stage != 5) {
+		mes "^0000FF[Reward Master]^000000";
+		mes "Complete all challenges first!";
+		close;
+	}
+	
+	cutin "ep20_lasgand_god01.png", 2;
+	mes "^0000FF[Reward Master]^000000";
+	mes "Congratulations, brave warrior!";
+	mes "You have conquered the Immortal Realm!";
+	next;
+	
+	cutin "ep20_lasgand_god02.png", 2;
+	mes "^0000FF[Reward Master]^000000";
+	mes "You have claimed:";
+	mes "^008800- 3x Treasure Chests (22004)^000000";
+	mes "^FF8800- 5x Legendary Treasures (22005)^000000";
+	next;
+	
+	cutin "ep20_lasgand_god01.png", 2;
+	mes "^0000FF[Reward Master]^000000";
+	mes "Would you like to exit the instance now?";
+	next;
+	
+	if (select("Stay here", "Exit Instance") == 1) {
+		mes "^0000FF[Reward Master]^000000";
+		mes "Take your time to explore.";
+		mes "Return when you're ready to leave!";
+		close2;
+		cutin "", 255;
+		end;
+	}
+	
+	mes "^0000FF[Reward Master]^000000";
+	mes "Thank you for your bravery!";
+	mes "May we meet again in battle!";
+	close2;
+	cutin "", 255;
+	
+	// Teleport player out
+	warp "askald", 67, 230;
+	end;
+
+OnInstanceInit:
+	// Start with NPC disabled
+	disablenpc instance_npcname("Reward Master#immortal");
+	end;
+}

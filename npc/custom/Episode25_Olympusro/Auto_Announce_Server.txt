@@ -1,0 +1,63 @@
+// ============================================================
+// COLOR CODES (Only work with bc_all)
+// ============================================================
+// 0xFF0000 = Red (Very Important)
+// 0xFF6600 = Orange (Important)
+// 0xFFD700 = Gold (Special)
+// 0x00FF00 = Green (Success)
+// 0x00FFFF = Cyan (Info)
+// 0x1E90FF = Dodger Blue (Normal)
+// 0xFF1493 = Deep Pink (Rare Event)
+// 0x9400D3 = Dark Violet (Epic)
+// @reloadnpcfile npc/custom/Episode25_Olympusro/Auto_Announce_Server.txt		
+// Fishing Event Announcements with Multiple Messages
+-	script	FishingAnnounce	FAKE_NPC,{
+	OnInit:
+		set $@fish_msg_index, 0;
+		initnpctimer;
+		end;
+
+	OnTimer300000:
+		setarray .@messages$[0],
+			// --- Event Announcements ---
+			"(( Fishing Event )) Join the Fishing Event at MainTown! Type @joinfishing to participate!",
+			"(( Plant Event )) You can only plant trees in the Plant Land area!",
+			"(( Fishing Event )) You need a fishing rod and bait to be able to fish!",
+			"(( Plant Event )) You need to buy seeds and water to grow the plants!",
+			// --- Server Features ---
+			"[Server Feature] Magic Skills can CRITICALLY STRIKE based on LUK + Critical Rate! Base Crit Damage is 180%. Boost it higher with special cards!",
+			"[Server Feature] Physical Skills deal Critical Damage based on LUK + Critical Rate! Base Crit Damage is 170%. Equip Crit boost cards to push it higher!",
+			"[Server Feature] Build your character around LUK to unlock devastating critical hits on both Magic and Physical Skills!",
+			"[Server Feature] Critical Strike Cards can increase your Magic Crit Damage beyond 180%. Hunt for the best gear and dominate the battlefield!",
+			"[Server Feature] LUK Drop Bonus :: Every 100 LUK gives +0.1% Drop Rate on ALL Items and Cards! Stack LUK to farm faster!",
+			"[Server Feature] Max Stats is 200 :: Use the Stat NPC to set stats up to 100, and gain +10 more per Rebirth. Keep rebirthing to reach your full potential!",
+			"[Server Feature] Hourly Point Shop :: Simply play the game and earn points every hour! Spend them at the Point Shop for essential items!",
+			"[Server Feature] Coin Exchange System :: Monsters drop Coins that you can convert into Zeny! The higher the monster level, the more Coins drop. Bonus increases every 50 levels!",
+			"[Server Feature] STR + INT + DEX increase your Max Weight capacity! Build your stats wisely to carry more loot on your adventures!";
+		
+		setarray .@important[0],
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0, 0;
+
+		setarray .@colors[0],
+			0xFF1493, 0xFF1493, 0xFF1493, 0xFF1493,
+			0xFFD700, 0xFFD700, 0xFFD700, 0xFFD700,
+			0x00FFFF, 0xFFD700, 0x00FF00, 0xFF6600, 0x1E90FF;
+
+		if (.@important[$@fish_msg_index] == 1) {
+			announce .@messages$[$@fish_msg_index], bc_woe;
+		} else {
+			announce .@messages$[$@fish_msg_index], bc_all, .@colors[$@fish_msg_index];
+		}
+		
+		set $@fish_msg_index, $@fish_msg_index + 1;
+		
+		if ($@fish_msg_index >= getarraysize(.@messages$)) {
+			set $@fish_msg_index, 0;
+		}
+		
+		stopnpctimer;
+		initnpctimer;
+		end;
+}

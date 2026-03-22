@@ -1,0 +1,316 @@
+//==========================================================================================================
+// BOSS INVASION EVENT
+// - Trigger: 08:00 / 22:00 auto or GM command @bossattack
+// - Kill 20 out of 30 spawned bosses to complete
+// - 7 boss types, ~4-5 each, spread across safe coordinates
+// - Per-kill reward: 10 TCG (7227)
+// - Top killer reward: 5 MVP Vouchers via Treasure Boxes
+// - @reloadnpcfile npc/custom/Events/BossAttack_Event.txt
+//==========================================================================================================
+-	script	Invasion	-1,{
+
+OnClock2200:
+OnClock0800:
+OnGMStart:
+		// Check if event is already running
+		if (.event_active == 1) {
+			announce "Invasion Event is already running!",bc_all,0xFF0000;
+			end;
+		}
+
+		set .event_active, 1;
+		set .killcount, 0;
+		set .totalmonsters, 20;    // Kill 20 to complete
+		set .spawnedmonsters, 30;  // Total 30 bosses spawned
+		set .treasure_claimed, 0;
+
+		// Reset player kill tracking
+		deletearray .player_name$[0], 128;
+		deletearray .player_kills[0], 128;
+		set .player_count, 0;
+		set .top_killer$, "";
+		set .top_kills, 0;
+
+		// Clean map before start
+		cleanmap $@mapinvasion$[.town];
+
+		announce "=== BOSS INVASION EVENT ===",bc_all,0xFF0000;
+		announce "Bosses will appear in Askald Main Town in 30 seconds!",bc_all,0x00FFFF;
+		announce "Prepare yourself! Kill 20 MVPs to complete the event!",bc_all,0xFFFF00;
+		announce "The player who kills the most MVPs will receive 5 MVP Vouchers!",bc_all,0xFF6600;
+		announce "Event will automatically end in 15 minutes!",bc_all,0xFF0000;
+
+		sleep 30000;
+
+		announce "Bosses are now invading Askald Main Town! Defend it!",bc_all,0xFF0000;
+
+		// Start 15-minute auto-end timer
+		donpcevent "Invasion::OnEventTimer";
+
+		// -------------------------------------------------------
+		// Safe coordinate clusters (base -> ±3~5 offset):
+		// A: 103,152  B: 121,151  C: 138,150
+		// D: 148,138  E: 105,127  F: 111,109
+		// G: 129,110  H: 148,112  I: 148,126
+		// 30 bosses total / 7 types = 4-5 each
+		// -------------------------------------------------------
+
+		// [1] Valkyrie Rangris (1751) - 5 spawns
+		// Clusters: A, B, C, D, E
+		monster $@mapinvasion$[.town],103,152,"Valkyrie Rangris",1751,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],106,155,"Valkyrie Rangris",1751,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],121,154,"Valkyrie Rangris",1751,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],138,153,"Valkyrie Rangris",1751,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],148,141,"Valkyrie Rangris",1751,1,"Invasion::OnMVPKill";
+
+		// [2] Lord Knight Seyren (1646) - 4 spawns
+		// Clusters: E, F, G, H
+		monster $@mapinvasion$[.town],105,130,"Lord Knight Seyren",1646,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],108,124,"Lord Knight Seyren",1646,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],114,109,"Lord Knight Seyren",1646,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],129,113,"Lord Knight Seyren",1646,1,"Invasion::OnMVPKill";
+
+		// [3] Assassin Cross Eremes (1647) - 4 spawns
+		// Clusters: G, H, I, A
+		monster $@mapinvasion$[.town],132,107,"Assassin Cross Eremes",1647,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],148,115,"Assassin Cross Eremes",1647,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],145,126,"Assassin Cross Eremes",1647,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],100,149,"Assassin Cross Eremes",1647,1,"Invasion::OnMVPKill";
+
+		// [4] High Wizard Katrinn (1651) - 5 spawns
+		// Clusters: B, C, D, I, F
+		monster $@mapinvasion$[.town],118,151,"High Wizard Katrinn",1651,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],124,148,"High Wizard Katrinn",1651,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],141,150,"High Wizard Katrinn",1651,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],151,129,"High Wizard Katrinn",1651,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],111,112,"High Wizard Katrinn",1651,1,"Invasion::OnMVPKill";
+
+		// [5] Sniper Cecil (1650) - 4 spawns
+		// Clusters: E, G, H, B
+		monster $@mapinvasion$[.town],102,127,"Sniper Cecil",1650,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],126,110,"Sniper Cecil",1650,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],151,112,"Sniper Cecil",1650,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],124,154,"Sniper Cecil",1650,1,"Invasion::OnMVPKill";
+
+		// [6] High Priest Margaretha (1649) - 4 spawns
+		// Clusters: C, D, I, F
+		monster $@mapinvasion$[.town],135,147,"High Priest Margaretha",1649,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],143,135,"High Priest Margaretha",1649,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],151,123,"High Priest Margaretha",1649,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],108,106,"High Priest Margaretha",1649,1,"Invasion::OnMVPKill";
+
+		// [7] Mastersmith Howard (1648) - 4 spawns
+		// Clusters: A, B, G, I
+		monster $@mapinvasion$[.town],100,155,"Mastersmith Howard",1648,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],119,148,"Mastersmith Howard",1648,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],132,113,"Mastersmith Howard",1648,1,"Invasion::OnMVPKill";
+		monster $@mapinvasion$[.town],145,129,"Mastersmith Howard",1648,1,"Invasion::OnMVPKill";
+
+		sleep 5000;
+		announce "Hurry before they dominate the whole Askald Main Town!",bc_all,0x00FFFF;
+		sleep 3000;
+		announce "Kill "+.totalmonsters+" MVPs to complete the invasion! ("+.killcount+"/"+.totalmonsters+")",bc_all,0xFFFF00;
+		announce "Total spawned: "+.spawnedmonsters+" bosses across the map!",bc_all,0x00FFFF;
+		end;
+
+//==========================================================================================================
+OnEventTimer:
+		sleep 300000; // 5 min
+		if (.event_active == 1) {
+			announce "Event Notice: 10 minutes remaining!",bc_all,0xFFFF00;
+		}
+
+		sleep 300000; // 10 min total
+		if (.event_active == 1) {
+			announce "Event Notice: 5 minutes remaining!",bc_all,0xFFFF00;
+		}
+
+		sleep 180000; // 13 min total
+		if (.event_active == 1) {
+			announce "Event Warning: 2 minutes remaining!",bc_all,0xFF0000;
+		}
+
+		sleep 60000; // 14 min total
+		if (.event_active == 1) {
+			announce "Event Warning: 1 minute remaining!",bc_all,0xFF0000;
+		}
+
+		sleep 60000; // 15 min total
+
+		if (.event_active == 1) {
+			if (.killcount >= .totalmonsters) end;
+
+			announce "=== INVASION EVENT TIME LIMIT REACHED ===",bc_all,0xFF0000;
+			announce "The event has ended after 15 minutes!",bc_all,0xFF0000;
+			announce "Final Result: "+.killcount+"/"+.totalmonsters+" MVPs defeated!",bc_all,0xFFFF00;
+
+			if (.top_killer$ != "" && .killcount > 0) {
+				announce "Top MVP Killer: ["+.top_killer$+"] with "+.top_kills+" kills!",bc_all,0xFFFF00;
+			} else {
+				announce "No MVPs were defeated during this event!",bc_all,0xFF0000;
+			}
+
+			announce "All monsters are retreating!",bc_all,0x00FFFF;
+			sleep 2000;
+
+			killmonster $@mapinvasion$[.town],"Invasion::OnMVPKill";
+			cleanmap $@mapinvasion$[.town];
+
+			announce "Askald Main Town has been cleared! Event ended!",bc_all,0x00FF00;
+
+			set .killcount, 0;
+			set .event_active, 0;
+			set .treasure_claimed, 0;
+			set .top_killer$, "";
+			set .top_kills, 0;
+			set .player_count, 0;
+		}
+		end;
+
+//==========================================================================================================
+OnMVPKill:
+		if (.event_active == 0) end;
+
+		if (killerrid) {
+			attachrid(killerrid);
+			set .@killer$, strcharinfo(0);
+
+			// Per-kill reward: 10 TCG
+			getitem 7227, 10;
+			announce "["+.@killer$+"] received 10 TCG for killing a boss!",bc_map,0x00FF00;
+
+			// Track player kills for top killer ranking
+			set .@found, 0;
+			for (set .@i, 0; .@i < .player_count; set .@i, .@i + 1) {
+				if (.player_name$[.@i] == .@killer$) {
+					set .player_kills[.@i], .player_kills[.@i] + 1;
+					set .@found, 1;
+					if (.player_kills[.@i] > .top_kills) {
+						set .top_kills, .player_kills[.@i];
+						set .top_killer$, .@killer$;
+					}
+					break;
+				}
+			}
+
+			if (.@found == 0) {
+				set .player_name$[.player_count], .@killer$;
+				set .player_kills[.player_count], 1;
+				if (.player_kills[.player_count] > .top_kills) {
+					set .top_kills, .player_kills[.player_count];
+					set .top_killer$, .@killer$;
+				}
+				set .player_count, .player_count + 1;
+			}
+
+			detachrid();
+		}
+
+		// Clean drops instantly
+		sleep 10;
+		cleanmap $@mapinvasion$[.town];
+
+		set .killcount, .killcount + 1;
+		announce "MVP killed! Progress: "+.killcount+"/"+.totalmonsters,bc_all,0xFFFF00;
+
+		// Event complete when 20 MVPs killed
+		if (.killcount >= .totalmonsters) {
+			announce "=== INVASION DEFEATED! ===",bc_all,0x00FF00;
+			announce "Askald Main Town is safe now!",bc_all,0x00FF00;
+
+			if (.top_killer$ != "") {
+				announce "Top MVP Killer: ["+.top_killer$+"] with "+.top_kills+" kills!",bc_all,0xFFFF00;
+				announce "["+.top_killer$+"] will receive 5 MVP Vouchers from Treasure Boxes!",bc_all,0xFF6600;
+			}
+
+			announce "All remaining monsters will be cleared!",bc_all,0x00FF00;
+			sleep 2000;
+
+			killmonster $@mapinvasion$[.town],"Invasion::OnMVPKill";
+			cleanmap $@mapinvasion$[.town];
+
+			sleep 1000;
+			announce "5 Treasure Boxes are appearing! Only ["+.top_killer$+"] can claim them!",bc_all,0xFFFF00;
+
+			// Spawn 5 Treasure Boxes at safe spots
+			sleep 1000;
+			monster $@mapinvasion$[.town],103,152,"Treasure Box",1845,1,"Invasion::OnTreasureKill";
+			monster $@mapinvasion$[.town],121,151,"Treasure Box",1845,1,"Invasion::OnTreasureKill";
+			monster $@mapinvasion$[.town],138,150,"Treasure Box",1845,1,"Invasion::OnTreasureKill";
+			monster $@mapinvasion$[.town],129,110,"Treasure Box",1845,1,"Invasion::OnTreasureKill";
+			monster $@mapinvasion$[.town],148,126,"Treasure Box",1845,1,"Invasion::OnTreasureKill";
+
+			announce "Treasure Boxes will disappear in 60 seconds!",bc_all,0xFF0000;
+
+			sleep 60000;
+			killmonster $@mapinvasion$[.town],"Invasion::OnTreasureKill";
+			cleanmap $@mapinvasion$[.town];
+			announce "Treasure Boxes have disappeared! The invasion event has ended!",bc_all,0xFF0000;
+
+			set .killcount, 0;
+			set .event_active, 0;
+			set .treasure_claimed, 0;
+			set .top_killer$, "";
+			set .top_kills, 0;
+		}
+		end;
+
+//==========================================================================================================
+OnTreasureKill:
+		if (.event_active == 1) {
+			if (killerrid) {
+				attachrid(killerrid);
+
+				if (strcharinfo(0) == .top_killer$) {
+					if (.treasure_claimed >= 5) {
+						dispbottom "All Treasure Boxes have been claimed!";
+					} else {
+						getitem 7615, 1; // MVP Voucher
+						set .treasure_claimed, .treasure_claimed + 1;
+						announce "["+strcharinfo(0)+"] has opened a Treasure Box! ("+.treasure_claimed+"/5)",bc_map,0x00FF00;
+					}
+				} else {
+					dispbottom "Only ["+.top_killer$+"] can open these Treasure Boxes!";
+				}
+
+				detachrid();
+			}
+
+			sleep 10;
+			cleanmap $@mapinvasion$[.town];
+		}
+		end;
+
+//==========================================================================================================
+OnInit:
+		setarray $@mapinvasion$,"askald";
+		set .killcount, 0;
+		set .totalmonsters, 20;   // Kill 20 to complete
+		set .spawnedmonsters, 30; // 30 bosses spawned (7 types)
+		set .event_active, 0;
+		set .treasure_claimed, 0;
+		set .player_count, 0;
+		set .top_killer$, "";
+		set .top_kills, 0;
+		set .town, 0;
+		end;
+}
+
+//==========================================================================================================
+// AtCommand @bossattack - GM Level 80+
+//==========================================================================================================
+-	script	atcmd_bossattack	-1,{
+OnInit:
+	bindatcmd "bossattack","atcmd_bossattack::OnCommand",80,80;
+	end;
+
+OnCommand:
+	if (getgmlevel() < 80) {
+		dispbottom "You don't have permission to use this command.";
+		end;
+	}
+	announce "[GM "+strcharinfo(0)+"] has activated the Boss Invasion Event!",bc_all,0xFF0000;
+	sleep 2000;
+	donpcevent "Invasion::OnGMStart";
+	end;
+}

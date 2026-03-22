@@ -1,0 +1,603 @@
+skycity,139,215,5	script	Aura_Tester	810,{
+	mes "[Aura Tester]";
+	mes "Select testing method:";
+	next;
+	
+	switch(select("Browse All Auras:Search by Name:Quick Popular:Manual ID:Disable All:Cancel")) {
+		case 1:
+			callsub L_BrowseCategories;
+			break;
+		case 2:
+			callsub L_SearchAura;
+			break;
+		case 3:
+			callsub L_QuickPopular;
+			break;
+		case 4:
+			callsub L_ManualID;
+			break;
+		case 5:
+			for(.@i = 283; .@i <= 828; .@i++)
+				hateffect .@i, false;
+			mes "All auras disabled!";
+			close;
+		case 6:
+			close;
+	}
+	end;
+
+// Browse by categories
+L_BrowseCategories:
+	mes "[Browse Auras]";
+	mes "Select category:";
+	next;
+	
+	switch(select("VIP Skills (A):VIP Skills (B):VIP Skills (C):Popular Auras (A):Popular Auras (B):Popular Auras (C):Themed Auras (A):Themed Auras (B):VIP Skills 2:Back")) {
+		case 1: callsub L_ShowVIPSkills1; break;
+		case 2: callsub L_ShowVIPSkills2; break;
+		case 3: callsub L_ShowVIPSkills3; break;
+		case 4: callsub L_ShowPopularAuras1; break;
+		case 5: callsub L_ShowPopularAuras2; break;
+		case 6: callsub L_ShowPopularAuras3; break;
+		case 7: callsub L_ShowThemedAuras1; break;
+		case 8: callsub L_ShowThemedAuras2; break;
+		case 9: callsub L_ShowVIPSkills2_2; break;
+		case 10: return;
+	}
+	return;
+
+// VIP Skills Part 1
+L_ShowVIPSkills1:
+	mes "[VIP Skills - Part 1]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 283,286,288,291,295,299,302,305,306,307,308,309,311,312,314,316,318,320;
+	setarray .@names$[0],
+		"First Faith Power",
+		"Hell Tree",
+		"Abyss Slayer",
+		"Judge",
+		"Third Exor Flame",
+		"SKE Rising Sun",
+		"SKE Rising Moon",
+		"SKE Enchanting Sky",
+		"Circle Directions Elements",
+		"Talisman of Magician",
+		"Soul of Heaven and Earth",
+		"Servant Sign",
+		"Vigor",
+		"Dragonic Aura",
+		"Diamond Storm",
+		"Conflagration",
+		"Enchanting Shadow",
+		"Abyss Strike";
+	
+	setarray .@counts[0], 3,2,3,4,4,3,3,1,1,1,1,2,1,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// VIP Skills Part 2
+L_ShowVIPSkills2:
+	mes "[VIP Skills - Part 2]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 322,324,326,328,330,332,334,337,339,341,343,345,347,349,351,353,355,357;
+	setarray .@names$[0],
+		"Mystery Illusion",
+		"Deadly Projection",
+		"Astral Strike",
+		"Froral Flareroad",
+		"Crimson Arrow",
+		"Rain of Crystal",
+		"Crystal Impact",
+		"Tornado Storm",
+		"Strantum Tremor",
+		"Rockdown",
+		"Violent Quake",
+		"Terra Drive",
+		"Lightning Land",
+		"Venom Swamp",
+		"Activity Burn",
+		"Increasing Activity",
+		"Diluvio",
+		"Ardor";
+	
+	setarray .@counts[0], 2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// VIP Skills Part 3
+L_ShowVIPSkills3:
+	mes "[VIP Skills - Part 3]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 359,361,363,365,369,371,373,375,376,377,379,382,385,387,389,391,393,395;
+	setarray .@names$[0],
+		"Procella",
+		"Terremotus",
+		"Serpens",
+		"New Dilectio Heal",
+		"Competentia",
+		"Benedictum",
+		"Arbitrium",
+		"Pneumaticus Procella",
+		"Sincere Faith",
+		"New A Machine",
+		"New D Machine",
+		"Adv Protection",
+		"Acidified Zone Fire",
+		"Acidified Zone Ground",
+		"Acidified Zone Water",
+		"Acidified Zone Wind",
+		"Wooden Fairy",
+		"Wooden Warrior";
+	
+	setarray .@counts[0], 2,2,2,4,2,2,2,1,1,2,3,3,2,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// Popular Auras Part 1
+L_ShowPopularAuras1:
+	mes "[Popular Auras - Part 1]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 451,453,455,457,459,461,463,465,467,469,471,473,475,477,479,481,483,485;
+	setarray .@names$[0],
+		"Arcane Aura",
+		"Gluttony Aura",
+		"Abstract Flower Aura",
+		"Aiyu Aura",
+		"Amulet Aura",
+		"Angelic Aura",
+		"Aniexiles Aura",
+		"Crest Moon Aura",
+		"Solestic Aura",
+		"Arcane Red Aura",
+		"Arcane Blue Aura",
+		"Arcane Pink Aura",
+		"Arcane Green Aura",
+		"Artic Galaxy Aura",
+		"King of Aura",
+		"Flame Aura",
+		"Autum Leaf Aura",
+		"Dolphin Aura";
+	
+	setarray .@counts[0], 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// Popular Auras Part 2
+L_ShowPopularAuras2:
+	mes "[Popular Auras - Part 2]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 487,489,491,493,495,497,499,501,503,505,507,508,509,510,511,512,513,514;
+	setarray .@names$[0],
+		"Voodoo Aura",
+		"Blood Aura",
+		"Bloody Sun Aura",
+		"Blubble Aura",
+		"Blue Fume Aura",
+		"Blue Heaven Aura",
+		"Blue Moon Aura",
+		"Blush Aura",
+		"Bubble 2 Aura",
+		"Butterfly Aura",
+		"Effect Aura",
+		"Effect Purple Aura",
+		"Effect Orange Aura",
+		"Effect Blue Aura",
+		"Effect Cyan Aura",
+		"Effect Pink Aura",
+		"Effect Red Aura",
+		"Effect Yellow Aura";
+	
+	setarray .@counts[0], 2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// Popular Auras Part 3
+L_ShowPopularAuras3:
+	mes "[Popular Auras - Part 3]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 515,516,517,518,519,520,521,522,523,524,526,528,530,532,534,536,538,540;
+	setarray .@names$[0],
+		"Effect Green Aura",
+		"Effect Purple S Aura",
+		"Effect Orange S Aura",
+		"Effect Blue S Aura",
+		"Effect Cyan S Aura",
+		"Effect Pink S Aura",
+		"Effect Red S Aura",
+		"Effect Yellow S Aura",
+		"Effect Green S Aura",
+		"Butterfly 2 Aura",
+		"Celestia Tattoo Aura",
+		"Celtic Aura",
+		"Celtic Flower Aura",
+		"Celtic Green Aura",
+		"Celtic Heart Aura",
+		"Celtic Protection Aura",
+		"Chococat Aura",
+		"Circle of Power Aura";
+	
+	setarray .@counts[0], 1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// Themed Auras Part 1
+L_ShowThemedAuras1:
+	mes "[Themed Auras - Part 1]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 542,544,546,548,550,552,554,556,558,560,562,564,566,568,570,572,574,576;
+	setarray .@names$[0],
+		"Color Swirls Aura",
+		"Crest Aura",
+		"Cross Aura",
+		"Daisy Aura",
+		"Dark Summoning Aura",
+		"Demon Symbol Aura",
+		"Anime Aura",
+		"Devotion Aura",
+		"Dolphin 2 Aura",
+		"Dragon Aura",
+		"Dragon Head Aura",
+		"Dragonflies Aura",
+		"Envy Aura",
+		"Fairy Aura",
+		"Fire Sun Aura",
+		"Flamy Sun 2 Aura",
+		"Flamy Sun Aura",
+		"Flashy 2 Aura";
+	
+	setarray .@counts[0], 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// Themed Auras Part 2
+L_ShowThemedAuras2:
+	mes "[Themed Auras - Part 2]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 578,580,582,584,586,588,590,592,594,596,598,600,602,604,606,608,610,612;
+	setarray .@names$[0],
+		"Flashy 3 Aura",
+		"Flashy Aura",
+		"Flower Aura",
+		"Force Aura",
+		"Full Metal Alchemist Aura",
+		"Funky Colors Aura",
+		"Ghost 1 Aura",
+		"Ghost 2 Aura",
+		"Ghost 3 Aura",
+		"Ghost 4 Aura",
+		"Grape Aura",
+		"Greed Aura",
+		"Green Plant Aura",
+		"Green Swirls Aura",
+		"Green Wing Aura",
+		"Grunge Green Aura",
+		"Guiding Star Aura",
+		"Tornado Aura";
+	
+	setarray .@counts[0], 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// VIP Skills 2
+L_ShowVIPSkills2_2:
+	mes "[VIP Skills 2]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 780,781,783,785,787,789,791,792,794,796,797,799,801,802,804,805,807,809,810,813,815,818,820,821,823,826,828;
+	setarray .@names$[0],
+		"Absolute Zephyr",
+		"Allbloom",
+		"Chain Reaction Shot",
+		"Crossrain",
+		"Dancing Knife",
+		"Destructive Hurricane",
+		"Firm Faith",
+		"Frozen Slash",
+		"Gef Nocturn",
+		"New Aimed Bolt",
+		"New Aroma Oil",
+		"New Axe Boomerang",
+		"New Chain Lightning",
+		"New Fatal Menace",
+		"New Hell Inferno",
+		"New Howling of Lion",
+		"New Overbrand",
+		"New Pramen",
+		"New Soul Expansion",
+		"New Sound of Destruction",
+		"New Spell Fist",
+		"New Tornado Storm",
+		"Powerful Faith",
+		"Rebound Shield",
+		"Rose Blossom",
+		"Soul VC Strike",
+		"New Chain Lightning Cast";
+	
+	setarray .@counts[0], 1,2,2,2,2,2,1,2,2,1,2,2,1,2,1,2,2,1,3,2,3,2,1,2,3,2,1;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// Quick Popular Menu
+L_QuickPopular:
+	mes "[Quick Popular Auras]";
+	mes "Select aura to test:";
+	next;
+	
+	setarray .@ids[0], 451,481,622,560,670,732,505,702,716,614,644,712,586,642,758,746,668,550;
+	setarray .@names$[0],
+		"Arcane Aura",
+		"Flame Aura",
+		"Holy Aura",
+		"Dragon Aura",
+		"Phoenix Aura",
+		"Star Aura",
+		"Butterfly Aura",
+		"Rose Aura",
+		"Snow Aura",
+		"Heart Aura",
+		"Lotus Aura",
+		"Skull Aura",
+		"Full Metal Alchemist",
+		"Lord of the Rings",
+		"Unicorn Aura",
+		"Batman Aura",
+		"Necromancy Aura",
+		"Dark Summoning Aura";
+	
+	setarray .@counts[0], 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2;
+	
+	.@size = getarraysize(.@ids);
+	.@menu$ = "";
+	
+	for(.@i = 0; .@i < .@size; .@i++) {
+		.@menu$ += .@names$[.@i] + " [" + .@ids[.@i];
+		if(.@counts[.@i] > 1)
+			.@menu$ += "+" + (.@counts[.@i] - 1);
+		.@menu$ += "]:";
+	}
+	.@menu$ += "Back";
+	
+	.@choice = select(.@menu$) - 1;
+	if(.@choice >= .@size) return;
+	
+	callsub L_EnableAura, .@ids[.@choice], .@counts[.@choice];
+	return;
+
+// Search aura by name
+L_SearchAura:
+	mes "[Search Aura]";
+	mes "Enter aura name or keyword:";
+	mes "(Example: dragon, fire, holy)";
+	input .@search$;
+	
+	mes "[Search Results]";
+	mes "Searching for: '" + .@search$ + "'";
+	mes " ";
+	mes "^FF0000Use Browse All Auras menu^000000";
+	mes "^FF0000to see complete list^000000";
+	close;
+
+// Manual ID input
+L_ManualID:
+	mes "[Manual ID Input]";
+	mes "Enter base aura ID (283-828):";
+	mes "System will auto-enable all variants";
+	input .@id;
+	
+	if(.@id < 283 || .@id > 828) {
+		mes "Invalid ID! Must be 283-828";
+		close;
+	}
+	
+	callsub L_EnableAura, .@id, 5;
+	close;
+
+// Enable complete aura with all variants
+L_EnableAura:
+	.@base = getarg(0);
+	.@max_variants = getarg(1);
+	.@count = 0;
+	.@msg$ = "Enabled: ";
+	
+	for(.@i = 0; .@i < .@max_variants; .@i++) {
+		.@id = .@base + .@i;
+		if(.@id > 828) break;
+		
+		hateffect .@id, true;
+		.@count++;
+		.@msg$ += .@id;
+		if(.@i < .@max_variants - 1 && (.@base + .@i + 1) <= 828)
+			.@msg$ += ", ";
+	}
+	
+	mes "[Aura Enabled]";
+	mes .@msg$;
+	mes "Total variants: ^0000FF" + .@count + "^000000";
+	return;
+
+// Command: Enable aura by ID
+OnAura:
+	input .@number;
+	if(.@number < 283 || .@number > 828) {
+		dispbottom "Invalid ID! Must be 283-828";
+		end;
+	}
+	
+	.@count = 0;
+	.@msg$ = "Enabled: ";
+	
+	for(.@i = 0; .@i < 5; .@i++) {
+		.@id = .@number + .@i;
+		if(.@id > 828) break;
+		
+		hateffect .@id, true;
+		.@count++;
+		.@msg$ += .@id + " ";
+	}
+	
+	dispbottom .@msg$ + "| " + .@count + " variants";
+	end;
+
+// Command: Disable all
+OnOff:
+	for(.@i = 283; .@i <= 828; .@i++)
+		hateffect .@i, false;
+	dispbottom "All auras disabled!";
+	end;
+
+OnInit:
+	bindatcmd "aura", strnpcinfo(3)+"::OnAura", 99, 99;
+	bindatcmd "auraoff", strnpcinfo(3)+"::OnOff", 99, 99;
+}

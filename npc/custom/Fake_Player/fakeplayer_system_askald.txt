@@ -1,0 +1,258 @@
+// ============================================================
+//   █████╗ ███████╗ ██████╗  █████╗ ██████╗ ██████╗ 
+//  ██╔══██╗██╔════╝██╔════╝ ██╔══██╗██╔══██╗██╔══██╗
+//  ███████║███████╗██║  ███╗███████║██████╔╝██║  ██║
+//  ██╔══██║╚════██║██║   ██║██╔══██║██╔══██╗██║  ██║
+//  ██║  ██║███████║╚██████╔╝██║  ██║██║  ██║██████╔╝
+//  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
+// ============================================================
+//  FAKE PLAYER SYSTEM  |  Asgard Map  |  Version 1.0
+//  File    : npc/custom/fakeplayer_asgard.txt
+//  Reload  : @reloadnpcfile npc/custom/fakeplayer_asgard.txt
+// ------------------------------------------------------------
+//  Features:
+//    - Fake Players spread across 15 coordinate zones in asgard
+//    - 2–4 players per zone, scattered ± 3 tiles around each point
+//    - Randomized jobs, outfits, headgears, robes, gender
+//    - Direction randomized via setunitdata after spawn
+//
+//  Zone anchor points:
+//    (120,103) (101,109) (100,145) (113,155) (136,156)
+//    (147,141) (150,109) (151, 62) ( 57,146) ( 27,138)
+//    ( 23, 97) ( 39,206) ( 19,220) ( 52,232) ( 59,218)
+// ============================================================
+
+-	script	FakePlayerAsgard	FAKE_EVENT,{
+	end;
+
+// ============================================================
+OnInit:
+// ============================================================
+
+	// ----------------------------------------------------------
+	//  GLOBAL CONFIGURATION
+	// ----------------------------------------------------------
+	.spawn_map$   = "askald";
+	.mob_id_min   = 30201;
+	.mob_id_max   = 30250;
+
+	// Available job IDs
+	setarray .job_id[0],
+		0,1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,
+		17,18,19,20,21,22,23,24,25;
+	.@arr_size = getarraysize(.job_id);
+
+	// Robe View IDs
+	setarray .robeViewID[0],
+		0,0,0,0,0,0,0,0,0,0,
+		23,25,16,46,64,65,67,68,79,86,87,82,
+		104,52,53,60,62,70,51,80,97,98,103,114,116,117,118;
+	.@robe_size = getarraysize(.robeViewID);
+
+	// Bottom Headgear IDs
+	setarray .hgBottom[0],
+		0,0,0,0,0,0,0,0,0,0,
+		383,885,460,1501,1776,1416,1761,2059,1691;
+	.@hg_size = getarraysize(.hgBottom);
+
+// ============================================================
+//  ZONE 1  |  asgard (120, 103)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 120+rand(-3,3), 103+rand(-3,3), "Valhalla Seeker",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 120+rand(-3,3), 103+rand(-3,3), "Odin Follower",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 120+rand(-3,3), 103+rand(-3,3), "Norse Wanderer",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 2  |  asgard (101, 109)  |  2 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 101+rand(-3,3), 109+rand(-3,3), "Mjolnir Guard",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 101+rand(-3,3), 109+rand(-3,3), "Thunder Keeper",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 3  |  asgard (100, 145)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 100+rand(-3,3), 145+rand(-3,3), "Freya Pilgrim",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 100+rand(-3,3), 145+rand(-3,3), "Bifrost Walker",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 100+rand(-3,3), 145+rand(-3,3), "Einherjar Soul",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 4  |  asgard (113, 155)  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 113+rand(-3,3), 155+rand(-3,3), "Rune Carver",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 113+rand(-3,3), 155+rand(-3,3), "Skald Poet",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 113+rand(-3,3), 155+rand(-3,3), "Fate Weaver",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 113+rand(-3,3), 155+rand(-3,3), "Norns Child",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 5  |  asgard (136, 156)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 136+rand(-3,3), 156+rand(-3,3), "Yggdrasil Root",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 136+rand(-3,3), 156+rand(-3,3), "World Tree Sage",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 136+rand(-3,3), 156+rand(-3,3), "Aether Drifter",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 6  |  asgard (147, 141)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 147+rand(-3,3), 141+rand(-3,3), "Shield Maiden",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 147+rand(-3,3), 141+rand(-3,3), "Valkyrie Rider",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 147+rand(-3,3), 141+rand(-3,3), "War Maiden",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 7  |  asgard (150, 109)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 150+rand(-3,3), 109+rand(-3,3), "Frost Giant Slayer", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,         0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 150+rand(-3,3), 109+rand(-3,3), "Jotun Hunter",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 150+rand(-3,3), 109+rand(-3,3), "Niflheim Scout",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 8  |  asgard (151, 62)  |  2 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, 151+rand(-3,3),  62+rand(-3,3), "Gate Watcher",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, 151+rand(-3,3),  62+rand(-3,3), "Bridge Guardian",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 9  |  asgard (57, 146)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$,  57+rand(-3,3), 146+rand(-3,3), "Mimir Scholar",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  57+rand(-3,3), 146+rand(-3,3), "Wisdom Well Guard",rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  57+rand(-3,3), 146+rand(-3,3), "Lore Keeper",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 10  |  asgard (27, 138)  |  2 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$,  27+rand(-3,3), 138+rand(-3,3), "Forseti Judge",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  27+rand(-3,3), 138+rand(-3,3), "Justice Seeker",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 11  |  asgard (23, 97)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$,  23+rand(-3,3),  97+rand(-3,3), "Tyr Warrior",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  23+rand(-3,3),  97+rand(-3,3), "One Hand Fighter",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  23+rand(-3,3),  97+rand(-3,3), "Oath Binder",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 12  |  asgard (39, 206)  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$,  39+rand(-3,3), 206+rand(-3,3), "Hel Wanderer",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  39+rand(-3,3), 206+rand(-3,3), "Shadow Realm Exile",rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  39+rand(-3,3), 206+rand(-3,3), "Pale Traveler",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  39+rand(-3,3), 206+rand(-3,3), "Void Wanderer",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 13  |  asgard (19, 220)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$,  19+rand(-3,3), 220+rand(-3,3), "Loki Disciple",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  19+rand(-3,3), 220+rand(-3,3), "Trickster Rogue",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  19+rand(-3,3), 220+rand(-3,3), "Chaos Agent",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 14  |  asgard (52, 232)  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$,  52+rand(-3,3), 232+rand(-3,3), "Ragnarok Veteran", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  52+rand(-3,3), 232+rand(-3,3), "Twilight Raider",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  52+rand(-3,3), 232+rand(-3,3), "Dusk Sentinel",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  52+rand(-3,3), 232+rand(-3,3), "Fallen Hero",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 15  |  asgard (59, 218)  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$,  59+rand(-3,3), 218+rand(-3,3), "Surtr Flame",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  59+rand(-3,3), 218+rand(-3,3), "Muspelheim Blaze", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,           0,                          .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$,  59+rand(-3,3), 218+rand(-3,3), "Ember Warlord",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@arr_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,        .hgBottom[rand(.@hg_size)], .robeViewID[rand(.@robe_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	end;
+}
+// ============================================================
+//  END OF FILE  |  fakeplayer_asgard.txt
+//  Total: 46 Fake Players across 15 zones
+// ============================================================

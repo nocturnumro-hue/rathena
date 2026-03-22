@@ -1,0 +1,505 @@
+// ============================================================
+//  ███████╗ █████╗ ██╗  ██╗███████╗    ██████╗ ██╗      █████╗ ██╗   ██╗███████╗██████╗ 
+//  ██╔════╝██╔══██╗██║ ██╔╝██╔════╝    ██╔══██╗██║     ██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
+//  █████╗  ███████║█████╔╝ █████╗      ██████╔╝██║     ███████║ ╚████╔╝ █████╗  ██████╔╝
+//  ██╔══╝  ██╔══██║██╔═██╗ ██╔══╝      ██╔═══╝ ██║     ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
+//  ██║     ██║  ██║██║  ██╗███████╗    ██║     ███████╗██║  ██║   ██║   ███████╗██║  ██║
+//  ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+// ============================================================
+//  FAKE PLAYER SYSTEM  |  Version 1.0
+//  File    : npc/custom/fakeplayer_system.txt
+//  Reload  : @reloadnpcfile npc/custom/fakeplayer_system.txt
+// ------------------------------------------------------------
+//  Features:
+//    - 140 Fake Players spread across 11 zones in Prontera
+//    - 4 Indoor Players in prt_in
+//    - Randomized jobs, outfits, headgears, robes, gender
+//    - Direction randomized via setunitdata after spawn
+// ============================================================
+
+-	script	FakePlayerSystem	FAKE_EVENT,{
+	end;
+
+// ============================================================
+OnInit:
+// ============================================================
+
+	// ----------------------------------------------------------
+	//  GLOBAL CONFIGURATION
+	// ----------------------------------------------------------
+	.spawn_map$   = "prontera";
+	.mob_id_min   = 30201;
+	.mob_id_max   = 30250;
+
+	// Available job IDs
+	setarray .job_id[0],
+		0,1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,
+		17,18,19,20,21,22,23,24,25;
+	.@array_size = getarraysize(.job_id);
+
+	// Robe View IDs
+	setarray .robeViewID[0],
+		0,0,0,0,0,0,0,0,0,0,
+		23,25,16,46,64,65,67,68,79,86,87,82,
+		104,52,53,60,62,70,51,80,97,98,103,114,116,117,118;
+	.@robe_arr_size = getarraysize(.robeViewID);
+
+	// Bottom Headgear IDs
+	setarray .hgBottom[0],
+		0,0,0,0,0,0,0,0,0,0,
+		383,885,460,1501,1776,1416,1761,2059,1691;
+	.@hgBottom_arr_size = getarraysize(.hgBottom);
+
+// ============================================================
+//  ZONE 1  |  prontera  |  18 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(150,162), rand(160,187), "BanhBao",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(150,162), rand(160,187), "Zalo",          rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(150,162), rand(160,187), "FaceBook",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Phoenix Blade", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Dragon Soul",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Thunder Strike", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,            .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Crystal Mage",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Shadow Ninja",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Emerald Knight",rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Crimson Archer",rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Violet Sage",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Golden Eagle",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Ice Queen",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Titan Hammer",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Sapphire Star", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Ruby Warrior",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Obsidian Shield",rand(.mob_id_min,.mob_id_max),.job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(151,162), rand(161,185), "Amber Flame",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 2  |  prontera  |  14 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Supreme",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Clone",         rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Clone01",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Clone02",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Vortex Master", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Nebula Striker",rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Quantum Leap",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Cosmic Ray",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Astral Knight", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Galaxy Hunter", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Stellar Blade", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Void Walker",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Eclipse Raven", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125,             .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(148,162), rand(213,229), "Aurora Wolf",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,               0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 3  |  prontera  |  13 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Gold Hunt",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Neon Rex",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Arcane Sage",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    0,                                 0,         1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Blazing Inferno",rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Frozen Tundra",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Storm Breaker",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Earth Shaker",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Wind Dancer",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Water Spirit",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Light Bringer",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Dark Reaper",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Holy Paladin",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(167,180), rand(194,212), "Death Bringer",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 4  |  prontera  |  5 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(159,168), rand(183,191), "Silver Rune",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(159,168), rand(183,191), "Storm Rage",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(159,168), rand(183,191), "Battle Cry",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(159,168), rand(183,191), "War Horn",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(159,168), rand(183,191), "Victory March", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 5  |  prontera  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(144,149), rand(181,188), "Steel Heart",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(144,149), rand(181,188), "Iron Will",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(144,149), rand(181,188), "Crimson Tide",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(144,149), rand(181,188), "Brass Bull",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 6  |  prontera  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,145), rand(185,198), "Iron Fist",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,145), rand(185,198), "Stealth Ops",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,145), rand(185,198), "Deadly Strike", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,145), rand(185,198), "Quick Blade",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 7  |  prontera  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(136,143), rand(188,201), "Dark Soul",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(136,143), rand(188,201), "Black Lotus",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(136,143), rand(188,201), "Midnight Rose", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(136,143), rand(188,201), "Ebony Raven",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 8  |  prontera  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(134,140), rand(191,202), "Twilight Sage", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(134,140), rand(191,202), "Dawn Breaker",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(134,140), rand(191,202), "Noon Guardian", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 9  |  prontera  |  6 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(131,143), rand(199,212), "Night Rogue",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(131,143), rand(199,212), "Rogue Agent",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(131,143), rand(199,212), "Thief King",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(131,143), rand(199,212), "Bandit Lord",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(131,143), rand(199,212), "Shadow Thief",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    0,                                 0,         0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(131,143), rand(199,212), "Master Spy",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 10  |  prontera  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,147), rand(213,220), "Shadow Step",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,147), rand(213,220), "Shade Hunter",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,147), rand(213,220), "Gloom Stalker", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(139,147), rand(213,220), "Wraith Lord",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ZONE 11  |  prontera  |  3 Players
+// ============================================================
+
+	.@gid = fakeplayer(.spawn_map$, rand(164,171), rand(215,223), "Spirit Guide",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(164,171), rand(215,223), "Soul Keeper",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 0,   0,                                    .robeViewID[rand(.@robe_arr_size)], rand(0,2), 0, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer(.spawn_map$, rand(164,171), rand(215,223), "Essence Thief", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), 1, 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  INDOOR ZONE  |  prt_in  |  4 Players
+// ============================================================
+
+	.@gid = fakeplayer("prt_in", 59, 61,   "Tavern Hero",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer("prt_in", 60, 65,   "Inn Keeper",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 1, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer("prt_in", 34, 65,   "Guild Master", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	.@gid = fakeplayer("prt_in", 167,131,  "Shop Vendor",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+// ============================================================
+//  ADDITIONAL PLAYERS  |  prontera (wide area)  |  62 Players
+// ============================================================
+
+	// --- Batch A: Greek Alphabet Series ---
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Alpha Wolf",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Beta Hunter",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Gamma Ray",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Delta Force",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Epsilon Star",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Zeta Prime",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Eta Blade",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Theta Wave",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Iota Storm",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Kappa Knight",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Lambda Light",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Mu Shadow",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Nu Nexus",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Xi Force",       rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Omicron Edge",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Pi Warrior",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Rho Ranger",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Sigma Shield",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Tau Thunder",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Upsilon Viper",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	// --- Batch B: Cosmos Series ---
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Phi Phoenix",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Chi Crusader",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Psi Psion",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Omega End",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Nova Burst",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Pulsar Punch",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Quasar Quest",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Meteor Strike",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Comet Tail",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Nebula Mist",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	// --- Batch C: Mythology / Class Series ---
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Titan Soul",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Giant Slayer",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Mystic Sage",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Oracle Eye",     rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Prophet Voice",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Druid Nature",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Shaman Spirit",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Warlock Hex",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Sorcerer Spell", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Wizard Wand",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	// --- Batch D: Healer & East Asia Series ---
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Mage Missile",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Priest Prayer",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Cleric Heal",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Monk Fist",      rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Ninja Blade",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Samurai Honor",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Ronin Wanderer", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Shogun Command", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Daimyo Lord",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Sentinel Guard", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	// --- Batch E: Fortress Series ---
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Fortress Wall",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Bastion Keep",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Citadel Stone",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Rampart Iron",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Bulwark Steel",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Aegis Light",    rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Guardian Angel", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Protector Oath", rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Defender Vow",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Warden Watch",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Keeper Shield",  rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	.@gid = fakeplayer(.spawn_map$, rand(120,190), rand(150,240), "Sentry Spear",   rand(.mob_id_min,.mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), rand(0,125), rand(.@hgBottom_arr_size), .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+
+	// ============================================
+	// INDOOR ZONES (prt_in map): 4 PLAYERS
+	// ============================================
+	
+	.@gid = fakeplayer("prt_in", 62, 67, "Tavern Hero", rand(.mob_id_min, .mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	
+	.@gid = fakeplayer("prt_in", 61, 64, "Inn Keeper", rand(.mob_id_min, .mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 1, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	
+	.@gid = fakeplayer("prt_in", 34, 65, "Guild Master", rand(.mob_id_min, .mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	
+	.@gid = fakeplayer("prt_in", 55, 56, "Shop Vendor", rand(.mob_id_min, .mob_id_max), .job_id[rand(.@array_size)], rand(0,1), rand(0,84), rand(0,7), 0, 0, rand(20,100), 125, .hgBottom[rand(.@hgBottom_arr_size)], .robeViewID[rand(.@robe_arr_size)], rand(0,2), rand(0,1), 0);
+	if (.@gid > 0) setunitdata(.@gid, UMOB_LOOKDIR, rand(0,7));
+	
+	end;
+}
+// ============================================================
+//  END OF FILE  |  fakeplayer_system.txt
+// ============================================================

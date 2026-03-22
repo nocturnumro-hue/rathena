@@ -1,0 +1,99 @@
+//===== By:==================================================
+//= Manuel Sintos
+// @reloadnpcfile npc/custom/olympus/jobs_item_dealer.txt
+// Elemental Dealer
+askald,96,136,5	script	Elemental Master Dealer	621,{
+	callshop "elementDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Elemental Master Dealer",0;
+	end;
+}
+-	shop	elementDealer	-1,12116:35000,12114:35000,12115:35000,12117:35000,12279:35000,12928:35000,1000293:5000,1000295:5000,1000291:5000,1000294:5000,1000292:5000;
+
+// Alchemist Dealer
+askald,96,140,5	script	Alchemist Item Dealer	749,{
+	callshop "alchItemDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Alchemist Item Dealer",0;
+	end;
+}
+-	shop	alchItemDealer	-1,6210:1300,6211:800,6212:1000,7135:500,7136:500,7137:500,7138:1500,7139:200,7144:500000,7143:5000,7134:100,7127:100000,7128:100000,7129:100000,7130:100000,7131:100000,7132:100000,6284:100000,6285:100000,11023:240000,11024:240000,7133:240000,1000276:5000,1000277:5000,1000278:5000,1000279:5000,1000280:35000,1000281:25000,1000275:5000,100371:10000,7142:100000,7140:50000;
+
+// Archer Dealer
+askald,96,144,5	script	Archer Item Dealer	634,{
+	callshop "archerItemDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Archer Item Dealer",0;
+	end;
+}
+-	shop	archerItemDealer	-	cashshop	archerItemDealer	-1,533:250,6124:50000,1750:100,1751:100,1752:100,1753:100,1754:100,1755:100,1756:100,1757:100,1758:100,1759:100,1760:100,1761:200,1762:200,1763:200,1764:200,1765:150,1766:150,1767:200,1768:200,1769:200,1770:200,1773:1000,1774:1000;
+
+// Ninja Dealer
+askald,96,148,5	script	Ninja Item Dealer	637,{
+	callshop "ninjaItemDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Ninja Item Dealer",0;
+	end;
+}
+-	shop	ninjaItemDealer	-1,2117:10000,13000:150000,13006:400000,13007:100000,13009:100000,13010:100000,13258:30,13257:30,13255:30,13256:30,13259:30,13294:100,6512:100,6513:100,6514:100,13250:4,13251:10,13252:20,13253:40,13254:100,7521:112,7522:112,7523:112,7524:112,1000565:30,1000566:30,1000567:30,1000568:30,1000569:30;
+
+// Assassin Dealer
+askald,96,152,5	script	Assassin Item Dealer	615,{
+	callshop "assassinItemDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Assassin Item Dealer",0;
+	end;
+}
+-	shop	assassinItemDealer	-1,678:50000,657:4500,713:2000,937:2000,939:2000,952:2000,972:2000,7033:2000;
+
+// Mechanic Dealer
+askald,101,160,5	script	Mechanic Item Dealer	645,{
+	callshop "mechanicItemDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Mechanic Item Dealer",0;
+	end;
+}
+-	shop	mechanicItemDealer	-1,1000290:100000,1000289:100000;
+
+// Rune Knight Dealer
+askald,105,160,5	script	Rune Knight Item Dealer	628,{
+	callshop "runeknightItemDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Rune Knight Item Dealer",0;
+	end;
+}
+-	shop	runeknightItemDealer	-1,12731:25000,12728:25000,12729:25000,12733:25000,22540:250000;
+
+// Warlock Dealer
+askald,96,156,5	script	Warlock Item Dealer	612,{
+	callshop "warlockItemDealer",1;
+	end;
+
+	OnInit:
+		waitingroom "Warlock Item Dealer",0;
+	end;
+}
+-	shop	warlockItemDealer	-1,6189:10000,6190:10000,6191:10000,6192:50000,6193:50000,6194:50000,6195:100000,6196:100000,6197:100000,6198:100000,6199:100000,6200:100000,6201:10000,6202:75000,6203:75000,6204:75000,6205:75000;
+
+
+
+
+
+
+
+
+

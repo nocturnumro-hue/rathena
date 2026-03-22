@@ -1,0 +1,466 @@
+//===== rAthena Script =======================================
+//= Planting System with Tiered Rewards
+//===== By: ==================================================
+//= @reloadnpcfile npc/custom/plant_system.txt
+//============================================================
+
+function	script	ProgCutin	{
+	set .@base$, getarg(0);
+	set .@frames, getarg(1);
+	set .@step, getarg(2);
+	set .@layer, getarg(3);
+
+	set .@now, gettimetick(2);
+	set .@total_ms, (.@frames * .@step);
+	set .@total_sec, (.@total_ms + 999) / 1000;
+	set .@lock_until, .@now + .@total_sec + 1;
+
+	if (#ps_busy_until > .@now) return -1;
+	if (#ps_busy_until && #ps_busy_until <= .@now) set #ps_busy_until, 0;
+
+	set #ps_busy_until, .@lock_until;
+
+	getmapxy(.@smap$, .@sx, .@sy, BL_PC);
+
+	for (set .@i, 1; .@i <= .@frames; set .@i, .@i + 1) {
+		cutin .@base$+.@i+".png", .@layer;
+		sleep2 .@step;
+		if (.@i < .@frames) {
+			getmapxy(.@cmap$, .@cx, .@cy, BL_PC);
+			if (.@cmap$ != .@smap$ || .@cx != .@sx || .@cy != .@sy) {
+				cutin "", 255;
+				set #ps_busy_until, 0;
+				return 0;
+			}
+		}
+	}
+	cutin "", 255;
+	set #ps_busy_until, 0;
+	return 1;
+}
+
+function	script	plant_system	{
+
+	set .@plant_id, getarg(0);
+	set .@seed_item_id, getarg(1);
+
+	set .@acc_id, getcharid(3);
+	set .@char_id, getcharid(0);
+
+	set .@r, callfunc("ProgCutin", "seedprogbar", 5, 600, 1);
+	if (.@r == -1) { dispbottom "[Plant System]: You're already busy. Please wait a moment."; end; }
+	if (.@r == 0) { dispbottom "[Plant System]: Planting canceled."; end; }
+
+	set .@now, gettimetick(2);
+	getmapxy(.@map$, .@x, .@y, BL_PC);
+
+	.@allow = 1;
+	if (getarraysize($PlantWhitelist$) > 0) {
+		.@allow = 0;
+		for (.@i = 0; .@i < getarraysize($PlantWhitelist$); .@i++)
+			if (.@map$ == $PlantWhitelist$[.@i]) { .@allow = 1; break; }
+	}
+	if (getarraysize($PlantBlacklist$) > 0) {
+		for (.@i = 0; .@i < getarraysize($PlantBlacklist$); .@i++)
+			if (.@map$ == $PlantBlacklist$[.@i]) { .@allow = 0; break; }
+	}
+	if (!.@allow) { dispbottom "[Plant System]: You cannot plant on this map."; end; }
+
+	.@today = gettime(DT_YYYYMMDD);
+	if (#plant_day != .@today) { #plant_day = .@today; #plant_day_count = 0; }
+	if ($DailyAccountLimit > 0 && #plant_day_count >= $DailyAccountLimit) {
+		dispbottom "[Plant System]: You've reached today's planting limit ("+#plant_day_count+"/"+$DailyAccountLimit+").";
+		end;
+	}
+
+	query_sql "DELETE FROM `plant_system` WHERE `finaltime` <= "+.@now;
+	query_sql "SELECT COUNT(*) FROM `plant_system` WHERE `account_id`="+.@acc_id+" AND `finaltime` > "+.@now, .@active;
+	if ($ActivePlantCap > 0 && .@active >= $ActivePlantCap) {
+		dispbottom "[Plant System]: You already have "+.@active+"/"+$ActivePlantCap+" active plants.";
+		end;
+	}
+	query_sql "SELECT 1 FROM `plant_system` WHERE `map`='"+escape_sql(.@map$)+"' AND `x`="+.@x+" AND `y`="+.@y, .@exists_any;
+	if (.@exists_any) { dispbottom "[Plant System]: Someone just planted here."; end; }
+
+	if ($PlantMinSpacing > 0) {
+		query_sql "SELECT `x`,`y` FROM `plant_system` WHERE `map`='"+escape_sql(.@map$)+"' AND `finaltime` > "+.@now+
+		          " AND `x` BETWEEN "+(.@x - $PlantMinSpacing)+" AND "+(.@x + $PlantMinSpacing)+
+		          " AND `y` BETWEEN "+(.@y - $PlantMinSpacing)+" AND "+(.@y + $PlantMinSpacing),
+		          .@rx, .@ry;
+		if (getarraysize(.@rx)) {
+			for (.@i = 0; .@i < getarraysize(.@rx); .@i++)
+				if (distance(.@x, .@y, .@rx[.@i], .@ry[.@i]) < $PlantMinSpacing) {
+					dispbottom "[Plant System]: Too close to another plant. Try a different spot.";
+					end;
+				}
+		}
+	}
+
+	.@info$ = callfunc("plant_type", .@plant_id);
+	if (.@info$ == "" || .@info$ == "0") { dispbottom "[Plant System]: Invalid plant type."; end; }
+	explode(.@t$, .@info$, ",");
+	.@type_name$ = .@t$[0];
+
+	.@t_next = .@now + atoi(.@t$[7]);
+	.@final  = .@now + ($PlantExpireHours * 3600);
+
+	.@dupname$ = "plant#"+.@acc_id+"_"+.@x+"_"+.@y;
+	duplicatenpc("planting", .@dupname$, .@map$, .@x, .@y, DIR_SOUTH, atoi(.@t$[3]));
+	setnpcdisplay .@dupname$, .@type_name$, atoi(.@t$[3]);
+
+	query_sql "INSERT INTO `plant_system` (`account_id`,`char_id`,`map`,`x`,`y`,`plant_id`,`stage`,`time`,`finaltime`) VALUES ("+
+	          .@acc_id+","+.@char_id+",'"+escape_sql(.@map$)+"',"+.@x+","+.@y+","+.@plant_id+","+
+	          "1,"+.@t_next+","+.@final+")";
+
+	delitem .@seed_item_id, 1;
+	fakeloot;
+	soundeffectall "planting.wav",0;
+	#plant_day_count += 1;
+
+	end;
+}
+
+-	script	planting	-1,{
+
+	getmapxy(.@map$, .@x, .@y, BL_NPC);
+	query_sql "SELECT 1 FROM `plant_system` WHERE `map`='"+escape_sql(.@map$)+"' AND `x`="+.@x+" AND `y`="+.@y+" LIMIT 1", .@exists_any;
+	if (!.@exists_any) {
+		set $@ps_despawn$, strnpcinfo(3);
+		donpcevent "plant_control::OnDespawn";
+		end;
+	}
+
+	set .@now, gettimetick(2);
+	if (#ps_busy_until > .@now) {
+		dispbottom "[Plant System]: You're already busy. Please wait a moment.";
+		end;
+	}
+
+	if (#ps_busy_until && #ps_busy_until <= .@now) set #ps_busy_until, 0;
+
+	set .@acc_id, getcharid(3);
+	set .@now, gettimetick(2);
+
+	query_sql "SELECT COUNT(*) FROM `plant_system` WHERE `account_id`="+.@acc_id+
+	          " AND `map`='"+escape_sql(.@map$)+"' AND `x`="+.@x+" AND `y`="+.@y, .@have;
+	if (!.@have) {
+		dispbottom "[Plant System]: This plant is not yours.";
+		end;
+	}
+
+	query_sql "SELECT `plant_id`,`stage`,`time`,`finaltime` FROM `plant_system` WHERE `account_id`="+.@acc_id+
+	          " AND `map`='"+escape_sql(.@map$)+"' AND `x`="+.@x+" AND `y`="+.@y,
+	          .@pid, .@stage, .@time_next, .@ft;
+
+	if (.@ft <= .@now) {
+		query_sql "DELETE FROM `plant_system` WHERE `account_id`="+.@acc_id+
+		          " AND `map`='"+escape_sql(.@map$)+"' AND `x`="+.@x+" AND `y`="+.@y;
+		set $@ps_despawn$, strnpcinfo(3);
+		donpcevent "plant_control::OnDespawn";
+		end;
+	}
+
+	.@info$ = callfunc("plant_type", .@pid);
+	explode(.@t$, .@info$, ",");
+	.@type_name$ = .@t$[0];
+
+	.@remain = .@time_next - .@now;
+	set .@ready_water, ((.@stage < 4) && (.@remain <= 0));
+	set .@ready_harvest, ((.@stage == 4) && (.@remain <= 0));
+
+	if (!.@ready_water && !.@ready_harvest) {
+		switch (.@stage) {
+			case 1: .@stage_name$ = "^008000Germination^000000"; break;
+			case 2: .@stage_name$ = "^0000FFSapling^000000"; break;
+			case 3: .@stage_name$ = "^800080Mature^000000"; break;
+			case 4: .@stage_name$ = "^FF8C00Fruition^000000"; break;
+			default: .@stage_name$ = "Unknown";
+		}
+		.@next_label$ = (.@remain < 60 ? .@remain+"sec" : (.@remain/60)+"min+");
+		mes "^000000Type:^000000 " + .@type_name$;
+		mes "^000000Stage:^000000 " + .@stage_name$;
+		mes "^000000Next Stage:^000000 " + ( (.@remain <= 0) ? "^008000Ready^000000" : .@next_label$ );
+		mes "^0000FFReward Rates:^000000";
+		mes "^FF0000Rate 70%^000000 - EP 17~21 Enhancement Materials";
+		mes "^008800Rate 20%^000000 - TCG Card, Enchantment Ticket,";
+		mes "Lottery Ticket, Silvervine Fruit,";
+		mes "Event Stone Coin, and other valuables";
+		mes "^FF9900Rate 9%^000000  - Bubble Gum [1 Day],";
+		mes "Battle Manual [1 Day],";
+		mes "Silver VIP Card";
+		mes "^FF0000Rate 1%^000000  - MVP Voucher,";
+		mes "Premium Black Coin,";
+		mes "Gold VIP Card";
+		close;
+	}
+
+	getmapxy(.@pcmap$, .@px, .@py, BL_PC);
+	if (.@pcmap$ != .@map$ || distance(.@px, .@py, .@x, .@y) > 3) {
+		dispbottom "[Plant System]: You need to be within 3 cells.";
+		end;
+	}
+
+	if (.@ready_water) {
+		set .@r, callfunc("ProgCutin", "waterprogbar", 5, 600, 1);
+		if (.@r == -1) { dispbottom "[Plant System]: You're already busy. Please wait a moment."; end; }
+		if (.@r == 0) { dispbottom "[Plant System]: Watering canceled."; end; }
+
+		set .@now, gettimetick(2);
+		getmapxy(.@pcmap$, .@px, .@py, BL_PC);
+		if (.@pcmap$ != .@map$ || distance(.@px, .@py, .@x, .@y) > 3) { dispbottom "[Plant System]: You need to be within 3 cells."; end; }
+		if (.@now < .@time_next || .@stage >= 4) { dispbottom "[Plant System]: Not ready to water."; end; }
+		if (countitem($WateringCan) < $WaterCanUse) { dispbottom "[Plant System]: You need "+$WaterCanUse+"x "+getitemname($WateringCan)+"."; end; }
+
+		switch (.@stage) {
+			case 1: set .@t_next2, .@now + atoi(.@t$[8]);  set .@spr_idx, 4; set .@next_stage, 2; break;
+			case 2: set .@t_next2, .@now + atoi(.@t$[9]);  set .@spr_idx, 5; set .@next_stage, 3; break;
+			case 3: set .@t_next2, .@now + atoi(.@t$[10]); set .@spr_idx, 6; set .@next_stage, 4; break;
+		}
+
+		query_sql "UPDATE `plant_system` SET `stage`="+.@next_stage+",`time`="+.@t_next2+
+		          " WHERE `account_id`="+.@acc_id+" AND `map`='"+escape_sql(.@map$)+"' AND `x`="+.@x+" AND `y`="+.@y;
+		delitem $WateringCan, $WaterCanUse;
+
+		setnpcdisplay strnpcinfo(3), .@type_name$, atoi(.@t$[.@spr_idx]);
+		soundeffectall "watering.wav",0;
+		specialeffect EF_BUBBLE;
+		dispbottom "[Plant System]: Watering successful.";
+		end;
+	}
+
+	// HARVEST with Tiered Rewards
+	if ((Weight * 100) / MaxWeight >= 90) {
+		dispbottom "[Plant System]: You are overweight. Store items first.";
+		end;
+	}
+
+	// Roll for reward tier
+	set .@roll, rand(1, 100);
+	
+	if (.@roll <= 70) {
+		// 70% - EP 17~21 Enhancement Materials
+		setarray .@tier1[0], 25723, 25669, 1000103, 25271, 1000405, 1000608, 1001217; // Replace with actual item IDs
+		set .@reward_id, .@tier1[rand(getarraysize(.@tier1))];
+		set .@reward_amt, rand(5, 15);
+		set .@tier_name$, "^0000FFEP Enhancement Material^000000";
+	} else if (.@roll <= 90) {
+		// 20% - TCG Card, Enchantment Ticket, Lottery Ticket, Silvervine Fruit, Event Stone Coin
+		setarray .@tier2[0], 7227, 7528, 7000, 6417, 1000874; // TCG Card, Enchant Ticket, Lottery, Silvervine, Event Coin
+		set .@reward_id, .@tier2[rand(getarraysize(.@tier2))];
+		set .@reward_amt, rand(1, 10);
+		set .@tier_name$, "^008800Valuable Item^000000";
+	} else if (.@roll <= 99) {
+		// 9% - Bubble Gum [1 Day], Battle Manual [1 Day], Silver VIP Card
+		setarray .@tier3[0], 12210, 12208, 30010, 30005, 1230019; // Bubble Gum 1Day, Battle Manual 1Day, Silver VIP
+		set .@reward_id, .@tier3[rand(getarraysize(.@tier3))];
+		set .@reward_amt, 1;
+		set .@tier_name$, "^FF9900Premium Buff^000000";
+	} else {
+		// 1% - MVP Voucher, Premium Black Coin, Gold VIP Card
+		setarray .@tier4[0], 7615, 1001258, 1230020; // MVP Voucher, Premium Black Coin, Gold VIP
+		set .@reward_id, .@tier4[rand(getarraysize(.@tier4))];
+		set .@reward_amt, rand(1, 5);
+		set .@tier_name$, "^FF0000JACKPOT!^000000";
+		announce "[Plant System]: " + strcharinfo(0) + " got a JACKPOT reward from harvest!", bc_all;
+	}
+
+	if (!checkweight(.@reward_id, .@reward_amt)) {
+		dispbottom "[Plant System]: Not enough weight or inventory space.";
+		end;
+	}
+
+	getitem .@reward_id, .@reward_amt;
+
+	query_sql "DELETE FROM `plant_system` WHERE `account_id`="+.@acc_id+
+	          " AND `map`='"+escape_sql(.@map$)+"' AND `x`="+.@x+" AND `y`="+.@y;
+
+	specialeffect2 EF_HATED2;
+	movenpc strnpcinfo(3),1,1;
+	set $@ps_despawn$, strnpcinfo(3);
+	donpcevent "plant_control::OnDespawn";
+
+	dispbottom "[Plant System]: Harvested ["+.@tier_name$+"] "+.@reward_amt+"x "+getitemname(.@reward_id)+".";
+	fakeloot;
+	end;
+}
+
+-	script	plant_control	FAKE_NPC,{
+
+	OnInit:
+		// Configuration
+		set $WateringCan, 6432; // Item ID for watering
+		set $WaterCanUse, 1; // Amount required per watering
+		set $PlantGain, 1; // 1=random (1-MaxAmt), 0=always max (deprecated in tiered system)
+		set $ActivePlantCap, 5; // Active plants per account (0=unlimited)
+		set $PlantExpireHours, 12; // Expire unharvested plants after N hours
+		set $DailyAccountLimit, 20; // Plants per day per account (0=unlimited)
+		set $PlantMinSpacing, 4; // Minimum cell spacing (0=off)
+
+		// Map filters (leave empty to ignore)
+		deletearray $PlantWhitelist$[0];
+		setarray $PlantWhitelist$[0], "askald"; // Leave blank to allow on all maps
+		deletearray $PlantBlacklist$[0];
+		setarray $PlantBlacklist$[0], "pvp_y_1-1"; // No need to put maps here if whitelist isn't empty
+
+		// Optional display names
+		deletearray $PlantName$[0];
+		setarray $PlantName$[1], "Apple Tree", "Yggdrasil Tree", "Hybrid Yellow Plant", "Watermelon", "Tomato";
+
+		// Restore plants on server start and cleanup expired ones
+		query_sql "DELETE FROM `plant_system` WHERE `finaltime` <= "+gettimetick(2);
+
+		query_sql "SELECT `account_id`,`map`,`x`,`y`,`stage`,`plant_id`,`finaltime` FROM `plant_system`",
+		          .@aid, .@map$, .@x, .@y, .@stage, .@pid, .@ft;
+
+		if (getarraysize(.@aid)) {
+			for (.@i = 0; .@i < getarraysize(.@aid); .@i++) {
+				if (.@ft[.@i] > gettimetick(2)) {
+					.@info$ = callfunc("plant_type", .@pid[.@i]);
+					explode(.@t$, .@info$, ",");
+					switch (.@stage[.@i]) {
+						case 1: .@spr_idx = 3; break;
+						case 2: .@spr_idx = 4; break;
+						case 3: .@spr_idx = 5; break;
+						case 4: .@spr_idx = 6; break;
+					}
+					.@run$ = "plant#"+.@aid[.@i]+"_"+.@x[.@i]+"_"+.@y[.@i];
+					duplicatenpc("planting", .@run$, .@map$[.@i], .@x[.@i], .@y[.@i], DIR_SOUTH, atoi(.@t$[.@spr_idx]));
+					setnpcdisplay .@run$, .@t$[0], atoi(.@t$[.@spr_idx]);
+				} else {
+					query_sql "DELETE FROM `plant_system` WHERE `account_id`="+.@aid[.@i]+
+					          " AND `map`='"+escape_sql(.@map$[.@i])+"' AND `x`="+.@x[.@i]+" AND `y`="+.@y[.@i];
+				}
+			}
+		}
+
+		initnpctimer;
+		end;
+
+	OnTimer600000:
+		// Periodic cleanup of expired plants (runs every 10 minutes)
+		query_sql "SELECT `account_id`,`map`,`x`,`y` FROM `plant_system` WHERE `finaltime` <= "+gettimetick(2),
+		          .@aid, .@map$, .@x, .@y;
+		if (getarraysize(.@aid)) {
+			for (.@i = 0; .@i < getarraysize(.@aid); .@i++) {
+				query_sql "DELETE FROM `plant_system` WHERE `account_id`="+.@aid[.@i]+
+				          " AND `map`='"+escape_sql(.@map$[.@i])+"' AND `x`="+.@x[.@i]+" AND `y`="+.@y[.@i];
+				set $@ps_despawn$, "plant#"+.@aid[.@i]+"_"+.@x[.@i]+"_"+.@y[.@i];
+				donpcevent strnpcinfo(3)+"::OnDespawn";
+			}
+		}
+		stopnpctimer;
+		initnpctimer;
+		end;
+
+	// Server-side despawn handler
+	OnDespawn:
+		if ($@ps_despawn$ != "") {
+			duplicateremove $@ps_despawn$;
+			$@ps_despawn$ = "";
+		}
+		end;
+}
+
+// Login event handler - clears busy lock on login
+-	script	ps_login_guard	FAKE_NPC,{
+	OnPCLoginEvent:
+		set #ps_busy_until, 0;
+		end;
+}
+
+// Plant type configuration function
+function	script	plant_type	{
+	if (!getarg(0)) return;
+
+	// Structure: "Name,RewardItem,MaxAmt,SpriteID1,SpriteID2,SpriteID3,SpriteID4,Time1,Time2,Time3,Time4"
+	// Name: Display name of the plant
+	// RewardItem: Deprecated (now using tiered reward system)
+	// MaxAmt: Deprecated (now using tiered reward system)
+	// SpriteID1-4: Sprite IDs for stages 1-4 (Germination, Sapling, Mature, Fruition)
+	// Time1: Seconds from planted to stage 1
+	// Time2: Seconds from stage 1 to 2 (after watering)
+	// Time3: Seconds from stage 2 to 3 (after watering)
+	// Time4: Seconds from stage 3 to 4 (after watering)
+	
+	switch (getarg(0)) {
+		case 1: set .@PlantSet$, "Apple Tree,512,3,10805,10806,10807,10808,30,60,90,120"; break;
+		case 2: set .@PlantSet$, "Yggdrasil Tree,607,1,10805,10806,10807,10809,30,60,90,120"; break;
+		case 3: set .@PlantSet$, "Hybrid Yellow Plant,508,5,10801,10802,10803,10804,30,60,90,120"; break;
+		case 4: set .@PlantSet$, "Watermelon,511,5,10801,10801,10810,10811,30,60,90,120"; break;
+		case 5: set .@PlantSet$, "Tomato,507,5,10801,10801,10812,10813,30,60,90,120"; break;
+	}
+	return (.@PlantSet$ != "" ? .@PlantSet$ : 0);
+}
+
+// Seed and Watering Can Seller NPC
+askald,150,68,5	script	Plant Supply Seller	4_F_CAPEGIRL,{
+	mes "[Plant Supply Seller]";
+	mes "Welcome! I sell seeds and watering supplies.";
+	mes "What would you like to buy?";
+	next;
+
+	callshop "PlantSupplyShop", 1;
+	npcshopattach "PlantSupplyShop";
+	end;
+
+OnBuyItem:
+	// Process purchase using Zeny
+	for(set .@i, 0; .@i < getarraysize(@bought_nameid); set .@i, .@i + 1) {
+		set .@item_id, @bought_nameid[.@i];
+		set .@quantity, @bought_quantity[.@i];
+		
+		// Get price from table
+		set .@price, 0;
+		switch(.@item_id) {
+			case 30000: set .@price, 50000000; break;    // Apple Tree Seed
+			case 30001: set .@price, 50000000; break;    // Yggdrasil Seed
+			case 30002: set .@price, 50000000; break;    // Hybrid Yellow Plant Seed
+			case 30003: set .@price, 50000000; break;    // Watermelon Seed
+			case 30004: set .@price, 50000000; break;    // Tomato Seed
+			case 20001: set .@price, 100000000; break;    // Item 20001 - 100M
+			case 20002: set .@price, 100000000; break;    // Item 20002 - 100M
+			case 20003: set .@price, 100000000; break;    // Item 20003 - 100M
+			case 20004: set .@price, 100000000; break;    // Item 20004 - 100M
+			case 20005: set .@price, 100000000; break;    // Item 20005 - 100M
+			case 6432: set .@price, 1000000; break;       // Watering Can
+		}
+		
+		set .@totalcost, .@price * .@quantity;
+		
+		// Check Zeny
+		if(Zeny < .@totalcost) {
+			mes "[Plant Supply Seller]";
+			mes "^FF0000Sorry! You don't have enough Zeny.^000000";
+			mes " ";
+			mes "Item: " + getitemname(.@item_id);
+			mes "Quantity: " + .@quantity;
+			mes "Required: ^FF0000" + .@totalcost + " Zeny^000000";
+			mes "You have: ^0000FF" + Zeny + " Zeny^000000";
+			close;
+		}
+		
+		// Check weight
+		if(checkweight(.@item_id, .@quantity) == 0) {
+			mes "[Plant Supply Seller]";
+			mes "^FF0000You don't have enough inventory space or weight capacity!^000000";
+			mes "Please free up some space first.";
+			close;
+		}
+		
+		// Deduct Zeny and give item
+		set Zeny, Zeny - .@totalcost;
+		getitem .@item_id, .@quantity;
+		
+		mes "[Plant Supply Seller]";
+		mes "^00FF00Purchase Successful!^000000";
+		mes " ";
+		mes "Bought: ^0000FF" + .@quantity + "x " + getitemname(.@item_id) + "^000000";
+		mes "Spent: ^FF0000" + .@totalcost + " Zeny^000000";
+		mes " ";
+		mes "^0000FFRemaining Zeny: ^00FF00" + Zeny + "^000000";
+	}
+	close;
+}
+
+// Plant Supply Shop definition
+-	shop	PlantSupplyShop	-1,30000:50000000,30001:50000000,30002:50000000,30003:50000000,30004:50000000,20001:100000000,20002:100000000,20003:100000000,20004:100000000,20005:100000000,6432:1000000

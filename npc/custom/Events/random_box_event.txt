@@ -1,0 +1,104 @@
+//===== By:==================================================
+// @reloadnpc npc/custom/manuel_npc/tbox_spawner.txt
+-	script	Treasure Box Spawner	FAKE_NPC,{
+	OnInit:
+		// List of maps where treasure box will spawn (technical names)
+		setarray .maps$[0], "prontera", "askald", "the_fair", "byako", "skycity", "league";
+		// Display names for each map
+		setarray .mapnames$[0], "Prontera", "Askald", "The Fair", "Byako", "Sky City", "Legend";
+		
+		.box_duration = 600000; // Box lifetime: 10 minutes
+		.next_spawn_delay = 3600000; // Next spawn delay: 60 minutes
+		.box_active = 0; // Track if box is currently active
+		
+		// Spawn first box after 30 seconds on server start
+		sleep 30000;
+		goto OnSpawnTreasureBox;
+	end;
+	
+	OnTBoxDestroyed:
+		// Check if killed by player
+		if (playerattached()) {
+			// Mark box as inactive
+			.box_active = 0;
+			
+			// Announce player destroyed the treasure box
+			announce "[ TREASURE BOX ] " + strcharinfo(0) + " has found and destroyed the Treasure Box at " + .current_mapname$ + " (" + .current_x + ", " + .current_y + ")!", bc_all, 0xFFD700;
+			
+			// Give rewards
+			getitem 12208, 1; // Battle Manual
+			getitem 7227, 3;  // TCG Card
+			getitem 14232, 1; // Yggdrasil Berry Box
+			getitem 12210, 1; // Bubble Gum
+			
+			// Announce rewards
+			announce "[ TREASURE BOX ] " + strcharinfo(0) + " received: 1x Battle Manual, 3x TCG Card, 1x Yggdrasil Berry Box, 1x Bubble Gum!", bc_all, 0x00FF00;
+			
+			// Wait 60 minutes then spawn next box
+			sleep .next_spawn_delay;
+			goto OnSpawnTreasureBox;
+		} else {
+			// Mark box as inactive
+			.box_active = 0;
+			
+			// Announce monster destroyed the box
+			announce "[ TREASURE BOX ] The Treasure Box has been destroyed by a monster!", bc_all, 0xFF0000;
+			
+			// Wait 60 minutes then spawn next box
+			sleep .next_spawn_delay;
+			goto OnSpawnTreasureBox;
+		}
+	end;
+	
+	OnSpawnTreasureBox:
+		// Select random map
+		.@random_map = rand(getarraysize(.maps$));
+		.current_map$ = .maps$[.@random_map];
+		.current_mapname$ = .mapnames$[.@random_map];
+		
+		// Find random walkable cell
+		getfreecell(.current_map$, .current_x, .current_y);
+		
+		// Spawn treasure box
+		monster .current_map$, .current_x, .current_y, "Treasure Box", 2288, 1, strnpcinfo(0)+"::OnTBoxDestroyed";
+		
+		// Mark box as active
+		.box_active = 1;
+		
+		// Announce treasure box location with display name
+		announce "[ TREASURE BOX ] A Treasure Box has appeared at " + .current_mapname$ + " (" + .current_x + ", " + .current_y + ")!", bc_all, 0xFFD700;
+		announce "[ TREASURE BOX ] Rewards: 1x Battle Manual, 3x TCG Card, 1x Yggdrasil Berry Box, 1x Bubble Gum!", bc_all, 0x00FF00;
+		announce "[ TREASURE BOX ] Time Limit: 10 minutes!", bc_all, 0xFFFF00;
+		
+		// Start 10 minute countdown timer
+		donpcevent strnpcinfo(0) + "::OnBoxTimer";
+	end;
+	
+	OnBoxTimer:
+		// Wait 10 minutes
+		sleep .box_duration;
+		
+		// Check if box is still active
+		if (.box_active == 1) {
+			// Check if box still exists on the map
+			.@count = mobcount(.current_map$, strnpcinfo(0) + "::OnTBoxDestroyed");
+			
+			if (.@count > 0) {
+				// Box still exists - delete it
+				killmonster .current_map$, strnpcinfo(0) + "::OnTBoxDestroyed";
+				
+				// Mark box as inactive
+				.box_active = 0;
+				
+				// Announce box expired
+				announce "[ TREASURE BOX ] The Treasure Box at " + .current_mapname$ + " has vanished after 10 minutes!", bc_all, 0xFF6347;
+				announce "[ TREASURE BOX ] Better luck next time! Next box in 60 minutes.", bc_all, 0xFFFF00;
+				
+				// Wait 60 minutes then spawn next box
+				sleep .next_spawn_delay;
+				goto OnSpawnTreasureBox;
+			}
+			// If .@count is 0, box was already killed, do nothing (OnTBoxDestroyed will handle it)
+		}
+	end;
+}

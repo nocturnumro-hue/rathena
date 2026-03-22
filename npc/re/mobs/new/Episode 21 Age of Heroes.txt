@@ -1,0 +1,63 @@
+//----- [Episode21] ----- Age of Heroes
+//==================================================
+// jor_base,0,0 - jor_base Jormungandr Cult Village 
+//==================================================
+jor_base,0,0	monster	Yorker Trader	22322,230
+jor_base,0,0	monster	Seawind	22313,50
+jor_base,0,0	monster	Yorker Worker	22321,230
+jor_base,0,0	monster	Yoster Negotiator	22326,30
+jor_base,0,0	monster	Yoster Fixer	22324,30
+
+
+//==================================================
+// jor_raise2,0,0 - Rising Lands - Southern Region
+//==================================================
+jor_raise2,0,0	monster	Seawind	22313,100
+jor_raise2,0,0	monster	Skipskipper	22319,130
+jor_raise2,0,0	monster	Cliolima	22320,100
+jor_raise2,0,0	monster	Ice Seahorse	22318,130
+jor_raise2,0,0	monster	Icehorn	22362,1,3600000
+//====--BOSS--====--MAP--====================
+jor_raise2,0,0	boss_monster	Ice Horn 	22362,1,3600000
+
+//==================================================
+// jor_raise1,0,0 - Rising Lands - Northern Region
+//==================================================
+jor_raise1,0,0	monster	Velelling	22315,70
+jor_raise1,0,0	monster	Seawind	22313,70
+jor_raise1,0,0	monster	Letterster	22316,70
+jor_raise1,0,0	monster	Scalleg	22314,70
+jor_raise1,0,0	monster	Rockstriker	22317,70
+jor_raise1,0,0	monster	Yoster Cleaner	22323,30
+jor_raise1,0,0	monster	Yoster Cooker	22327,30
+jor_raise1,0,0	monster	Yoster Collector	22325,30
+
+//==================================================
+// jor_tmple1,0,0 - Jormungandr Cult Temple 1
+//==================================================
+jor_tmple1,0,0	monster	Yoster Cleaner	22323,70
+jor_tmple1,0,0	monster	Yoster Negotiator	22326,70
+jor_tmple1,0,0	monster	Yoster Cooker	22327,70
+jor_tmple1,0,0	monster	Yormi	22353,75
+jor_tmple1,0,0	monster	Yoster Fixer	22324,70
+jor_tmple1,0,0	monster	Yoster Collector	22325,70
+jor_tmple1,0,0	monster	Yormi Missionary	22354,75
+jor_tmple1,0,0	monster	Yordos Investigator	22355,20
+jor_tmple1,0,0	monster	Yordos Judge	22356,20
+jor_tmple1,0,0	monster	Yordos Executor	22357,20
+//====--BOSS--====--MAP--====================
+jor_tmple1,0,0	boss_monster	Yortus Arbiter 	22363,1,3600000
+
+//==================================================
+// jor_tmple2,0,0 - Jormungandr Cult Temple 1
+//==================================================
+jor_tmple2,0,0	monster	Yordos Investigator	22355,90
+jor_tmple2,0,0	monster	Yordos Judge	22356,90
+jor_tmple2,0,0	monster	Yordos Executor	22357,90
+jor_tmple2,0,0	monster	Yorcopus Guardian	22358,80
+jor_tmple2,0,0	monster	Yordos Warlock	22359,80
+jor_tmple2,0,0	monster	Yoster Collector	22325,70
+jor_tmple2,0,0	monster	Yortus Bishop	22360,70
+jor_tmple2,0,0	monster	Yortus Warlock	22361,70
+//====--BOSS--====--MAP--====================
+jor_tmple2,0,0	boss_monster	Yortus Executor	22364,1,3600000

@@ -1,0 +1,11 @@
+//==================================================
+// Airship Crash Instance - Mod Dungeon Maps
+//==================================================
+1@mjo1,0,0	monster	Rotten Tree	20886,45,5000
+1@mjo1,0,0	monster	Melted Poring	20887,35,5000
+1@mjo1,0,0	monster	Grave Worm	20888,45,5000
+1@mjo1,0,0	monster	Brain Sucker	20889,35,5000
+1@mjo1,0,0	monster	Moskillro	20890,45,5000
+
+
+1@mjo1,166,258	boss_monster	Unidentified Creatures	20891,1,10800000,600000,0

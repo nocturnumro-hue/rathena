@@ -1,0 +1,746 @@
+//===== rAthena Script =======================================
+//= Bot NPC Manager - Shop & Time Claims (Limited)
+//===== By: ==================================================
+//= Enhanced NPC for bot time management
+//= LIMITED: Max 8 hours purchase per day per account
+//===== Description: =========================================
+//= NPC for buying bot time and claiming daily rewards
+//= Location: Prontera 143,179
+//= Purchase Limit: 8 hours per day (resets at midnight)
+//= VIP system included
+//============================================================
+
+prontera,143,179,5	script	Bot Time Manager	10368,{
+
+OnTalk:
+	mes "[Bot Time Manager]";
+	mes "Hello I manage bot time";
+	mes "^0000FFVietnam Time: " + callfunc("F_GetVNTime", 3) + "^000000";	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^0000FFVIP MEMBER^000000";
+	}	
+	mes "^008000Payment: Zeny^000000";
+	mes "^FF00001 Hour = 15000000z^000000";
+	mes "^FF0000Daily Purchase Limit: 8 Hours^000000";
+	mes "^008000FREE Daily Time^000000";
+	mes "Normal: ^00FF004 Hours^000000";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "VIP Bonus: ^00FF00 4 Hours^000000";
+		mes "^00FF00Total: 8 Hours per Day^000000";
+	}	
+	// Show purchase status (ACCOUNT-BASED)
+	.@today = callfunc("F_GetVNTime", 0);
+	if(##BOT_PURCHASE_DATE == .@today){
+		.@bought_hours = ##BOT_PURCHASED_TODAY / 3600;
+		.@remaining = 8 - .@bought_hours;
+		
+		if(.@remaining > 0){
+			mes " ";
+			mes "^FF8800Today Purchased: " + .@bought_hours + "h^000000";
+			mes "^00FF00Can buy: " + .@remaining + "h more^000000";
+		} else {
+			mes " ";
+			mes "^FF0000Purchase Limit Reached^000000";
+			mes "Bought: 8/8 hours today";
+		}
+	}
+	
+	mes "^FF0000Safety Features Active^000000";
+	mes "^008800Auto-stop at 90% weight^000000";
+	mes "^008800Auto-stop on death^000000";
+	mes "Use @boton to start bot";
+	mes "Use @botoff to stop bot";
+	next;
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		.@menu = select(
+			"Claim FREE Daily Time 4h",
+			"Claim VIP Bonus 4h",
+			"Buy Bot Time Zeny",
+			"Check Remaining Time",
+			"Price List",
+			"How to use",
+			"Safety Features Info",
+			"Close"
+		);
+	} else {
+		.@menu = select(
+			"Claim FREE Daily Time 4h",
+			"Buy Bot Time Zeny",
+			"Check Remaining Time",
+			"Price List",
+			"How to use",
+			"Safety Features Info",
+			"Close"
+		);
+		if(.@menu >= 2) .@menu++;
+	}
+	
+	switch(.@menu){
+		case 1: goto ClaimFreeTime;
+		case 2: goto ClaimVIPBonus;
+		case 3: goto BuyTime;
+		case 4: goto CheckTime;
+		case 5: goto PriceList;
+		case 6: goto HowToUse;
+		case 7: goto SafetyInfo;
+		case 8: close;
+	}
+	end;
+
+ClaimFreeTime:
+	mes "[Bot Time Manager]";
+	mes "^008000FREE DAILY TIME^000000";
+	
+	.@today = callfunc("F_GetVNTime", 0);
+	
+	if(##BOT_LAST_CLAIM_DATE == .@today){
+		mes "^FF0000Account already claimed today^000000";
+		mes "Claimed at:";
+		mes "^FF0000" + ##BOT_LAST_CLAIM_TIME$ + "^000000";
+		mes "^FF8800This is per ACCOUNT limit^000000";
+		mes "All characters share this claim";
+		mes "^0000FFNext claim available in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+		mes " ";
+		
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			if(##BOT_VIP_CLAIM_DATE != .@today){
+				mes "^FF00FFBut you can still claim VIP Bonus^000000";
+			}
+		}
+		close;
+	}
+	
+	.@free_time = getvariableofnpc(.FreeHoursDaily, "bot_time_manager") * 3600;
+	#BOT_TIME = #BOT_TIME + .@free_time;
+	##BOT_LAST_CLAIM_DATE = .@today;
+	##BOT_LAST_CLAIM_TIME$ = callfunc("F_GetVNTime", 3);
+	
+	mes "^008000SUCCESS^000000";
+	mes "Received: ^00FF004 Hours FREE^000000";
+	mes "Claimed at: ^FF0000" + ##BOT_LAST_CLAIM_TIME$ + "^000000";
+	mes "^FF8800Account Claim Used^000000";
+	mes "All characters cannot claim again today";
+	mes " ";
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Total Time: ^FF0000" + .@d + "d " + .@h + "h " + .@m + "m^000000";
+	mes "^0000FFNext claim available in^000000";
+	mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		if(##BOT_VIP_CLAIM_DATE != .@today){
+			mes "^008800Dont forget to claim VIP Bonus^000000";
+			mes "^008800+4 Hours available^000000";
+		}
+	}
+	
+	mes "Use ^0000FF@boton^000000 to start bot";
+	
+	logmes "Claimed 4 hours free daily bot time (ACCOUNT) at " + ##BOT_LAST_CLAIM_TIME$;
+	
+	close;
+
+ClaimVIPBonus:
+	mes "[Bot Time Manager]";
+	mes "^008000VIP BONUS TIME^000000";
+	
+	if(getgroupid() < getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^FF0000This feature is for VIP Members only^000000";
+		mes "^FF00FFBecome a VIP to enjoy^000000";
+		mes "Extra 4 hours daily";
+		mes "Total 8 hours FREE per day";
+		mes "Priority support";
+		mes "Special features";
+		close;
+	}
+	
+	.@today = callfunc("F_GetVNTime", 0);
+	
+	if(##BOT_VIP_CLAIM_DATE == .@today){
+		mes "^FF0000Account already claimed VIP bonus today^000000";
+		mes "Claimed at:";
+		mes "^FF0000" + ##BOT_VIP_CLAIM_TIME$ + "^000000";
+		mes "^FF8800This is per ACCOUNT limit^000000";
+		mes "All characters share this claim";
+		mes "^0000FFNext claim available in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+		close;
+	}
+	
+	.@vip_bonus = getvariableofnpc(.VIPBonusHours, "bot_time_manager") * 3600;
+	#BOT_TIME = #BOT_TIME + .@vip_bonus;
+	##BOT_VIP_CLAIM_DATE = .@today;
+	##BOT_VIP_CLAIM_TIME$ = callfunc("F_GetVNTime", 3);
+	
+	mes "^008800VIP BONUS CLAIMED^000000";
+	mes "Received: ^0000FF Hours VIP BONUS^000000";
+	mes "Claimed at: ^0000FF" + ##BOT_VIP_CLAIM_TIME$ + "^000000";
+	mes "^FF8800Account VIP Claim Used^000000";
+	mes "All characters cannot claim again today";
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Total Time: ^FF0000" + .@d + "d " + .@h + "h " + .@m + "m^000000";
+	mes "^0000FFNext claim available in^000000";
+	mes "^FF00FF" + callfunc("F_TimeToReset") + "^000000";
+	
+	if(##BOT_LAST_CLAIM_DATE != .@today){
+		mes "^008000Dont forget normal daily claim^000000";
+		mes "^008800+4 Hours still available^000000";
+		mes " ";
+	}
+	
+	mes "^008800Thank you for being a VIP^000000";
+	mes "Use ^0000FF@boton^000000 to start bot";
+	
+	logmes "Claimed 4 hours VIP bonus bot time (ACCOUNT) at " + ##BOT_VIP_CLAIM_TIME$;
+	
+	close;
+
+BuyTime:
+	mes "[Bot Time Manager]";
+	mes "^008000BUY BOT TIME^000000";
+	mes "Payment: ^FF0000Zeny^000000";
+	mes "Price: ^FF000015000000z per hour^000000";
+	mes "^FF0000DAILY LIMIT: 8 Hours Maximum^000000";
+	mes "^FF8800Per ACCOUNT (All Characters)^000000";
+	
+	// Check purchase limit (ACCOUNT-BASED)
+	.@today = callfunc("F_GetVNTime", 0);
+	
+	// Reset daily purchase tracking
+	if(##BOT_PURCHASE_DATE != .@today){
+		##BOT_PURCHASE_DATE = .@today;
+		##BOT_PURCHASED_TODAY = 0;
+	}
+	
+	.@bought_hours = ##BOT_PURCHASED_TODAY / 3600;
+	.@remaining_hours = 8 - .@bought_hours;
+	
+	if(.@remaining_hours <= 0){
+		mes "^FF0000PURCHASE LIMIT REACHED^000000";
+		mes " ";
+		mes "Today purchased: ^FF0000" + .@bought_hours + " / 8 hours^000000";
+		mes "Purchased at: ^FF0000" + ##BOT_LAST_PURCHASE_TIME$ + "^000000";
+		mes " ";
+		mes "^FF8800This limit is per ACCOUNT^000000";
+		mes "All your characters share this limit";
+		mes " ";
+		mes "^0000FFLimit resets in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+		mes " ";
+		mes "^008000You can still claim FREE time^000000";
+		if(##BOT_LAST_CLAIM_DATE != .@today)
+			mes "^00FF004 hours FREE available^000000";
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager") && ##BOT_VIP_CLAIM_DATE != .@today)
+			mes "^FF00FF4 hours VIP BONUS available^000000";
+		close;
+	}
+	
+	mes "^0000FFToday Status^000000";
+	mes "Purchased: ^FFFF00" + .@bought_hours + " / 8 hours^000000";
+	mes "Can buy: ^00FF00" + .@remaining_hours + " hours more^000000";
+	mes "Select package";
+	next;
+	
+	// Dynamic menu based on remaining hours
+	.@menu$ = "";
+	.@options = 0;
+	
+	if(.@remaining_hours >= 1){
+		.@menu$ += "1 Hour 15M:";
+		.@options++;
+	}
+	if(.@remaining_hours >= 2){
+		.@menu$ += "2 Hours 30M:";
+		.@options++;
+	}
+	if(.@remaining_hours >= 3){
+		.@menu$ += "3 Hours 45M:";
+		.@options++;
+	}
+	if(.@remaining_hours >= 4){
+		.@menu$ += "4 Hours 60M:";
+		.@options++;
+	}
+	if(.@remaining_hours >= 5){
+		.@menu$ += "5 Hours 75M:";
+		.@options++;
+	}
+	if(.@remaining_hours >= 6){
+		.@menu$ += "6 Hours 90M:";
+		.@options++;
+	}
+	if(.@remaining_hours >= 7){
+		.@menu$ += "7 Hours 105M:";
+		.@options++;
+	}
+	if(.@remaining_hours >= 8){
+		.@menu$ += "8 Hours 120M:";
+		.@options++;
+	}
+	
+	.@menu$ += "Custom Hours:Cancel";
+	
+	.@pack = select(.@menu$);
+	
+	.@price_per_hour = getvariableofnpc(.ZenyPerHour, "bot_time_manager");
+	
+	// Map selection to hours
+	if(.@pack <= .@options){
+		.@hours = .@pack;
+		.@cost = .@hours * .@price_per_hour;
+	}
+	else if(.@pack == .@options + 1){
+		// Custom hours
+		mes "[Bot Time Manager]";
+		mes "Enter hours 1 to " + .@remaining_hours;
+		mes " ";
+		mes "^FF0000Max available: " + .@remaining_hours + " hours^000000";
+		input .@hours;
+		
+		if(.@hours < 1 || .@hours > .@remaining_hours){
+			mes " ";
+			mes "^FF0000Invalid^000000";
+			mes "Use 1 to " + .@remaining_hours + " hours only";
+			close;
+		}
+		.@cost = .@hours * .@price_per_hour;
+	}
+	else{
+		close;
+	}
+	
+	// Double check limit before purchase
+	if(.@bought_hours + .@hours > 8){
+		mes "[Bot Time Manager]";
+		mes "^FF0000ERROR: Exceeds daily limit^000000";
+		mes " ";
+		mes "You want: " + .@hours + " hours";
+		mes "Already bought: " + .@bought_hours + " hours";
+		mes "Total would be: " + (.@bought_hours + .@hours) + " hours";
+		mes " ";
+		mes "^FF0000Maximum is 8 hours per day^000000";
+		close;
+	}
+	
+	mes "[Bot Time Manager]";
+	mes "^00FF00CONFIRM PURCHASE^000000";
+	mes " ";
+	mes "Package: ^FF0000" + .@hours + " Hours^000000";
+	mes "Cost: ^FF0000" + callfunc("F_InsertComma", .@cost) + " Zeny^000000";
+	mes " ";
+	mes "Your Zeny: ^FF0000" + callfunc("F_InsertComma", Zeny) + "z^000000";
+	mes " ";
+	mes "^FF8800Today Summary^000000";
+	mes "Already bought: " + .@bought_hours + "h";
+	mes "This purchase: " + .@hours + "h";
+	mes "Total today: ^FF0000" + (.@bought_hours + .@hours) + " / 8 hours^000000";
+	mes " ";
+	
+	if(Zeny < .@cost){
+		mes "^FF0000Not enough Zeny^000000";
+		mes " ";
+		mes "You need: ^FF0000" + callfunc("F_InsertComma", .@cost - Zeny) + "z more^000000";
+		close;
+	}
+	
+	mes "Confirm purchase";
+	next;
+	
+	if(select("Yes buy it", "No cancel") == 2){
+		mes "[Bot Time Manager]";
+		mes "Purchase cancelled";
+		close;
+	}
+	
+	Zeny -= .@cost;
+	
+	.@time_seconds = .@hours * 3600;
+	#BOT_TIME = #BOT_TIME + .@time_seconds;
+	##BOT_PURCHASED_TODAY = ##BOT_PURCHASED_TODAY + .@time_seconds;
+	##BOT_LAST_PURCHASE_TIME$ = callfunc("F_GetVNTime", 3);
+	
+	mes "[Bot Time Manager]";
+	mes "^00FF00PURCHASE SUCCESS^000000";
+	mes " ";
+	mes "Added: ^FF0000" + .@hours + " Hours^000000";
+	mes "Paid: ^FF0000" + callfunc("F_InsertComma", .@cost) + "z^000000";
+	mes "Time: ^0000FF" + ##BOT_LAST_PURCHASE_TIME$ + "^000000";
+	mes " ";
+	
+	.@new_bought = ##BOT_PURCHASED_TODAY / 3600;
+	.@new_remaining = 8 - .@new_bought;
+	
+	mes "^FF8800Account Purchase Status^000000";
+	mes "Total bought: ^FF0000" + .@new_bought + " / 8 hours^000000";
+	mes "^FF8800All characters share this limit^000000";
+	mes " ";
+	
+	if(.@new_remaining > 0){
+		mes "Can buy more: ^00FF00" + .@new_remaining + " hours^000000";
+	} else {
+		mes "^FF0000Daily limit reached^000000";
+		mes "Limit resets at midnight";
+	}
+	
+	mes " ";
+	
+	.@d = #BOT_TIME / 86400;
+	.@h = (#BOT_TIME % 86400) / 3600;
+	.@m = (#BOT_TIME % 3600) / 60;
+	mes "Total Time: ^FF0000" + .@d + "d " + .@h + "h " + .@m + "m^000000";
+	mes " ";
+	mes "Use ^0000FF@boton^000000 to start bot";
+	
+	logmes "Bought " + .@hours + " hours (" + .@new_bought + "/8 today) for " + .@cost + "z at " + ##BOT_LAST_PURCHASE_TIME$;
+	
+	close;
+
+CheckTime:
+	mes "[Bot Time Manager]";
+	mes "^00FF00BOT TIME STATUS^000000";
+	mes "^0000FFVietnam Time: " + callfunc("F_GetVNTime", 3) + "^000000";
+	mes " ";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "Account: ^0000FFVIP MEMBER^000000";
+		mes " ";
+	}
+	
+	// Check purchase limit status (ACCOUNT-BASED)
+	.@today = callfunc("F_GetVNTime", 0);
+	if(##BOT_PURCHASE_DATE == .@today && ##BOT_PURCHASED_TODAY > 0){
+		.@bought_hours = ##BOT_PURCHASED_TODAY / 3600;
+		.@remaining_buy = 8 - .@bought_hours;
+		
+		mes "^FF8800Account Purchases Today^000000";
+		mes "Bought: ^FF0000" + .@bought_hours + " / 8 hours^000000";
+		mes "^FF8800Shared across all characters^000000";
+		
+		if(.@remaining_buy > 0){
+			mes "Can buy: ^00FF00" + .@remaining_buy + " hours more^000000";
+		} else {
+			mes "Status: ^FF0000Limit reached^000000";
+		}
+		
+		mes " ";
+	}
+	
+	if(#BOT_TIME <= 0){
+		mes "^FF0000No time remaining^000000";
+		mes " ";
+		
+		mes "^0000FFDaily Claims Status^000000";
+		if(#BOT_LAST_CLAIM_DATE == .@today){
+			mes "Normal: ^FF0000Claimed^000000";
+			mes "Time: " + #BOT_LAST_CLAIM_TIME$;
+		} else {
+			mes "Normal: ^00FF00Available 4h^000000";
+		}
+		
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			if(#BOT_VIP_CLAIM_DATE == .@today){
+				mes "VIP Bonus: ^FF0000Claimed^000000";
+				mes "Time: " + #BOT_VIP_CLAIM_TIME$;
+			} else {
+				mes "VIP Bonus: ^FF00FFAvailable 4h^000000";
+			}
+		}
+		
+		mes " ";
+		mes "^0000FFNext reset in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+	} else {
+		.@d = #BOT_TIME / 86400;
+		.@h = (#BOT_TIME % 86400) / 3600;
+		.@m = (#BOT_TIME % 3600) / 60;
+		.@s = #BOT_TIME % 60;
+		
+		mes "Remaining Time";
+		mes "^FF0000" + .@d + " Days " + .@h + " Hours";
+		mes .@m + " Minutes " + .@s + " Seconds^000000";
+		
+		if(#BOT_ACTIVE){
+			mes " ";
+			mes "Status: ^008000RUNNING^000000";
+			
+			.@current_weight = Weight * 100 / MaxWeight;
+			if(.@current_weight >= 85){
+				mes "Weight: ^FF0000" + .@current_weight + "% CRITICAL^000000";
+			}
+			else if(.@current_weight >= 70){
+				mes "Weight: ^FF8800" + .@current_weight + "% WARNING^000000";
+			}
+			else{
+				mes "Weight: ^00FF00" + .@current_weight + "%^000000";
+			}
+			
+			mes "Use @botoff to stop";
+		} else {
+			mes " ";
+			mes "Status: STOPPED";
+			mes "Use @boton to start";
+		}
+		
+		mes " ";
+		
+		mes "^0000FFDaily Claims^000000";
+		
+		if(##BOT_LAST_CLAIM_DATE == .@today){
+			mes "Normal: ^FF0000Claimed^000000";
+			mes "Time: " + ##BOT_LAST_CLAIM_TIME$;
+		} else {
+			mes "Normal: ^00FF00Available 4h^000000";
+		}
+		
+		if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+			if(##BOT_VIP_CLAIM_DATE == .@today){
+				mes "VIP Bonus: ^FF0000Claimed^000000";
+				mes "Time: " + ##BOT_VIP_CLAIM_TIME$;
+			} else {
+				mes "VIP Bonus: ^FF00FFAvailable 4h^000000";
+			}
+		}
+		
+		mes " ";
+		mes "^0000FFNext reset in^000000";
+		mes "^FF0000" + callfunc("F_TimeToReset") + "^000000";
+	}
+	
+	close;
+
+PriceList:
+	mes "[Bot Time Manager]";
+	mes "^00FF00PRICE LIST^000000";
+	mes " ";
+	mes "^FF00001 Hour = 15000000z^000000";
+	mes " ";
+	mes "^FF0000DAILY PURCHASE LIMIT^000000";
+	mes "^FF0000Maximum: 8 Hours per Day^000000";
+	mes "^FFD700Resets at midnight GMT+7^000000";
+	mes " ";
+	mes "^0000FFAvailable Packages^000000";
+	mes "1 Hour = 15M";
+	mes "2 Hours = 30M";
+	mes "3 Hours = 45M";
+	mes "4 Hours = 60M";
+	mes "5 Hours = 75M";
+	mes "6 Hours = 90M";
+	mes "7 Hours = 105M";
+	mes "8 Hours = 120M";
+	mes " ";
+	next;
+	mes "[Bot Time Manager]";
+	mes "^00FF00FREE TIME^000000";
+	mes " ";
+	mes "^0000FFNormal Users^000000";
+	mes "4 Hours daily FREE";
+	mes "Resets at midnight Vietnam time";
+	mes " ";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^FF00FFVIP MEMBERS YOU^000000";
+		mes "4 Hours daily FREE";
+		mes "4 Hours VIP BONUS";
+		mes "^FF00FFTotal: 8 Hours per Day^000000";
+	} else {
+		mes "^FF00FFVIP MEMBERS^000000";
+		mes "4 Hours daily FREE";
+		mes "4 Hours VIP BONUS";
+		mes "^FF00FFTotal: 8 Hours per Day^000000";
+		mes " ";
+		mes "^FF0000Become VIP for double rewards^000000";
+	}
+	mes "^FF8800Daily System^000000";
+	mes "FREE time: 1 claim per ACCOUNT";
+	mes "VIP bonus: 1 claim per ACCOUNT";
+	mes "PURCHASE: Max 8h per ACCOUNT";
+	mes "All limits shared by characters";
+	mes "Purchased time accumulates";
+	mes "No expiration on stored time";
+	mes " ";
+	mes "^FF8800Account Limit^000000";
+	mes "Cannot bypass with alts";
+	mes "One account = One daily claim";
+	mes " ";
+	mes "^0000FFCurrent Vietnam Time^000000";
+	mes "^FF0000" + callfunc("F_GetVNTime", 3) + "^000000";
+	close;
+
+HowToUse:
+	mes "[Bot Time Manager]";
+	mes "^00FF00HOW TO USE^000000";
+	mes " ";
+	mes "^0000FF1 Get Bot Time^000000";
+	
+	if(getgroupid() >= getvariableofnpc(.VIPGroupID, "bot_time_manager")){
+		mes "^FF00FFVIP: Claim 8 hours FREE daily^000000";
+		mes "4 hours normal claim";
+		mes "4 hours VIP bonus";
+	} else {
+		mes "Claim 4 hours FREE daily";
+	}
+	
+	mes "Or buy with Zeny 15M per hour";
+	mes "^FF0000Max 8 hours purchase per day^000000";
+	mes " ";
+	mes "^FF0000Daily claims reset at midnight^000000";
+	mes "^FF0000Vietnam Time GMT+7^000000";
+	mes " ";
+	mes "^0000FF2 Configure Bot^000000";
+	mes "Use @boton command";
+	mes "Configure all settings";
+	mes "Set up Smart AI features";
+	mes " ";
+	next;
+	mes "[Bot Time Manager]";
+	mes "^0000FF3 Start Bot^000000";
+	mes "Choose Start Bot";
+	mes "Bot starts automatically";
+	mes "Time countdown begins";
+	mes " ";
+	mes "^0000FF4 Stop Bot^000000";
+	mes "Use @botoff command";
+	mes "Time automatically saved";
+	mes " ";
+	mes "^0000FF5 Check Status^000000";
+	mes "Use @bottime command";
+	mes "Or visit this NPC";
+	mes "See claim and purchase history";
+	mes " ";
+	next;
+	mes "[Bot Time Manager]";
+	mes "^FF0000IMPORTANT LIMITS^000000";
+	mes " ";
+	mes "^FF8800All Limits Per ACCOUNT^000000";
+	mes "FREE claim: 1 time per account";
+	mes "VIP claim: 1 time per account";
+	mes "Purchase: 8 hours per account";
+	mes "All characters share limits";
+	mes "Cannot bypass with alts";
+	mes " ";
+	mes "^00FF00Why Account-Based^000000";
+	mes "Prevents multi-char abuse";
+	mes "Fair for all players";
+	mes "Balanced server economy";
+	mes " ";
+	mes "^FF00FFSMART AI FEATURES^000000";
+	mes "Smart Movement";
+	mes "Kiting Mode";
+	mes "Multi Target Attack";
+	mes " ";
+	mes "^0000FFTimezone Info^000000";
+	mes "All times use Vietnam GMT+7";
+	mes "Current: " + callfunc("F_GetVNTime", 3);
+	
+	close;
+
+SafetyInfo:
+	mes "[Bot Time Manager]";
+	mes "^FF0000SAFETY FEATURES^000000";
+	mes " ";
+	mes "^00FF00Auto Protection System^000000";
+	mes "Bot automatically stops to";
+	mes "prevent wasting your time";
+	mes " ";
+	next;
+	
+	mes "[Bot Time Manager]";
+	mes "^FF0000Weight Protection^000000";
+	mes " ";
+	mes "^00FF00Warning Levels^000000";
+	mes "75% - Green Notice";
+	mes "80% - Yellow Caution";
+	mes "85% - Red Warning";
+	mes "90% - ^FF0000AUTO STOP^000000";
+	mes " ";
+	mes "Bot stops automatically";
+	mes "when weight reaches 90%";
+	mes "Your time is saved";
+	mes " ";
+	next;
+	
+	mes "[Bot Time Manager]";
+	mes "^FF0000Death Protection^000000";
+	mes " ";
+	mes "Bot stops immediately";
+	mes "when your character dies";
+	mes " ";
+	mes "^00FF00Benefits^000000";
+	mes "No time wasted";
+	mes "Prevents endless deaths";
+	mes "Time is saved instantly";
+	mes " ";
+	next;
+	
+	mes "[Bot Time Manager]";
+	mes "^FF0000Purchase Limits^000000";
+	mes " ";
+	mes "^FF8800Why ACCOUNT-based system^000000";
+	mes "Prevents multi-char abuse";
+	mes "Cannot bypass with alts";
+	mes "One account = One daily limit";
+	mes "Encourages fair gameplay";
+	mes "Balances server economy";
+	mes " ";
+	mes "^00FF00Daily Limits^000000";
+	mes "FREE claim: 4h (account)";
+	mes "VIP claim: 4h (account)";
+	mes "Purchase: 8h (account)";
+	mes "Total max: 12h or 16h per day";
+	mes " ";
+	next;
+	
+	mes "[Bot Time Manager]";
+	mes "^00FF00How It Works^000000";
+	mes " ";
+	mes "System checks every 60 seconds";
+	mes "When weight >= 90%";
+	mes "Or when you die";
+	mes "Bot stops automatically";
+	mes " ";
+	mes "^FFD700Your Time is Protected^000000";
+	mes "Remaining time is saved";
+	mes "No time loss occurs";
+	mes "Restart with @boton";
+	mes " ";
+	next;
+	
+	mes "[Bot Time Manager]";
+	mes "^00FF00Tips^000000";
+	mes " ";
+	mes "Keep weight under 85%";
+	mes "Store items regularly";
+	mes "Use Kafra storage";
+	mes "Drop unnecessary items";
+	mes " ";
+	mes "^FFD700Safe Botting^000000";
+	mes "Check weight before starting";
+	mes "Monitor weight warnings";
+	mes "Keep HP potions ready";
+	mes "Use safe hunting spots";
+	mes " ";
+	mes "^FF8800Daily Strategy^000000";
+	mes "Claim FREE 4h once per account";
+	mes "Claim VIP 4h if member";
+	mes "Purchase up to 8h if needed";
+	mes "Plan across all characters";
+	mes "Unused time carries over";
+	mes " ";
+	mes "^FF8800Account System^000000";
+	mes "All limits: Per account";
+	mes "Bot time: Per character";
+	mes "Cannot abuse with alts";
+	mes "One account = Fair limits";
+	mes " ";
+	mes "^008000Happy Botting^000000";
+	
+	close;
+}

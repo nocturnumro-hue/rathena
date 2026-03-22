@@ -47,7 +47,14 @@ Body:
     Value: 5
   - Name: REPUTATION_EP18
     Value: 3
-
+  - Name: REPUTATION_EP19
+    Value: 4
+  - Name: 4_PORINGG1
+    Value: 19901
+  - Name: 4_MARIN
+    Value: 19902
+  - Name: 4_BEACHG
+    Value: 19903
 Footer:
   Imports:
   - Path: db/import/const.yml

@@ -1,26 +1,24 @@
 //===== rAthena Script =======================================
-//= Healer
+//= Enhanced Healer with Full Buffs + 4th Class AP
 //===== By: ==================================================
-//= Euphy
+//= Euphy (Modified with AP + More Buffs)
 //===== Current Version: =====================================
-//= 1.1
+//= 1.3
 //===== Compatible With: =====================================
 //= rAthena Project
 //===== Description: =========================================
-//= Basic healer script.
-//===== Additional Comments: =================================
-//= 1.0 Initial script.
-//= 1.1 Aligned coordinates with @go.
+//= Full buff healer with ASPD Potion + 4th Class AP support
 //============================================================
 
 -	script	Healer	-1,{
 
 	.@Price = 0;	// Zeny required for heal
-	.@Buffs = 0;	// Also buff players? (1: yes / 0: no)
+	.@Buffs = 1;	// Also buff players? (1: yes / 0: no)
 	.@Delay = 0;	// Heal delay, in seconds
 
 	if (@HD > gettimetick(2))
 		end;
+
 	if (.@Price) {
 		message strcharinfo(0), "Healing costs " + callfunc("F_InsertComma",.@Price) + " Zeny.";
 		if (Zeny < .@Price)
@@ -29,19 +27,135 @@
 			end;
 		Zeny -= .@Price;
 	}
+
 	specialeffect2 EF_HEAL2;
 	percentheal 100,100;
+
 	if (.@Buffs) {
-		specialeffect2 EF_INCAGILITY;
-		sc_start SC_INCREASEAGI,240000,10;
-		specialeffect2 EF_BLESSING;
-		sc_start SC_BLESSING,240000,10;
+
+		// Buff GM/VIP
+		if (getgroupid() > 0) {
+			// 🌟 Identify + Repair tất cả đồ
+			identifyall;
+			repairall;
+
+			// 🌟 FULL AP CHO 4TH CLASS
+			if (Class >= 4252 && Class <= 4310) {
+				// 4th Class detected - restore full AP
+				.@maxAP = MaxAp;
+				if (.@maxAP > 0) {
+					Ap = .@maxAP;
+					dispbottom "Full AP restored: " + .@maxAP + " AP";
+				}
+			}
+
+			// === BASIC BUFFS ===
+//			specialeffect2 EF_ANGELUS; sc_start SC_ANGELUS,3600000,10;
+//			specialeffect2 EF_SUFFRAGIUM; sc_start SC_SUFFRAGIUM,3600000,3;
+//			specialeffect2 EF_IMPOSITIO; sc_start SC_IMPOSITIO,3600000,5;
+//			specialeffect2 EF_GLORIA; sc_start SC_GLORIA,3600000,5;
+			specialeffect2 EF_MAGNIFICAT; sc_start SC_MAGNIFICAT,3600000,5;
+			specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,3600000,10;
+			specialeffect2 EF_BLESSING; sc_start SC_BLESSING,3600000,10;
+//			sc_start SC_KYRIE,3600000,10;
+
+			// === COMBAT BUFFS ===
+//			sc_start SC_ADRENALINE2,3600000,1;
+//			sc_start SC_WEAPONPERFECTION,3600000,5;
+//			sc_start SC_ENDURE,3600000,10;
+//			sc_start SC_ASSUMPTIO,3600000,5;
+//			sc_start SC_PROVIDENCE,3600000,5;
+//			sc_start SC_TRUESIGHT,3600000,10;
+//			sc_start SC_CONCENTRATION,3600000,10;
+//			sc_start SC_WINDWALK,3600000,10;
+
+			// === ASPD POTIONS (Quan trọng!) ===
+			sc_start SC_ASPDPOTION0,3600000,0;  // Concentration
+			sc_start SC_ASPDPOTION1,3600000,1;  // Awakening
+			sc_start SC_ASPDPOTION2,3600000,2;  // Berserk
+			sc_start SC_ASPDPOTION3,3600000,3;  // Special ASPD
+
+			// === EQUIPMENT PROTECTION ===
+//			sc_start SC_CP_WEAPON,3600000,5;
+//			sc_start SC_CP_HELM,3600000,5;
+//			sc_start SC_CP_ARMOR,3600000,5;
+//			sc_start SC_CP_SHIELD,3600000,5;
+
+			// === FOOD BUFFS +10 ALL STATS ===
+			sc_start SC_STRFOOD,3600000,10;
+			sc_start SC_AGIFOOD,3600000,10;
+			sc_start SC_VITFOOD,3600000,10;
+			sc_start SC_INTFOOD,3600000,10;
+			sc_start SC_DEXFOOD,3600000,10;
+			sc_start SC_LUKFOOD,3600000,10;
+
+			// === FOOD BUFFS - SPECIAL ===
+			sc_start SC_HITFOOD,3600000,50;     // Hit +50
+			sc_start SC_FLEEFOOD,3600000,50;    // Flee +50
+			sc_start SC_ATKPOTION,3600000,50;   // ATK +50
+			sc_start SC_MATKPOTION,3600000,50;  // MATK +50
+
+//			// === ELEMENTAL RESISTANCE ===
+//			sc_start SC_RESIST_PROPERTY_WATER,3600000,10;
+//			sc_start SC_RESIST_PROPERTY_GROUND,3600000,10;
+//			sc_start SC_RESIST_PROPERTY_FIRE,3600000,10;
+//			sc_start SC_RESIST_PROPERTY_WIND,3600000,10;
+
+			// === ADDITIONAL COMBAT BUFFS ===
+//			sc_start SC_SHRIMP,3600000,5;
+//			sc_start SC_FULL_THROTTLE,3600000,5;
+//			sc_start SC_STRUP,3600000,10;
+//			sc_start SC_BATTLEORDERS,3600000,5;
+//			sc_start SC_GUILDAURA,3600000,1;
+//			sc_start SC_LAUDAAGNUS,3600000,4;
+//			sc_start SC_LAUDARAMUS,3600000,4;
+
+			// === MOVEMENT & UTILITY ===
+//			sc_start SC_CARTBOOST,3600000,10;
+//			sc_start SC_CLOAKING,3600000,10;
+
+			// === CRITICAL & DAMAGE ===
+//			sc_start SC_EXPLOSIONSPIRITS,3600000,5;
+//			sc_start SC_KRITICAL,3600000,10;
+//			sc_start SC_PLUSATTACKPOWER,3600000,10;
+//			sc_start SC_PLUSMAGICPOWER,3600000,10;
+
+			// === REGEN BUFFS ===
+//			sc_start SC_ATTHASTE_CASH,3600000,10;
+//			sc_start SC_INCREASEAGI,3600000,10;
+
+			dispbottom "Full buffs activated! Duration: 60 minutes";
+			dispbottom "ASPD Potions, All Foods, Resistances included!";
+			if (Class >= 4252 && Class <= 4283) {
+				dispbottom "4th Class: Full AP Restored!";
+			}
+
+		} else {
+			// Người chơi thường: Basic buffs (20 phút)
+			specialeffect2 EF_INCAGILITY;
+			sc_start SC_INCREASEAGI,1200000,10;
+
+			specialeffect2 EF_BLESSING;
+			sc_start SC_BLESSING,1200000,10;
+
+			// Basic ASPD buff for normal players
+			sc_start SC_ASPDPOTION0,1200000,0;
+
+			// Identify + Repair
+			identifyall;
+			repairall;
+
+			dispbottom "Basic buffs activated! Duration: 20 minutes";
+		}
+
 	}
+
+	// Delay heal
 	if (.@Delay)
 		@HD = gettimetick(2) + .@Delay;
+
 	end;
 }
-
 
 // Duplicates
 //============================================================
@@ -55,7 +169,7 @@ einbroch,57,202,6	duplicate(Healer)	Healer#einbr	909
 geffen,115,72,6	duplicate(Healer)	Healer#gef	909
 gonryun,156,122,6	duplicate(Healer)	Healer#gon	909
 hugel,89,150,6	duplicate(Healer)	Healer#hug	909
-izlude,121,150,6	duplicate(Healer)	Healer#izl	909	//Pre-RE: (125,118)
+izlude,121,150,6	duplicate(Healer)	Healer#izl	909
 jawaii,250,139,4	duplicate(Healer)	Healer#jaw	909
 lighthalzen,152,100,6	duplicate(Healer)	Healer#lhz	909
 louyang,226,103,4	duplicate(Healer)	Healer#lou	909
@@ -66,7 +180,7 @@ morocc,153,97,6	duplicate(Healer)	Healer#mor	909
 moscovia,220,191,4	duplicate(Healer)	Healer#mos	909
 niflheim,212,182,5	duplicate(Healer)	Healer#nif	909
 payon,179,106,4	duplicate(Healer)	Healer#pay	909
-prontera,162,193,4	duplicate(Healer)	Healer#prt	909
+prontera,159,198,4	duplicate(Healer)	Healer#prt	936
 rachel,125,116,6	duplicate(Healer)	Healer#rac	909
 splendide,201,153,4	duplicate(Healer)	Healer#spl	909
 thor_camp,249,74,4	duplicate(Healer)	Healer#thor	909
@@ -84,3 +198,4 @@ ecl_in01,45,60,4	duplicate(Healer)	Healer#ecl	909
 malangdo,132,114,6	duplicate(Healer)	Healer#mal	909
 malaya,227,204,6	duplicate(Healer)	Healer#ma	909
 mora,55,152,4	duplicate(Healer)	Healer#mora	909
+askald,118,162,4	duplicate(Healer)	Healer#ask	936

@@ -9,3 +9,6 @@
  **/
 
 //BUILDIN_DEF(example,""),
+
+BUILDIN_DEF(fakeplayer, "siisiiiiiiiiiiiiii"),
+BUILDIN_DEF(player_mbase,"siisiiiiiiiiiiiiiis"),

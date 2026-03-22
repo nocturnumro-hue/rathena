@@ -1,0 +1,75 @@
+// ============================================
+// BARTER SHOPS
+// ============================================
+// NPC Olympusro Asia SHOPS
+// ============================================
+askald,20,130,5	script	Shop IRO JRO	22174,{
+	mes "[Legacy Vanguard Armory]";
+	mes "WellCome IRO JRO Olympusro Shop!";
+	mes "Please select Shop Type:";
+	next;
+	
+	switch(select("[1][Headgear - Upper]:[2][Headgear - Middle/Low]:[3][Armor]:[4][Garment]:[5][Shoes]:[6][Accessory]:[7][Weapon]:[8]Shield:[-Exit-]")) {
+		case 1:
+			mes "[Headgear - Upper]";
+			mes "Open Headgear Upper Shop..";
+			close2;
+			callshop "IRO_Headgear";
+			end;
+
+		case 2:
+			mes "[Headgear - Middle/Low]";
+			mes "Open Headgear Middle/Low Shop..";
+			close2;
+			callshop "IRO_Headgear_Middle";
+			end;
+
+		case 3:
+			mes "[Armor]";
+			mes "Open Armor Shop..";
+			close2;
+			callshop "IRO_Armor";
+			end;
+
+		case 4:
+			mes "[Garment]";
+			mes "Open Garment Shop..";
+			close2;
+			callshop "IRO_Garment";
+			end;
+
+		case 5:
+			mes "[Shoes]";
+			mes "Open Shoes Shop..";
+			close2;
+			callshop "IRO_Shoes";
+			end;
+
+		case 6:
+			mes "[Accessory]";
+			mes "Open Accessory Shop..";
+			close2;
+			callshop "IRO_Accessory";
+			end;
+
+		case 7:
+			mes "[Weapon]";
+			mes "Open Weapon Shop..";
+			close2;
+			callshop "IRO_Weapon";
+			end;
+
+		case 8:
+			mes "[Shield]";
+			mes "Open Shield Shop..";
+			close2;
+			callshop "IRO_Shield";
+			end;
+
+		case 9:
+			mes "Have A Good Day]";
+			mes "Good Bye!";
+			close;
+	}
+	end;
+}

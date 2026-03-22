@@ -1,0 +1,12 @@
+//==================================================
+// ch1_geffen - Ruined Geffen (Extreme Difficulty)
+// Level 150-200 (150+ mobs)
+//==================================================
+
+ch1_geffen	monster	Unreasonable Person	20388,30
+ch1_geffen	monster	Khalitzburg Knight	20389,20
+ch1_geffen	monster	White Knight	20390,30
+ch1_geffen	monster	MD White Knight	20391,20
+
+
+// Total: 220 monsters

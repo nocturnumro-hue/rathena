@@ -1,0 +1,342 @@
+//===== Script rAthena =========================================
+//= Mystery Gift Box (Event-based + VIP Daily Reward System)
+//= IP RESTRICTED VERSION
+//===== Description ============================================
+//= NPC cho phep nguoi choi nhan qua theo tung dot su kien
+//= VIP players co the nhan qua hang ngay
+//= MOI IP CHI NHAN DUOC MOT LAN cho moi event va VIP daily
+//==============================================================
+
+askald,159,133,3	script	Donation Reward NPC	10365,{
+
+	cutin "4job_maggi_01.png", 2;
+	mes "[Donation Reward NPC]";
+	mes "Welcome, my dear " + strcharinfo(0) + ".";
+	mes "What do you need today?";
+	next;
+
+	switch(select("Claim Daily Rewards:Check Total Donate Amount:Redeem Donation Voucher")) {
+
+	//======================================================
+	case 1: // Claim Daily Rewards
+		setarray .ItemList[0],
+			12411,14545,12412,12210,1000274,7000,7615,1230019,1230020,1230021,1001258;
+
+		cutin "4job_maggi_02.png", 2;
+		mes "[Donation Reward NPC]";
+		mes "Let me check your donation data...";
+		next;
+
+		set .@aid, getcharid(3);
+		query_sql("SELECT total_donate FROM donation_data WHERE account_id = " + .@aid, .@donate);
+
+		if (!.@donate) {
+			mes "I couldn't find your donation record.";
+			cutin "", 255;
+			close;
+		}
+
+		set .@reward_count, .@donate / 10;
+
+		if (gettimetick(2) < #last_donate_reward_day + 86400) {
+			mes "You already claimed your daily donation reward today!";
+			cutin "", 255;
+			close;
+		}
+
+		if (.@reward_count < 1) {
+			mes "You don't have enough donation points to claim a reward.";
+			cutin "", 255;
+			close;
+		}
+
+		mes "You have donated a total of ^00AAFF" + .@donate + "^000000 points.";
+		mes "So you will receive ^00AAFF" + .@reward_count + "x^000000 of one random reward today!";
+		next;
+
+		set .@rand_item, .ItemList[rand(getarraysize(.ItemList))];
+		getitem .@rand_item, .@reward_count;
+
+		mes "You received ^00AAFF" + .@reward_count + "x " + getitemname(.@rand_item) + "^000000!";
+		set #last_donate_reward_day, gettimetick(2);
+		cutin "", 255;
+		close;
+
+	//======================================================
+	case 2: // Check Total Donation
+		set .@aid, getcharid(3);
+		query_sql("SELECT total_donate FROM donation_data WHERE account_id = " + .@aid, .@donate);
+
+		cutin "4job_maggi_02.png", 2;
+		mes "[Donation Reward NPC]";
+		if (!.@donate) {
+			mes "I couldn't find your donation record.";
+		} else {
+			mes "Your total donation amount is ^00AAFF" + .@donate + "^000000 points.";
+			mes "That means you can receive up to ^00AAFF" + (.@donate / 10) + "^000000 random rewards daily.";
+		}
+		cutin "", 255;
+		close;
+
+	//======================================================
+	case 3: // Redeem Voucher Code
+		cutin "4job_maggi_01.png", 2;
+		mes "[Donation Reward NPC]";
+		mes "Please enter your 8-character voucher code (A-Z and 0-9).";
+		next;
+		input .@code$;
+
+		set .@code$, strtoupper(.@code$);
+
+		if (getstrlen(.@code$) != 8) {
+			mes "^FF0000Invalid voucher code length. It must be 8 characters.^000000";
+			cutin "", 255;
+			close;
+		}
+
+		query_sql("SELECT amount, used FROM donation_vouchers WHERE code = '" + escape_sql(.@code$) + "'", .@amount, .@used);
+
+		if (!.@amount) {
+			mes "^FF0000Invalid or nonexistent voucher code.^000000";
+			cutin "", 255;
+			close;
+		}
+
+		if (.@used) {
+			mes "^FF0000This voucher has already been used.^000000";
+			cutin "", 255;
+			close;
+		}
+
+		set .@aid, getcharid(3);
+
+		mes "^00FF00Voucher code accepted!^000000";
+		mes "Processing your ^00AAFF$" + .@amount + "^000000 donation package...";
+		next;
+
+		// ====================================
+		// -- Donate $100 - LEGEND PACKAGE
+		// ====================================
+		if (.@amount >= 100) {
+			cutin "4job_maggi_04.png", 2;
+			mes "[Donation Reward NPC]";
+			mes "You just donated ^FFD700$100^000000!";
+			mes "You received the ^FFD700Legend Donation Package^000000!";
+			next;
+
+			set .@days, 75;
+
+			set #CASHPOINTS, #CASHPOINTS + 1500000;
+			mes "You received ^00FF00" + callfunc("F_InsertComma", 1500000) + "^000000 Cash Points!";
+			next;
+
+			mes "[Donation Reward NPC]";
+			mes "^FFD700Legend Package Rewards:^000000";
+
+			getitem 1001258, 900;		// Black VIP Coin x900
+			mes "[1] 900x Black VIP Coin";
+
+			getitem 1001214, 1;		// Skip Ticket Episode 20 x1
+			mes "[2] 1x Skip Ticket Episode 20";
+
+			getitem 7615, 250;		// MVP Voucher x250
+			mes "[3] 250x MVP Voucher";
+
+			getitem 1230038, 10;		// Shadowecon/Zelunium Exchange Ticket x10
+			mes "[4] 10x Shadowecon/Zelunium Exchange Ticket";
+
+			getitem 1230042, 10;		// Episode 20 Material Exchange Ticket x10
+			mes "[5] 10x Episode 20 Material Exchange Ticket";
+
+			getitem 1230033, 3;		// Universal Refine Ticket +15 Max x3
+			mes "[6] 3x Universal Refine Ticket +15 Max";
+
+			getitem 1230036, 1;		// Universal Refine Ticket +18 Max x1
+			mes "[7] 1x Universal Refine Ticket +18 Max";
+
+			getitem 677, 50;		// Platinum Coin x50
+			mes "[8] 50x Platinum Coin (Material <-> Zeny)";
+
+			specialeffect2 338;
+		}
+		// ====================================
+		// -- Donate $50 - PREMIUM PACKAGE
+		// ====================================
+		else if (.@amount >= 50) {
+			cutin "4job_maggi_04.png", 2;
+			mes "[Donation Reward NPC]";
+			mes "You just donated ^FFD700$50^000000!";
+			mes "You received a ^FFD700Premium Donation Package^000000!";
+			next;
+
+			set .@days, 30;
+
+			set #CASHPOINTS, #CASHPOINTS + 650000;
+			mes "You received ^00FF00" + callfunc("F_InsertComma", 650000) + "^000000 Cash Points!";
+			next;
+
+			mes "[Donation Reward NPC]";
+			mes "^FFD700Premium Package Rewards:^000000";
+
+			getitem 1001258, 400;		// Black VIP Coin x400
+			mes "[1] 400x Black VIP Coin";
+
+			getitem 1001214, 1;		// Skip Ticket Episode 20 x1
+			mes "[2] 1x Skip Ticket Episode 20";
+
+			getitem 7615, 100;		// MVP Voucher x100
+			mes "[3] 100x MVP Voucher";
+
+			getitem 1230039, 5;		// Shadowecon/Zelunium Exchange Ticket x5
+			mes "[4] 5x Shadowecon/Zelunium Exchange Ticket";
+
+			getitem 1230043, 5;		// Episode 20 Material Exchange Ticket x5
+			mes "[5] 5x Episode 20 Material Exchange Ticket";
+
+			getitem 674, 100;		// Mithril Coin x100
+			mes "[6] 100x Mithril Coin (Material <-> Zeny)";
+
+			specialeffect2 338;
+		}
+		// ====================================
+		// -- Donate $30 - SPECIAL PACKAGE
+		// ====================================
+		else if (.@amount >= 30) {
+			cutin "4job_maggi_03.png", 2;
+			mes "[Donation Reward NPC]";
+			mes "You just donated ^00AAFF$30^000000!";
+			mes "You received a ^00AAFFSpecial Donation Package^000000!";
+			next;
+
+			set .@days, 15;
+
+			set #CASHPOINTS, #CASHPOINTS + 350000;
+			mes "You received ^00FF00" + callfunc("F_InsertComma", 350000) + "^000000 Cash Points!";
+			next;
+
+			mes "[Donation Reward NPC]";
+			mes "^00AAFFSpecial Package Rewards:^000000";
+
+			getitem 1001258, 200;		// Black VIP Coin x200
+			mes "[1] 200x Black VIP Coin";
+
+			getitem 1000988, 1;		// Skip Ticket Episode 19 x1
+			mes "[2] 1x Skip Ticket Episode 19";
+
+			getitem 102399, 3;		// Costume Egg x3
+			mes "[3] 3x Costume Egg";
+
+			getitem 1230039, 3;		// Shadowecon/Zelunium Exchange Ticket x3
+			mes "[4] 3x Shadowecon/Zelunium Exchange Ticket";
+
+			getitem 1230042, 3;		// Episode 19 Material Exchange Ticket x3
+			mes "[5] 3x Episode 19 Material Exchange Ticket";
+
+			specialeffect2 332;
+		}
+		// ====================================
+		// -- Donate $20 - ADVANCED PACKAGE
+		// ====================================
+		else if (.@amount >= 20) {
+			cutin "4job_maggi_02.png", 2;
+			mes "[Donation Reward NPC]";
+			mes "You just donated ^00FF00$20^000000!";
+			mes "You received an ^00FF00Advanced Donation Package^000000!";
+			next;
+
+			set .@days, 7;
+
+			set #CASHPOINTS, #CASHPOINTS + 250000;
+			mes "You received ^00FF00" + callfunc("F_InsertComma", 250000) + "^000000 Cash Points!";
+			next;
+
+			mes "[Donation Reward NPC]";
+			mes "^00FF00Advanced Package Rewards:^000000";
+
+			getitem 1001258, 125;		// Black VIP Coin x125
+			mes "[1] 125x Black VIP Coin";
+
+			getitem 1000288, 1;		// Skip Ticket Episode 18 x1
+			mes "[2] 1x Skip Ticket Episode 18";
+
+			getitem 102399, 2;		// Costume Egg x2
+			mes "[3] 2x Costume Egg";
+
+			getitem 1230039, 2;		// Shadowecon/Zelunium Exchange Ticket x2
+			mes "[4] 2x Shadowecon/Zelunium Exchange Ticket";
+
+			getitem 1230041, 2;		// Episode 18 Material Exchange Ticket x2
+			mes "[5] 2x Episode 18 Material Exchange Ticket";
+
+			specialeffect2 331;
+		}
+		// ====================================
+		// -- Donate $10 - BASIC PACKAGE
+		// ====================================
+		else if (.@amount >= 10) {
+			cutin "4job_maggi_02.png", 2;
+			mes "[Donation Reward NPC]";
+			mes "You just donated ^00FF00$10^000000!";
+			mes "You received a ^00FF00Basic Donation Package^000000!";
+			next;
+
+			set .@days, 3;
+
+			set #CASHPOINTS, #CASHPOINTS + 100000;
+			mes "You received ^00FF00" + callfunc("F_InsertComma", 100000) + "^000000 Cash Points!";
+			next;
+
+			mes "[Donation Reward NPC]";
+			mes "^00FF00Basic Package Rewards:^000000";
+
+			getitem 1001258, 50;		// Black VIP Coin x50
+			mes "[1] 50x Black VIP Coin";
+
+			getitem 1000282, 1;		// Skip Ticket Episode 16 x1
+			mes "[2] 1x Skip Ticket Episode 16";
+
+			getitem 1000287, 1;		// Skip Ticket Episode 17 x1
+			mes "[3] 1x Skip Ticket Episode 17";
+
+			getitem 102399, 1;		// Costume Egg x1
+			mes "[4] 1x Costume Egg";
+
+			getitem 1230038, 1;		// Shadowecon/Zelunium Exchange Ticket x1
+			mes "[5] 1x Shadowecon/Zelunium Exchange Ticket";
+
+			getitem 1230039, 1;		// Episode 16/17 Material Exchange Ticket x1
+			mes "[6] 1x Episode 16/17 Material Exchange Ticket";
+
+			specialeffect2 331;
+		}
+		else {
+			mes "Sorry, there are no packages available for this voucher value.";
+			cutin "", 255;
+			close;
+		}
+
+		// ====================================
+		// VIP Time Extension
+		// ====================================
+		set .@seconds, .@days * 86400;
+		if (#vip_time < gettimetick(2))
+			set #vip_time, gettimetick(2) + .@seconds;
+		else
+			set #vip_time, #vip_time + .@seconds;
+
+		query_sql("UPDATE `login` SET `group_id` = 5 WHERE `account_id` = " + .@aid);
+
+		next;
+		mes "[Donation Reward NPC]";
+		mes "^00FF00Your VIP status has been extended by " + .@days + " day(s)!^000000";
+		mes "^FF69B4Thank you for your support to OlympusRO!^000000";
+
+		// ====================================
+		// UPDATE DATABASE - Mark voucher used & update donate total
+		// ====================================
+		query_sql("INSERT INTO donation_data (account_id, total_donate) VALUES (" + .@aid + ", " + .@amount + ") ON DUPLICATE KEY UPDATE total_donate = total_donate + " + .@amount);
+		query_sql("UPDATE donation_vouchers SET used = 1, used_by = " + .@aid + ", used_date = NOW() WHERE code = '" + escape_sql(.@code$) + "'");
+	}
+	cutin "", 255;
+	close;
+}

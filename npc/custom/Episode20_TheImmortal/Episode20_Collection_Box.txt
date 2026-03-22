@@ -1,0 +1,127 @@
+//===== rAthena Script =======================================
+//= Glacier Box Exchange NPC
+//===== Description: =========================================
+//= Exchange Cat Whiskers or Flower Petals for Glacier Boxes
+//===== Author: ==============================================
+//= Modified Script
+//============================================================
+
+askald,65,138,1	script	Dim Glacier Box	604,{
+	// Random cutin from 01 to 04
+	.@cutin_num = rand(1,4);
+	if (.@cutin_num == 1)
+		cutin "arquien_n_atnad01",2;
+	else if (.@cutin_num == 2)
+		cutin "arquien_n_atnad02",2;
+	else if (.@cutin_num == 3)
+		cutin "arquien_n_atnad03",2;
+	else
+		cutin "arquien_n_atnad04",2;
+	
+	mes "[Glacier Box Merchant]";
+	mes "Welcome! I can exchange items for Glacier Boxes.";
+	next;
+	mes "[Glacier Box Merchant]";
+	mes "What would you like to exchange?";
+	next;
+	
+	switch(select("^8B00FF100 Cat Whiskers -> Dim Glacier Weapon Box^000000:^0000FF100 Flower Petals -> Glacier Weapon Box^000000:Check my items:Cancel")) {
+		case 1:
+			// Exchange 100 Cat Whiskers for Dim Glacier Weapon Box
+			.@item_needed = 1001217; // Cat Whiskers
+			.@item_count = 100;
+			.@reward = 41246; // Dim Glacier Weapon Box
+			
+			mes "[Glacier Box Merchant]";
+			mes "You want to exchange:";
+			mes "^FF0000100 Cat Whiskers^000000";
+			mes "          ||";
+			mes "          V";
+			mes "^8B00FF1 Dim Glacier Weapon Box^000000";
+			next;
+			mes "[Glacier Box Merchant]";
+			mes "Do you want to proceed?";
+			next;
+			
+			if (select("[+]Yes:[-]No") == 2) {
+				mes "[Glacier Box Merchant]";
+				mes "Come back anytime!";
+				cutin "",255;
+				close;
+			}
+			
+			// Check if player has enough items
+			if (countitem(.@item_needed) < .@item_count) {
+				mes "[Glacier Box Merchant]";
+				mes "Sorry, you don't have enough Cat Whiskers.";
+				mes "You have: ^0000FF" + countitem(.@item_needed) + "/" + .@item_count + "^000000";
+				cutin "",255;
+				close;
+			}
+			
+			// Exchange
+			mes "[Glacier Box Merchant]";
+			mes "Exchange successful!";
+			delitem .@item_needed, .@item_count;
+			getitem .@reward, 1;
+			cutin "",255;
+			close;
+			
+		case 2:
+			// Exchange 100 Flower Petals for Glacier Weapon Box
+			.@item_needed = 1000608; // Flower Petals
+			.@item_count = 100;
+			.@reward = 41247; // Glacier Weapon Box
+			
+			mes "[Glacier Box Merchant]";
+			mes "You want to exchange:";
+			mes "^FF0000100 Flower Petals^000000";
+			mes "          ||";
+			mes "          V";
+			mes "^0000FF1 Glacier Weapon Box^000000";
+			next;
+			mes "[Glacier Box Merchant]";
+			mes "Do you want to proceed?";
+			next;
+			
+			if (select("[+]Yes:[-]No") == 2) {
+				mes "[Glacier Box Merchant]";
+				mes "Come back anytime!";
+				cutin "",255;
+				close;
+			}
+			
+			// Check if player has enough items
+			if (countitem(.@item_needed) < .@item_count) {
+				mes "[Glacier Box Merchant]";
+				mes "Sorry, you don't have enough Flower Petals.";
+				mes "You have: ^0000FF" + countitem(.@item_needed) + "/" + .@item_count + "^000000";
+				cutin "",255;
+				close;
+			}
+			
+			// Exchange
+			mes "[Glacier Box Merchant]";
+			mes "Exchange successful!";
+			delitem .@item_needed, .@item_count;
+			getitem .@reward, 1;
+			cutin "",255;
+			close;
+			
+		case 3:
+			// Check items
+			mes "[Glacier Box Merchant]";
+			mes "^00FF00Your current items:^000000";
+			mes "Cat Whiskers: ^0088FF" + countitem(1001217) + "^000000";
+			mes "Flower Petals: ^0088FF" + countitem(1000608) + "^000000";
+			cutin "",255;
+			close;
+			
+		case 4:
+			// Cancel
+			mes "[Glacier Box Merchant]";
+			mes "Come back anytime!";
+			cutin "",255;
+			close;
+	}
+}

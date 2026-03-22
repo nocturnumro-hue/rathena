@@ -1,0 +1,45 @@
+// ============================================
+// GRAY WOLF ARMOR ENCHANT NPC
+// ============================================
+askald,11,230,5	script	Gray Wolf Enchanter	10379,{
+	mes "[Gray Wolf Enchanter]";
+	mes "^0000FFWelcome to Gray Wolf Armor Enchant System!^000000";
+	mes "I can enchant the following armors:";
+	mes " ";
+	mes "^AAAAAA[1]^000000 ^FF6600Gray Wolf Suit / Robe^000000";
+	mes "    ^FF4444* Requires +9 Refine or higher^000000";
+	mes "^AAAAAA[2]^000000 ^CC00CCGray Wolf Manteau / Muffler^000000";
+	mes "    ^FF4444* Requires +7 Refine or higher^000000";
+	mes "^AAAAAA[3]^000000 ^0088FFGray Wolf Boots / Shoes^000000";
+	mes "    ^FF4444* Requires +7 Refine or higher^000000";
+	mes "^AAAAAA[4]^000000 ^008800Gray Wolf Pendant / Earring^000000";
+	next;
+
+	switch(select("^AAAAAA[1]^000000 ^FF6600Suit / Robe^000000:^AAAAAA[2]^000000 ^CC00CCManteau / Muffler^000000:^AAAAAA[3]^000000 ^0088FFBoots / Shoes^000000:^AAAAAA[4]^000000 ^008800Pendant / Earring^000000:^888888[Exit]^000000")) {
+		case 1:
+			// Gray Wolf Suit / Robe - TABLE 180
+			item_enchant(180);
+			close;
+
+		case 2:
+			// Gray Wolf Manteau / Muffler - TABLE 181
+			item_enchant(181);
+			close;
+
+		case 3:
+			// Gray Wolf Boots / Shoes - TABLE 182
+			item_enchant(182);
+			close;
+
+		case 4:
+			// Gray Wolf Pendant / Earring - TABLE 183
+			item_enchant(183);
+			close;
+
+		case 5:
+			mes "[Gray Wolf Enchanter]";
+			mes "Have a nice day!";
+			mes "Come back anytime!";
+			close;
+	}
+}

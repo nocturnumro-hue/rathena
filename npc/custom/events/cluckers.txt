@@ -1,25 +1,7 @@
 //===== rAthena Script =======================================
 //= Cluck! Cluck! Boom!
-//===== By: ==================================================
-//= Keale
-//===== Current Version: =====================================
-//= 1.2a
-//===== Compatible With: =====================================
-//= rAthena Project
-//===== Description: =========================================
-//= Click the chicken and try retrieve the item at a low 
-//= chance. If you fail he will nuke, freeze, stone, 
-//= stun, or make you fall asleep.
-//= The prize is configurable and triggered by the NPC.
-//===== Additional Comments: =================================
-//= 1.0 First release.
-//= 1.1 Using 'switch rand' instead.
-//= 1.2 Cleaned and standardized. [Euphy]
-//= 1.2a Switched 'atcommand' to 'unitskilluseid'.
-//= 1.3 Switched 'unitskilluseid' to 'unitkill'.
 //============================================================
-
-prontera,156,219,4	script	Cluckers	800,{
+prontera,155,240,4	script	Cluckers	800,{
 
 	set .@GMAccess,80;	// GM level required to access NPC
 

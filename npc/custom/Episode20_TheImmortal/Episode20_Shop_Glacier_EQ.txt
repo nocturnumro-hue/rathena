@@ -1,0 +1,98 @@
+// ============================================
+// BARTER SHOPS - Episode 20
+// ============================================
+askald,71,142,1	script	Episode20 SHOP	10583,{
+	.@points_episode20 = get_reputation_points(5); // Episode 20
+	
+	// Random PNG chat image (1-4)
+	.@random_png = rand(1,4);
+	.@png_file$ = "ep21_galaxia0" + .@random_png + ".png";
+	
+	disable_items;
+	cutin .@png_file$, 2;
+	mes "[Episode 20 Trader]";
+	mes "Welcome to the ^0000FFEpisode 20 Material Exchange^000000!";
+	mes "^FF8800Current Reputation Points:^000000";
+	mes "^0000FFEpisode 20 Shop:^000000 " + (.@points_episode20 >= 1000 ? "^00FF00" + .@points_episode20 + "/1000^000000" : "^FF0000" + .@points_episode20 + "/1000^000000");
+	mes "^9900FFGlacier Equipment:^000000 " + (.@points_episode20 >= 2000 ? "^00FF00" + .@points_episode20 + "/2000^000000" : "^FF0000" + .@points_episode20 + "/2000^000000");
+	mes " ";
+	
+	// Check if player has minimum reputation
+	if (.@points_episode20 < 1000) {
+		cutin "ep21_galaxia02.png", 2;
+		mes "You don't have enough reputation points!";
+		mes " ";
+		mes "^FF0000Required reputation:^000000";
+		mes "- Episode 20 Shop: 1000 points";
+		mes "- Glacier Equipment: 2000 points";
+		cutin "", 255;
+		close;
+	}
+	
+	// Build menu based on reputation
+	.@menu$ = "";
+	
+	if (.@points_episode20 >= 1000) {
+		.@menu$ = "Episode 20 Shop:";
+	}
+	if (.@points_episode20 >= 2000) {
+		.@menu$ = .@menu$ + "Glacier Equipment:";
+	}
+	.@menu$ = .@menu$ + "Exit";
+	
+	mes "Please select your shop:";
+	next;
+	
+	cutin "ep21_galaxia02.png", 2;
+	.@choice = select(.@menu$);
+	
+	switch(.@choice) {
+		// Episode 20 Shop (1000 reputation)
+		case 1:
+			cutin "ep21_galaxia03.png", 2;
+			mes "[Episode 20 Shop]";
+			mes "Opening ^0000FFEpisode 20 Shop^000000...";
+			cutin "", 255;
+			close2;
+			callshop "Episode20_SHOP";
+			end;
+		
+		// Glacier Equipment (2000 reputation)
+		case 2:
+			if (.@points_episode20 >= 2000) {
+				cutin "ep21_galaxia04.png", 2;
+				mes "[Episode 20 VIP Shop]";
+				mes "Opening ^9900FFGlacier Equipment^000000...";
+				cutin "", 255;
+				close2;
+				callshop "Episode20_Glacier_EQ";
+				end;
+			} else {
+				// This is Exit option if reputation < 2000
+				cutin "ep21_galaxia04.png", 2;
+				mes "[Episode 20 Trader]";
+				mes "Have a good day!";
+				mes "Good Bye!";
+				cutin "", 255;
+				close;
+			}
+		
+		// Exit (case 3 if reputation >= 2000, case 2 if < 2000)
+		case 3:
+			cutin "ep21_galaxia04.png", 2;
+			mes "[Episode 20 Trader]";
+			mes "Have a good day!";
+			mes "Good Bye!";
+			cutin "", 255;
+			close;
+		
+		// Default Exit
+		default:
+			cutin "ep21_galaxia04.png", 2;
+			mes "[Episode 20 Trader]";
+			mes "Have a good day!";
+			mes "Good Bye!";
+			cutin "", 255;
+			close;
+	}
+}

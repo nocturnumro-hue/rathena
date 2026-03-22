@@ -1,0 +1,292 @@
+//===== rAthena Script =======================================
+//= Event Tracker System (He thong Theo doi Event)
+//===== Description: =========================================
+//= Hien thi danh sach tat ca Event tren server
+//= Co the dich chuyen den Event khi click
+//= Hien thi thoi gian dien ra cho Event
+//= SAP XEP: Event sap dien ra len tren, dien ra lau o duoi
+//= Command: @event
+//===== Author: ==============================================
+//= Custom Event System
+//============================================================
+
+-	script	event_tracker	FAKE_NPC,{
+OnInit:
+	bindatcmd "event","event_tracker::OnShowEvents",0,99;
+	
+	// ===== CAU HINH EVENT =====
+	// Event Type: 0 = Permanent (Luon co), 1 = Scheduled (Theo lich)
+	
+	setarray .event_name$[0],
+		"Boss Invasion",
+		"Farm Zone",
+		"Stop the Clock",
+		"World Boss",
+		"Find Mushroom",
+		"Treasure Box",
+		"Monster Invasion",
+		"Lotti Girl";
+	
+	setarray .event_type[0],
+		1, // Boss Invasion - Scheduled (22:00 & 08:00)
+		0, // Farm Zone - Permanent
+		1, // Stop the Clock - Scheduled (every 8 hours)
+		1, // World Boss - Scheduled (21:00)
+		1, // Find Mushroom - Scheduled (every 1 hour)
+		1, // Treasure Box - Scheduled (every 1 hour)
+		1, // Monster Invasion - Scheduled (every 2 hours)
+		0; // Lotti Girl - Permanent
+	
+	// Toa do dich chuyen (Map, X, Y)
+	setarray .event_map$[0],
+		"askald",      // Boss Invasion (spawns at town)
+		"askald",      // Farm Zone (NPC location)
+		"askald",      // Stop the Clock (NPC location)
+		"askald",      // World Boss (NPC location)
+		"prontera",    // Find Mushroom (NPC location)
+		"prontera",    // Treasure Box (random spawn)
+		"askald",      // Monster Invasion (spawn area)
+		"askald";      // Lotti Girl (NPC location)
+	
+	setarray .event_x[0], 127, 153, 119, 134, 142, 155, 127, 150;
+	setarray .event_y[0], 153, 98, 127, 97, 228, 181, 144, 95;
+	
+	// Lich Event (Gio:Phut theo gio server) - Chi cho Scheduled events
+	setarray .event_schedule$[0],
+		"08:00|22:00", // Boss Invasion (2 times/day)
+		"",            // Farm Zone - no schedule (permanent)
+		"09:00|17:00|01:00", // Stop the Clock (every 8 hours: 1am, 9am, 5pm)
+		"21:00",       // World Boss (9pm daily)
+		"Every Hour",  // Find Mushroom (hourly - special text)
+		"Every Hour",  // Treasure Box (hourly - special text)
+		"Every 2h",    // Monster Invasion (every 2 hours - special text)
+		"";            // Lotti Girl - no schedule (permanent)
+	
+	// Thong tin mo ta event
+	setarray .event_desc$[0],
+		"Boss Invasion at Askald Main Town! Kill 30 MVPs to complete. Top killer gets 5 MVP Vouchers!",
+		"Farm Zone with unlimited monsters! Hunt for rare items. VIP gets double time. PVP enabled!",
+		"Click the NPC when counter hits closest to 0 (below 50). Winner gets 5 Bloody Branch!",
+		"3-round World Boss event! Escalating difficulty and rewards. Final round gives ultimate prizes!",
+		"Find random mushrooms spawning in custom maps! Kill them for TCG Cards. 10 minutes time limit!",
+		"Treasure Box spawns randomly every hour! Find it at coordinates for Battle Manual, TCG, Ygg Berry Box!",
+		"5 waves of monsters invade Askald Main Town! Clear all waves to spawn Treasure Boxes!",
+		"Exchange Lottery Tickets for random prizes! Grand prizes include MVP Cards, Ice Pick, rare headgears!";
+	
+	end;
+
+OnShowEvents:
+	// ===== SAP XEP EVENT THEO THOI GIAN =====
+	deletearray .@sorted_idx[0], 128;
+	deletearray .@sorted_time[0], 128;
+	.@count = 0;
+	
+	// Tinh thoi gian cho tung event va luu vao array
+	for (.@i = 0; .@i < getarraysize(.event_name$); .@i++) {
+		.@sorted_idx[.@count] = .@i;
+		
+		if (.event_type[.@i] == 0) {
+			// Permanent events - Priority thap nhat (cho xuong cuoi)
+			.@sorted_time[.@count] = 99999;
+		} else {
+			// Scheduled events - Tinh thoi gian con lai
+			if (.event_schedule$[.@i] == "Every Hour") {
+				.@sorted_time[.@count] = 30; // Average time
+			} else if (.event_schedule$[.@i] == "Every 2h") {
+				.@sorted_time[.@count] = 60; // Average time
+			} else {
+				.@sorted_time[.@count] = callfunc("F_GetNextScheduleMinutes", .event_schedule$[.@i]);
+			}
+		}
+		.@count++;
+	}
+	
+	// Bubble sort - Sap xep tang dan theo thoi gian (sap dien ra len dau)
+	for (.@i = 0; .@i < .@count - 1; .@i++) {
+		for (.@j = 0; .@j < .@count - .@i - 1; .@j++) {
+			if (.@sorted_time[.@j] > .@sorted_time[.@j + 1]) {
+				// Swap time
+				.@temp_time = .@sorted_time[.@j];
+				.@sorted_time[.@j] = .@sorted_time[.@j + 1];
+				.@sorted_time[.@j + 1] = .@temp_time;
+				
+				// Swap index
+				.@temp_idx = .@sorted_idx[.@j];
+				.@sorted_idx[.@j] = .@sorted_idx[.@j + 1];
+				.@sorted_idx[.@j + 1] = .@temp_idx;
+			}
+		}
+	}
+	
+	// ===== TAO MENU VOI EVENT DA SAP XEP =====
+	.@menu$ = "";
+	
+	for (.@i = 0; .@i < .@count; .@i++) {
+		.@idx = .@sorted_idx[.@i];
+		.@rank = .@i + 1;
+		
+		// Tinh toan mau sac va status
+		.@color$ = "";
+		.@status$ = "";
+		.@time_info$ = "";
+		.@type$ = "";
+		
+		switch (.event_type[.@idx]) {
+			case 0: // Permanent - Luon xanh la dam (dang active)
+				.@color$ = "^008000";
+				.@type$ = "Permanent";
+				.@status$ = "ACTIVE";
+				break;
+				
+			case 1: // Scheduled - Tinh toan thoi gian
+				.@type$ = "Scheduled";
+				
+				// Special handling for hourly/2h events
+				if (.event_schedule$[.@idx] == "Every Hour") {
+					.@color$ = "^0000FF";
+					.@status$ = "HOURLY";
+					.@time_info$ = "Auto";
+				} else if (.event_schedule$[.@idx] == "Every 2h") {
+					.@color$ = "^0000FF";
+					.@status$ = "AUTO";
+					.@time_info$ = "2h";
+				} else {
+					.@next_min = callfunc("F_GetNextScheduleMinutes", .event_schedule$[.@idx]);
+					if (.@next_min <= 10) {
+						.@color$ = "^FF6600"; // Cam dam - sap dien ra hoac <10 phut
+						.@status$ = "SOON";
+						.@time_info$ = .@next_min + "m";
+					} else if (.@next_min <= 30) {
+						.@color$ = "^FF6600"; // Cam dam - duoi 30 phut
+						.@status$ = "UPCOMING";
+						.@time_info$ = .@next_min + "m";
+					} else {
+						.@color$ = "^0000FF"; // Xanh duong - con lau >30 phut
+						.@status$ = "LATER";
+						.@time_info$ = .@next_min + "m";
+					}
+				}
+				break;
+		}
+		
+		// Format with multiple colors
+		.@menu_line$ = "^000080- Event #" + .@rank + " ^9932CCName [" + .event_name$[.@idx] + "] ^8B4513Type [" + .@type$ + "] ";
+		
+		// Status and Time use the calculated color based on urgency
+		.@menu_line$ += .@color$ + "Status [" + .@status$ + "]";
+		if (.@time_info$ != "")
+			.@menu_line$ += " Time [" + .@time_info$ + "]";
+		.@menu_line$ += "^000000";
+		.@menu$ += .@menu_line$ + ":";
+	}
+	
+	.@choice = select(.@menu$) - 1;
+	
+	// Get the actual event index from sorted array
+	.@event_idx = .@sorted_idx[.@choice];
+	
+	// Selected an event - Show info and auto warp
+	if (.@choice >= 0 && .@choice < .@count) {
+		mes "^FF0000[Event Details]^000000";
+		mes "^0000FF================================^000000";
+		mes "^FF0000Event:^000000 " + .event_name$[.@event_idx];
+		mes " ";
+		mes "^0000FFDescription:^000000";
+		mes .event_desc$[.@event_idx];
+		mes " ";
+		
+		// Event Type Info
+		switch (.event_type[.@event_idx]) {
+			case 0:
+				mes "^008000Type:^000000 Permanent Event";
+				mes "^008000Status:^000000 Always Active";
+				break;
+			case 1:
+				mes "^0000FFType:^000000 Scheduled Event";
+				
+				if (.event_schedule$[.@event_idx] == "Every Hour") {
+					mes "^0000FFSchedule:^000000 Auto-start every 1 hour";
+					mes "^0000FFNext:^000000 Within next hour";
+				} else if (.event_schedule$[.@event_idx] == "Every 2h") {
+					mes "^0000FFSchedule:^000000 Auto-start every 2 hours";
+					mes "^0000FFNext:^000000 Within next 2 hours";
+				} else {
+					mes "^0000FFSchedule:^000000 " + .event_schedule$[.@event_idx];
+					.@next$ = callfunc("F_GetNextSchedule", .event_schedule$[.@event_idx]);
+					.@next_min = callfunc("F_GetNextScheduleMinutes", .event_schedule$[.@event_idx]);
+					mes "^0000FFNext:^000000 " + .@next$ + " (~" + .@next_min + " minutes)";
+				}
+				break;
+		}
+		
+		mes "^0000FF================================^000000";
+		mes "^00FF00Warping to " + .event_name$[.@event_idx] + "...^000000";
+		close2;
+		warp .event_map$[.@event_idx], .event_x[.@event_idx], .event_y[.@event_idx];
+		end;
+	}
+	end;
+}
+
+// Function: Tinh thoi gian scheduled event tiep theo (return string)
+function	script	F_GetNextSchedule	{
+	.@schedule$ = getarg(0);
+	if (.@schedule$ == "") return "";
+	if (.@schedule$ == "Every Hour") return "Within 1 hour";
+	if (.@schedule$ == "Every 2h") return "Within 2 hours";
+	
+	explode(.@times$, .@schedule$, "|");
+	.@current_time = gettime(DT_HOUR) * 60 + gettime(DT_MINUTE);
+	
+	.@next_time = 9999;
+	for (.@i = 0; .@i < getarraysize(.@times$); .@i++) {
+		explode(.@hm$, .@times$[.@i], ":");
+		.@event_time = atoi(.@hm$[0]) * 60 + atoi(.@hm$[1]);
+		
+		if (.@event_time > .@current_time) {
+			if (.@event_time < .@next_time) {
+				.@next_time = .@event_time;
+				.@result$ = .@times$[.@i];
+			}
+		}
+	}
+	
+	// Neu khong tim thay event hom nay, lay event dau tien ngay mai
+	if (.@next_time == 9999) {
+		.@result$ = .@times$[0] + " (Tomorrow)";
+	}
+	
+	return .@result$;
+}
+
+// Function: Tinh thoi gian scheduled event tiep theo (return minutes)
+function	script	F_GetNextScheduleMinutes	{
+	.@schedule$ = getarg(0);
+	if (.@schedule$ == "") return 9999;
+	if (.@schedule$ == "Every Hour") return 30; // Return average for display
+	if (.@schedule$ == "Every 2h") return 60; // Return average for display
+	
+	explode(.@times$, .@schedule$, "|");
+	.@current_time = gettime(DT_HOUR) * 60 + gettime(DT_MINUTE);
+	
+	.@next_time = 9999;
+	for (.@i = 0; .@i < getarraysize(.@times$); .@i++) {
+		explode(.@hm$, .@times$[.@i], ":");
+		.@event_time = atoi(.@hm$[0]) * 60 + atoi(.@hm$[1]);
+		
+		if (.@event_time > .@current_time) {
+			if (.@event_time < .@next_time) {
+				.@next_time = .@event_time;
+			}
+		}
+	}
+	
+	// Neu khong tim thay event hom nay
+	if (.@next_time == 9999) {
+		explode(.@hm$, .@times$[0], ":");
+		.@next_time = atoi(.@hm$[0]) * 60 + atoi(.@hm$[1]);
+		return (1440 - .@current_time) + .@next_time; // Phut con lai hom nay + phut cua event ngay mai
+	}
+	
+	return .@next_time - .@current_time;
+}

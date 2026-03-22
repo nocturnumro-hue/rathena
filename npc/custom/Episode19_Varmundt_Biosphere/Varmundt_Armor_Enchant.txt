@@ -1,0 +1,40 @@
+// ============================================
+// VARMUNDT ARMOR ENCHANT NPC
+// ============================================
+ba_in01,298,132,4	script	Varmundt Armor Enchant	10563,{
+	mes "^0000FFWelcome to Varmundt Armor Enchant System!^000000";
+	mes "I can enchant the following armors:";
+	mes "^FF0000=>Engraved/Flame Earth Rune Armor^000000";
+	mes "^0088FF=>Engraved/Ice Storm Rune Suits^000000";
+	mes "^9900FF=>Engraved/Soul Purification Rune Robe^000000";
+	mes "^00CC00=>Engraved/Corruption Poison Rune Cloth^000000";
+	next;
+	
+	switch(select("^FF0000Engraved/Flame Earth Rune Armor^000000:^0088FFEngraved/Ice Storm Rune Suits^000000:^9900FFEngraved/Soul Purification Rune Robe^000000:^00CC00Engraved/Corruption Poison Rune Cloth^000000:Exit")) {
+		case 1:
+			// FLAME E-R ARMOR - TABLE 99
+			item_enchant(99);
+			close;
+			
+		case 2:
+			// ICE S-R SUITS - TABLE 100
+			item_enchant(100);
+			close;
+			
+		case 3:
+			// SOUL P-R ROBE - TABLE 101
+			item_enchant(101);
+			close;
+			
+		case 4:
+			// CORRUPT P-R CLOTH - TABLE 102
+			item_enchant(102);
+			close;
+			
+		case 5:
+			mes "[Armor Enchanter]";
+			mes "Have a nice day!";
+			mes "Come back anytime!";
+			close;
+	}
+}

@@ -1,0 +1,272 @@
+//===== rAthena Script =======================================
+//= Elite Mercenary Master NPC
+//===== Description: =========================================
+//= Hire powerful Elite Mercenaries
+//============================================================
+
+askald,12,94,5	script	Ultimate Mercenary	10582,{
+	
+	// Check level requirement
+	if (BaseLevel >= 200) {
+		mes "[^FF6600Mercenary Master^000000]";
+		mes "I'm sorry, but you're too powerful!";
+		mes "^FF0000Only players below Level 200 can hire mercenaries.^000000";
+		mes " ";
+		mes "You no longer need my services.";
+		close;
+	}
+	
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "Welcome! I can hire you a powerful Elite Mercenary!";
+	mes " ";
+	mes "^00A000Duration: 6 hours^000000";
+	mes "^FF0000All mercenaries are Level 150+!^000000";
+	mes "^FF0000Cost: 100 TCG^000000";
+	mes " ";
+	mes "^0000FFRequirement: Level < 200^000000";
+	next;
+	
+L_Start:
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "Please select your mercenary type:";
+	next;
+	
+	switch(select("^FF0000Elite Combat Mercenaries^000000:^0000FFElite Support Mercenaries^000000:^9932CCLegendary MVP Mercenaries^000000:^00A000Special Forces^000000:Cancel")) {
+		case 1:
+			goto L_Combat;
+		case 2:
+			goto L_Support;
+		case 3:
+			goto L_MVP;
+		case 4:
+			goto L_Special;
+		case 5:
+			mes "[^FF6600Mercenary Master^000000]";
+			mes "Come back anytime!";
+			close;
+	}
+
+L_Combat:
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "^FF0000Elite Combat Mercenaries^000000";
+	mes "These warriors excel in physical combat!";
+	mes " ";
+	mes "Select your warrior:";
+	next;
+	
+	switch(select("Wander Man (Lv.150):Kasa (Lv.150):Salamander (Lv.150):Diabolic (Lv.150):Eddga (Lv.150):Back")) {
+		case 1:
+			set .@merc_id, 2213;
+			set .@merc_name$, "Wander Man";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Quicken Lv.10, Parrying Lv.4, Auto Berserk, Bowling Bash Lv.5";
+			break;
+		case 2:
+			set .@merc_id, 2215;
+			set .@merc_name$, "Kasa";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Crash Lv.5, Magnum Break Lv.5, Regain, Auto Berserk";
+			break;
+		case 3:
+			set .@merc_id, 2216;
+			set .@merc_name$, "Salamander";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Bash Lv.5, Brandish Spear Lv.5, Auto Berserk, Benediction";
+			break;
+		case 4:
+			set .@merc_id, 2342;
+			set .@merc_name$, "Diabolic";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Crash Lv.5, Magnum Break Lv.5, Regain, Auto Berserk";
+			break;
+		case 5:
+			set .@merc_id, 2347;
+			set .@merc_name$, "Eddga";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Crash Lv.5, Magnum Break Lv.5, Regain, Auto Berserk";
+			break;
+		case 6:
+			goto L_Start;
+	}
+	goto L_Confirm;
+
+L_Support:
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "^0000FFElite Support Mercenaries^000000";
+	mes "These allies provide powerful buffs and healing!";
+	mes " ";
+	mes "Select your supporter:";
+	next;
+	
+	switch(select("Wicked Nymph (Lv.150):Teddy Bear (Lv.150):Official Pope (Lv.175):Casual Pope (Lv.175):Back")) {
+		case 1:
+			set .@merc_id, 2214;
+			set .@merc_name$, "Wicked Nymph";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Lex Divina Lv.3, Blessing Lv.5, Tender, Magnificat";
+			break;
+		case 2:
+			set .@merc_id, 2217;
+			set .@merc_name$, "Teddy Bear";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Devotion Lv.3, Regain, Defender, Scapegoat";
+			break;
+		case 3:
+			set .@merc_id, 3569;
+			set .@merc_name$, "Official Pope";
+			set .@merc_level, 175;
+			set .@merc_skill$, "Magnificat, Decrease AGI, Tender, Blessing Lv.3";
+			break;
+		case 4:
+			set .@merc_id, 3570;
+			set .@merc_name$, "Casual Pope";
+			set .@merc_level, 175;
+			set .@merc_skill$, "Magnificat, Decrease AGI, Tender, Blessing Lv.3";
+			break;
+		case 5:
+			goto L_Start;
+	}
+	goto L_Confirm;
+
+L_MVP:
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "^9932CCLegendary MVP Mercenaries^000000";
+	mes "Ultimate power from legendary monsters!";
+	mes " ";
+	mes "Select your legend:";
+	next;
+	
+	switch(select("Baphomet (Lv.150):Wish Maiden (Lv.150):Zherlthsh (Lv.150):Ktullanux (Lv.150):Loki's Shadow (Lv.200):Back")) {
+		case 1:
+			set .@merc_id, 2325;
+			set .@merc_name$, "Baphomet";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Bash Lv.5, Quicken Lv.10";
+			break;
+		case 2:
+			set .@merc_id, 2344;
+			set .@merc_name$, "Wish Maiden";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Dark Element Attack";
+			break;
+		case 3:
+			set .@merc_id, 2345;
+			set .@merc_name$, "Zherlthsh";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Crash Lv.5, Magnum Break Lv.5, Regain, Auto Berserk";
+			break;
+		case 4:
+			set .@merc_id, 2346;
+			set .@merc_name$, "Ktullanux";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Ice Element Attack";
+			break;
+		case 5:
+			set .@merc_id, 2937;
+			set .@merc_name$, "Loki's Shadow";
+			set .@merc_level, 200;
+			set .@merc_skill$, "Invincible (Special Ability)";
+			break;
+		case 6:
+			goto L_Start;
+	}
+	goto L_Confirm;
+
+L_Special:
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "^00A000Special Forces^000000";
+	mes "Unique mercenaries with special abilities!";
+	mes " ";
+	mes "Select your specialist:";
+	next;
+	
+	switch(select("Galapago (Lv.150):Civil Servant (Lv.150):Loli Ruri (Lv.150):Sedora (Lv.150):Chepet (Lv.150):Antler Scaraba (Lv.175):Back")) {
+		case 1:
+			set .@merc_id, 2326;
+			set .@merc_name$, "Galapago";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Blessing Lv.5";
+			break;
+		case 2:
+			set .@merc_id, 2348;
+			set .@merc_name$, "Civil Servant";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Dark Element Attack";
+			break;
+		case 3:
+			set .@merc_id, 2349;
+			set .@merc_name$, "Loli Ruri";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Dark Element Attack";
+			break;
+		case 4:
+			set .@merc_id, 2350;
+			set .@merc_name$, "Sedora";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Dark Element Attack";
+			break;
+		case 5:
+			set .@merc_id, 2351;
+			set .@merc_name$, "Chepet";
+			set .@merc_level, 150;
+			set .@merc_skill$, "Dark Element Attack";
+			break;
+		case 6:
+			set .@merc_id, 2378;
+			set .@merc_name$, "Antler Scaraba";
+			set .@merc_level, 175;
+			set .@merc_skill$, "Earth Element Attack";
+			break;
+		case 7:
+			goto L_Start;
+	}
+	goto L_Confirm;
+
+L_Confirm:
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "You selected: ^00A000" + .@merc_name$ + "^000000";
+	mes "^FFD700Level: " + .@merc_level + "^000000";
+	mes " ";
+	mes "^0000FFSpecial Skills:^000000";
+	mes .@merc_skill$;
+	mes " ";
+	mes "^00A000Duration: 6 hours^000000";
+	mes " ";
+	mes "Summon this mercenary?";
+	next;
+	
+	if (select("Yes, Summon!:No, Choose Another") == 2) {
+		goto L_Start;
+	}
+	
+	// Check if already have mercenary
+	if (getmercinfo(0) > 0) {
+		mes "[^FF6600Mercenary Master^000000]";
+		mes "^FF0000You already have a mercenary!^000000";
+		mes "Please dismiss your current mercenary first.";
+		close;
+	}
+	
+	// Check TCG requirement
+	if (countitem(7227) < 100) {
+		mes "[^FF6600Mercenary Master^000000]";
+		mes "^FF0000You don't have enough TCG!^000000";
+		mes "Required: ^FFD700100 TCG^000000";
+		mes "You have: ^FFD700" + countitem(7227) + " TCG^000000";
+		close;
+	}
+	
+	// Delete 100 TCG
+	delitem 7227, 100;
+	
+	mes "[^FF6600Mercenary Master^000000]";
+	mes "Summoning your Elite Mercenary...";
+	mes "^00FF00100 TCG has been consumed.^000000";
+	close2;
+	
+	// Summon mercenary (6 hours = 21600000 milliseconds)
+	mercenary_create .@merc_id, 21600000;
+	specialeffect2 EF_LIGHTSPHERE;
+	announce "Elite Mercenary [" + .@merc_name$ + "] Level " + .@merc_level + " has been summoned!", bc_self, 0x00FF00;
+	end;
+}
