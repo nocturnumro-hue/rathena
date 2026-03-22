@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../skill_impl.hpp"
+#include "../status_skill_impl.hpp"
 
 class SkillCrazyUproar : public StatusSkillImpl {
 public:

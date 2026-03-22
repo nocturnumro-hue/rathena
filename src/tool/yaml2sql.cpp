@@ -55,11 +55,6 @@
 #include <map/skill.hpp>
 #include <map/storage.hpp>
 
-#if defined(BUILDBOT)
-	// Force buildbot to always convert all files
-	#define CONVERT_ALL
-#endif
-
 using namespace rathena;
 using namespace rathena::server_core;
 

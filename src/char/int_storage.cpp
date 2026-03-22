@@ -19,6 +19,51 @@
 #include "int_guild.hpp"
 
 /**
+ * Get max storage amount
+ * @param id: Storage ID
+ * @return Max amount
+ */
+int32 inter_premiumStorage_getMax(uint8 id) {
+	std::shared_ptr<s_storage_table> storage = interServerDb.find( id );
+
+	if( storage != nullptr ){
+		return storage->max_num;
+	}
+
+	return MAX_STORAGE;
+}
+
+/**
+ * Get table name of storage
+ * @param id: Storage ID
+ * @return Table name
+ */
+const char *inter_premiumStorage_getTableName(uint8 id) {
+	std::shared_ptr<s_storage_table> storage = interServerDb.find( id );
+
+	if( storage != nullptr ){
+		return storage->table;
+	}
+
+	return schema_config.storage_db;
+}
+
+/**
+ * Get printable name of storage
+ * @param id: Storage ID
+ * @return printable name
+ */
+const char *inter_premiumStorage_getPrintableName(uint8 id) {
+	std::shared_ptr<s_storage_table> storage = interServerDb.find( id );
+
+	if( storage != nullptr ){
+		return storage->name;
+	}
+
+	return "Storage";
+}
+
+/**
  * Save inventory entries to SQL
  * @param char_id: Character ID to save
  * @param p: Inventory entries
@@ -466,12 +511,15 @@ bool mapif_parse_StorageLoad(int32 fd) {
 	switch (type) {
 		case TABLE_INVENTORY: res = inventory_fromsql(cid, &stor); break;
 		case TABLE_STORAGE:
+			if( !interServerDb.exists( stor_id ) ){
+				ShowError( "Invalid storage with id %d\n", stor_id );
+				return false;
+			}
+
 			res = storage_fromsql(aid, &stor);
 			break;
 		case TABLE_CART:      res = cart_fromsql(cid, &stor);      break;
-		default:
-			res = false;
-			break;
+		default: return false;
 	}
 
 	mode = RFIFOB(fd, 12);
@@ -490,7 +538,6 @@ bool mapif_parse_StorageLoad(int32 fd) {
 bool mapif_parse_StorageSave(int32 fd) {
 	int32 aid, cid, type;
 	struct s_storage stor;
-	bool res = false;
 
 	type = RFIFOB(fd, 4);
 	aid = RFIFOL(fd, 5);
@@ -501,21 +548,20 @@ bool mapif_parse_StorageSave(int32 fd) {
 
 	//ShowInfo("Saving storage data for AID=%d.\n", aid);
 	switch(type){
-		case TABLE_INVENTORY:
-			res = inventory_tosql(cid, &stor) == 0;
-			break;
+		case TABLE_INVENTORY:	inventory_tosql(cid, &stor); break;
 		case TABLE_STORAGE:
-			res = storage_tosql(aid, &stor) == 0;
+			if( !interServerDb.exists( stor.stor_id ) ){
+				ShowError( "Invalid storage with id %d\n", stor.stor_id );
+				return false;
+			}
+
+			storage_tosql(aid, &stor);
 			break;
-		case TABLE_CART:
-			res = cart_tosql(cid, &stor) == 0;
-			break;
-		default:
-			res = false;
-			break;
+		case TABLE_CART:	cart_tosql(cid, &stor); break;
+		default: return false;
 	}
-	mapif_storage_saved(fd, aid, cid, res, type, stor.stor_id);
-	return true;
+	mapif_storage_saved(fd, aid, cid, true, type, stor.stor_id);
+	return false;
 }
 
 

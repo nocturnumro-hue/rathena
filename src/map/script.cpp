@@ -7790,7 +7790,6 @@ BUILDIN_FUNC(countinarray)
  *------------------------------------------*/
 BUILDIN_FUNC(setlook)
 {
-	// TODO: no checks at all... [Lemongrass]
 	int32 type,val;
 	TBL_PC* sd;
 
@@ -7853,13 +7852,13 @@ BUILDIN_FUNC(changelook){
 			break;
 
 		case LOOK_BODY2:
-			if( val < JOB_NOVICE ){
-				ShowError( "buildin_changelook: Invalid body style. Minimum: %d\n", JOB_NOVICE );
+			if( val < MIN_BODY_STYLE ){
+				ShowError( "buildin_changelook: Invalid body style. Minimum: %d\n", MIN_BODY_STYLE );
 				return SCRIPT_CMD_FAILURE;
 			}
 
-			if( val >= JOB_MAX ){
-				ShowError( "buildin_changelook: Invalid body style. Maximum: %d\n", ( JOB_MAX - 1 ) );
+			if( val > MAX_BODY_STYLE ){
+				ShowError( "buildin_changelook: Invalid body style. Maximum: %d\n", MAX_BODY_STYLE );
 				return SCRIPT_CMD_FAILURE;
 			}
 			break;
@@ -13954,7 +13953,7 @@ BUILDIN_FUNC(resetskill)
 BUILDIN_FUNC(resetfeel)
 {
 	TBL_PC *sd;
-	if (!script_charid2sd(2,sd) || (sd->class_&MAPID_SECONDMASK) != MAPID_STAR_GLADIATOR)
+	if (!script_charid2sd(2,sd) || (sd->class_&MAPID_UPPERMASK) != MAPID_STAR_GLADIATOR)
 		return SCRIPT_CMD_FAILURE;
 	pc_resetfeel(sd);
 	return SCRIPT_CMD_SUCCESS;
@@ -13967,7 +13966,7 @@ BUILDIN_FUNC(resetfeel)
 BUILDIN_FUNC(resethate)
 {
 	TBL_PC *sd;
-	if (!script_charid2sd(2,sd) || (sd->class_&MAPID_SECONDMASK) != MAPID_STAR_GLADIATOR)
+	if (!script_charid2sd(2,sd) || (sd->class_&MAPID_UPPERMASK) != MAPID_STAR_GLADIATOR)
 		return SCRIPT_CMD_FAILURE;
 	pc_resethate(sd);
 	return SCRIPT_CMD_SUCCESS;
@@ -14015,7 +14014,7 @@ BUILDIN_FUNC(changebase)
 			clif_changelook(sd,LOOK_CLOTHES_COLOR,sd->vd.look[LOOK_CLOTHES_COLOR]);
 		if (sd->vd.look[LOOK_BODY2])
 			clif_changelook(sd,LOOK_BODY2,sd->vd.look[LOOK_BODY2]);
-		clif_skillinfoblock(*sd);
+		clif_skillinfoblock(sd);
 	}
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -28271,47 +28270,6 @@ BUILDIN_FUNC(set_reputation_points){
 	return SCRIPT_CMD_SUCCESS;
 }
 
-BUILDIN_FUNC(reputationui) {
-	map_session_data* sd;
-
-	if (script_hasdata(st, 4)) {
-		if (!script_charid2sd(4, sd)) {
-			st->state = END;
-			return SCRIPT_CMD_FAILURE;
-		}
-	}
-	else if (!script_rid2sd(sd))
-	{	//Player not attached!
-		st->state = END;
-		return SCRIPT_CMD_FAILURE;
-	}
-
-	int64 group_id = 0;
-	int64 reputation_id = 0;
-
-	if (script_hasdata(st, 2)) {
-		group_id = script_getnum64(st, 2);
-		if (group_id < 0) {
-			ShowError("buildin_reputationui: Unknown GroupID %" PRIi64 ".\n", group_id);
-			st->state = END;
-			return SCRIPT_CMD_FAILURE;
-		}
-	}
-	if (script_hasdata(st, 3)) {
-		reputation_id = script_getnum64(st, 3);
-
-		if (reputation_id != 0 && !reputation_db.exists(reputation_id)) {
-			ShowError("buildin_reputationui: Unknown reputation type %" PRIi64 ".\n", reputation_id);
-			st->state = END;
-			return SCRIPT_CMD_FAILURE;
-		}
-	}
-
-	clif_reputation_open(*sd, group_id, reputation_id);
-
-	return SCRIPT_CMD_SUCCESS;
-}
-
 BUILDIN_FUNC(get_reputation_points){
 	map_session_data* sd;
 
@@ -28558,7 +28516,7 @@ BUILDIN_FUNC(getfamerank) {
 	if (!script_charid2sd(2, sd))
 		return SCRIPT_CMD_FAILURE;
 
-	script_pushint(st, pc_famerank(sd->status.char_id, sd->class_ & MAPID_SECONDMASK));
+	script_pushint(st, pc_famerank(sd->status.char_id, sd->class_ & MAPID_UPPERMASK));
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -28877,63 +28835,6 @@ BUILDIN_FUNC(duplicatenpc)
 	uint8 dir = (uint8)script_getnum(st, 7);
 	int32 class_ = (int32)script_getnum(st, 8);
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-/**
- * Creates a clickable hyperlink string for NPC dialogue.
- * meshyperlink(<display_text>", "<url>)
- **/
-BUILDIN_FUNC(meshyperlink) {  
-	const char* display = script_getstr(st, 2);
-	const char* url = script_getstr(st, 3);
-
-	std::string result = "<URL>";
-	result += display;
-	result += "<INFO>";
-	result += url;
-	result += "</INFO></URL>";
-
-	script_pushstrcopy(st, result.c_str());
-	return SCRIPT_CMD_SUCCESS;
-}
-
-BUILDIN_FUNC(mesemotion){
-#if PACKETVER >= 20230302
-	int32 id = script_getnum(st, 2);
-
-	// Validates emotion range
-	if (id < ET_SURPRISE || id >= ET_MAX) {
-		ShowError("buildin_mesemotion: Emotion ID %d is invalid.\n", id);
-<<<<<<< Updated upstream
-		st->state = END;
-=======
-		st->state = END;
->>>>>>> Stashed changes
-		return SCRIPT_CMD_FAILURE;
-	}
-
-	char buf[32];
-	std::snprintf(buf, sizeof(buf), "^e[%d]", id);
-	script_pushstrcopy(st, buf);
-
-	return SCRIPT_CMD_SUCCESS;
-#else
-	ShowError( "buildin_mesemotion: This command requires PACKETVER 2023-03-02 or newer.\n" );
-<<<<<<< Updated upstream
-	st->state = END;
-	return SCRIPT_CMD_FAILURE;
-#endif
-}
-
-=======
-	st->state = END;
-	return SCRIPT_CMD_FAILURE;
-#endif
-}
-
-=======
 	char newname[NPC_NAME_LENGTH + 1];
 	safestrncpy(newname, newname_str, sizeof(newname));
 
@@ -28993,8 +28894,6 @@ BUILDIN_FUNC(fakeloot)
 	script_pushint(st, pc_faketakeitem(sd) ? 1 : 0);
 	return SCRIPT_CMD_SUCCESS;
 }
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 #include <custom/script.inc>
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -29751,7 +29650,6 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getjobexp_ratio, "i??"),
 	BUILDIN_DEF(enchantgradeui, "?" ),
 
-	BUILDIN_DEF(reputationui, "???"),
 	BUILDIN_DEF(set_reputation_points, "ii?"),
 	BUILDIN_DEF(get_reputation_points, "i?"),
 	BUILDIN_DEF(add_reputation_points, "ii?"),
@@ -29779,20 +29677,11 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(permission_add, "permission_remove", "i?"),
 
 	BUILDIN_DEF( mesitemicon, "v??" ),
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-	BUILDIN_DEF(meshyperlink, "ss"),
-	BUILDIN_DEF(mesemotion,"i"),
-
-=======
 	BUILDIN_DEF(duplicatenpc, "sssiiii"),
 	BUILDIN_DEF(duplicateremove, "s"),
 	BUILDIN_DEF(fakeloot, ""),
 	BUILDIN_DEF(unitisforcewalk, "i"),
 	
->>>>>>> Stashed changes
 #include <custom/script_def.inc>
 
 	{nullptr,nullptr,nullptr},

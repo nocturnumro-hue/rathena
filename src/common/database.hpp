@@ -114,10 +114,6 @@ public:
 		}
 	}
 
-	virtual std::shared_ptr<const datatype> find(keytype key) const{
-		return const_cast<TypesafeYamlDatabase*>(this)->find(key);
-	}
-
 	virtual void put( keytype key, std::shared_ptr<datatype> ptr ){
 		this->data[key] = ptr;
 	}
@@ -130,7 +126,7 @@ public:
 		return this->data.end();
 	}
 
-	size_t size() const{
+	size_t size(){
 		return this->data.size();
 	}
 
@@ -176,19 +172,11 @@ public:
 		}
 	}
 
-	std::shared_ptr<const datatype> find(keytype key) const override{
-		if( this->cache.empty() || key >= this->cache.size() ){
-			return TypesafeYamlDatabase<keytype, datatype>::find( key );
-		}else{
-			return cache[this->calculateCacheKey( key )];
-		}
-	}
-
 	std::vector<std::shared_ptr<datatype>> getCache() {
 		return this->cache;
 	}
 
-	virtual size_t calculateCacheKey( keytype key ) const{
+	virtual size_t calculateCacheKey( keytype key ){
 		return key;
 	}
 
